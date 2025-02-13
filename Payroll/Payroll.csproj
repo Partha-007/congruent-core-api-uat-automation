@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="AutoFixture" Version="5.0.0-preview0011" />
+	  <PackageReference Include="Bogus" Version="35.6.1" />
+	  <PackageReference Include="CsvHelper" Version="33.0.1" />
+	  <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+	  <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
+	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+	  <PackageReference Include="Microsoft.NETCore.App" Version="2.1.30" />
+	  <PackageReference Include="Microsoft.Playwright" Version="1.50.0-beta-2" />
+	  <PackageReference Include="MSTest.TestAdapter" Version="3.7.1" />
+	  <PackageReference Include="MSTest.TestFramework" Version="3.7.1" />
+	  <PackageReference Include="NBuilder" Version="6.1.0" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="NSwag.CodeGeneration" Version="14.2.0" />
+	  <PackageReference Include="NSwag.CodeGeneration.CSharp" Version="14.2.0" />
+	  <PackageReference Include="NSwag.ConsoleCore" Version="12.0.10" />
+	  <PackageReference Include="NSwag.Core" Version="14.2.0" />
+	  <PackageReference Include="NUnit" Version="4.3.2" />
+	  <PackageReference Include="NUnit3TestAdapter" Version="5.0.0-beta.5" />
+	  <PackageReference Include="Refit" Version="8.0.0" />
+	  <PackageReference Include="Refitter.SourceGenerator" Version="1.5.0-preview.65">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Reqnroll" Version="2.2.1" />
+	  <PackageReference Include="Reqnroll.NUnit" Version="2.2.1" />
+	  <PackageReference Include="Reqnroll.Tools.MsBuild.Generation" Version="2.2.1" />
+	  <PackageReference Include="System.Net.Http" Version="4.3.4" />
+	  <PackageReference Include="System.Reflection" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Drivers\" />
+    <Folder Include="Features\" />
+    <Folder Include="Support\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClassLibrary.Shared\ClassLibrary.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
