@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "0sf77QXhpz6O/AfhV0F1JrXuJWCJwUvMOv7CJ7NMq6NQBqtSLOE2z8VGxJ2m2aSHbUk9R+E7hgfGz9RONGVHjA==",
+  "dgSpecHash": "Geq2l03Y+O2/1d/O13mqeLCMascypf+TGsgKywGCzXEALwnYS7IMQJG+7181W23u/QlkfwvunoBBgS0VkVePMg==",
   "success": true,
   "projectFilePath": "D:\\API_TestAutomationSuite\\Congruent.Core.API.TestAutomation\\ClearingPartner\\ClearingPartner.csproj",
   "expectedPackageFiles": [
@@ -257,6 +257,13 @@
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\system.xml.xpath\\4.3.0\\system.xml.xpath.4.3.0.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\system.xml.xpath.xdocument\\4.3.0\\system.xml.xpath.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\timezoneconverter\\6.1.0\\timezoneconverter.6.1.0.nupkg.sha512",
+    "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\xunit\\2.9.3\\xunit.2.9.3.nupkg.sha512",
+    "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\xunit.abstractions\\2.0.3\\xunit.abstractions.2.0.3.nupkg.sha512",
+    "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\xunit.analyzers\\1.18.0\\xunit.analyzers.1.18.0.nupkg.sha512",
+    "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\xunit.assert\\2.9.3\\xunit.assert.2.9.3.nupkg.sha512",
+    "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\xunit.core\\2.9.3\\xunit.core.2.9.3.nupkg.sha512",
+    "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\xunit.extensibility.core\\2.9.3\\xunit.extensibility.core.2.9.3.nupkg.sha512",
+    "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\xunit.extensibility.execution\\2.9.3\\xunit.extensibility.execution.2.9.3.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\yamldotnet.signed\\5.0.1\\yamldotnet.signed.5.0.1.nupkg.sha512"
   ],
   "logs": []

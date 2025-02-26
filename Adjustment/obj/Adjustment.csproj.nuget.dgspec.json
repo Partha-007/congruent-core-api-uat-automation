@@ -143,6 +143,10 @@
             "System.Reflection": {
               "target": "Package",
               "version": "[4.3.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.9.3, )"
             }
           },
           "imports": [

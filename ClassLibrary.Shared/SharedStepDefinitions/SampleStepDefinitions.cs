@@ -67,7 +67,7 @@ namespace SharedStepDefinitions
         [Then("API should respond with successful message")]
         public void ThenAPIShouldRespondWithSuccessfulMessage()
         {
-            throw new PendingStepException();
+            _program.VerifyResponse();
         }
 
         [Then("Vesting API should respond as follows")]

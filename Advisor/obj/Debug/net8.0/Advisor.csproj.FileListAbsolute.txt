@@ -1311,3 +1311,7 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\obj\Debug\n
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\obj\Debug\net8.0\Advisor.pdb
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\obj\Debug\net8.0\Advisor.genruntimeconfig.cache
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\obj\Debug\net8.0\ref\Advisor.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\xunit.abstractions.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\xunit.assert.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\xunit.core.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\xunit.execution.dotnet.dll

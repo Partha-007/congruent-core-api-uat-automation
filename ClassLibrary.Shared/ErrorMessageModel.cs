@@ -24,6 +24,8 @@ namespace RefitSandBox
 
     public class ResponseBody
     {
+        [JsonProperty("IsSuccessful")]
+        public bool isSuccessful { get; set; }
         [JsonProperty("errorMessages")]
         public List<ErrorMessage> ErrorMessages { get; set; }
     }

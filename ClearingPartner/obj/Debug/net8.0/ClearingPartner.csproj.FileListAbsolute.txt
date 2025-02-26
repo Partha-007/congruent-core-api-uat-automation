@@ -1311,3 +1311,7 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClearingPartner\obj
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClearingPartner\obj\Debug\net8.0\ClearingPartner.pdb
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClearingPartner\obj\Debug\net8.0\ClearingPartner.genruntimeconfig.cache
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClearingPartner\obj\Debug\net8.0\ref\ClearingPartner.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClearingPartner\bin\Debug\net8.0\xunit.abstractions.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClearingPartner\bin\Debug\net8.0\xunit.assert.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClearingPartner\bin\Debug\net8.0\xunit.core.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClearingPartner\bin\Debug\net8.0\xunit.execution.dotnet.dll

@@ -1311,3 +1311,7 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debu
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\Adjustment.pdb
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\Adjustment.genruntimeconfig.cache
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\ref\Adjustment.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debug\net8.0\xunit.abstractions.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debug\net8.0\xunit.assert.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debug\net8.0\xunit.core.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debug\net8.0\xunit.execution.dotnet.dll

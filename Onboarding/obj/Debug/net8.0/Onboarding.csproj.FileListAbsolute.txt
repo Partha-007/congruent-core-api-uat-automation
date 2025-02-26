@@ -1323,3 +1323,7 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Onboarding\obj\Debu
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Onboarding\obj\Debug\net8.0\Onboarding.pdb
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Onboarding\obj\Debug\net8.0\Onboarding.genruntimeconfig.cache
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Onboarding\obj\Debug\net8.0\ref\Onboarding.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Onboarding\bin\Debug\net8.0\xunit.abstractions.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Onboarding\bin\Debug\net8.0\xunit.assert.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Onboarding\bin\Debug\net8.0\xunit.core.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Onboarding\bin\Debug\net8.0\xunit.execution.dotnet.dll

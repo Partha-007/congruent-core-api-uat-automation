@@ -45,6 +45,28 @@ namespace RefitSandBox
         [Post("/api/BasicPlanDetails/SaveBasicPlanDetails")]
         [Headers("Content-Type: application/json")]
         Task<object> CreateNewPlanAsync([Body] PlanDetailsViewModel planModel);
+
+        [Post("/api/Sponsor/SaveSponsor")]
+        Task<object> SavePlanSponsor([Body] SponsorViewModel sponsor);
+
+        [Get("/api/ClearingPartner/GetClearingPartner/{id}")]
+        Task<object> GetClearingPartnersId(int id);
+
+        [Post("/api/ClearingPartner/UpsertPlanWithClearingPartnerAccount")]
+        Task<object> AddClearingPartnerToPlan([Body] PlanWithClearingPartnerViewModel clearingPartnerPlanMapping);
+
+        [Post("/api/v1/EligibleRule/SavePlanAmendmentEligibleRule")]
+        [Headers("Accept: */*", "Content-Type: application/json-patch+json")]
+        Task<object> SavePlanAmendmentEligibleRule([Body] EligibilityRuleViewModel eligibilityRuleViewModel);
+
+        [Post("/api/EntryDate/SaveEntryDate")]
+        Task<object> SaveEntryDate([Body] EntryDateRuleViewModel entryDateRuleViewModel);
+
+        [Post("/api/Source/SaveSource")]
+        Task<object> SaveSource([Body] SourceViewModel sourceViewModel);
+
+        [Post("/api/Compensation/SaveCompensation")]
+        Task<object> SaveCompensation([Body] CompensationViewModel compensationViewModel);
     }
 
     public interface ICompanyDetails

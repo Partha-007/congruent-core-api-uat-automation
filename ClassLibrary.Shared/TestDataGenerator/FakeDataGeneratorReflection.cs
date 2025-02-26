@@ -28,35 +28,77 @@ namespace RefitSandBox.TestDataGenerator
                 var propertyType = property.PropertyType;
                 var propertyName = property.Name;
 
-                property.SetValue(obj,
-                    StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Id") ? null :
-                    StringComparer.OrdinalIgnoreCase.Equals(propertyName, "tenantid") ? 1 :
+                if (propertyName.Equals("SourceCompensations", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("PostSeveranceCompensationCategories", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (propertyType.IsArray)
+                    {
+                        // If it's an array type, assign an empty array
+                        property.SetValue(obj, Array.CreateInstance(propertyType.GetElementType(), 0));
+                    }
+                    else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
+                    {
+                        // If it's a collection type (ICollection<T>), assign an empty list
+                        var itemType = propertyType.GetGenericArguments()[0]; // Get the item type T
+                        var listType = typeof(List<>).MakeGenericType(itemType); // Create List<T> type
+                        var collectionInstance = Activator.CreateInstance(listType); // Instantiate the List<T>
+                        property.SetValue(obj, collectionInstance);  // Set the empty collection
+                    }
+                    continue; // Skip further processing for this property
+                }
+                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && propertyName == "PlanCompensationCategories")
+                {
+                    // Handle ICollection<T> types
+                    var itemType = propertyType.GetGenericArguments()[0]; // Get the item type T
+                    var listType = typeof(List<>).MakeGenericType(itemType); // Create List<T> type
+                    var collectionInstance = Activator.CreateInstance(listType); // Instantiate the List<T>
+
+                    // Create and add a random number of items to the collection
+                    var addMethod = listType.GetMethod("Add");
+                    var itemInstance = Activator.CreateInstance(itemType); // Create an instance of the item type
+                    PopulateModelWithFakeData(itemInstance);  // Recursively populate nested model
+                    addMethod.Invoke(collectionInstance, new[] { itemInstance }); // Add the item to the collection
+                    
+                    property.SetValue(obj, collectionInstance);  // Set the populated collection to the property
+                }
+                else
+                {
+                    // Handle other property types as in the original code
+                    property.SetValue(obj,
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Id") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "PlanAmendmentId") ? null :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "tenantid") ? 1 :
+                        propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
+                        propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? faker.Name.FirstName() :
                         propertyType == typeof(string) && propertyName.Contains("Name", StringComparison.OrdinalIgnoreCase) ? faker.Company.CompanyName() :
                         propertyType == typeof(string) && propertyName.Contains("Email", StringComparison.OrdinalIgnoreCase) ? faker.Person.Email :
                         propertyType == typeof(string) && propertyName.Contains("PhoneNumber", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-###-####") :
-                        propertyType == typeof(string) && (StringComparer.OrdinalIgnoreCase.Equals(propertyName,"Zipcode") || StringComparer.OrdinalIgnoreCase.Equals(propertyName,"PostalCode")) ? faker.Address.ZipCode("#####") :
+                        propertyType == typeof(string) && propertyName.Contains("Zipcode", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("PostalCode", StringComparison.OrdinalIgnoreCase) ? faker.Address.ZipCode("#####") :
                         propertyName == "SicCode" ? faker.Random.Number(1000, 9999).ToString() :
                         propertyName == "BusinessCode" ? faker.Random.Number(100000, 999999).ToString() :
                         propertyName == "TaxEIN" ? faker.Phone.PhoneNumber("##-#######") :
-                        propertyName == "BusinessType" ? 1:
-                        propertyName.Contains("Address", StringComparison.OrdinalIgnoreCase) ? faker.Address.StreetAddress():
+                        propertyName == "BusinessType" ? 1 :
+                        propertyName.Contains("Address", StringComparison.OrdinalIgnoreCase) ? faker.Address.StreetAddress() :
                         propertyName.Contains("State") ? GetRandomStateCode() :
                         propertyName.Contains("City", StringComparison.OrdinalIgnoreCase) ? faker.Address.City() :
-                        propertyName.Contains("Country", StringComparison.OrdinalIgnoreCase) ? "USA":
-                        propertyName.Contains("Website", StringComparison.OrdinalIgnoreCase) ? faker.Internet.DomainName():
-                        propertyName.Contains("day",StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 28) :
-                        propertyName.Contains("month", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 12) :
-                        propertyName == "TrsContractId" || propertyName == "RkPlanNumber" ? faker.Random.AlphaNumeric(5):
-                        propertyName == "IrsPlanNumber" ? faker.Random.Number(3,3).ToString():
-                        propertyName == "LetterSerialNumber" || propertyName.Contains("CustomData", StringComparison.OrdinalIgnoreCase) || propertyName == "MepPlanId" || propertyName == "Level" ? null:
-                        propertyName == "PensionBenefitCode" || propertyName == "WelfareBenefitCode" ? faker.Random.Number(1,2).ToString():
+                        propertyName.Contains("Country", StringComparison.OrdinalIgnoreCase) ? "USA" :
+                        propertyName.Equals("Website", StringComparison.OrdinalIgnoreCase) ? faker.Internet.DomainName() :
+                        propertyName.Contains("day", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 28) :
+                        propertyName.Equals("month", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 12) :
+                        propertyName == "TrsContractId" || propertyName == "RkPlanNumber" ? faker.Random.AlphaNumeric(5).ToUpper() :
+                        propertyName == "IrsPlanNumber" ? faker.Random.Number(3, 3).ToString() :
+                        propertyName == "LetterSerialNumber" || propertyName.Contains("CustomData", StringComparison.OrdinalIgnoreCase) || propertyName == "MepPlanId" || propertyName == "Level" || propertyName == "Prototype" || propertyName == "PlanTerminationDate" || propertyName.Contains("Enddate", StringComparison.OrdinalIgnoreCase) || propertyName == "PostSeveranceCompensationCategories" || propertyName == "EmployeeClasificationCategories" ? null :
+                        propertyName == "PensionBenefitCode" || propertyName == "WelfareBenefitCode" ? faker.Random.Number(1, 2).ToString() :
                         propertyName.Contains("CompanyName", StringComparison.OrdinalIgnoreCase) ? null :
-                        propertyName == "PlanStatus" ? 0:
-                        propertyName == "PlanType" ? 1:
-                        propertyName == "Category" ? 0:
+                        propertyName == "PlanStatus" ? 0 :
+                        propertyName == "PlanType" || propertyName == "EligibilityRuleFor" || propertyName == "EntryDateRuleFor" || propertyName == "ContributionType" ? 1 :
+                        propertyName == "Category" ? 0 :
+                        propertyName == "ImmediateEligibility" ? true :
+                        propertyName == "EntryDateRule" ? 6 :
+                        propertyName.Contains("Minimum", StringComparison.OrdinalIgnoreCase) ? 10 :
                         propertyType == typeof(string) ? faker.Lorem.Word() :
                         propertyType == typeof(int?) ? (object)faker.Random.Int(1, 100) : // For nullable int
                         propertyType == typeof(int) ? faker.Random.Int(1, 100) : // For non-nullable int
+                        propertyType == typeof(double?) ? (object)faker.Random.Double(1, 100) : // For nullable int
+                        propertyType == typeof(double) ? faker.Random.Double(1, 100) : // For non-nullable int
                         propertyType == typeof(DateTime?) ? (object)faker.Date.Past().ToUniversalTime() : // For nullable DateTime
                         propertyType == typeof(DateTime) && propertyName.Contains("Date") ? faker.Date.Past().ToUniversalTime() : // For non-nullable DateTime
                         propertyType == typeof(DateTimeOffset?) ? (object)new DateTimeOffset(faker.Date.Past()) : // For nullable DateTimeOffset
@@ -65,41 +107,37 @@ namespace RefitSandBox.TestDataGenerator
                         propertyType == typeof(bool) ? false :
                         // For non-nullable bool
                         property.GetValue(obj) // Fallback for any unmatched type
-                        ) ;
+                        );
 
-
-
-
-                if (propertyType.IsClass && propertyType != typeof(string))
-                {
-                    try
+                    if (propertyType.IsClass && propertyType != typeof(string))
                     {
-                        var nestedObject = Activator.CreateInstance(propertyType);
-                        PopulateModelWithFakeData(nestedObject);
-                        property.SetValue(obj, nestedObject);
+                        try
+                        {
+                            var nestedObject = Activator.CreateInstance(propertyType);
+                            PopulateModelWithFakeData(nestedObject);
+                            property.SetValue(obj, nestedObject);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Exception :" + ex.Message);
+                        }
                     }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine("Exception :" +ex.Message);
-                    }
-                }
 
-                if (propertyType.IsEnum)
-                {
-                    var listOfEnumValues = Enum.GetValues(propertyType);
-                    var randomValueFromEnumList = listOfEnumValues.GetValue(new Random().Next(listOfEnumValues.Length));
-                    property.SetValue(obj, randomValueFromEnumList);
-                }
-                else
-                {
-                    Console.WriteLine($"No generator for type {propertyName}");
-                    
+                    if (propertyType.IsEnum)
+                    {
+                        var listOfEnumValues = Enum.GetValues(propertyType);
+                        var randomValueFromEnumList = listOfEnumValues.GetValue(new Random().Next(listOfEnumValues.Length));
+                        property.SetValue(obj, randomValueFromEnumList);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No generator for type {propertyName}");
+                    }
                 }
             }
             return obj;
-
-            
         }
+
 
         public static string GetRandomStateCode()
         {
@@ -132,11 +170,45 @@ namespace RefitSandBox.TestDataGenerator
                         var convertedValue = Convert.ChangeType(id, underlyingType);
                         property.SetValue(obj, convertedValue);
                     }
+                    else if(property.PropertyType == typeof(ICollection<int>))
+                    {
+                        var convertedValue = new List<int> { Convert.ToInt32(id) };
+                        property.SetValue(obj, convertedValue);
+                    }
                     else
                     {
-                        property.SetValue(obj, id);
+                        var propertyType = property.PropertyType;
+                        var convertedValue = Convert.ChangeType(id, propertyType);
+                        property.SetValue(obj, convertedValue);
                     }
                 }
+                else if (propertyName.Contains("."))
+                {
+                    var nestedProperty = propertyName.Split(".");
+                    var instance = obj.GetType().GetProperty(nestedProperty[0]);
+
+                    if (instance != null)
+                    {
+                        // Get the value of the property from the object, or create a new instance if null
+                        var nestedObject = instance.GetValue(obj);
+
+                        if (nestedObject == null)
+                        {
+                            // Create the instance if the nested object is null
+                            nestedObject = Activator.CreateInstance(instance.PropertyType);
+                            instance.SetValue(obj, nestedObject);
+                        }
+
+                        // Recursively call AssignId for the next level of nested property
+                        AssignId(id, nestedProperty[1], nestedObject);
+                    }
+                    else
+                    {
+                        // Handle case where the property is not found
+                        throw new Exception($"Property '{nestedProperty[0]}' not found.");
+                    }
+                }
+
             }
             return obj;
         }
