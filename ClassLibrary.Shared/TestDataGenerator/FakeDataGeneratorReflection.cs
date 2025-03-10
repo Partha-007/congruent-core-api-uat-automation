@@ -28,7 +28,7 @@ namespace RefitSandBox.TestDataGenerator
                 var propertyType = property.PropertyType;
                 var propertyName = property.Name;
 
-                if (propertyName.Equals("SourceCompensations", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("PostSeveranceCompensationCategories", StringComparison.OrdinalIgnoreCase))
+                if (propertyName.Equals("SourceCompensations", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("PostSeveranceCompensationCategories", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("Additional", StringComparison.OrdinalIgnoreCase) ||  propertyName.Equals("PlanGroupMappings", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("Classifications", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("EmploymentStatus", StringComparison.OrdinalIgnoreCase))
                 {
                     if (propertyType.IsArray)
                     {
@@ -45,7 +45,7 @@ namespace RefitSandBox.TestDataGenerator
                     }
                     continue; // Skip further processing for this property
                 }
-                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && propertyName == "PlanCompensationCategories")
+                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
                 {
                     // Handle ICollection<T> types
                     var itemType = propertyType.GetGenericArguments()[0]; // Get the item type T
@@ -81,8 +81,8 @@ namespace RefitSandBox.TestDataGenerator
                         propertyName.Contains("City", StringComparison.OrdinalIgnoreCase) ? faker.Address.City() :
                         propertyName.Contains("Country", StringComparison.OrdinalIgnoreCase) ? "USA" :
                         propertyName.Equals("Website", StringComparison.OrdinalIgnoreCase) ? faker.Internet.DomainName() :
-                        propertyName.Contains("day", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 28) :
-                        propertyName.Equals("month", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 12) :
+                        propertyName.Equals("day", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 28) :
+                        propertyName.Equals("month", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("agemonth", StringComparison.OrdinalIgnoreCase)? faker.Random.Number(1, 12) :
                         propertyName == "TrsContractId" || propertyName == "RkPlanNumber" ? faker.Random.AlphaNumeric(5).ToUpper() :
                         propertyName == "IrsPlanNumber" ? faker.Random.Number(3, 3).ToString() :
                         propertyName == "LetterSerialNumber" || propertyName.Contains("CustomData", StringComparison.OrdinalIgnoreCase) || propertyName == "MepPlanId" || propertyName == "Level" || propertyName == "Prototype" || propertyName == "PlanTerminationDate" || propertyName.Contains("Enddate", StringComparison.OrdinalIgnoreCase) || propertyName == "PostSeveranceCompensationCategories" || propertyName == "EmployeeClasificationCategories" ? null :
@@ -93,7 +93,8 @@ namespace RefitSandBox.TestDataGenerator
                         propertyName == "Category" ? 0 :
                         propertyName == "ImmediateEligibility" ? true :
                         propertyName == "EntryDateRule" ? 6 :
-                        propertyName.Contains("Minimum", StringComparison.OrdinalIgnoreCase) ? 10 :
+                        propertyName.Equals("Minimum", StringComparison.OrdinalIgnoreCase) ? 10 :
+                        propertyName.Equals("InvestmentPercentage") ? 100.00 :
                         propertyType == typeof(string) ? faker.Lorem.Word() :
                         propertyType == typeof(int?) ? (object)faker.Random.Int(1, 100) : // For nullable int
                         propertyType == typeof(int) ? faker.Random.Int(1, 100) : // For non-nullable int
@@ -230,7 +231,7 @@ namespace RefitSandBox.TestDataGenerator
                     .RuleFor(x => x.City, x => x.Address.City())
                     .RuleFor(x => x.Country, x => "USA")
                     .RuleFor(x => x.State, x => "NY")
-                    .RuleFor(x => x.Zipcode, x => x.Address.ZipCode("#####"))
+                    .RuleFor(x => x.Zipcode, x => x.Address.ZipCode("#####-####"))
                     .RuleFor(x => x.PrimaryPhoneNumber, x => "")
                     .RuleFor(x => x.SecondaryPhoneNumber, x => "")
                     .RuleFor(x => x.PrimaryEmailAddress, x => "")
@@ -248,19 +249,19 @@ namespace RefitSandBox.TestDataGenerator
                     .RuleFor(x => x.AnnualSalary, x => "500")
                     .RuleFor(x => x.Hours, x => "100")
                     .RuleFor(x => x.GrossCompensation, x => x.Random.Number(100, 999).ToString())
-                    .RuleFor(x => x.PlanCompensation, x => x.Random.Number(1000, 9999).ToString())
-                    .RuleFor(x => x.SourceName, x => "10");
+                    .RuleFor(x => x.PlanCompensation, x => x.Random.Number(1000, 9999).ToString());
 
             return data.Generate(1);
         }
-        public static void GetHeaders(string filename)
+        public static void WriteHeadersWithConventionalData(string filename, List<string> sourceNames)
         {
+            //var sourceNames = await Program.GetSourceNameHeader("1723");
             DisplayNameAttribute value;
             var values = RuleSetForCombinedTemplate();
 
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
             string directoryPath = Path.Combine(projectDirectory, "Templates",filename);
-
+            
             using (var writer = new StreamWriter(directoryPath, false))
             {
                 using (CsvWriter csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
@@ -272,6 +273,11 @@ namespace RefitSandBox.TestDataGenerator
                         value = property.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault();
                         csv.WriteField(value.DisplayName);
                     }
+                    //var sourceNames = await Program.GetSourceNameHeader("1723");
+                    foreach (var source in sourceNames)
+                    {
+                        csv.WriteField($"{Program.rkPlanNumber}_{source.ToUpper()}");
+                    }
                     csv.NextRecord();
                     foreach(var item in values)
                     {
@@ -281,12 +287,20 @@ namespace RefitSandBox.TestDataGenerator
                             var valueToWrite = property.GetValue(item);
                             csv.WriteField(valueToWrite?.ToString()); 
                         }
+                        for (int i = 0; i < sourceNames.Count; i++)
+                        {
+                            csv.WriteField("");
+                        }
                         csv.NextRecord();
                     }
-                    
+
                 }
+                
+                
             }
         }
+
+        
     }
     
     public class CombinedTemplateModel
@@ -339,7 +353,7 @@ namespace RefitSandBox.TestDataGenerator
         [DisplayName("STATE")]
         public string State { get; set; }
 
-        [DisplayName("ZIPCODE")]
+        [DisplayName("ZIP CODE")]
         public string Zipcode { get; set; }
 
         [DisplayName("PRIMARY PHONE NUMBER")]
@@ -395,10 +409,6 @@ namespace RefitSandBox.TestDataGenerator
 
         [DisplayName("PLAN COMPENSATION")]
         public string PlanCompensation { get; set; }
-
-        [DisplayName("PP123_PRETAX")]
-        public string SourceName { get; set; }
-        //public List<Contributions> contributions { get; set; }
     }
 
     public class Contributions

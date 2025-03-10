@@ -113,9 +113,9 @@ namespace SharedStepDefinitions
         }
 
         [Given("Payroll file {string} is selected and Edit payroll file as mentioned below")]
-        public void GivenPayrollFileIsSelectedAndEditPayrollFileAsMentionedBelow(string filename, DataTable dataTable)
+        public async Task GivenPayrollFileIsSelectedAndEditPayrollFileAsMentionedBelow(string filename, DataTable dataTable)
         {
-            Program.FileConfiguration(filename, dataTable);
+            await Program.FileConfiguration(filename, dataTable);
         }
 
         [When("File upload is executed for the file {string}")]

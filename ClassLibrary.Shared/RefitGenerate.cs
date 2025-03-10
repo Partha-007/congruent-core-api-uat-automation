@@ -67,6 +67,24 @@ namespace RefitSandBox
 
         [Post("/api/Compensation/SaveCompensation")]
         Task<object> SaveCompensation([Body] CompensationViewModel compensationViewModel);
+
+        [Post("/api/v1/Plan/UpdatePlanStatus")]
+        Task<object> UpdatePlanStatus([Body] UpdatePlanStatusViewModel updatePlanStatus);
+
+        [Get("/api/Source/ListSource/{id}")]
+        Task<object> ListSource(int id);
+
+        [Post("/api/Investment/AddInvestmentsToPlan")]
+        Task<object> AddInvestmentsToPlan([Body] AddInvestmentsInput addInvestmentInput);
+
+        [Post("/api/Enrollment/SaveEnrollmentSetting")]
+        Task<object> SaveEnrollmentSettings([Body] EnrollmentViewModel enrollmentViewModel);
+
+        [Get("/api/Funding/ListFunding/{planId}")]
+        Task<object> ListFunding(string planId);
+
+        [Post("/api/Funding/SaveFunding")]
+        Task<object> SaveFunding([Body] FundingViewModel fundingViewModel);
     }
 
     public interface ICompanyDetails
@@ -77,8 +95,26 @@ namespace RefitSandBox
 
     public interface IPayrollFileUpload
     {
-        [Post("/api/v1/Payroll/PayrollAndCensusFileUploadTest")]
+        [Post("/api/v1/Payroll/PayrollAndCensusFileUpload")]
         Task<object> UploadCombinedFileAsync([Body] MultipartFormDataContent form);
+    }
+
+    public interface IPayroll
+    {
+        [Post("/api/v1/Payroll/GetUploadedFilesBasedOnSearchCriteria")]
+        Task<object> GetUploadedFilesBasedOnSearchCriteria([Body] UploadedFileInformationDetails body);
+
+        [Get("/api/v1/Payroll/GetFileInformation/{fileId}")]
+        Task<FileInformationDetails> GetFileInformation(string fileId);
+
+        [Post("/api/v1/Payroll/AcceptAllWarningsInaFile/{fileId}")]
+        Task<bool> AcceptAllWarningsInaFile(string fileId);
+
+        [Get("/api/v1/Payroll/FinalSubmit/{fileId}/{fileType}")]
+        Task<FinalSumbitResult> FinalSubmit(string fileId, string fileType);
+
+        [Post("/api/v1/Payroll/SaveFundingDetailsByPlan")]
+        Task<SaveFundingByPlanResult> SaveFundingDetailsByPlan([Body] FundingByPlanViewModel fundingByPlan);
     }
 
     public class Advisor

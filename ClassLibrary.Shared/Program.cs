@@ -39,6 +39,7 @@ using RefitSandBox.Hooks;
 using Fluid.Values;
 using System.Collections;
 using NUnit.Framework.Diagnostics;
+using System.Text;
 
 
 namespace RefitSandBox
@@ -52,7 +53,7 @@ namespace RefitSandBox
         public FakeDataHelper _fakeDataHelper;
         System.Type Model;
         public static object modelAfterConvention;
-        public Hooks.Hooks _hooks;
+        public static Hooks.Hooks _hooks;
         
         public Program(FakeDataHelper fake, Hooks.Hooks hooks)
         {
@@ -195,17 +196,15 @@ namespace RefitSandBox
             //request = JsonConvert.SerializeObject(planModel, Formatting.Indented);
         }
         public List<string> JsonProperties = new List<string>();
-        public static Dictionary<string, System.Reflection.PropertyInfo> jsonPropertyDictionaryTotal = new Dictionary<string, System.Reflection.PropertyInfo>();
+        public static List<KeyValuePair<string, System.Reflection.PropertyInfo>> jsonPropertyListTotal = new List<KeyValuePair<string, System.Reflection.PropertyInfo>>();
 
-
-
-        public static Dictionary<string, System.Reflection.PropertyInfo> GetJsonPropertyDictionary(object obj)
+        public static List<KeyValuePair<string, System.Reflection.PropertyInfo>> GetJsonPropertyList(object obj)
         {
-            var jsonPropertyDictionary = new Dictionary<string, System.Reflection.PropertyInfo>();
+            var jsonPropertyList = new List<KeyValuePair<string, System.Reflection.PropertyInfo>>();
 
-            // If the object is null, return an empty dictionary
+            // If the object is null, return an empty list
             if (obj == null)
-                return jsonPropertyDictionary;
+                return jsonPropertyList;
 
             // Get the properties of the object
             var properties = obj.GetType().GetProperties();
@@ -217,8 +216,8 @@ namespace RefitSandBox
 
                 if (jsonPropertyAttribute != null)
                 {
-                    // Add the JsonPropertyName (attribute value) and the PropertyInfo to the dictionary
-                    jsonPropertyDictionary[jsonPropertyAttribute.PropertyName] = property;
+                    // Add the JsonPropertyName (attribute value) and the PropertyInfo to the list
+                    jsonPropertyList.Add(new KeyValuePair<string, System.Reflection.PropertyInfo>(jsonPropertyAttribute.PropertyName, property));
                 }
 
                 // Handle collections (ICollection, List, etc.)
@@ -241,14 +240,14 @@ namespace RefitSandBox
                                 if (item != null)
                                 {
                                     // Recursively call the function for the nested object inside the collection
-                                    var nestedProperties = GetJsonPropertyDictionary(item);
+                                    var nestedProperties = GetJsonPropertyList(item);
 
-                                    // Add the nested properties to the main dictionary with a modified key
+                                    // Add the nested properties to the list with a modified key
                                     foreach (var nestedProperty in nestedProperties)
                                     {
                                         // Prefix with collection property name to make it unique
                                         var nestedKey = $"{nestedProperty.Key}";
-                                        jsonPropertyDictionary[nestedKey] = nestedProperty.Value;
+                                        jsonPropertyList.Add(new KeyValuePair<string, System.Reflection.PropertyInfo>(nestedKey, nestedProperty.Value));
                                     }
                                 }
                             }
@@ -265,22 +264,24 @@ namespace RefitSandBox
                     if (nestedObject != null)
                     {
                         // Recursively call the function for the nested object
-                        var nestedProperties = GetJsonPropertyDictionary(nestedObject);
+                        var nestedProperties = GetJsonPropertyList(nestedObject);
 
                         foreach (var nestedProperty in nestedProperties)
                         {
                             // Prepend the parent property name to the nested property name for uniqueness
                             var nestedKey = $"{nestedProperty.Key}";
 
-                            // Add the nested property with the unique key to the original dictionary
-                            jsonPropertyDictionary[nestedKey] = nestedProperty.Value;
+                            // Add the nested property with the unique key to the list
+                            jsonPropertyList.Add(new KeyValuePair<string, System.Reflection.PropertyInfo>(nestedKey, nestedProperty.Value));
                         }
                     }
                 }
             }
-            jsonPropertyDictionaryTotal = jsonPropertyDictionary;
-            return jsonPropertyDictionary;
+
+            jsonPropertyListTotal = jsonPropertyList;
+            return jsonPropertyList;
         }
+
 
 
 
@@ -288,287 +289,397 @@ namespace RefitSandBox
         public void ConfigureWithTestDate(string ControlName, int length, Pattern pattern)
         {
             var value = GenerateTestData.RandomString(length, pattern);
-            if(jsonPropertyDictionaryTotal.ContainsKey(ControlName))
+
+            // Find matching entries in the list
+            var matchingProperties = jsonPropertyListTotal
+                .Where(entry => entry.Key == ControlName)
+                .ToList();
+
+            // If we have at least one matching property, set the value
+            foreach (var entry in matchingProperties)
             {
-                var property = jsonPropertyDictionaryTotal[ControlName];
-                property.SetValue(modelAfterConvention, value);
+                var property = entry.Value;
+                try
+                {
+                    property.SetValue(modelAfterConvention, value);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error setting value for property {property.Name}: {ex.Message}");
+                }
             }
         }
+
+        public static List<System.Reflection.PropertyInfo> matchingProperties = new List<System.Reflection.PropertyInfo>();
         public async Task Configuration(string ControlName, string Value)
         {
-            if (jsonPropertyDictionaryTotal.ContainsKey(ControlName))
+            var program = new Program();
+            if(ControlName.Contains("1") || ControlName.Contains("2"))
             {
-                var property = jsonPropertyDictionaryTotal[ControlName];
-                var ModelDeclaredType = modelAfterConvention.GetType().Name;
-                var PropertyDeclaredType = property.DeclaringType.Name;
-                var typeToSearch = System.Type.GetType($"MyNamespace.{PropertyDeclaredType}");
-                if(ModelDeclaredType != PropertyDeclaredType)
+                var match = System.Text.RegularExpressions.Regex.Match(ControlName, @"^\d+");
+
+                // If a match is found, convert the digits to skipCount, subtracting 1 for zero-based indexing
+                int skipCount = match.Success && int.TryParse(match.Value, out int result) ? result - 1 : 0;
+                //int skipCount = Convert.ToInt32(ControlName.Substring(0, 1));
+                string keyPart = ControlName.Substring(1);
+                matchingProperties = jsonPropertyListTotal
+                              .Where(entry => entry.Key.Contains(keyPart)) // Filter by keyPart
+                              .Skip(skipCount) // Skip the appropriate number of matches
+                              .Take(1) // Take the next match (either first or second)
+                              .Select(entry => entry.Value)
+                              .ToList(); // Get the value or null if not found
+            }
+            else
+            {
+                // Get all the matching keys from jsonPropertyDictionaryTotal
+                matchingProperties = jsonPropertyListTotal
+                    .Where(entry => entry.Key == ControlName)
+                    .Select(entry => entry.Value)
+                    .ToList();
+            }
+
+
+            if (matchingProperties.Any())
+            {
+                foreach (var property in matchingProperties)
                 {
-                    foreach(var item in modelAfterConvention.GetType().GetProperties())
+                    var ModelDeclaredType = modelAfterConvention.GetType().Name;
+                    var PropertyDeclaredType = property.DeclaringType.Name;
+                    var typeToSearch = System.Type.GetType($"MyNamespace.{PropertyDeclaredType}");
+
+                    // Check if the ModelDeclaredType is different from PropertyDeclaredType
+                    if (ModelDeclaredType != PropertyDeclaredType)
                     {
-                        if(item.PropertyType.IsGenericType && item.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>) && item.PropertyType.GetGenericArguments()[0] == typeToSearch)
+                        foreach (var item in modelAfterConvention.GetType().GetProperties())
                         {
-                            Console.WriteLine($"Found matching property: {item.Name}");
-                            var propertiesInModel = modelAfterConvention.GetType().GetProperty(item.Name);
-                            var currentModel = propertiesInModel.GetValue(modelAfterConvention);
-
-                            //var itemType = property.PropertyType.GetGenericArguments()[0];
-                            //var collection = currentModel as ICollection<PlanCompensationCategoryViewModel>;
-                            var collectionType = typeof(IEnumerable<>).MakeGenericType(typeToSearch);
-                            try
+                            if (item.PropertyType.IsGenericType && item.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>) && item.PropertyType.GetGenericArguments()[0] == typeToSearch)
                             {
-                                var collection = (IEnumerable)currentModel;
-                                foreach (var collectionItem in collection)
+                                Console.WriteLine($"Found matching property: {item.Name}");
+                                var propertiesInModel = modelAfterConvention.GetType().GetProperty(item.Name);
+                                var currentModel = propertiesInModel.GetValue(modelAfterConvention);
+                                var collectionType = typeof(IEnumerable<>).MakeGenericType(typeToSearch);
+                                try
                                 {
-                                    // Use reflection to get the property and set the value
-                                    var propertyToUpdate = collectionItem.GetType().GetProperty(property.Name);
-                                    if (Nullable.GetUnderlyingType(property.PropertyType) != null)
+                                    var collection = (IEnumerable)currentModel;
+                                    foreach (var collectionItem in collection)
                                     {
-                                        if (Value == null)
+                                        // Use reflection to get the property and set the value
+                                        var propertyToUpdate = collectionItem.GetType().GetProperty(property.Name);
+                                        if (Nullable.GetUnderlyingType(property.PropertyType) != null)
                                         {
-                                            // Set the property to null if the value is null
-                                            property.SetValue(collectionItem, null);
-                                        }
-                                        else
-                                        {
-                                            if (property.PropertyType == typeof(DateTimeOffset?))
+                                            if (Value == null)
                                             {
-                                                var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
-                                                property.SetValue(collectionItem, convertedValue);
-                                            }
-                                            else if (property.PropertyType == typeof(double?))
-                                            {
-                                                var convertedValue = double.Parse(Value);
-                                                try
-                                                {
-                                                    property.SetValue(collectionItem, convertedValue);
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    Console.WriteLine(ex.Message);
-                                                }
-
+                                                // Set the property to null if the value is null
+                                                property.SetValue(collectionItem, null);
                                             }
                                             else
                                             {
-                                                // Otherwise, convert the value to the underlying type and set it
-                                                var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
-                                                var convertedValue = Convert.ChangeType(Value, underlyingType);
-                                                property.SetValue(collectionItem, convertedValue);
+                                                if (property.PropertyType == typeof(DateTimeOffset?))
+                                                {
+                                                    var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
+                                                    property.SetValue(collectionItem, convertedValue);
+                                                }
+                                                else if (property.PropertyType == typeof(double?))
+                                                {
+                                                    var convertedValue = double.Parse(Value);
+                                                    try
+                                                    {
+                                                        property.SetValue(collectionItem, convertedValue);
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        Console.WriteLine(ex.Message);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    // Otherwise, convert the value to the underlying type and set it
+                                                    var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
+                                                    var convertedValue = Convert.ChangeType(Value, underlyingType);
+                                                    property.SetValue(collectionItem, convertedValue);
+                                                }
                                             }
-
+                                        }
+                                        else if (property != null)
+                                        {
+                                            property.SetValue(collectionItem, Convert.ChangeType(Value, property.PropertyType));
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"Property {property.Name} not found or is read-only.");
                                         }
                                     }
-                                    else if(property != null)
+                                }
+                                catch (Exception ex)
+                                {
+                                    // Handle any exceptions that occur during collection processing
+                                    Console.WriteLine($"Error processing collection: {ex.Message}");
+                                }
+                            }
+                            else if (item.PropertyType.Name == PropertyDeclaredType)
+                            {
+                                var propertiesInModel = modelAfterConvention.GetType().GetProperty(item.Name);
+                                var currentModel = propertiesInModel.GetValue(modelAfterConvention);
+                                try
+                                {
+                                    if (Nullable.GetUnderlyingType(property.PropertyType) != null)
                                     {
-                                        property.SetValue(collectionItem, Convert.ChangeType(Value, property.PropertyType));
+                                        var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
+                                        var convertedValue = Convert.ChangeType(Value, underlyingType);
+                                        property.SetValue(currentModel, convertedValue);
                                     }
                                     else
                                     {
-                                        Console.WriteLine($"Property {property.Name} not found or is read-only.");
+                                        var propertyType = property.PropertyType;
+                                        var convertedValue = Convert.ChangeType(Value, propertyType);
+                                        property.SetValue(currentModel, convertedValue);
                                     }
                                 }
-                                //UpdateProperty(collection, property.Name, Value);
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
                             }
-                            catch (Exception ex)
+                            else
                             {
+                                SetPropertyValueRecursive(modelAfterConvention,property.Name,Value);
+                                /*var propertiesToLoop = modelAfterConvention.GetType().GetProperties();
+                                foreach(var ItemInLoop in propertiesToLoop)
+                                {
+                                    if(ItemInLoop.PropertyType.IsClass)
+                                    {
+                                        var classToBeChecked = ItemInLoop.GetValue(modelAfterConvention);
+                                        var identifiedClass = classToBeChecked.GetType().GetProperties();
+                                        foreach(var classes in identifiedClass)
+                                        {
+                                            if(classes.PropertyType.Name.Contains("ICollection", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                if (classes.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>))
+                                                {
+                                                    try
+                                                    {
+                                                        var propertiesInCollection = classes.GetValue(identifiedClass);
+                                                    }
+                                                    catch(Exception ex)
+                                                    {
+                                                        Console.WriteLine(ex.Message);
+                                                    }
+                                                }
+                                            }
+                                            
+                                        }
 
+                                    }
+                                }
+                                var secondLayer = property.DeclaringType;
+                                var secondLayerName = property.DeclaringType.Name;
+                                var firstNest1 = modelAfterConvention.GetType().GetProperty(secondLayerName);
+
+
+                                var firstNest = modelAfterConvention.GetType().GetProperty("DefaultElectionSetting");
+                                var firstModel = firstNest.GetValue(modelAfterConvention);
+
+                                var secondNest = firstModel.GetType().GetProperty("PlanInvestment");
+                                var currentModel = secondNest.GetValue(firstModel);
+                                var nestedCheck = property.DeclaringType;
+                                var instance = Activator.CreateInstance(nestedCheck);
+                                var propertyToUpdate = instance.GetType().GetProperty(property.Name);
+                                //var current = propertyToUpdate.GetValue(modelAfterConvention);
+                                if (Nullable.GetUnderlyingType(propertyToUpdate.PropertyType) != null)
+                                {
+                                    if (Value == null)
+                                    {
+                                        // Set the property to null if the value is null
+                                        propertyToUpdate.SetValue(instance, null);
+                                    }
+                                    else
+                                    {
+                                        if (propertyToUpdate.PropertyType == typeof(DateTimeOffset?))
+                                        {
+                                            var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
+                                            propertyToUpdate.SetValue(instance, convertedValue);
+                                        }
+                                        else if (propertyToUpdate.PropertyType == typeof(double?))
+                                        {
+                                            var convertedValue = double.Parse(Value);
+                                            try
+                                            {
+                                                propertyToUpdate.SetValue(currentModel, convertedValue);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Console.WriteLine(ex.Message);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            // Otherwise, convert the value to the underlying type and set it
+                                            var underlyingType = Nullable.GetUnderlyingType(propertyToUpdate.PropertyType);
+                                            var convertedValue = Convert.ChangeType(Value, underlyingType);
+                                            propertyToUpdate.SetValue(instance, convertedValue);
+                                        }
+                                    }
+                                }*/
                             }
-                            
-                            
                         }
-                        else if(item.PropertyType.Name == PropertyDeclaredType)
+                    }
+                    // If ModelDeclaredType equals PropertyDeclaredType, handle it directly
+                    else if (Nullable.GetUnderlyingType(property.PropertyType) != null)
+                    {
+                        if (Value == null)
                         {
-                            var propertiesInModel = modelAfterConvention.GetType().GetProperty(item.Name);
-                            var currentModel = propertiesInModel.GetValue(modelAfterConvention);
-                            try
+                            // Set the property to null if the value is null
+                            property.SetValue(modelAfterConvention, null);
+                        }
+                        else
+                        {
+                            if (property.PropertyType == typeof(DateTimeOffset?))
                             {
-                                if(Nullable.GetUnderlyingType(property.PropertyType) != null)
-                                {
-                                    var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
-                                    var convertedValue = Convert.ChangeType(Value, underlyingType);
-                                    property.SetValue(currentModel, convertedValue);
-                                }
-                                else
-                                {
-                                    var propertyType = property.PropertyType;
-                                    var convertedValue = Convert.ChangeType(Value, propertyType);
-                                    property.SetValue(currentModel, convertedValue);
-                                }
-                               
+                                var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
+                                property.SetValue(modelAfterConvention, convertedValue);
                             }
-                            catch (Exception ex)
+                            else if (property.PropertyType == typeof(double?))
                             {
-                                var message = ex.Message; Console.WriteLine(message);
+                                var convertedValue = double.Parse(Value);
+                                try
+                                {
+                                    property.SetValue(modelAfterConvention, convertedValue);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
+                            }
+                            else
+                            {
+                                // Otherwise, convert the value to the underlying type and set it
+                                var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
+                                var convertedValue = Convert.ChangeType(Value, underlyingType);
+                                property.SetValue(modelAfterConvention, convertedValue);
                             }
                         }
-                        
                     }
-                    
-                }
-
-                /*foreach(var item in modelAfterConvention.GetType().GetProperties())
-                {
-                    Console.WriteLine(item.Name);
-                }
-                //var propertyIdentified = property.GetValue(modelAfterConvention);
-                var className = property.DeclaringType.Name;
-                var propertiesInModel = modelAfterConvention.GetType().GetProperty("EmployeeDeferralSource");
-                var propType = propertiesInModel.PropertyType;
-                var declared = propType.GetMember(property.Name);
-                var currentModel = propertiesInModel.GetValue(modelAfterConvention);
-                try
-                {
-                    var propertyType = property.PropertyType;
-                    var convertedValue = Convert.ChangeType(Value,propertyType);
-                    property.SetValue(currentModel, convertedValue);
-                }
-                catch(Exception ex)
-                {
-                    var message = ex.Message; Console.WriteLine(message);
-                }
-                
-                var test = new EmployeeDeferralSourceViewModel();
-                var test2 = new SourceViewModel();
-                
-                //propToSet.SetValue(modelAfterConvention, Value);
-                var assume = modelAfterConvention.GetType().GetProperty("EmployeeDeferralSource");
-                *//*if(assume.GetType().IsClass)
-                {
-                    try
+                    else if (String.IsNullOrEmpty(Value))
                     {
-                        var check = assume.GetType();
-                        var instance = Activator.CreateInstance(assume.GetType());
-                        instance.GetType().GetProperty(property.Name);
-                    }
-                    catch(Exception ex)
-                    {
-                        var message = ex.Message;
-                    }
-                    
-                }
-                try
-                {
-                    var propertyType = property.PropertyType;
-                    var convertedValue = Convert.ChangeType(Value, propertyType);
-                    property.SetValue(test, convertedValue);
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-                foreach ( var properties in propertiesInModel)
-                {
-                    Console.WriteLine(properties.Name);
-                }*/
-
-                // Check if the property is nullable
-                else if (Nullable.GetUnderlyingType(property.PropertyType) != null)
-                {
-                    if (Value == null)
-                    {
-                        // Set the property to null if the value is null
                         property.SetValue(modelAfterConvention, null);
                     }
                     else
                     {
-                        if (property.PropertyType == typeof(DateTimeOffset?))
+                        var propertyType = property.PropertyType;
+                        var convertedValue = Convert.ChangeType(Value, propertyType);
+                        // For non-nullable types, just set the value
+                        try
                         {
-                            var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
                             property.SetValue(modelAfterConvention, convertedValue);
                         }
-                        else if (property.PropertyType == typeof(double?))
+                        catch (Exception ex)
                         {
-                            var convertedValue = double.Parse(Value);
-                            try
-                            {
-                                property.SetValue(modelAfterConvention, convertedValue);
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(ex.Message);
-                            }
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine($"No matching property found for {ControlName}");
+            }
+        }
 
+        public static void SetPropertyValueRecursive(object targetObject, string propertyName, object value)
+        {
+            if (targetObject == null) return;
+
+            // Get all properties of the object
+            System.Reflection.PropertyInfo[] properties = targetObject.GetType().GetProperties();
+
+            foreach (var property in properties)
+            {
+                // If we find the property that matches the given name
+                if (property.Name == propertyName)
+                {
+                    // Set the property value if it's writable
+                    if (property.CanWrite)
+                    {
+                        if (Nullable.GetUnderlyingType(property.PropertyType) != null)
+                        {
+                            if (value == null)
+                            {
+                                // Set the property to null if the value is null
+                                property.SetValue(targetObject, null);
+                            }
+                            else
+                            {
+                                if (property.PropertyType == typeof(DateTimeOffset?))
+                                {
+                                    var convertedValue = DateTimeOffset.Parse(value.ToString()); // Parsing the string to DateTimeOffset
+                                    property.SetValue(targetObject, convertedValue);
+                                }
+                                else if (property.PropertyType == typeof(double?))
+                                {
+                                    var convertedValue = double.Parse(value.ToString());
+                                    try
+                                    {
+                                        property.SetValue(targetObject, convertedValue);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine(ex.Message);
+                                    }
+                                }
+                                else
+                                {
+                                    // Otherwise, convert the value to the underlying type and set it
+                                    var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
+                                    var convertedValue = Convert.ChangeType(value, underlyingType);
+                                    property.SetValue(targetObject, convertedValue);
+                                }
+                            }
+                        }
+                        else if (property != null)
+                        {
+                            property.SetValue(targetObject, Convert.ChangeType(value, property.PropertyType));
                         }
                         else
                         {
-                            // Otherwise, convert the value to the underlying type and set it
-                            var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
-                            var convertedValue = Convert.ChangeType(Value, underlyingType);
-                            property.SetValue(modelAfterConvention, convertedValue);
+                            Console.WriteLine($"Property {property.Name} not found or is read-only.");
                         }
+                    }
+                    return;
+                }
 
+                // If the property is a collection, iterate through the elements
+                var propertyValue = property.GetValue(targetObject);
+                if (propertyValue != null && typeof(System.Collections.IEnumerable).IsAssignableFrom(property.PropertyType) && !(propertyValue is string))
+                {
+                    // If it's a collection, iterate through each item in the collection
+                    foreach (var item in (System.Collections.IEnumerable)propertyValue)
+                    {
+                        SetPropertyValueRecursive(item, propertyName, value);
                     }
                 }
-                else if (String.IsNullOrEmpty(Value))
+                else if (propertyValue != null && !property.PropertyType.IsValueType && property.PropertyType != typeof(string))
                 {
-                    property.SetValue(modelAfterConvention, null);
-                }
-                else
-                {
-                    var propertyType = property.PropertyType;
-                    var convertedValue = Convert.ChangeType(Value, propertyType);
-                    // For non-nullable types, just set the value
-                    try
-                    {
-                        property.SetValue(modelAfterConvention, convertedValue);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-
+                    // If the property is a complex type, recurse into it
+                    SetPropertyValueRecursive(propertyValue, propertyName, value);
                 }
             }
-
-
-            /*var requestModel = typeof(PlanDetailsViewModel).GetProperty(ControlName);
-            
-            
-            if (requestModel != null)
-            {
-                //Handling Nullable properties
-                if (Nullable.GetUnderlyingType(requestModel.PropertyType) != null)
-                {
-                    
-                    if (string.IsNullOrEmpty(Value))
-                    {
-                        requestModel.SetValue(planModel, null);
-                    }
-                    else
-                    {
-                        //This is where nullable properties is handled
-                        var convertedValue = Convert.ChangeType(Value, Nullable.GetUnderlyingType(requestModel.PropertyType));
-                        requestModel.SetValue(planModel, convertedValue);
-                    }
-                }
-                else
-                {
-                    var convertedValue = Convert.ChangeType(Value, requestModel.PropertyType);
-                    requestModel.SetValue(planModel, convertedValue);
-                }
-            }
-                
-            Console.WriteLine(planModel.ToString());*/
-            //response = await SendAPIRequest(bearer, planModel);
         }
-        public const string BASE_URL = "https://localhost:3200";
-        public string APIEndpoint = "api/v1/Payroll/PayrollAndCensusFileUploadTest";
 
+        public const string BASE_URL = "https://localhost:3200";
+        public string APIEndpoint = "api/v1/Payroll/PayrollAndCensusFileUpload";
+        public static string uploadedFileName;
         public async Task<JObject> SendAPIRequestForFileUpload(string filename)
         {
-            
-            
             MultipartFormDataContent form;
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
-            string directoryPath = Path.Combine(projectDirectory, "Templates", filename);
+            uploadedFileName = Path.Combine(projectDirectory, "Templates", filename);
             using (form = new MultipartFormDataContent())
             {
                 StreamContent streamContent;
-                using (var fileStream = new FileStream(directoryPath, FileMode.Open))
+                using (var fileStream = new FileStream(uploadedFileName, FileMode.Open))
                 {
                     streamContent = new StreamContent(fileStream);
-                    form.Add(streamContent, "file", directoryPath);
+                    form.Add(streamContent, "file", uploadedFileName);
                     form.Add(new StringContent("1"), "fileType");
                     form.Add(new StringContent("testing stuff"), "description");
                     form.Add(new StringContent("false"), "isSFTP");
@@ -588,51 +699,32 @@ namespace RefitSandBox
                     };
 
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
-                    //var responseObject = httpClient.PostAsync($"{BaseURL}/{APIEndpoint}", form);
-
-                    /*var task = Task.Run(() => httpClient.PostAsync($"{BaseURL}/{APIEndpoint}", form));
-                    task.Wait();
-                    var contentTask = Task.Run(() => task.Result.Content.ReadAsStringAsync());
-                    contentTask.Wait();
-                    //var responseObj = JObject.Parse(contentTask.Result);
-                    response = (JObject)JsonConvert.DeserializeObject(contentTask.Result);
-
-                    Console.WriteLine(response.ToString());
-                    return response;*/
+                    
                     var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
                     var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileAsync(form);
                     Console.WriteLine("Response : " + responseAfterFileUpload.ToString());
 
                     JObject responseObject = JObject.Parse(responseAfterFileUpload.ToString());
                     Console.Write(responseObject.ToString());
+                    await Task.Delay(3000);
+                    var fileId = await GetUploadedFilesBasedOnSearchCriteria(_hooks.bearer, companyName, planName, rkPlanNumber);
+                    var fileInformationClient = RestService.For<IPayroll>(httpClient);
+                    var fileDetails = await fileInformationClient.GetFileInformation(fileId);
+                    if(fileDetails.FileStatus == "ErrorCorrectionRequired")
+                    {
+                        var acceptAllWarningsClient = RestService.For<IPayroll>(httpClient);
+                        var response = await acceptAllWarningsClient.AcceptAllWarningsInaFile(fileId);
+                    }
+                    var finalSubmitClient = RestService.For<IPayroll>(httpClient);
+                    var finalSubmit = await finalSubmitClient.FinalSubmit(fileId, "3");
+                    await SaveFundingDetailsByPlan(planId, fileId);
                     return responseObject;
                 }
             }
             //var formData = HandlingFileUpload(filename);
             
         }
-        public async Task LoadDefaultAdvisorDetails()
-        {
-            //Autofixture flow
-            var fixture = new Fixture();
-            fixture.Customize<string>(c => c.FromFactory(() => Guid.NewGuid().ToString("N")));
-            var advisorReq = fixture.Create<AdvisorRepresentativeViewModel>();
-
-            //Nbuilder flow
-            var obj = Builder<AdvisorRepresentativeViewModel>.CreateListOfSize(1).All().With(_ => _.Contact = Builder<Contact>.CreateNew().Build()).Build();
-            foreach(var item in obj)
-            {
-                Console.WriteLine("Nbuilder returns : "+item);
-            }
-
-            //Bogus with Reflection
-            var advisorReflection = new AdvisorRepresentativeViewModel();
-
-            FakeDataHelper.PopulateModelWithFakeData(advisorReflection);
-
-            response = await SendAPIRequest(bearer, advisorReflection, typeof(IAdvisorDetails), "CreateAdvisorDetailsAsync");
-            Console.WriteLine("Response inside : " + response);
-        }
+        
         string errorMessage;
         string errorCode;
         public void AssertResponse(string expectedValue)
@@ -737,16 +829,18 @@ namespace RefitSandBox
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-            var apiClient = RestService.For(interfaceType, httpClient);
 
+
+            var apiClient = RestService.For(interfaceType, httpClient);
+            JObject response = null;
             // Dynamically search for the method in the interface
             var methodToSearch = interfaceType.GetMethod(methodName);
             if (methodToSearch != null)
             {
+                
                 try
                 {
-                    object responseObject;
-
+                    object responseObject = null;
                     // Ensure that the model type matches the parameter type expected by the method
                     if (methodToSearch.GetParameters().Length == 1)
                     {
@@ -758,10 +852,61 @@ namespace RefitSandBox
                         {
                             model = Convert.ChangeType(model, parameterType); // Convert the model to the expected type
                         }
-                        var requestBody = JsonConvert.SerializeObject(model);
-                        Console.WriteLine(requestBody.ToString());
+                        
+                        Console.WriteLine(JsonConvert.SerializeObject(model));
+                        if(methodName == "SavePlanAmendmentEligibleRule")
+                        {
+                            var requestBody = JsonConvert.SerializeObject(model);
+                            var requestPayload = JObject.Parse(requestBody);
+                            string Action = "api/v1/EligibleRule/SavePlanAmendmentEligibleRule";
+                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                            var task = await httpClient.PostAsync($"{BaseURL}{Action}/", data);
+                            var contentTask = await task.Content.ReadAsStringAsync();
+                            response = JObject.Parse(contentTask);
+                            Console.Write(response.ToString());
+                            return response;
+                        }
+                        else if(methodName == "SaveEnrollmentSettings")
+                        {
+                            var requestBody = JsonConvert.SerializeObject(model);
+                            var requestPayload = JObject.Parse(requestBody);
+                            string Action = "api/Enrollment/SaveEnrollmentSetting";
+                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                            var task = await httpClient.PostAsync($"{BaseURL}{Action}/", data);
+                            var contentTask = await task.Content.ReadAsStringAsync();
+                            response = JObject.Parse(contentTask);
+                            Console.Write(response.ToString());
+                            return response;
+                        }
+                        else if(methodName == "SaveFunding")
+                        {
+                            var requestBody = JsonConvert.SerializeObject(model);
+                            var requestPayload = JObject.Parse(requestBody);
+                            string Action = "api/Funding/SaveFunding";
+                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                            var task = await httpClient.PostAsync($"{BaseURL}{Action}/", data);
+                            var contentTask = await task.Content.ReadAsStringAsync();
+                            response = JObject.Parse(contentTask);
+                            Console.Write(response.ToString());
+                            return response;
+                        }
+                        else
+                        {
+                            try
+                            {                                   
+                                responseObject = await (Task<object>)methodToSearch.Invoke(apiClient, new object[] { model });
+                            }
+                            catch(Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                            Console.WriteLine("Response: " + responseObject?.ToString());
+                        }
                         // Call method dynamically based on the passed model
-                        responseObject = await (Task<object>)methodToSearch.Invoke(apiClient, new object[] { model });
+                        
                     }
                     else
                     {
@@ -769,10 +914,20 @@ namespace RefitSandBox
                     }
 
                     Console.WriteLine("Response: " + responseObject?.ToString());
-                    JObject response = JObject.Parse(responseObject?.ToString());
+                    if(responseObject is bool)
+                    {
+                        Console.WriteLine("API Returned true");
+                        return response;
+                    }
+                    else 
+                    {
+                        response = JObject.Parse(responseObject?.ToString());
 
-                    Console.Write(response.ToString());
-                    return response;
+                        Console.Write(responseObject.ToString());
+                        return response;
+                    }
+                    
+                   
                 }
                 catch (Exception ex)
                 {
@@ -943,7 +1098,7 @@ namespace RefitSandBox
             {
                 var Model = viewModelType();
                 modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
-                var listOfProperties = GetJsonPropertyDictionary(Model);
+                var listOfProperties = GetJsonPropertyList(Model);
                 return viewModelType;
             }
             
@@ -951,13 +1106,14 @@ namespace RefitSandBox
 
         }
 
-        public static void FileConfiguration(string filename, Reqnroll.DataTable dataTable)
+        public static async Task FileConfiguration(string filename, Reqnroll.DataTable dataTable)
         {
             switch(filename)
             {
                 case "CombinedFile.csv":
-                    FakeDataHelper.GetHeaders(filename);
-                    EditFile(filename, dataTable);
+                    var sourceNames = await GetSourceNameHeader(_hooks.planId);
+                    FakeDataHelper.WriteHeadersWithConventionalData(filename, sourceNames);
+                    await EditFile(filename, dataTable);
                     break;
 
                 default:
@@ -966,12 +1122,12 @@ namespace RefitSandBox
             }
         }
 
-        public static void EditFile(string filename, Reqnroll.DataTable dataTable)
+        public static async Task EditFile(string filename, Reqnroll.DataTable dataTable)
         {
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
             string directoryPath = Path.Combine(projectDirectory, "Templates", filename);
 
-            var EditedFile = ReadCsvToDictionary(directoryPath);
+            var EditedFile = await ReadCsvToDictionary(directoryPath);
 
             foreach(var row in dataTable.Rows)
             {
@@ -988,6 +1144,11 @@ namespace RefitSandBox
                 if (fileToEdit.ContainsKey(ColumnHeader))
                 {
                     fileToEdit[ColumnHeader] = Value;
+                }
+                else if(fileToEdit.Keys.Any(_ => _.Contains("Pretax",StringComparison.OrdinalIgnoreCase)))
+                {
+                    var pretaxHeader = fileToEdit.Keys.First(_ => _.Contains("Pretax", StringComparison.OrdinalIgnoreCase));
+                    fileToEdit[pretaxHeader] = Value;
                 }
                 else
                 {
@@ -1016,7 +1177,7 @@ namespace RefitSandBox
 
             }
         }
-        public static Dictionary<string, string> ReadCsvToDictionary(string filePath)
+        public static async Task<Dictionary<string, string>> ReadCsvToDictionary(string filePath)
         {
             var dictionary = new Dictionary<string, string>();
             
@@ -1040,33 +1201,75 @@ namespace RefitSandBox
             return dictionary;
         }
 
-        
+
+        public static async Task<List<string>> GetSourceNameHeader(string planId)
+        {
+            var sourceNames = new List<string>();
+            var program = new Program();
+            string BaseURL = "https://test.coreretirementsolutions.com/";
+            string Action = "api/Source/ListSource";
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(BaseURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            /*var task = await httpClient.GetAsync($"{BaseURL}{Action}/{planId}");
+            var contentTask = await task.Content.ReadAsStringAsync();
+            var response = JObject.Parse(contentTask);*/
+            var apiClient = RestService.For<IPlanDetailsSave>(httpClient);
+            var response = await apiClient.ListSource(Convert.ToInt32(planId));
+            var result = JObject.Parse(response.ToString());
+            foreach (var item in result["employerSourcesList"])
+            {
+                sourceNames.Add(item["sourceName"].ToString());
+                Console.WriteLine(item["sourceName"]);
+            }
+            return sourceNames;
+        }
 
         public static string companyPlanCompensationId;
         public static string companyGrossCompensationId;
+        public static string companyName;
+        public static string planId;
+        public static string planName;
+        public static string sourceId;
+        public static string uploadedFileId;
+        public static string fundingBankId;
         public static async Task<string> SaveCompany(string bearer)
         {
             var program = new Program();
             var companyModel = new CompanyViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(companyModel);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            modelAfterConvention = FakeDataHelper.AssignId(null, "CompanyId", modelAfterConvention);
+            await program.Configuration("frequencyName", "Daily");
+            await program.Configuration("frequencyType", "1");
+            await program.Configuration("modeOfHours", "1");
+            await program.Configuration("modeOfCompensation", "1");
+            await program.Configuration("modeOfContribution", "1");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.ICompanyDetails");
             var companyresponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewCompanyAsync");
             var companyId = companyresponse["company"]["id"].ToString();
             companyGrossCompensationId = companyresponse["company"]["compensationCategories"][0]["id"].ToString();
             companyPlanCompensationId = companyresponse["company"]["compensationCategories"][1]["id"].ToString();
-
+            companyName = companyresponse["company"]["name"].ToString();
             return companyId;
         }
-
+        public static string rkPlanNumber = "PP123";
         public static async Task<string> SavePlan(string bearer, string companyId)
         {
             var program = new Program();
             var planModel = new PlanDetailsViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(planModel);
             modelAfterConvention = FakeDataHelper.AssignId(companyId.ToString(), "CompanyId", modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            await program.Configuration("effectiveDate", "2021-01-01");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewPlanAsync");
-            var planId = planResponse["plan"]["id"].ToString();
+            planId = planResponse["plan"]["id"].ToString();
+            rkPlanNumber = planResponse["plan"]["rkPlanNumber"].ToString();
+            planName = planResponse["plan"]["planName"].ToString();
             return planId;
         }
 
@@ -1100,14 +1303,16 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(eligibility);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanAmendments.PlanId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyDictionary(modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             program.Configuration("exclusionType", "0"); 
             program.Configuration("isLTPTApplicable", "false");
-            //program.Configuration("ltptExclusionFromRule", null);
+            program.Configuration("ltptHours", "500");
             program.Configuration("isRevaluationRequired", "false");
             program.Configuration("isBreakInService", "false");
             program.Configuration("eligibilityType", null);
-            program.Configuration("planId", "1695");
+            program.Configuration("planId", planId.ToString());
+            program.Configuration("age", "20");
+            await program.Configuration("ltptAgeInYears", "20");
             
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SavePlanAmendmentEligibleRule");
@@ -1119,7 +1324,7 @@ namespace RefitSandBox
             var entryDateModel = new EntryDateRuleViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(entryDateModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyDictionary(modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             program.Configuration("ruleName", "Immediate");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEntryDate");
@@ -1131,18 +1336,21 @@ namespace RefitSandBox
             var sourceModel = new SourceViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyDictionary(modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            var currentDate = DateTime.UtcNow;
             program.Configuration("sourceType", "1");
             program.Configuration("sourceCategory", "2");
             program.Configuration("sourceSubCategory", "4");
             program.Configuration("sourceSubSubCategory", "1");
-            program.Configuration("effectiveStartDate", "2025-02-01T00:00:00Z");
+            program.Configuration("effectiveStartDate", "2022-01-01");
             program.Configuration("sourceName", "Pretax");
             program.Configuration("contributionType", "1");
-            //program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
+            sourceId = sourceSave["source"]["id"].ToString();
         }
 
         public static async Task SaveCompensation(string bearer, string planId)
@@ -1151,12 +1359,149 @@ namespace RefitSandBox
             var compensationModel = new CompensationViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(compensationModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var list = GetJsonPropertyDictionary(modelAfterConvention);
-            program.Configuration("compensationCategoryId", "2519");
+            var list = GetJsonPropertyList(modelAfterConvention);
+            program.Configuration("compensationCategoryId", companyPlanCompensationId);
             program.Configuration("isIncluded", "true");
             program.Configuration("calculationType", "1");
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var compSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveCompensation");
+        }
+
+        public static async Task UpdatePlanStatus(string bearer, string planId, string statusCode)
+        {
+            var program = new Program();
+            var updatePlanStatusModel = new UpdatePlanStatusViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(updatePlanStatusModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(),"PlanId",modelAfterConvention);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            program.Configuration("planStatus", statusCode);
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "UpdatePlanStatus");
+        }
+
+        public static async Task AddInvestmentsToPlan(string bearer, string planId)
+        {
+            var program = new Program();
+            var investmentPlanMapping = new AddInvestmentsInput();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            await program.Configuration("investmentId", "281");
+            await program.Configuration("status", "1");
+            await program.Configuration("investmentType", "2");
+            await program.Configuration("planId", planId);
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+            await program.Configuration("investmentId", "282");
+            await program.Configuration("status", "1");
+            await program.Configuration("investmentType", "2");
+            await program.Configuration("planId", planId);
+            var interfaceType1 = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var addedToPlan = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+        }
+
+        public static async Task SaveEnrollmentSettings(string bearer, string planId)
+        {
+            var program = new Program();
+            var enrollmentSettings = new EnrollmentViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(enrollmentSettings);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            await program.Configuration("planId", planId);
+            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            await program.Configuration("sourceName", "Pretax");
+            await program.Configuration("contributionRate", "12");
+            await program.Configuration("autoDeferralIncreaseProgram", "true");
+            await program.Configuration("increaseAllowanceDays", "30");
+            await program.Configuration("periodOfIncrease", "1");
+            await program.Configuration("applyADITo", "0");
+            await program.Configuration("adiApplicableTo", "2");
+            await program.Configuration("subjecttoAutoEnrollment", "True");
+            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            await program.Configuration("numberOfDaysWindowIsOpen", "3");
+            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            await program.Configuration("exclusionType", "0");
+            await program.Configuration("usePlanDefaultDeferralElection", "true");
+            await program.Configuration("usePlanDefaultInvestmentElection", "true");
+            await program.Configuration("sendEnrollmentInvite", "1");
+            await program.Configuration("deferralContributionRateUponRehire", "2");
+            await program.Configuration("contributionType", "1");
+            await program.Configuration("sourceId", sourceId);
+            await program.Configuration("autoDeferralIncreasePercentage", "15");
+            await program.Configuration("maximumADIPercentage", "18");
+            await program.Configuration("investmentId", "3129");
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
+        }
+
+        public static async Task SaveFunding(string bearer, string planId)
+        {
+            var program = new Program();
+            var listOfFundingClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var listOfFunding = await program.SendAPIRequest(bearer, planId, listOfFundingClient, "ListFunding");
+            var fundingId = listOfFunding["funding"]["id"].ToString();
+            var funding = new FundingViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(funding);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            await program.Configuration("planId", planId);
+            await program.Configuration("planCashAccountEnabled", "true");
+            await program.Configuration("achPullEnabled", "true");
+            await program.Configuration("bankAccountNumber", "647823647236");
+            await program.Configuration("abaRoutingNumber", "527183462");
+            await program.Configuration("bankAccountName", "HSBC Bank");
+            await program.Configuration("bankAccountType", "2");
+            await program.Configuration("bankAccountStatus", "1");
+            await program.Configuration("defaultBankAccountIndicator", "true");
+            await program.Configuration("classificationIds", null);
+            await program.Configuration("fundingId", fundingId);
+            await program.Configuration("1id", fundingId);
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var fundingSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveFunding");
+            fundingBankId = fundingSave["funding"]["sponsorFundingAccounts"][0]["id"].ToString();
+        }
+        public static async Task<string> GetUploadedFilesBasedOnSearchCriteria(string bearer, string companyName, string planName, string rkPlanNumber)
+        {
+            var program = new Program();
+            var payrollSearch = new UploadedFileInformationDetails();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(payrollSearch);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            await program.Configuration("companyName",companyName);
+            await program.Configuration("planName", planName);
+            await program.Configuration("rkPlanNumber", rkPlanNumber);
+            await program.Configuration("uploadedOn", null);
+            await program.Configuration("fileStatus", null);
+            await program.Configuration("fileType", null);
+            await program.Configuration("fileName", null);
+            string BaseURL = "https://test.coreretirementsolutions.com/";
+            payrollSearch = (UploadedFileInformationDetails)modelAfterConvention;
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(BaseURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            
+            var apiClient = RestService.For<IPayroll>(httpClient);
+            var response = await apiClient.GetUploadedFilesBasedOnSearchCriteria(payrollSearch);
+            var responseArray = JArray.Parse(response.ToString());
+            uploadedFileId = responseArray[0]["id"].ToString();
+            return uploadedFileId;
+            /*var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
+            var payrollFileList = await program.SendAPIRequest(bearer, payrollSearch, interfaceType, "GetUploadedFilesBasedOnSearchCriteria");*/
+        }
+
+        public static async Task SaveFundingDetailsByPlan(string planId, string fileId)
+        {
+            var program = new Program();
+            var fundingByPlan = new FundingByPlanViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(fundingByPlan);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            await program.Configuration("planId", planId);
+            await program.Configuration("fileId", fileId);
+            await program.Configuration("bankId", fundingBankId);
+            await program.Configuration("amount", "100");
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
+            var fundByPlan = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
         }
     }
 }

@@ -82,12 +82,14 @@ namespace Payroll.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("[scenario name]")]
-        public async System.Threading.Tasks.Task ScenarioName()
+        [NUnit.Framework.DescriptionAttribute("Payroll file upload for an active plan")]
+        [NUnit.Framework.CategoryAttribute("SaveEmployee")]
+        public async System.Threading.Tasks.Task PayrollFileUploadForAnActivePlan()
         {
-            string[] tagsOfScenario = ((string[])(null));
+            string[] tagsOfScenario = new string[] {
+                    "SaveEmployee"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("[scenario name]", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Payroll file upload for an active plan", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -103,24 +105,27 @@ this.ScenarioInitialize(scenarioInfo);
                             "Value"});
                 table1.AddRow(new string[] {
                             "HIRE DATE",
-                            "01/01/2021"});
+                            "01/01/2025"});
                 table1.AddRow(new string[] {
                             "HOURS",
                             "1000"});
                 table1.AddRow(new string[] {
                             "PAY DATE",
-                            "12/01/2021"});
+                            "02/01/2025"});
                 table1.AddRow(new string[] {
                             "BIRTH DATE",
                             "04/01/1996"});
                 table1.AddRow(new string[] {
                             "PAYROLL FREQUENCY",
-                            "DemoFrequency"});
+                            "Daily"});
+                table1.AddRow(new string[] {
+                            "Pretax",
+                            "100"});
 #line 7
  await testRunner.GivenAsync("Payroll file \"CombinedFile.csv\" is selected and Edit payroll file as mentioned be" +
                         "low", ((string)(null)), table1, "Given ");
 #line hidden
-#line 14
+#line 15
 await testRunner.WhenAsync("File upload is executed for the file \"CombinedFile.csv\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
             }
@@ -136,7 +141,7 @@ await testRunner.WhenAsync("File upload is executed for the file \"CombinedFile.
                     "SaveEmployee"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Employee save through payroll file upload", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 17
+#line 18
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
