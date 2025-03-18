@@ -52,14 +52,31 @@ namespace RefitSandBox.TestDataGenerator
                     var listType = typeof(List<>).MakeGenericType(itemType); // Create List<T> type
                     var collectionInstance = Activator.CreateInstance(listType); // Instantiate the List<T>
 
-                    // Create and add a random number of items to the collection
-                    var addMethod = listType.GetMethod("Add");
-                    var itemInstance = Activator.CreateInstance(itemType); // Create an instance of the item type
-                    PopulateModelWithFakeData(itemInstance);  // Recursively populate nested model
-                    addMethod.Invoke(collectionInstance, new[] { itemInstance }); // Add the item to the collection
-                    
+                    // Check if the item type is int (specifically handle ICollection<int>)
+                    if (itemType == typeof(int))
+                    {
+                        var addMethod = listType.GetMethod("Add");
+
+                        // Generate a random number of items to add to the collection
+                        var randomCount = new Random().Next(1, 2); // Random number of items (1 to 10)
+                        for (int i = 0; i < randomCount; i++)
+                        {
+                            var itemInstance = new Random().Next(1, 2); // Random integer between 1 and 100
+                            addMethod.Invoke(collectionInstance, new object[] { itemInstance });
+                        }
+                    }
+                    else
+                    {
+                        // Handle non-int collections (e.g., custom objects)
+                        var addMethod = listType.GetMethod("Add");
+                        var itemInstance = Activator.CreateInstance(itemType); // Create an instance of the item type
+                        PopulateModelWithFakeData(itemInstance);  // Recursively populate nested model
+                        addMethod.Invoke(collectionInstance, new[] { itemInstance }); // Add the item to the collection
+                    }
+
                     property.SetValue(obj, collectionInstance);  // Set the populated collection to the property
                 }
+
                 else
                 {
                     // Handle other property types as in the original code
@@ -258,7 +275,7 @@ namespace RefitSandBox.TestDataGenerator
             //var sourceNames = await Program.GetSourceNameHeader("1723");
             DisplayNameAttribute value;
             var values = RuleSetForCombinedTemplate();
-
+            
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
             string directoryPath = Path.Combine(projectDirectory, "Templates",filename);
             

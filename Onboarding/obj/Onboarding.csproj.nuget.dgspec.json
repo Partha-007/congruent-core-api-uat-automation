@@ -144,6 +144,10 @@
               "target": "Package",
               "version": "[2.2.1, )"
             },
+            "SSH.NET": {
+              "target": "Package",
+              "version": "[2024.2.0, )"
+            },
             "System.Net.Http": {
               "target": "Package",
               "version": "[4.3.4, )"
@@ -320,6 +324,10 @@
             "Reqnroll.Tools.MsBuild.Generation": {
               "target": "Package",
               "version": "[2.2.1, )"
+            },
+            "SSH.NET": {
+              "target": "Package",
+              "version": "[2024.2.0, )"
             },
             "System.Net.Http": {
               "target": "Package",

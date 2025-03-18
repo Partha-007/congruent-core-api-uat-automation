@@ -1305,7 +1305,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\ob
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\obj\Debug\net8.0\CorporateActions.AssemblyInfo.cs
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\obj\Debug\net8.0\CorporateActions.csproj.CoreCompileInputs.cache
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\obj\Debug\net8.0\CorporateActions.sourcelink.json
-D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\obj\Debug\net8.0\CorporateActions.csproj.CopyComplete
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\obj\Debug\net8.0\CorporateActions.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\obj\Debug\net8.0\refint\CorporateActions.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\obj\Debug\net8.0\CorporateActions.pdb
@@ -1315,3 +1314,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\bi
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\bin\Debug\net8.0\xunit.assert.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\bin\Debug\net8.0\xunit.core.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\bin\Debug\net8.0\xunit.execution.dotnet.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\obj\Debug\net8.0\Corporat.A6D5C227.Up2Date
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\CorporateActions\bin\Debug\net8.0\Renci.SshNet.dll

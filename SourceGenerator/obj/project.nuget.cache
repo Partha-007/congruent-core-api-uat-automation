@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "Xnmq3uRpLcM=",
+  "dgSpecHash": "buWPsKO1PE8=",
   "success": true,
   "projectFilePath": "D:\\API_TestAutomationSuite\\Congruent.Core.API.TestAutomation\\SourceGenerator\\SourceGenerator.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\autofixture\\5.0.0-preview0011\\autofixture.5.0.0-preview0011.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\bogus\\35.6.1\\bogus.35.6.1.nupkg.sha512",
+    "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\bouncycastle.cryptography\\2.4.0\\bouncycastle.cryptography.2.4.0.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\csvhelper\\33.0.1\\csvhelper.33.0.1.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\fare\\2.2.1\\fare.2.2.1.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\fluid.core\\2.12.0\\fluid.core.2.12.0.nupkg.sha512",
@@ -42,6 +43,7 @@
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\nswag.codegeneration.csharp\\14.2.0\\nswag.codegeneration.csharp.14.2.0.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\nswag.core\\14.2.0\\nswag.core.14.2.0.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\parlot\\1.0.2\\parlot.1.0.2.nupkg.sha512",
+    "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\ssh.net\\2024.2.0\\ssh.net.2024.2.0.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\system.componentmodel.annotations\\4.4.0\\system.componentmodel.annotations.4.4.0.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\system.diagnostics.diagnosticsource\\5.0.0\\system.diagnostics.diagnosticsource.5.0.0.nupkg.sha512",
     "C:\\Users\\vigneshwaran.n\\.nuget\\packages\\system.io\\4.3.0\\system.io.4.3.0.nupkg.sha512",

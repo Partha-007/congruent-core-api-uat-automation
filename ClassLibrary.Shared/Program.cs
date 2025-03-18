@@ -40,6 +40,8 @@ using Fluid.Values;
 using System.Collections;
 using NUnit.Framework.Diagnostics;
 using System.Text;
+using Renci.SshNet;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 
 namespace RefitSandBox
@@ -63,7 +65,18 @@ namespace RefitSandBox
 
         public Program()
         {
+
         }
+        public static string companyPlanCompensationId;
+        public static string companyGrossCompensationId;
+        public static string companyName;
+        public static string planId;
+        public static string planName;
+        public static string sourceId;
+        public static string uploadedFileId;
+        public static string fundingBankId;
+        public static string payrollFundingId;
+        public static string employeeSSN;
 
         public async Task UserLogin()
         {
@@ -320,7 +333,6 @@ namespace RefitSandBox
 
                 // If a match is found, convert the digits to skipCount, subtracting 1 for zero-based indexing
                 int skipCount = match.Success && int.TryParse(match.Value, out int result) ? result - 1 : 0;
-                //int skipCount = Convert.ToInt32(ControlName.Substring(0, 1));
                 string keyPart = ControlName.Substring(1);
                 matchingProperties = jsonPropertyListTotal
                               .Where(entry => entry.Key.Contains(keyPart)) // Filter by keyPart
@@ -443,83 +455,6 @@ namespace RefitSandBox
                             else
                             {
                                 SetPropertyValueRecursive(modelAfterConvention,property.Name,Value);
-                                /*var propertiesToLoop = modelAfterConvention.GetType().GetProperties();
-                                foreach(var ItemInLoop in propertiesToLoop)
-                                {
-                                    if(ItemInLoop.PropertyType.IsClass)
-                                    {
-                                        var classToBeChecked = ItemInLoop.GetValue(modelAfterConvention);
-                                        var identifiedClass = classToBeChecked.GetType().GetProperties();
-                                        foreach(var classes in identifiedClass)
-                                        {
-                                            if(classes.PropertyType.Name.Contains("ICollection", StringComparison.OrdinalIgnoreCase))
-                                            {
-                                                if (classes.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>))
-                                                {
-                                                    try
-                                                    {
-                                                        var propertiesInCollection = classes.GetValue(identifiedClass);
-                                                    }
-                                                    catch(Exception ex)
-                                                    {
-                                                        Console.WriteLine(ex.Message);
-                                                    }
-                                                }
-                                            }
-                                            
-                                        }
-
-                                    }
-                                }
-                                var secondLayer = property.DeclaringType;
-                                var secondLayerName = property.DeclaringType.Name;
-                                var firstNest1 = modelAfterConvention.GetType().GetProperty(secondLayerName);
-
-
-                                var firstNest = modelAfterConvention.GetType().GetProperty("DefaultElectionSetting");
-                                var firstModel = firstNest.GetValue(modelAfterConvention);
-
-                                var secondNest = firstModel.GetType().GetProperty("PlanInvestment");
-                                var currentModel = secondNest.GetValue(firstModel);
-                                var nestedCheck = property.DeclaringType;
-                                var instance = Activator.CreateInstance(nestedCheck);
-                                var propertyToUpdate = instance.GetType().GetProperty(property.Name);
-                                //var current = propertyToUpdate.GetValue(modelAfterConvention);
-                                if (Nullable.GetUnderlyingType(propertyToUpdate.PropertyType) != null)
-                                {
-                                    if (Value == null)
-                                    {
-                                        // Set the property to null if the value is null
-                                        propertyToUpdate.SetValue(instance, null);
-                                    }
-                                    else
-                                    {
-                                        if (propertyToUpdate.PropertyType == typeof(DateTimeOffset?))
-                                        {
-                                            var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
-                                            propertyToUpdate.SetValue(instance, convertedValue);
-                                        }
-                                        else if (propertyToUpdate.PropertyType == typeof(double?))
-                                        {
-                                            var convertedValue = double.Parse(Value);
-                                            try
-                                            {
-                                                propertyToUpdate.SetValue(currentModel, convertedValue);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                Console.WriteLine(ex.Message);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            // Otherwise, convert the value to the underlying type and set it
-                                            var underlyingType = Nullable.GetUnderlyingType(propertyToUpdate.PropertyType);
-                                            var convertedValue = Convert.ChangeType(Value, underlyingType);
-                                            propertyToUpdate.SetValue(instance, convertedValue);
-                                        }
-                                    }
-                                }*/
                             }
                         }
                     }
@@ -673,25 +608,70 @@ namespace RefitSandBox
             MultipartFormDataContent form;
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
             uploadedFileName = Path.Combine(projectDirectory, "Templates", filename);
-            using (form = new MultipartFormDataContent())
+            if(filename == "CombinedFile.csv")
             {
-                StreamContent streamContent;
-                using (var fileStream = new FileStream(uploadedFileName, FileMode.Open))
+                using (form = new MultipartFormDataContent())
                 {
-                    streamContent = new StreamContent(fileStream);
-                    form.Add(streamContent, "file", uploadedFileName);
-                    form.Add(new StringContent("1"), "fileType");
-                    form.Add(new StringContent("testing stuff"), "description");
-                    form.Add(new StringContent("false"), "isSFTP");
-                    form.Add(new StringContent("1"), "inputType");
-                    form.Add(new StringContent("1"), "format");
-                    form.Add(new StringContent("true"), "isMultiplePlanOrPaydate");
-                    //form.Add(new StringContent(directoryPath), "fileName");
-                    form.Add(new StringContent("null"), "planId");
-                    form.Add(new StringContent("null"), "payDate");
-                    form.Add(new StringContent("false"), "isYearEndProcessing");
-                    form.Add(new StringContent("0"), "payrollFrequencyId");
+                    StreamContent streamContent;
+                    using (var fileStream = new FileStream(uploadedFileName, FileMode.Open))
+                    {
+                        streamContent = new StreamContent(fileStream);
+                        form.Add(streamContent, "file", uploadedFileName);
+                        form.Add(new StringContent("1"), "fileType");
+                        form.Add(new StringContent("testing stuff"), "description");
+                        form.Add(new StringContent("false"), "isSFTP");
+                        form.Add(new StringContent("1"), "inputType");
+                        form.Add(new StringContent("1"), "format");
+                        form.Add(new StringContent("true"), "isMultiplePlanOrPaydate");
+                        //form.Add(new StringContent(directoryPath), "fileName");
+                        form.Add(new StringContent("null"), "planId");
+                        form.Add(new StringContent("null"), "payDate");
+                        form.Add(new StringContent("false"), "isYearEndProcessing");
+                        form.Add(new StringContent("0"), "payrollFrequencyId");
 
+                        string BaseURL = "https://test.coreretirementsolutions.com";
+                        var httpClient = new HttpClient()
+                        {
+                            BaseAddress = new Uri(BaseURL)
+                        };
+
+                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+
+                        var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
+                        var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileAsync(form);
+                        Console.WriteLine("Response : " + responseAfterFileUpload.ToString());
+
+                        JObject responseObject = JObject.Parse(responseAfterFileUpload.ToString());
+                        Console.Write(responseObject.ToString());
+                        await Task.Delay(3000);
+                        var fileId = await GetUploadedFilesBasedOnSearchCriteria(_hooks.bearer, companyName, planName, rkPlanNumber);
+                        var payrollClient = RestService.For<IPayroll>(httpClient);
+                        var fileDetails = await payrollClient.GetFileInformation(fileId);
+                        if (fileDetails.FileStatus == "ErrorCorrectionRequired")
+                        {
+                            var acceptAllWarningsClient = RestService.For<IPayroll>(httpClient);
+                            var response = await acceptAllWarningsClient.AcceptAllWarningsInaFile(fileId);
+                        }
+                        var finalSubmit = await payrollClient.FinalSubmit(fileId, "3");
+                        await SaveFundingDetailsByPlan(planId, fileId);
+                        var getAwaitingFundsForFile = await payrollClient.GetAwaitingFundingDetailsByPlan(fileId, planId);
+                        payrollFundingId = getAwaitingFundsForFile.PayrollFundingId.ToString();
+                        await ConfirmFunds(planId, fileId, payrollFundingId);
+                        await payrollClient.GenerateConsolidation();
+                        return responseObject;
+                    }
+                }
+            }
+            else if(filename == "TradeOrder.csv")
+            {
+                using (form = new MultipartFormDataContent())
+                {
+                    // Add the file content to the form
+                    var fileStream = new FileStream(uploadedFileName, FileMode.Open);
+                    var fileContent = new StreamContent(fileStream);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
+                    form.Add(fileContent, "File", uploadedFileName);
+                    form.Add(new StringContent("1"), "FileType");
                     string BaseURL = "https://test.coreretirementsolutions.com";
                     var httpClient = new HttpClient()
                     {
@@ -699,32 +679,102 @@ namespace RefitSandBox
                     };
 
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
-                    
-                    var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
-                    var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileAsync(form);
-                    Console.WriteLine("Response : " + responseAfterFileUpload.ToString());
-
-                    JObject responseObject = JObject.Parse(responseAfterFileUpload.ToString());
-                    Console.Write(responseObject.ToString());
-                    await Task.Delay(3000);
-                    var fileId = await GetUploadedFilesBasedOnSearchCriteria(_hooks.bearer, companyName, planName, rkPlanNumber);
-                    var fileInformationClient = RestService.For<IPayroll>(httpClient);
-                    var fileDetails = await fileInformationClient.GetFileInformation(fileId);
-                    if(fileDetails.FileStatus == "ErrorCorrectionRequired")
-                    {
-                        var acceptAllWarningsClient = RestService.For<IPayroll>(httpClient);
-                        var response = await acceptAllWarningsClient.AcceptAllWarningsInaFile(fileId);
-                    }
-                    var finalSubmitClient = RestService.For<IPayroll>(httpClient);
-                    var finalSubmit = await finalSubmitClient.FinalSubmit(fileId, "3");
-                    await SaveFundingDetailsByPlan(planId, fileId);
-                    return responseObject;
+                    var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
+                    await tradeOrderClient.UploadFile(form);
+                    //var responseObject = JObject.Parse(tradeOrderFileUploadResult.ToString());
+                    return null;
                 }
             }
+            else
+            {
+                return null;
+            }
+            
             //var formData = HandlingFileUpload(filename);
             
         }
-        
+
+        public async Task TradeOrderFileUpload(string filename)
+        {
+            MultipartFormDataContent form;
+            string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+            uploadedFileName = Path.Combine(projectDirectory, "Templates", filename);
+            using (form = new MultipartFormDataContent())
+            {
+                // Add the file content to the form
+                var fileStream = new FileStream(uploadedFileName, FileMode.Open);
+                var fileContent = new StreamContent(fileStream);
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
+                form.Add(fileContent, "File", uploadedFileName);
+                form.Add(new StringContent("1"), "FileType");
+                string BaseURL = "https://test.coreretirementsolutions.com";
+                var httpClient = new HttpClient()
+                {
+                    BaseAddress = new Uri(BaseURL)
+                };
+
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
+                var tradeOrderFileUploadResult = await tradeOrderClient.UploadFile(form);
+            }
+        }
+
+        public async Task<Dictionary<string, string>> SFTPConnect()
+        {
+            string hostName = "10.4.1.5";
+            string userName = "ftp_qa";
+            string password = "jack@123";
+            var FileContent = new List<string>();
+            var connectionInfo = new PasswordConnectionInfo(hostName, userName, password);
+            using (var sftp = new SftpClient(connectionInfo))
+            {
+                try
+                {
+                    // Connect to the SFTP server
+                    sftp.Connect();
+                    Console.WriteLine("Connected to the SFTP server.");
+
+                    // List files in the root directory of the SFTP server
+                    var files = sftp.ListDirectory("/qa/outbound/").OrderByDescending(_ => _.LastWriteTimeUtc).ToList();
+                    Console.WriteLine("Files in root directory:");
+                    var fileToRead = files[1];
+                    //var checkFileName = "/qa/outbound/TRADE.20250311.C0602959";
+                    using (var fileStream = sftp.OpenRead(fileToRead.FullName))
+                    {
+                        // Read the file content (example: print to console)
+                        using (var reader = new StreamReader(fileStream))
+                        {
+                            string line;
+                            while ((line = reader.ReadLine()) != null)
+                            {
+                                FileContent.Add(line);
+                            }
+
+                            //Console.WriteLine("File content:\n" + content);
+                        }
+                    }
+                    var tradeInstructionRows = FileContent.Where(_ => _.StartsWith("001")).ToList();
+                    var cusipWithOrderNumber = await CusipTradeOrderNumberDictionary(tradeInstructionRows);
+                    return cusipWithOrderNumber;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<Dictionary<string, string>> CusipTradeOrderNumberDictionary(List<string> tradeInstructionRows)
+        {
+            var CusipTradeOrderNumber = new Dictionary<string, string>();
+            foreach (var row in tradeInstructionRows)
+            {
+                string cusip = row.Substring(3, 9);
+                string tradeOrderNumber = row.Substring(71, 15);
+                CusipTradeOrderNumber.Add(cusip, tradeOrderNumber);
+            }
+            return CusipTradeOrderNumber;
+        }
         string errorMessage;
         string errorCode;
         public void AssertResponse(string expectedValue)
@@ -766,8 +816,23 @@ namespace RefitSandBox
         }
         public async Task APIRequestForRefit(string interfaceName, string methodName)
         {
+            if(interfaceName == "IPlanDetailsSave" && methodName != "CreateNewPlanAsync")
+            {
+                if(methodName == "SaveLoan")
+                {
+                    await Configuration("sourceId", sourceId);
+                }
+                FakeDataHelper.AssignId(planId, "PlanId", modelAfterConvention);
+            }
+            if(methodName == "SaveInprogressLoanRequest")
+            {
+                var employeeId = await GetEmployeeId();
+                await Configuration("employeeId", employeeId);
+                await Configuration("planId", planId);
+
+            }
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
-            var companyresponse = await SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, methodName);
+            var response = await SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, methodName);
         }
 
         /*public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
@@ -1091,7 +1156,10 @@ namespace RefitSandBox
             var endpointToViewModel = new Dictionary<string, Func<object>>
             {
                 { "/api/BasicPlanDetails/SaveBasicPlanDetails", () => new PlanDetailsViewModel() },
-                { "/api/v1/Company", () => new CompanyViewModel() }
+                { "/api/v1/Company", () => new CompanyViewModel() },
+                { "/api/v1/Payroll/SaveEmployee",() => new PayrollEmployeeViewModel() },
+                { "/api/Loan/SaveLoan", () => new LoanSettingViewModel() },
+                { "/api/v1/Loan/SaveInprogressLoanRequest", () => new EmployeeLoanViewModel()}
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -1116,6 +1184,10 @@ namespace RefitSandBox
                     await EditFile(filename, dataTable);
                     break;
 
+                case "TradeOrder.csv":
+                    await EditFile(filename, dataTable);
+                    break;
+
                 default:
                     break;
 
@@ -1124,17 +1196,37 @@ namespace RefitSandBox
 
         public static async Task EditFile(string filename, Reqnroll.DataTable dataTable)
         {
+            var program = new Program();
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
             string directoryPath = Path.Combine(projectDirectory, "Templates", filename);
-
-            var EditedFile = await ReadCsvToDictionary(directoryPath);
-
-            foreach(var row in dataTable.Rows)
+            var FileToEdit = new Dictionary<string, string>();
+            FileToEdit = await ReadCsvToDictionary(directoryPath);
+            if(employeeSSN == null)
             {
-                var Columnname = row[0];
-                var Value = row[1];
-                UpdateFile(EditedFile, Columnname, Value, directoryPath);
+                employeeSSN = FileToEdit.GetValueOrDefault("SSN");
             }
+            
+            if (filename == "TradeOrder.csv")
+            {
+                var CusipWithTradeOrderNumber = await program.SFTPConnect();
+                var value = CusipWithTradeOrderNumber.GetValueOrDefault("SEAS00001");
+                foreach (var row in dataTable.Rows)
+                {
+                    var Columnname = row[0];
+                    UpdateFile(FileToEdit, Columnname, value, directoryPath);
+                }
+            }
+            else
+            {
+                foreach (var row in dataTable.Rows)
+                {
+                    var Columnname = row[0];
+                    var Value = row[1];
+                    UpdateFile(FileToEdit, Columnname, Value, directoryPath);
+                }
+            }
+            
+            
         }
 
         public static void UpdateFile(Dictionary<string, string> fileToEdit, string ColumnHeader, string Value, string FilePath)
@@ -1228,14 +1320,29 @@ namespace RefitSandBox
             return sourceNames;
         }
 
-        public static string companyPlanCompensationId;
-        public static string companyGrossCompensationId;
-        public static string companyName;
-        public static string planId;
-        public static string planName;
-        public static string sourceId;
-        public static string uploadedFileId;
-        public static string fundingBankId;
+        public static async Task<string> GetEmployeeId()
+        {
+            string BaseURL = "https://test.coreretirementsolutions.com/";
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(BaseURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            var searchBody = new SearchCriterias()
+            {
+                SearchBySSNEmpIdName = employeeSSN.Replace("-",""),
+                From = 0,
+                Offset = 20
+            };
+            await Task.Delay(3000);
+            //searchBody.SearchBySSNEmpIdName = "691209015";
+            var payrollClient = RestService.For<IPayroll>(httpClient);
+            var getEmployee = await payrollClient.GetEmployeesBySearchCriteria(searchBody);
+            var employeeId = getEmployee.SearchEmployeeResults.Select(_ => _.Id).FirstOrDefault().ToString();
+            return employeeId;
+        }
+        
         public static async Task<string> SaveCompany(string bearer)
         {
             var program = new Program();
@@ -1403,6 +1510,9 @@ namespace RefitSandBox
         public static async Task SaveEnrollmentSettings(string bearer, string planId)
         {
             var program = new Program();
+            var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var listOfPlanInvestments = await program.SendAPIRequest(bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var investmentPlanMappingId = listOfPlanInvestments["investmentPlanDetails"][0]["id"].ToString();
             var enrollmentSettings = new EnrollmentViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(enrollmentSettings);
             var list = GetJsonPropertyList(modelAfterConvention);
@@ -1429,7 +1539,7 @@ namespace RefitSandBox
             await program.Configuration("sourceId", sourceId);
             await program.Configuration("autoDeferralIncreasePercentage", "15");
             await program.Configuration("maximumADIPercentage", "18");
-            await program.Configuration("investmentId", "3129");
+            await program.Configuration("investmentId", investmentPlanMappingId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
         }
@@ -1459,6 +1569,8 @@ namespace RefitSandBox
             var fundingSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveFunding");
             fundingBankId = fundingSave["funding"]["sponsorFundingAccounts"][0]["id"].ToString();
         }
+
+
         public static async Task<string> GetUploadedFilesBasedOnSearchCriteria(string bearer, string companyName, string planName, string rkPlanNumber)
         {
             var program = new Program();
@@ -1500,8 +1612,33 @@ namespace RefitSandBox
             await program.Configuration("fileId", fileId);
             await program.Configuration("bankId", fundingBankId);
             await program.Configuration("amount", "100");
+            await program.Configuration("totalFundingAmount", "100");
+            await program.Configuration("forfeitureFundings", null);
+            await program.Configuration("achPullFundings", null);
+            await program.Configuration("wireFundings", null);
+            await program.Configuration("checkFundings", null);
+            await program.Configuration("achPushFundings", null);
+            await program.Configuration("totalEmployerContribution", "0");
+            await program.Configuration("bankFundings", null);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var fundByPlan = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
+            var fundByPlan = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
+        }
+
+        
+        public static async Task ConfirmFunds(string planId, string fileId, string payrollFundingId)
+        {
+            var program = new Program();
+            var confirmFunds = new ConfirmFundsViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(confirmFunds);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            await program.Configuration("fileId", fileId);
+            await program.Configuration("fundingType", "Plan");
+            await program.Configuration("isACHDebit", "true");
+            await program.Configuration("planId", planId);
+            await program.Configuration("amount", "100");
+            await program.Configuration("payrollFundingId", payrollFundingId);
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
+            var confirmFundsResponse = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
     }
 }

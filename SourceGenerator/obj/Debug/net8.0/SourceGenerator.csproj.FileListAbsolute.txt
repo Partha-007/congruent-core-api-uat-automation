@@ -367,7 +367,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\obj
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\obj\Debug\net8.0\SourceGenerator.AssemblyInfo.cs
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\obj\Debug\net8.0\SourceGenerator.csproj.CoreCompileInputs.cache
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\obj\Debug\net8.0\SourceGenerator.sourcelink.json
-D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\obj\Debug\net8.0\SourceGenerator.csproj.CopyComplete
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\obj\Debug\net8.0\SourceGenerator.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\obj\Debug\net8.0\refint\SourceGenerator.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\obj\Debug\net8.0\SourceGenerator.pdb
@@ -377,3 +376,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\bin
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\bin\Debug\net8.0\xunit.assert.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\bin\Debug\net8.0\xunit.core.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\bin\Debug\net8.0\xunit.execution.dotnet.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\obj\Debug\net8.0\SourceGe.39D2D468.Up2Date
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\SourceGenerator\bin\Debug\net8.0\Renci.SshNet.dll

@@ -1305,7 +1305,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debu
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\Adjustment.AssemblyInfo.cs
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\Adjustment.csproj.CoreCompileInputs.cache
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\Adjustment.sourcelink.json
-D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\Adjustment.csproj.CopyComplete
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\Adjustment.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\refint\Adjustment.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\Adjustment.pdb
@@ -1315,3 +1314,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debu
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debug\net8.0\xunit.assert.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debug\net8.0\xunit.core.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debug\net8.0\xunit.execution.dotnet.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\obj\Debug\net8.0\Adjustment.csproj.Up2Date
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Adjustment\bin\Debug\net8.0\Renci.SshNet.dll

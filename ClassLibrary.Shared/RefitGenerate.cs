@@ -77,6 +77,9 @@ namespace RefitSandBox
         [Post("/api/Investment/AddInvestmentsToPlan")]
         Task<object> AddInvestmentsToPlan([Body] AddInvestmentsInput addInvestmentInput);
 
+        [Get("/api/Investment/GetInvestmentListByPlanId/{planId}")]
+        Task<object> GetInvestmentListByPlanId(string planId);
+
         [Post("/api/Enrollment/SaveEnrollmentSetting")]
         Task<object> SaveEnrollmentSettings([Body] EnrollmentViewModel enrollmentViewModel);
 
@@ -85,6 +88,9 @@ namespace RefitSandBox
 
         [Post("/api/Funding/SaveFunding")]
         Task<object> SaveFunding([Body] FundingViewModel fundingViewModel);
+
+        [Post("/api/Loan/SaveLoan")]
+        Task<object> SaveLoan([Body] LoanSettingViewModel loan);
     }
 
     public interface ICompanyDetails
@@ -99,6 +105,11 @@ namespace RefitSandBox
         Task<object> UploadCombinedFileAsync([Body] MultipartFormDataContent form);
     }
 
+    public interface ITradeOrderFileUpload
+    {
+        [Post("/api/v1/Excalibur/UploadFile")]
+        Task<string> UploadFile([Body] MultipartFormDataContent content);
+    }
     public interface IPayroll
     {
         [Post("/api/v1/Payroll/GetUploadedFilesBasedOnSearchCriteria")]
@@ -114,9 +125,26 @@ namespace RefitSandBox
         Task<FinalSumbitResult> FinalSubmit(string fileId, string fileType);
 
         [Post("/api/v1/Payroll/SaveFundingDetailsByPlan")]
-        Task<SaveFundingByPlanResult> SaveFundingDetailsByPlan([Body] FundingByPlanViewModel fundingByPlan);
+        Task<dynamic> SaveFundingDetailsByPlan([Body] FundingByPlanViewModel fundingByPlan);
+
+        [Post("/api/v1/Payroll/ConfirmFunds")]
+        Task<dynamic> ConfirmFunds([Body] ConfirmFundsViewModel confirmFunds);
+
+        [Get("/api/v1/Payroll/GetAwaitingFundingDetailsByPlan/{fileId}/{planId}")]
+        Task<FundingByPlanViewModel> GetAwaitingFundingDetailsByPlan(string fileId, string planId);
+
+        [Get("/api/v1/TradeGeneration/GenerateConsoliation")]
+        Task<object> GenerateConsolidation();
+
+        [Post("/api/v1/Payroll/GetEmployeesBySearchCriteria")]
+        Task<GetEmployeesBySearchCriteriaResult> GetEmployeesBySearchCriteria(SearchCriterias search);
     }
 
+    public interface ILoan
+    {
+        [Post("/api/v1/Loan/SaveInprogressLoanRequest")]
+        Task<SaveLoanResult> SaveInprogressLoanRequest(EmployeeLoanViewModel loanViewModel);
+    }
     public class Advisor
     {
         public string Name { get; set; }

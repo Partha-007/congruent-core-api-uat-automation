@@ -1305,7 +1305,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\obj\Debug\net8.
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\obj\Debug\net8.0\Fee.AssemblyInfo.cs
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\obj\Debug\net8.0\Fee.csproj.CoreCompileInputs.cache
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\obj\Debug\net8.0\Fee.sourcelink.json
-D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\obj\Debug\net8.0\Fee.csproj.CopyComplete
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\obj\Debug\net8.0\Fee.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\obj\Debug\net8.0\refint\Fee.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\obj\Debug\net8.0\Fee.pdb
@@ -1315,3 +1314,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\bin\Debug\net8.
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\bin\Debug\net8.0\xunit.assert.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\bin\Debug\net8.0\xunit.core.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\bin\Debug\net8.0\xunit.execution.dotnet.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\obj\Debug\net8.0\Fee.csproj.Up2Date
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Fee\bin\Debug\net8.0\Renci.SshNet.dll

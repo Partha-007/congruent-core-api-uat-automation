@@ -18,7 +18,6 @@ namespace SharedStepDefinitions
         [Given("Model is selected for the endpoint {string}")]
         public void GivenModelIsSelectedForTheEndpoint(string endpoint)
         {
-            
             _program.EndpointToViewModel(endpoint);
         }
 
@@ -123,6 +122,13 @@ namespace SharedStepDefinitions
         {
             await _program.SendAPIRequestForFileUpload(filename);
         }
+
+        [When("Generate consolidation API is triggered for {string} and Trade order number extracted from trade response file")]
+        public async Task WhenGenerateConsolidationAPIIsTriggeredForAndTradeOrderNumberExtractedFromTradeResponseFile(string fileName)
+        {
+            await _program.SFTPConnect();
+        }
+
 
     }
 }

@@ -1305,7 +1305,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\obj\Debug\net8.0\ClassLibrary.Shared.AssemblyInfo.cs
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\obj\Debug\net8.0\ClassLibrary.Shared.csproj.CoreCompileInputs.cache
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\obj\Debug\net8.0\ClassLibrary.Shared.sourcelink.json
-D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\obj\Debug\net8.0\ClassLibrary.Shared.csproj.CopyComplete
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\obj\Debug\net8.0\ClassLibrary.Shared.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\obj\Debug\net8.0\refint\ClassLibrary.Shared.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\obj\Debug\net8.0\ClassLibrary.Shared.pdb
@@ -1315,3 +1314,6 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\bin\Debug\net8.0\xunit.assert.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\bin\Debug\net8.0\xunit.core.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\bin\Debug\net8.0\xunit.execution.dotnet.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\obj\Debug\net8.0\ClassLib.CABDD118.Up2Date
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\ClassLibrary.Shared\bin\Debug\net8.0\Renci.SshNet.dll
