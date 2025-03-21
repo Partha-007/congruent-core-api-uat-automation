@@ -654,9 +654,8 @@ D:\AutomationSuiteRevamped\Advisor\obj\Debug\net8.0\Advisor.pdb
 D:\AutomationSuiteRevamped\Advisor\obj\Debug\net8.0\Advisor.genruntimeconfig.cache
 D:\AutomationSuiteRevamped\Advisor\obj\Debug\net8.0\ref\Advisor.dll
 D:\AutomationSuiteRevamped\Advisor\bin\Debug\net8.0\CsvHelper.dll
-D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\testhost.dll
-D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\Reqnroll.NUnit.ReqnrollPlugin.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\testhost.exe
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\testhost.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\.playwright\node\win32_x64\node.exe
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\.playwright\node\LICENSE
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\.playwright\package\api.json
@@ -997,6 +996,7 @@ D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\n
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\.playwright\package\types\structs.d.ts
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\.playwright\package\types\types.d.ts
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\playwright.ps1
+D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\Reqnroll.NUnit.ReqnrollPlugin.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\NUnit3.TestAdapter.pdb
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\nunit.engine.dll
 D:\API_TestAutomationSuite\Congruent.Core.API.TestAutomation\Advisor\bin\Debug\net8.0\nunit.engine.api.dll
