@@ -194,8 +194,7 @@ await testRunner.GivenAsync("Model is selected for the endpoint \"/api/Loan/Save
 await testRunner.WhenAsync("Configuration has been made as per following", ((string)(null)), table1, "When ");
 #line hidden
 #line 39
-await testRunner.AndAsync("API request has been sent to the \"IPlanDetailsSave\" with the method name \"SaveLoa" +
-                        "n\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+await testRunner.AndAsync("Save Loan details in Plan", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
                 global::Reqnroll.Table table2 = new global::Reqnroll.Table(new string[] {
                             "Key",
@@ -222,7 +221,7 @@ await testRunner.AndAsync("API request has been sent to the \"IPlanDetailsSave\"
 await testRunner.GivenAsync("Payroll file \"CombinedFile.csv\" is selected and Edit payroll file as mentioned be" +
                         "low", ((string)(null)), table2, "Given ");
 #line hidden
-#line 49
+#line 50
 await testRunner.WhenAsync("File upload is executed for the file \"CombinedFile.csv\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
                 global::Reqnroll.Table table3 = new global::Reqnroll.Table(new string[] {
@@ -231,14 +230,14 @@ await testRunner.WhenAsync("File upload is executed for the file \"CombinedFile.
                 table3.AddRow(new string[] {
                             "Order Number",
                             ""});
-#line 51
+#line 52
 await testRunner.GivenAsync("Payroll file \"TradeOrder.csv\" is selected and Edit payroll file as mentioned belo" +
                         "w", ((string)(null)), table3, "Given ");
 #line hidden
-#line 54
+#line 56
 await testRunner.WhenAsync("File upload is executed for the file \"TradeOrder.csv\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 55
+#line 58
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Loan/SaveInprogressLoanRequest\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
                 global::Reqnroll.Table table4 = new global::Reqnroll.Table(new string[] {
@@ -268,12 +267,37 @@ await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Loan/S
                 table4.AddRow(new string[] {
                             "repaymentFrequency",
                             "1"});
-#line 56
+                table4.AddRow(new string[] {
+                            "tenureYears",
+                            "1"});
+                table4.AddRow(new string[] {
+                            "tenureMonths",
+                            "0"});
+                table4.AddRow(new string[] {
+                            "loanStatus",
+                            "3"});
+#line 60
 await testRunner.WhenAsync("Configuration has been made as per following", ((string)(null)), table4, "When ");
 #line hidden
-#line 67
+#line 74
 await testRunner.AndAsync("API request has been sent to the \"ILoan\" with the method name \"SaveInprogressLoan" +
                         "Request\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 76
+await testRunner.AndAsync("Loan request has been approved and trade for loan is executed", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+                global::Reqnroll.Table table5 = new global::Reqnroll.Table(new string[] {
+                            "Key",
+                            "Value"});
+                table5.AddRow(new string[] {
+                            "Order Number",
+                            ""});
+#line 78
+await testRunner.GivenAsync("Payroll file \"TradeOrder.csv\" is selected and Edit payroll file as mentioned belo" +
+                        "w", ((string)(null)), table5, "Given ");
+#line hidden
+#line 82
+await testRunner.WhenAsync("File upload is executed for the file \"TradeOrder.csv\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -288,7 +312,7 @@ await testRunner.AndAsync("API request has been sent to the \"ILoan\" with the m
                     "SaveEmployee"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Employee save through payroll file upload", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 72
+#line 85
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))

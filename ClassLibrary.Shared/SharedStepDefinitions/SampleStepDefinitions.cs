@@ -16,7 +16,7 @@ namespace SharedStepDefinitions
         }
 
         [Given("Model is selected for the endpoint {string}")]
-        public void GivenModelIsSelectedForTheEndpoint(string endpoint)
+        public async Task GivenModelIsSelectedForTheEndpoint(string endpoint)
         {
             _program.EndpointToViewModel(endpoint);
         }
@@ -25,6 +25,12 @@ namespace SharedStepDefinitions
         public async Task WhenAPIRequestHasBeenSentToTheWithTheMethodName(string interfaceName, string methodName)
         {
                 await _program.APIRequestForRefit(interfaceName, methodName);
+        }
+
+        [When("Save Loan details in Plan")]
+        public async Task GivenSaveLoanDetailsInPlan()
+        {
+            await _program.SaveLoan();
         }
 
         [When("the property {string} is configured with {string} with {int} characters")]
@@ -127,6 +133,12 @@ namespace SharedStepDefinitions
         public async Task WhenGenerateConsolidationAPIIsTriggeredForAndTradeOrderNumberExtractedFromTradeResponseFile(string fileName)
         {
             await _program.SFTPConnect();
+        }
+
+        [When("Loan request has been approved and trade for loan is executed")]
+        public async Task WhenLoanRequestHasBeenApprovedAndTradeForLoanIsExecuted()
+        {
+            await _program.LoanApprove();
         }
 
 

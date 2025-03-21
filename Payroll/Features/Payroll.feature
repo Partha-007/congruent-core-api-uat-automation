@@ -36,7 +36,7 @@ When Configuration has been made as per following
 | isMaster                                      | true            |
 | loanDescription                               | General Purpose |
 
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
+And Save Loan details in Plan
 
 Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
 | Key               | Value      |
@@ -46,13 +46,17 @@ Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as menti
 | BIRTH DATE        | 04/01/1996 |
 | PAYROLL FREQUENCY | Daily      |
 | Pretax            | 100        |
+
 When File upload is executed for the file "CombinedFile.csv"
-#And Generate consolidation API is triggered for "Payroll" and Trade order number extracted from trade response file
+
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
+
 When File upload is executed for the file "TradeOrder.csv"
+
 Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
+
 When Configuration has been made as per following
 | propertyName          | value                 |
 | loanType              | General Purpose       |
@@ -63,10 +67,19 @@ When Configuration has been made as per following
 | repaymentMethod       | 1                     |
 | firstRepaymentDate    | 3/1/2025, 12:00:00 AM |
 | repaymentFrequency    | 1                     |
+| tenureYears           | 1                     |
+| tenureMonths          | 0                     |
+| loanStatus            | 3                     |
 
 And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
 
+And Loan request has been approved and trade for loan is executed
 
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv"
 
 @SaveEmployee
 Scenario: Employee save through payroll file upload

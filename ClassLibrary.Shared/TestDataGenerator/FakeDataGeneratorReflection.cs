@@ -28,7 +28,7 @@ namespace RefitSandBox.TestDataGenerator
                 var propertyType = property.PropertyType;
                 var propertyName = property.Name;
 
-                if (propertyName.Equals("SourceCompensations", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("PostSeveranceCompensationCategories", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("Additional", StringComparison.OrdinalIgnoreCase) ||  propertyName.Equals("PlanGroupMappings", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("Classifications", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("EmploymentStatus", StringComparison.OrdinalIgnoreCase))
+                if (propertyName.Equals("SourceCompensations", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("PostSeveranceCompensationCategories", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("Additional", StringComparison.OrdinalIgnoreCase) ||  propertyName.Equals("PlanGroupMappings", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("Classifications", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("EmploymentStatus", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("RepaymentBankDetail") || propertyName.Equals("LoanSuspension"))
                 {
                     if (propertyType.IsArray)
                     {
@@ -42,6 +42,12 @@ namespace RefitSandBox.TestDataGenerator
                         var listType = typeof(List<>).MakeGenericType(itemType); // Create List<T> type
                         var collectionInstance = Activator.CreateInstance(listType); // Instantiate the List<T>
                         property.SetValue(obj, collectionInstance);  // Set the empty collection
+                    }
+                    else if (propertyType.IsClass && propertyType != typeof(string))
+                    {
+                        // If it's a class type (excluding string), assign a new empty instance of the class
+                        var classInstance = Activator.CreateInstance(propertyType);
+                        property.SetValue(obj, classInstance);  // Set the empty class instance
                     }
                     continue; // Skip further processing for this property
                 }
@@ -93,10 +99,10 @@ namespace RefitSandBox.TestDataGenerator
                         propertyName == "BusinessCode" ? faker.Random.Number(100000, 999999).ToString() :
                         propertyName == "TaxEIN" ? faker.Phone.PhoneNumber("##-#######") :
                         propertyName == "BusinessType" ? 1 :
-                        propertyName.Contains("Address", StringComparison.OrdinalIgnoreCase) ? faker.Address.StreetAddress() :
-                        propertyName.Contains("State") ? GetRandomStateCode() :
+                        propertyName.Contains("Address", StringComparison.OrdinalIgnoreCase) && !propertyType.IsClass && !propertyName.Equals("AddressType") ? faker.Address.StreetAddress() :
+                        propertyName.Contains("State") && !propertyName.Equals("StateId") ? GetRandomStateCode() :
                         propertyName.Contains("City", StringComparison.OrdinalIgnoreCase) ? faker.Address.City() :
-                        propertyName.Contains("Country", StringComparison.OrdinalIgnoreCase) ? "USA" :
+                        propertyName.Contains("Country", StringComparison.OrdinalIgnoreCase) && !propertyName.Equals("CountryId") ? "USA" :
                         propertyName.Equals("Website", StringComparison.OrdinalIgnoreCase) ? faker.Internet.DomainName() :
                         propertyName.Equals("day", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 28) :
                         propertyName.Equals("month", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("agemonth", StringComparison.OrdinalIgnoreCase)? faker.Random.Number(1, 12) :

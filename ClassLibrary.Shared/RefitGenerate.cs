@@ -109,6 +109,12 @@ namespace RefitSandBox
     {
         [Post("/api/v1/Excalibur/UploadFile")]
         Task<string> UploadFile([Body] MultipartFormDataContent content);
+
+        [Get("/api/v1/Trade/GetParticipantAccountBalanceByPlan")]
+        Task<object> GetParticipantAccountBalanceByPlan(
+        [AliasAs("planId")] string planId,
+        [AliasAs("participantId")] string participantId,
+        [AliasAs("date")] string date);
     }
     public interface IPayroll
     {
@@ -136,6 +142,8 @@ namespace RefitSandBox
         [Get("/api/v1/TradeGeneration/GenerateConsoliation")]
         Task<object> GenerateConsolidation();
 
+        
+
         [Post("/api/v1/Payroll/GetEmployeesBySearchCriteria")]
         Task<GetEmployeesBySearchCriteriaResult> GetEmployeesBySearchCriteria(SearchCriterias search);
     }
@@ -143,7 +151,13 @@ namespace RefitSandBox
     public interface ILoan
     {
         [Post("/api/v1/Loan/SaveInprogressLoanRequest")]
-        Task<SaveLoanResult> SaveInprogressLoanRequest(EmployeeLoanViewModel loanViewModel);
+        Task<dynamic> SaveInprogressLoanRequest(EmployeeLoanViewModel loanViewModel);
+
+        [Post("/api/v1/Loan/ApproveLoan/{id}")]
+        Task<bool> ApproveLoan(string id);
+
+        [Get("/api/v1/TradeGeneration/GenerateLoan/23%3A59")]
+        Task<GetAllApprovedLoansResult> GenerateLoan();
     }
     public class Advisor
     {

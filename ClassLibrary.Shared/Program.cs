@@ -49,7 +49,7 @@ namespace RefitSandBox
     public class Program : Controller
     {
         public static string bearer;
-        public JObject response;
+        public static JObject response;
         public JObject request;
         public PlanDetailsViewModel planModel;
         public FakeDataHelper _fakeDataHelper;
@@ -72,11 +72,13 @@ namespace RefitSandBox
         public static string companyName;
         public static string planId;
         public static string planName;
+        public static string rkPlanNumber;
         public static string sourceId;
         public static string uploadedFileId;
         public static string fundingBankId;
         public static string payrollFundingId;
         public static string employeeSSN;
+        public static string loanDocumentId;
 
         public async Task UserLogin()
         {
@@ -643,7 +645,7 @@ namespace RefitSandBox
 
                         JObject responseObject = JObject.Parse(responseAfterFileUpload.ToString());
                         Console.Write(responseObject.ToString());
-                        await Task.Delay(3000);
+                        await Task.Delay(5000);
                         var fileId = await GetUploadedFilesBasedOnSearchCriteria(_hooks.bearer, companyName, planName, rkPlanNumber);
                         var payrollClient = RestService.For<IPayroll>(httpClient);
                         var fileDetails = await payrollClient.GetFileInformation(fileId);
@@ -681,7 +683,26 @@ namespace RefitSandBox
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
                     var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
                     await tradeOrderClient.UploadFile(form);
-                    //var responseObject = JObject.Parse(tradeOrderFileUploadResult.ToString());
+                    Console.WriteLine("Trade order file uploaded");
+                    var employeeId = await GetEmployeeId();
+                    var currentDate = DateTime.Today.ToString("yyyy-MM-dd");
+                    await Task.Delay(5000);
+                    var employeeAccountBalance = await tradeOrderClient.GetParticipantAccountBalanceByPlan(planId, employeeId, currentDate);
+                    var responseObject = JObject.Parse(employeeAccountBalance.ToString());
+                    try
+                    {
+                        var amountUpdated = responseObject["sources"][0]["vestedBalance"].ToString();
+                        Console.WriteLine($"Amount updated as : {amountUpdated}");
+                        if (amountUpdated != "100")
+                        {
+                            throw new Exception();
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+
+                    }
+                    
                     return null;
                 }
             }
@@ -829,7 +850,7 @@ namespace RefitSandBox
                 var employeeId = await GetEmployeeId();
                 await Configuration("employeeId", employeeId);
                 await Configuration("planId", planId);
-
+                await Configuration("loanDocumentTypeId", loanDocumentId);
             }
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
             var response = await SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, methodName);
@@ -897,7 +918,7 @@ namespace RefitSandBox
 
 
             var apiClient = RestService.For(interfaceType, httpClient);
-            JObject response = null;
+            //JObject response = null;
             // Dynamically search for the method in the interface
             var methodToSearch = interfaceType.GetMethod(methodName);
             if (methodToSearch != null)
@@ -958,13 +979,26 @@ namespace RefitSandBox
                             Console.Write(response.ToString());
                             return response;
                         }
+                        else if(methodName == "SaveInprogressLoanRequest")
+                        {
+                            var requestBody = JsonConvert.SerializeObject(model);
+                            var requestPayload = JObject.Parse(requestBody);
+                            string Action = "api/v1/Loan/SaveInprogressLoanRequest";
+                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                            var task = await httpClient.PostAsync($"{BaseURL}{Action}/", data);
+                            var contentTask = await task.Content.ReadAsStringAsync();
+                            response = JObject.Parse(contentTask);
+                            Console.Write(response.ToString());
+                            return response;
+                        }
                         else
                         {
                             try
-                            {                                   
+                            {
                                 responseObject = await (Task<object>)methodToSearch.Invoke(apiClient, new object[] { model });
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 Console.WriteLine(ex.Message);
                             }
@@ -1210,10 +1244,18 @@ namespace RefitSandBox
             {
                 var CusipWithTradeOrderNumber = await program.SFTPConnect();
                 var value = CusipWithTradeOrderNumber.GetValueOrDefault("SEAS00001");
-                foreach (var row in dataTable.Rows)
+                if(value != null)
                 {
-                    var Columnname = row[0];
-                    UpdateFile(FileToEdit, Columnname, value, directoryPath);
+                    foreach (var row in dataTable.Rows)
+                    {
+                        var Columnname = row[0];
+                        UpdateFile(FileToEdit, Columnname, value, directoryPath);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Trade order number is not present in Trade response file");
+                    throw new Exception();
                 }
             }
             else
@@ -1343,6 +1385,58 @@ namespace RefitSandBox
             return employeeId;
         }
         
+        public async Task SaveLoan()
+        {
+            await Configuration("planId", planId);
+            string BaseURL = "https://test.coreretirementsolutions.com/";
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(BaseURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            var planClient = RestService.For<IPlanDetailsSave>(httpClient);
+            var loanSettings = new LoanSettingViewModel();
+            loanSettings = (LoanSettingViewModel)modelAfterConvention;
+            var response = await planClient.SaveLoan(loanSettings);
+            var responseAfterParsing = JObject.Parse(response.ToString());
+            loanDocumentId = responseAfterParsing["loan"]["loanDocumentType"][0]["id"].ToString();
+        }
+
+        public async Task LoanApprove()
+        {
+            try
+            {
+                /*var check = JsonConvert.DeserializeObject<SaveLoanResult>(response.ToString(), new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });*/
+                var loanId = response["loan"]["id"].ToString();
+                string BaseURL = "https://test.coreretirementsolutions.com/";
+                var httpClient = new HttpClient()
+                {
+                    BaseAddress = new Uri(BaseURL)
+                };
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                var loanClient = RestService.For<ILoan>(httpClient);
+                var loanApproved = await loanClient.ApproveLoan(loanId);
+                if(!loanApproved)
+                {
+                    throw new Exception();
+                }
+                else
+                {
+                    var loanActiveResult = await loanClient.GenerateLoan();
+                    Console.WriteLine(loanActiveResult.IsSuccessful.ToString());
+                    /*var payrollClient = RestService.For<IPayroll>(httpClient);
+                    var consolidationResult = await payrollClient.GenerateConsolidation();*/
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
         public static async Task<string> SaveCompany(string bearer)
         {
             var program = new Program();
@@ -1363,7 +1457,7 @@ namespace RefitSandBox
             companyName = companyresponse["company"]["name"].ToString();
             return companyId;
         }
-        public static string rkPlanNumber = "PP123";
+
         public static async Task<string> SavePlan(string bearer, string companyId)
         {
             var program = new Program();
@@ -1372,6 +1466,7 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(companyId.ToString(), "CompanyId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             await program.Configuration("effectiveDate", "2021-01-01");
+            await program.Configuration("name", "ABC123");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewPlanAsync");
             planId = planResponse["plan"]["id"].ToString();
@@ -1411,14 +1506,14 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanAmendments.PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            program.Configuration("exclusionType", "0"); 
-            program.Configuration("isLTPTApplicable", "false");
-            program.Configuration("ltptHours", "500");
-            program.Configuration("isRevaluationRequired", "false");
-            program.Configuration("isBreakInService", "false");
-            program.Configuration("eligibilityType", null);
-            program.Configuration("planId", planId.ToString());
-            program.Configuration("age", "20");
+            await program.Configuration("exclusionType", "0"); 
+            await program.Configuration("isLTPTApplicable", "false");
+            await program.Configuration("ltptHours", "500");
+            await program.Configuration("isRevaluationRequired", "false");
+            await program.Configuration("isBreakInService", "false");
+            await program.Configuration("eligibilityType", null);
+            await program.Configuration("planId", planId.ToString());
+            await program.Configuration("age", "20");
             await program.Configuration("ltptAgeInYears", "20");
             
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
@@ -1432,7 +1527,7 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(entryDateModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            program.Configuration("ruleName", "Immediate");
+            await program.Configuration("ruleName", "Immediate");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEntryDate");
         }
@@ -1445,15 +1540,18 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             var currentDate = DateTime.UtcNow;
-            program.Configuration("sourceType", "1");
-            program.Configuration("sourceCategory", "2");
-            program.Configuration("sourceSubCategory", "4");
-            program.Configuration("sourceSubSubCategory", "1");
-            program.Configuration("effectiveStartDate", "2022-01-01");
-            program.Configuration("sourceName", "Pretax");
-            program.Configuration("contributionType", "1");
-            program.Configuration("limitMinimumDollar", "10");
-            program.Configuration("limitMinimumPercentage", "10");
+            await program.Configuration("sourceType", "1");
+            await program.Configuration("sourceCategory", "2");
+            await program.Configuration("sourceSubCategory", "4");
+            await program.Configuration("sourceSubSubCategory", "1");
+            await program.Configuration("effectiveStartDate", "2022-01-01");
+            await program.Configuration("sourceName", "Pretax");
+            await program.Configuration("contributionType", "1");
+            await program.Configuration("limitMinimumDollar", "10");
+            await program.Configuration("limitMinimumPercentage", "10");
+            await program.Configuration("limitMaximumPercentage", "70");
+            await program.Configuration("limitMaximumDollar", "70");
+            await program.Configuration("sourceCode", "A");
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
@@ -1467,9 +1565,9 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(compensationModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
-            program.Configuration("compensationCategoryId", companyPlanCompensationId);
-            program.Configuration("isIncluded", "true");
-            program.Configuration("calculationType", "1");
+            await program.Configuration("compensationCategoryId", companyPlanCompensationId);
+            await program.Configuration("isIncluded", "true");
+            await program.Configuration("calculationType", "1");
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var compSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveCompensation");
         }
@@ -1481,7 +1579,7 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(updatePlanStatusModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(),"PlanId",modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
-            program.Configuration("planStatus", statusCode);
+            await program.Configuration("planStatus", statusCode);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "UpdatePlanStatus");
         }
