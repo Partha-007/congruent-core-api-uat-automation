@@ -113872,7 +113872,8 @@
             "nullable": true
           },
           "eft": {
-            "$ref": "#/components/schemas/Loan.Message.EFT"
+            "$ref": "#/components/schemas/Loan.Message.EFT",
+            "nullable" : true
           },
           "cheque": {
             "$ref": "#/components/schemas/Loan.Message.Cheque"

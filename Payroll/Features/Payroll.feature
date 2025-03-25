@@ -2,7 +2,7 @@
 
 
 
-@SaveEmployee
+@PlanActivation
 Scenario: Payroll file upload for an active plan
 Given Model is selected for the endpoint "/api/Loan/SaveLoan"
 When Configuration has been made as per following

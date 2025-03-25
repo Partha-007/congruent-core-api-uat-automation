@@ -21,7 +21,6 @@
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="NSwag.CodeGeneration" Version="14.2.0" />
 	  <PackageReference Include="NSwag.CodeGeneration.CSharp" Version="14.2.0" />
-	  <PackageReference Include="NSwag.ConsoleCore" Version="12.0.10" />
 	  <PackageReference Include="NSwag.Core" Version="14.2.0" />
 	  <PackageReference Include="NUnit" Version="4.3.2" />
 	  <PackageReference Include="NUnit3TestAdapter" Version="5.0.0-beta.5" />

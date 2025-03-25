@@ -83,11 +83,11 @@ namespace Payroll.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Payroll file upload for an active plan")]
-        [NUnit.Framework.CategoryAttribute("SaveEmployee")]
+        [NUnit.Framework.CategoryAttribute("PlanActivation")]
         public async System.Threading.Tasks.Task PayrollFileUploadForAnActivePlan()
         {
             string[] tagsOfScenario = new string[] {
-                    "SaveEmployee"};
+                    "PlanActivation"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Payroll file upload for an active plan", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 6

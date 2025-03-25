@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using CsvHelper;
 using System.Globalization;
 using Bogus.Extensions.UnitedStates;
-using YamlDotNet.Core.Tokens;
 
 namespace RefitSandBox.TestDataGenerator
 {

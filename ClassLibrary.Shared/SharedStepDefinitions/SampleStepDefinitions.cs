@@ -141,6 +141,12 @@ namespace SharedStepDefinitions
             await _program.LoanApprove();
         }
 
+        [Then("Employee Loan request API should respond with error message as {string}")]
+        public async Task ThenEmployeeLoanRequestAPIShouldRespondWithErrorMessageAs(string expectedErrorMessage)
+        {
+            await _program.VerifyErrorMessage(expectedErrorMessage);
+        }
+
 
     }
 }

@@ -64,8 +64,8 @@ namespace RefitSandBox.Hooks
             //bearer = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkMyN0E0MEI4ODkyOTU2Q0YzOTkxNkQ5MDgzRDY1NEYzRjZDNzlBNzQiLCJ4NXQiOiJ3bnBBdUlrcFZzODVrVzJRZzlaVThfYkhtblEiLCJ0eXAiOiJhdCtqd3QifQ.eyJvaV9wcnN0IjoiQ09SRUlJIiwiaXNzIjoiaHR0cHM6Ly90ZXN0LmNvcmVyZXRpcmVtZW50c29sdXRpb25zLmNvbS8iLCJvaV9hdV9pZCI6Ijk4ZDM1ZWQyLWZkZGQtNDFjNy04ZmQ4LWFlZGEyMGNhNWIzNiIsIlVzZXJJZCI6IjE1Iiwic3ViIjoiMTUiLCJlbWFpbCI6InZpZ25lc2h3YXJhbi5uQGNzcGwuY29tIiwibmFtZSI6InZpZ25lc2h3YXJhbi5uQGNzcGwuY29tIiwidXNlcm5hbWUiOiJ2aWduZXNod2FyYW4ubkBjc3BsLmNvbSIsInJvbGUiOiJTUFUiLCJjbGllbnRfaWQiOiJDT1JFSUkiLCJvaV90a25faWQiOiI3MTg4YjYyNS05YTk5LTRmOWEtODU5NC1mODI1YTVkYmRkMTYiLCJzY29wZSI6ImFwaSBvcGVuaWQgcHJvZmlsZSByb2xlcyBvZmZsaW5lX2FjY2VzcyIsImp0aSI6IjlmOTg4MTg0LTgyZDItNGMwNi1iOGVjLTVmODFkZTQ3ZGI4MyIsImV4cCI6MTc0MDk4NDc5MywiaWF0IjoxNzQwOTgxMTkzfQ.iDFesBukZlnQQ1IWE5bFcTXZNYrK3AoVT52gKO4L8E88V8yRNE5ATjtxKDG7etF2sCgDfcSZsuiQcmr0M2iE0acFkdrxXX3ZjsoEYtgCGEGBWr6pcRhyA16jfqrD3ok-sfhugtkVZzytJL-dpQTFuyTrWR4vOKofL7T6iBIHyIg0EkkxtccRlnPPZIzLbpXMY6-42MPfL6gPqrUFXDB43tkCreTHnxFaNEAHYRDryCMNnf9wKmnwpR5Y6BIiJExul4UQH_Ts0-zDQfD3AWEOBP380zVSjZKCcMkq3uWFxTc6NfPxnD-604UkPCKaDhVjkfL5HoleQpIbQVYOaRKunw";
         }
 
-        [BeforeScenario("@SaveEmployee")]
-        public async Task<string> CallSaveCompany()
+        [BeforeScenario("@PlanActivation")]
+        public async Task<string> PlanActivation()
         {
             string companyId = await Program.SaveCompany(bearer); // Static method call
             planId = await Program.SavePlan(bearer, companyId);

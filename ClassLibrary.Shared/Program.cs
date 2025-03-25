@@ -24,9 +24,7 @@ using System.Reflection;
 using RefitSandBox.TestDataGenerator;
 using System.Data;
 using Reqnroll;
-using YamlDotNet.Core.Tokens;
 using Bogus.Bson;
-using YamlDotNet.Serialization.Converters;
 using FizzWare.NBuilder.Extensions;
 using RefitSandBox;
 using NSwag.CodeGeneration.Models;
@@ -463,7 +461,7 @@ namespace RefitSandBox
                     // If ModelDeclaredType equals PropertyDeclaredType, handle it directly
                     else if (Nullable.GetUnderlyingType(property.PropertyType) != null)
                     {
-                        if (Value == null)
+                        if (String.IsNullOrEmpty(Value))
                         {
                             // Set the property to null if the value is null
                             property.SetValue(modelAfterConvention, null);
@@ -477,15 +475,23 @@ namespace RefitSandBox
                             }
                             else if (property.PropertyType == typeof(double?))
                             {
-                                var convertedValue = double.Parse(Value);
-                                try
+                                if(String.IsNullOrEmpty(Value))
                                 {
-                                    property.SetValue(modelAfterConvention, convertedValue);
+                                    property.SetValue(modelAfterConvention, null);
                                 }
-                                catch (Exception ex)
+                                else
                                 {
-                                    Console.WriteLine(ex.Message);
+                                    var convertedValue = double.Parse(Value);
+                                    try
+                                    {
+                                        property.SetValue(modelAfterConvention, convertedValue);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine(ex.Message);
+                                    }
                                 }
+                                    
                             }
                             else
                             {
@@ -1198,10 +1204,10 @@ namespace RefitSandBox
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
             {
-                var Model = viewModelType();
-                modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
-                var listOfProperties = GetJsonPropertyList(Model);
-                return viewModelType;
+               var Model = viewModelType();
+               modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
+               var listOfProperties = GetJsonPropertyList(Model);
+               return viewModelType;    
             }
             
             return null;
@@ -1407,6 +1413,7 @@ namespace RefitSandBox
         {
             try
             {
+                Console.WriteLine($"Loan approve started on {DateTime.Now}");
                 /*var check = JsonConvert.DeserializeObject<SaveLoanResult>(response.ToString(), new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore
@@ -1426,8 +1433,19 @@ namespace RefitSandBox
                 }
                 else
                 {
+                    Console.WriteLine($"Loan has been approved on {DateTime.Now}");
+                    await Task.Delay(3000);
                     var loanActiveResult = await loanClient.GenerateLoan();
-                    Console.WriteLine(loanActiveResult.IsSuccessful.ToString());
+                    var loanResponse = loanActiveResult.IsSuccessful;
+                    if(!loanResponse)
+                    {
+                        throw new Exception();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Generate Loan API returns success on {DateTime.Now}");
+                    }
+                    await Task.Delay(3000);
                     /*var payrollClient = RestService.For<IPayroll>(httpClient);
                     var consolidationResult = await payrollClient.GenerateConsolidation();*/
                 }
@@ -1435,6 +1453,39 @@ namespace RefitSandBox
             catch(Exception ex)
             {
 
+            }
+        }
+
+        public async Task VerifyErrorMessage(string expectedErrorMessage)
+        {
+            try
+            {
+                var loanResponse = JObject.Parse(response.ToString());
+                Console.WriteLine("Loan response :" +loanResponse.ToString());
+                var loanRequestResult = JsonConvert.DeserializeObject<SaveLoanResult>(response.ToString(), new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Include
+                });
+                if (loanRequestResult != null)
+                {
+                    try
+                    {
+                        var errorMessage = loanRequestResult.ErrorMessages.Single();
+                        var errorCode = errorMessage.ErrorCode.ToString();
+                        var message = errorMessage.Message.ToString();
+                        ClassicAssert.AreEqual(expectedErrorMessage, $"{errorCode} : {message}");
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+                    
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Deserializing the response failed : " +ex.Message);
+                throw new Exception();
             }
         }
         public static async Task<string> SaveCompany(string bearer)

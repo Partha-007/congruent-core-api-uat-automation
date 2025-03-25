@@ -102,10 +102,6 @@
               "target": "Package",
               "version": "[14.2.0, )"
             },
-            "NSwag.ConsoleCore": {
-              "target": "Package",
-              "version": "[12.0.10, )"
-            },
             "NSwag.Core": {
               "target": "Package",
               "version": "[14.2.0, )"
@@ -177,7 +173,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
