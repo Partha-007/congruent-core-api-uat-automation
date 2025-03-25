@@ -27,7 +27,7 @@ namespace RefitSandBox.TestDataGenerator
                 var propertyType = property.PropertyType;
                 var propertyName = property.Name;
 
-                if (propertyName.Equals("SourceCompensations", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("PostSeveranceCompensationCategories", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("Additional", StringComparison.OrdinalIgnoreCase) ||  propertyName.Equals("PlanGroupMappings", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("Classifications", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("EmploymentStatus", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("RepaymentBankDetail") || propertyName.Equals("LoanSuspension"))
+                if (propertyName.Equals("SourceCompensations", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("PostSeveranceCompensationCategories", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("Additional", StringComparison.OrdinalIgnoreCase) ||  propertyName.Equals("PlanGroupMappings", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("EmploymentStatus", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("RepaymentBankDetail") || propertyName.Equals("LoanSuspension"))
                 {
                     if (propertyType.IsArray)
                     {

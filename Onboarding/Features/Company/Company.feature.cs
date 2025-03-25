@@ -178,11 +178,41 @@ await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Compan
 #line 28
 await testRunner.WhenAsync("the property \"name\" is configured with \"alphabets\" with 127 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
+                global::Reqnroll.Table table1 = new global::Reqnroll.Table(new string[] {
+                            "key",
+                            "value"});
+                table1.AddRow(new string[] {
+                            "frequencyName",
+                            "Daily"});
+                table1.AddRow(new string[] {
+                            "frequencyType",
+                            "1"});
+                table1.AddRow(new string[] {
+                            "modeOfHours",
+                            "1"});
+                table1.AddRow(new string[] {
+                            "modeOfCompensation",
+                            "1"});
+                table1.AddRow(new string[] {
+                            "modeOfContribution",
+                            "1"});
+                table1.AddRow(new string[] {
+                            "employeeClassificationType",
+                            "1"});
+                table1.AddRow(new string[] {
+                            "code",
+                            "L1"});
+                table1.AddRow(new string[] {
+                            "classificationName",
+                            "Location"});
 #line 29
+await testRunner.AndAsync("Configuration has been done as mentioned below", ((string)(null)), table1, "And ");
+#line hidden
+#line 39
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 30
+#line 40
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -196,7 +226,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Company name field equal to 128 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 32
+#line 42
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -206,17 +236,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 33
+#line 43
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 34
+#line 44
 await testRunner.WhenAsync("the property \"name\" is configured with \"alphabets\" with 128 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 35
+#line 45
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 36
+#line 46
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -230,7 +260,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Company name field more than 128 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 38
+#line 48
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -240,17 +270,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 39
+#line 49
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 40
+#line 50
 await testRunner.WhenAsync("the property \"name\" is configured with \"alphabets\" with 129 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 41
+#line 51
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 42
+#line 52
 await testRunner.ThenAsync("API should give response as \"CM002 : Company name length should not exceed 128 ch" +
                         "aracters.\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
@@ -271,7 +301,7 @@ await testRunner.ThenAsync("API should give response as \"CM002 : Company name l
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             argumentsOfScenario.Add("address1", address1);
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Address 1 field positive acceptance", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 44
+#line 54
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -281,17 +311,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 45
+#line 55
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 46
+#line 56
 await testRunner.WhenAsync(string.Format("the property \"name\" is configured as \"{0}\"", address1), ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 47
+#line 57
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 48
+#line 58
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -305,7 +335,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Address 1 field less than 100 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 57
+#line 67
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -315,17 +345,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 58
+#line 68
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 59
+#line 69
 await testRunner.WhenAsync("the property \"address1\" is configured with \"alphabets\" with 99 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 60
+#line 70
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 61
+#line 71
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -339,7 +369,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Address 1 field equal to 100 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 63
+#line 73
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -349,17 +379,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 64
+#line 74
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 65
+#line 75
 await testRunner.WhenAsync("the property \"address1\" is configured with \"alphabets\" with 100 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 66
+#line 76
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 67
+#line 77
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -373,7 +403,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Address 1 field more than 128 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 69
+#line 79
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -383,17 +413,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 70
+#line 80
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 71
+#line 81
 await testRunner.WhenAsync("the property \"address1\" is configured with \"alphabets\" with 101 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 72
+#line 82
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 73
+#line 83
 await testRunner.ThenAsync("API should give response as \"CM004 : Address 1 length should not exceed 100 chara" +
                         "cters.\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
@@ -414,7 +444,7 @@ await testRunner.ThenAsync("API should give response as \"CM004 : Address 1 leng
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             argumentsOfScenario.Add("address2", address2);
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Address 2 field positive acceptance", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 76
+#line 86
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -424,17 +454,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 77
+#line 87
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 78
+#line 88
 await testRunner.WhenAsync(string.Format("the property \"name\" is configured as \"{0}\"", address2), ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 79
+#line 89
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 80
+#line 90
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -448,7 +478,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Address 2 field less than 100 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 89
+#line 99
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -458,17 +488,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 90
+#line 100
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 91
+#line 101
 await testRunner.WhenAsync("the property \"address2\" is configured with \"alphabets\" with 99 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 92
+#line 102
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 93
+#line 103
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -482,7 +512,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Address 2 field equal to 100 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 95
+#line 105
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -492,17 +522,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 96
+#line 106
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 97
+#line 107
 await testRunner.WhenAsync("the property \"address2\" is configured with \"alphabets\" with 100 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 98
+#line 108
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 99
+#line 109
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -516,7 +546,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Address 2 field more than 128 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 101
+#line 111
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -526,17 +556,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 102
+#line 112
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 103
+#line 113
 await testRunner.WhenAsync("the property \"address2\" is configured with \"alphabets\" with 101 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 104
+#line 114
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 105
+#line 115
 await testRunner.ThenAsync("API should give response as \"CM004 : Address 1 length should not exceed 100 chara" +
                         "cters.\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
@@ -557,7 +587,7 @@ await testRunner.ThenAsync("API should give response as \"CM004 : Address 1 leng
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             argumentsOfScenario.Add("city", city);
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("City field positive acceptance", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 108
+#line 118
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -567,17 +597,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 109
+#line 119
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 110
+#line 120
 await testRunner.WhenAsync(string.Format("the property \"name\" is configured as \"{0}\"", city), ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 111
+#line 121
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 112
+#line 122
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -591,7 +621,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("City field less than 30 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 121
+#line 131
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -601,17 +631,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 122
+#line 132
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 123
+#line 133
 await testRunner.WhenAsync("the property \"city\" is configured with \"alphabets\" with 29 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 124
+#line 134
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 125
+#line 135
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -625,7 +655,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("City field equal to 30 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 127
+#line 137
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -635,17 +665,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 128
+#line 138
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 129
+#line 139
 await testRunner.WhenAsync("the property \"city\" is configured with \"alphabets\" with 30 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 130
+#line 140
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 131
+#line 141
 await testRunner.ThenAsync("API should respond with successful message", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -659,7 +689,7 @@ await testRunner.ThenAsync("API should respond with successful message", ((strin
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("City field more than 30 characters", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 133
+#line 143
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -669,17 +699,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 134
+#line 144
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 135
+#line 145
 await testRunner.WhenAsync("the property \"city\" is configured with \"alphabets\" with 31 characters", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 136
+#line 146
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 137
+#line 147
 await testRunner.ThenAsync("API should give response as \"CM004 : Address 1 length should not exceed 100 chara" +
                         "cters.\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
@@ -694,7 +724,7 @@ await testRunner.ThenAsync("API should give response as \"CM004 : Address 1 leng
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Company model with multiple properties configured", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 167
+#line 177
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -704,29 +734,29 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 168
+#line 178
 await testRunner.GivenAsync("Model is selected for the endpoint \"/api/v1/Company\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-                global::Reqnroll.Table table1 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table2 = new global::Reqnroll.Table(new string[] {
                             "propertyName",
                             "value"});
-                table1.AddRow(new string[] {
+                table2.AddRow(new string[] {
                             "name",
                             ""});
-                table1.AddRow(new string[] {
+                table2.AddRow(new string[] {
                             "postalCode",
                             "abced"});
-                table1.AddRow(new string[] {
+                table2.AddRow(new string[] {
                             "taxEIN",
                             ""});
-#line 169
-await testRunner.WhenAsync("Configuration has been made as per following", ((string)(null)), table1, "When ");
+#line 179
+await testRunner.WhenAsync("Configuration has been made as per following", ((string)(null)), table2, "When ");
 #line hidden
-#line 174
+#line 184
 await testRunner.AndAsync("API request has been sent to the \"ICompanyDetails\" with the method name \"CreateNe" +
                         "wCompanyAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 175
+#line 185
 await testRunner.ThenAsync("API should give response as \"CM001 : Required\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }

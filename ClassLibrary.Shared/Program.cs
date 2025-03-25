@@ -1500,6 +1500,8 @@ namespace RefitSandBox
             await program.Configuration("modeOfHours", "1");
             await program.Configuration("modeOfCompensation", "1");
             await program.Configuration("modeOfContribution", "1");
+            await program.Configuration("employeeClassificationType", "Location");
+            await program.Configuration("code", "L1");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.ICompanyDetails");
             var companyresponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewCompanyAsync");
             var companyId = companyresponse["company"]["id"].ToString();
