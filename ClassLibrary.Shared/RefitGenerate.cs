@@ -158,6 +158,9 @@ namespace RefitSandBox
 
         [Get("/api/v1/TradeGeneration/GenerateLoan/23%3A59")]
         Task<GetAllApprovedLoansResult> GenerateLoan();
+
+        [Get("/api/v1/Loan/GetEmployeePlanLoans/{employeeId}")]
+        Task<GetEmployeeEligiblePlanLoansResult> GetEmployeePlanLoans(string employeeId);
     }
     public class Advisor
     {

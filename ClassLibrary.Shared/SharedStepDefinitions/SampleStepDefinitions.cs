@@ -147,6 +147,12 @@ namespace SharedStepDefinitions
             await _program.VerifyErrorMessage(expectedErrorMessage);
         }
 
+        [Then("Employee plan loans should respond with loan count as {int} with loan type as {int} and Loan description should be {string}")]
+        public async Task ThenEmployeePlanLoansShouldRespondWithLoanCountAsWithLoanTypeAsAndLoanDescriptionShouldBe(int loanCount, int loanType, string loanName)
+        {
+            await _program.VerifyMasterLoanTypesForEmployee(loanCount, loanType, loanName);
+        }
+
 
     }
 }

@@ -265,7 +265,7 @@ namespace RefitSandBox.TestDataGenerator
                     .RuleFor(x => x.EmployeeStatus, x => "A")
                     .RuleFor(x => x.LeaveStartDate, x => "")
                     .RuleFor(x => x.LeaveEndDate, x => "")
-                    .RuleFor(x => x.Location, x => " ")
+                    .RuleFor(x => x.Location, x => "L1")
                     .RuleFor(x => x.LocationStartDate, x => " ")
                     .RuleFor(x => x.LocationEndDate, x => " ")
                     .RuleFor(x => x.AnnualSalary, x => "500")

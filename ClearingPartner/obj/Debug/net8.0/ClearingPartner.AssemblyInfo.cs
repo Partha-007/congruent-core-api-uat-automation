@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClearingPartner")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95683a42723804738fb068bdd63c1d4b6b6bf794")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+38de833dd0e0e43335bc3a132cca5461f25c3391")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClearingPartner")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ClearingPartner")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

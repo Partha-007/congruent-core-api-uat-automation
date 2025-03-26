@@ -68,6 +68,7 @@ namespace RefitSandBox
         public static string companyPlanCompensationId;
         public static string companyGrossCompensationId;
         public static string companyName;
+        public static string companyClassificationId;
         public static string planId;
         public static string planName;
         public static string rkPlanNumber;
@@ -350,6 +351,10 @@ namespace RefitSandBox
                     .ToList();
             }
 
+            if(ControlName == "employeeClassificationId")
+            {
+                Value = companyClassificationId;
+            }
 
             if (matchingProperties.Any())
             {
@@ -1406,6 +1411,7 @@ namespace RefitSandBox
             loanSettings = (LoanSettingViewModel)modelAfterConvention;
             var response = await planClient.SaveLoan(loanSettings);
             var responseAfterParsing = JObject.Parse(response.ToString());
+            Console.WriteLine("Loan response : " +responseAfterParsing.ToString());
             loanDocumentId = responseAfterParsing["loan"]["loanDocumentType"][0]["id"].ToString();
         }
 
@@ -1456,6 +1462,49 @@ namespace RefitSandBox
             }
         }
 
+        public async Task<GetEmployeeEligiblePlanLoansResult> GetEmployeePlanLoans()
+        {
+            try
+            {
+                var employeeId = await GetEmployeeId();
+                string BaseURL = "https://test.coreretirementsolutions.com/";
+                var httpClient = new HttpClient()
+                {
+                    BaseAddress = new Uri(BaseURL)
+                };
+
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                var loanClient = RestService.For<ILoan>(httpClient);
+                await Task.Delay(2000);
+                var employeeLoansResponse = await loanClient.GetEmployeePlanLoans(employeeId);
+                return employeeLoansResponse;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        public async Task VerifyMasterLoanTypesForEmployee(int expectedLoanCount, int expectedLoanType, string expectedLoanName)
+        {
+            var employeeLoansResponse = await GetEmployeePlanLoans();
+            if (employeeLoansResponse != null)
+            {
+                var masterLoanTypes = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).Distinct().ToList();
+                ClassicAssert.AreEqual(expectedLoanCount, masterLoanTypes.Count);
+                var masterLoanType = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).FirstOrDefault()?.LoanType;
+                ClassicAssert.AreEqual(expectedLoanType, masterLoanType);
+                var masterLoanName = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).FirstOrDefault()?.Description;
+                ClassicAssert.AreEqual(expectedLoanName, masterLoanName);
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+        
+
         public async Task VerifyErrorMessage(string expectedErrorMessage)
         {
             try
@@ -1500,14 +1549,17 @@ namespace RefitSandBox
             await program.Configuration("modeOfHours", "1");
             await program.Configuration("modeOfCompensation", "1");
             await program.Configuration("modeOfContribution", "1");
-            await program.Configuration("employeeClassificationType", "Location");
+            await program.Configuration("employeeClassificationType", "1");
             await program.Configuration("code", "L1");
+            await program.Configuration("classificationName", "Location");
+            await program.Configuration("value", "Location");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.ICompanyDetails");
             var companyresponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewCompanyAsync");
             var companyId = companyresponse["company"]["id"].ToString();
             companyGrossCompensationId = companyresponse["company"]["compensationCategories"][0]["id"].ToString();
             companyPlanCompensationId = companyresponse["company"]["compensationCategories"][1]["id"].ToString();
             companyName = companyresponse["company"]["name"].ToString();
+            companyClassificationId = companyresponse["company"]["classifications"][0]["employeeClassificationCodes"][0]["id"].ToString();
             return companyId;
         }
 
