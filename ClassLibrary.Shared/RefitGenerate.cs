@@ -91,6 +91,9 @@ namespace RefitSandBox
 
         [Post("/api/Loan/SaveLoan")]
         Task<object> SaveLoan([Body] LoanSettingViewModel loan);
+
+        [Post("/api/Vesting/SaveVesting")]
+        Task<object> SaveVesting([Body] VestingViewModel vesting);
     }
 
     public interface ICompanyDetails

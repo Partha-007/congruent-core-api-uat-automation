@@ -275,11 +275,19 @@ namespace RefitSandBox.TestDataGenerator
 
             return data.Generate(1);
         }
+
+
+        public static List<CombinedTemplateModel> values = new List<CombinedTemplateModel>();
         public static void WriteHeadersWithConventionalData(string filename, List<string> sourceNames)
         {
             //var sourceNames = await Program.GetSourceNameHeader("1723");
             DisplayNameAttribute value;
-            var values = RuleSetForCombinedTemplate();
+            
+            if(values.Count == 0)
+            {
+                values = RuleSetForCombinedTemplate();
+            }
+            
             
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
             string directoryPath = Path.Combine(projectDirectory, "Templates",filename);
@@ -300,6 +308,11 @@ namespace RefitSandBox.TestDataGenerator
                     {
                         csv.WriteField($"{Program.rkPlanNumber}_{source.ToUpper()}");
                     }
+                    if(filename == "LoanRepayment.csv")
+                    {
+                        csv.WriteField($"{Program.rkPlanNumber}_FIRST LOAN ID");
+                        csv.WriteField($"{Program.rkPlanNumber}_FIRST LOAN REPAYMENT");
+                    }
                     csv.NextRecord();
                     foreach(var item in values)
                     {
@@ -311,6 +324,11 @@ namespace RefitSandBox.TestDataGenerator
                         }
                         for (int i = 0; i < sourceNames.Count; i++)
                         {
+                            csv.WriteField("");
+                        }
+                        if(filename == "LoanRepayment.csv")
+                        {
+                            csv.WriteField($"{Program.businessKey}");
                             csv.WriteField("");
                         }
                         csv.NextRecord();
@@ -433,6 +451,7 @@ namespace RefitSandBox.TestDataGenerator
         public string PlanCompensation { get; set; }
     }
 
+    
     public class Contributions
     {
         public string Name { get; set; }

@@ -73,12 +73,14 @@ namespace RefitSandBox
         public static string planName;
         public static string rkPlanNumber;
         public static string sourceId;
+        public static string matchSourceId;
         public static string uploadedFileId;
         public static string fundingBankId;
         public static string payrollFundingId;
         public static string employeeSSN;
         public static string loanDocumentId;
-
+        public static double totalAmount;
+        public static string businessKey;
         public async Task UserLogin()
         {
             string authorizationEndpoint = "https://test.coreretirementsolutions.com/connect/authorize";
@@ -621,7 +623,7 @@ namespace RefitSandBox
             MultipartFormDataContent form;
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
             uploadedFileName = Path.Combine(projectDirectory, "Templates", filename);
-            if(filename == "CombinedFile.csv")
+            if(filename == "CombinedFile.csv" || filename == "LoanRepayment.csv")
             {
                 using (form = new MultipartFormDataContent())
                 {
@@ -665,12 +667,24 @@ namespace RefitSandBox
                             var acceptAllWarningsClient = RestService.For<IPayroll>(httpClient);
                             var response = await acceptAllWarningsClient.AcceptAllWarningsInaFile(fileId);
                         }
+                        await Task.Delay(5000);
                         var finalSubmit = await payrollClient.FinalSubmit(fileId, "3");
+                        await Task.Delay(5000);
                         await SaveFundingDetailsByPlan(planId, fileId);
+                        await Task.Delay(5000);
                         var getAwaitingFundsForFile = await payrollClient.GetAwaitingFundingDetailsByPlan(fileId, planId);
                         payrollFundingId = getAwaitingFundsForFile.PayrollFundingId.ToString();
                         await ConfirmFunds(planId, fileId, payrollFundingId);
+                        if(filename == "Combined.csv")
+                        {
+                            await Task.Delay(3000);
+                        }
+                        else
+                        {
+                            await Task.Delay(20000);
+                        }
                         await payrollClient.GenerateConsolidation();
+                        await Task.Delay(5000);
                         return responseObject;
                     }
                 }
@@ -702,9 +716,9 @@ namespace RefitSandBox
                     var responseObject = JObject.Parse(employeeAccountBalance.ToString());
                     try
                     {
-                        var amountUpdated = responseObject["sources"][0]["vestedBalance"].ToString();
+                        var amountUpdated = Convert.ToInt32(responseObject["sources"][0]["vestedBalance"].ToString());
                         Console.WriteLine($"Amount updated as : {amountUpdated}");
-                        if (amountUpdated != "100")
+                        if (amountUpdated != totalAmount)
                         {
                             throw new Exception();
                         }
@@ -768,12 +782,11 @@ namespace RefitSandBox
 
                     // List files in the root directory of the SFTP server
                     var files = sftp.ListDirectory("/qa/outbound/").OrderByDescending(_ => _.LastWriteTimeUtc).ToList();
-                    Console.WriteLine("Files in root directory:");
+                    
                     var fileToRead = files[1];
                     //var checkFileName = "/qa/outbound/TRADE.20250311.C0602959";
                     using (var fileStream = sftp.OpenRead(fileToRead.FullName))
                     {
-                        // Read the file content (example: print to console)
                         using (var reader = new StreamReader(fileStream))
                         {
                             string line;
@@ -853,6 +866,10 @@ namespace RefitSandBox
                 if(methodName == "SaveLoan")
                 {
                     await Configuration("sourceId", sourceId);
+                }
+                if(methodName == "SaveVesting")
+                {
+                    await Configuration("sourceId", matchSourceId);
                 }
                 FakeDataHelper.AssignId(planId, "PlanId", modelAfterConvention);
             }
@@ -1204,7 +1221,8 @@ namespace RefitSandBox
                 { "/api/v1/Company", () => new CompanyViewModel() },
                 { "/api/v1/Payroll/SaveEmployee",() => new PayrollEmployeeViewModel() },
                 { "/api/Loan/SaveLoan", () => new LoanSettingViewModel() },
-                { "/api/v1/Loan/SaveInprogressLoanRequest", () => new EmployeeLoanViewModel()}
+                { "/api/v1/Loan/SaveInprogressLoanRequest", () => new EmployeeLoanViewModel()},
+                {"/api/Vesting/SaveVesting", () => new VestingViewModel() }
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -1232,6 +1250,13 @@ namespace RefitSandBox
                 case "TradeOrder.csv":
                     await EditFile(filename, dataTable);
                     break;
+
+                case "LoanRepayment.csv":
+                    var sourceNames1 = await GetSourceNameHeader(_hooks.planId);
+                    FakeDataHelper.WriteHeadersWithConventionalData(filename, sourceNames1);
+                    await EditFile(filename, dataTable);
+                    break;
+
 
                 default:
                     break;
@@ -1281,19 +1306,33 @@ namespace RefitSandBox
             
             
         }
-
+        public static int count = 0;
         public static void UpdateFile(Dictionary<string, string> fileToEdit, string ColumnHeader, string Value, string FilePath)
         {
+            
             if (fileToEdit.Count != 0)
             {
+                if(ColumnHeader == "PAY DATE")
+                {
+                    count++;
+                }
                 if (fileToEdit.ContainsKey(ColumnHeader))
                 {
                     fileToEdit[ColumnHeader] = Value;
                 }
-                else if(fileToEdit.Keys.Any(_ => _.Contains("Pretax",StringComparison.OrdinalIgnoreCase)))
+                else if(fileToEdit.Keys.Any(_ => _.Contains(ColumnHeader,StringComparison.OrdinalIgnoreCase)))
                 {
-                    var pretaxHeader = fileToEdit.Keys.First(_ => _.Contains("Pretax", StringComparison.OrdinalIgnoreCase));
+                    var pretaxHeader = fileToEdit.Keys.First(_ => _.Contains(ColumnHeader, StringComparison.OrdinalIgnoreCase));
                     fileToEdit[pretaxHeader] = Value;
+                    if(Value is string)
+                    {
+                        totalAmount = totalAmount + Convert.ToDouble(Value);
+                    }
+                }
+                else if(fileToEdit.Keys.Any(_ => _.Contains("Repayment",StringComparison.OrdinalIgnoreCase)))
+                {
+                    var repaymentHeader = fileToEdit.Keys.First(_ => _.Contains("Repayment", StringComparison.OrdinalIgnoreCase));
+                    fileToEdit[repaymentHeader] = Value;
                 }
                 else
                 {
@@ -1317,6 +1356,46 @@ namespace RefitSandBox
                     foreach (var value in fileToEdit.Values)
                     {
                         csvWriter.WriteField(value);
+                    }
+                }
+
+            }
+        }
+
+        public async Task WriteMultipleLinesForLoanRepayment(string filename, Reqnroll.DataTable dataTable)
+        {
+            string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+            string directoryPath = Path.Combine(projectDirectory, "Templates", filename);
+            var FileToEdit = new Dictionary<string, string>();
+            FileToEdit = await ReadCsvToDictionary(directoryPath);
+            using (var writerEdit = new StreamWriter(directoryPath, false))
+            {
+                using (var csvWriter = new CsvWriter(writerEdit, CultureInfo.CurrentCulture))
+                {
+                    foreach (var header in FileToEdit.Keys)
+                    {
+                        csvWriter.WriteField(header);
+                    }
+                    csvWriter.NextRecord();
+                    foreach (var value in FileToEdit.Values)
+                    {
+                        csvWriter.WriteField(value);
+                    }
+                    if(dataTable != null)
+                    {
+                        foreach(var row in dataTable.Rows)
+                        {
+                            var paydate = row[0];
+                            var repaymentAmount = row[1];
+                            FileToEdit["PAY DATE"] = paydate;
+                            var repaymentHeader = FileToEdit.Keys.First(_ => _.Contains("Repayment", StringComparison.OrdinalIgnoreCase));
+                            FileToEdit[repaymentHeader] = repaymentAmount;
+                            csvWriter.NextRecord();
+                            foreach(var value in FileToEdit.Values)
+                            {
+                                csvWriter.WriteField(value);
+                            }
+                        }
                     }
                 }
 
@@ -1425,6 +1504,7 @@ namespace RefitSandBox
                     NullValueHandling = NullValueHandling.Ignore
                 });*/
                 var loanId = response["loan"]["id"].ToString();
+                businessKey = response["loan"]["businessKey"].ToString();
                 string BaseURL = "https://test.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
@@ -1440,7 +1520,7 @@ namespace RefitSandBox
                 else
                 {
                     Console.WriteLine($"Loan has been approved on {DateTime.Now}");
-                    await Task.Delay(3000);
+                    await Task.Delay(5000);
                     var loanActiveResult = await loanClient.GenerateLoan();
                     var loanResponse = loanActiveResult.IsSuccessful;
                     if(!loanResponse)
@@ -1475,7 +1555,7 @@ namespace RefitSandBox
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
                 var loanClient = RestService.For<ILoan>(httpClient);
-                await Task.Delay(2000);
+                await Task.Delay(5000);
                 var employeeLoansResponse = await loanClient.GetEmployeePlanLoans(employeeId);
                 return employeeLoansResponse;
             }
@@ -1537,6 +1617,45 @@ namespace RefitSandBox
                 throw new Exception();
             }
         }
+
+        public double sourceBalance;
+        public async Task VerifyAvailableBalanceForNewLoan(double expectedAmount)
+        {
+            var employeeLoanDetails = await GetEmployeePlanLoans();
+            var availableSources = employeeLoanDetails.EmployeePlans.SelectMany(_ => _.SourceBalances).ToList();
+            foreach (var source in availableSources)
+            {
+                sourceBalance += source.VestedBalance;
+            }
+            var actualAmount = sourceBalance * 0.5;
+            ClassicAssert.AreEqual(expectedAmount, actualAmount);
+        }
+        
+        public async Task VerifyAvailableBalance(double expectedAmount)
+        {
+            var employeeLoanDetails = await GetEmployeePlanLoans();
+            var highestOutstandingLoanBalance = employeeLoanDetails.EmployeePlans.FirstOrDefault()?.HighestOutstandingLoanBalance;
+            var outstandingLoanBalance = employeeLoanDetails.EmployeePlans.FirstOrDefault()?.OutstandingLoanBalance;
+            var availableSources = employeeLoanDetails.EmployeePlans.SelectMany(_ => _.SourceBalances).ToList();
+            foreach(var source in availableSources)
+            {
+                sourceBalance += source.VestedBalance;
+            }
+            var calculatedAmount = await CalculateAvailableBalance(highestOutstandingLoanBalance, outstandingLoanBalance, sourceBalance);
+            ClassicAssert.AreEqual(expectedAmount, calculatedAmount);
+        }
+
+        public async Task<double> CalculateAvailableBalance(double? highestOutstanding, double? outstandingLoanBalance, double? vestedBalance)
+        {
+            double limit = 50000;
+            var firstAmount = vestedBalance.HasValue ? vestedBalance.Value * 0.5 : 0;
+            var secondAmount = highestOutstanding.HasValue ? limit - highestOutstanding.Value : limit;
+            var minimumAmount = Math.Min(firstAmount, secondAmount);
+            var availableBalance = minimumAmount - (outstandingLoanBalance ?? 0);
+            return availableBalance;
+        }
+
+
         public static async Task<string> SaveCompany(string bearer)
         {
             var program = new Program();
@@ -1637,7 +1756,7 @@ namespace RefitSandBox
             var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEntryDate");
         }
 
-        public static async Task SaveSource(string bearer, string planId)
+        public static async Task SavePretaxSource(string bearer, string planId)
         {
             var program = new Program();
             var sourceModel = new SourceViewModel();
@@ -1661,6 +1780,31 @@ namespace RefitSandBox
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
             sourceId = sourceSave["source"]["id"].ToString();
+        }
+
+        public static async Task SaveMatchSource(string bearer, string planId)
+        {
+            var program = new Program();
+            var sourceModel = new SourceViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            var currentDate = DateTime.UtcNow;
+            await program.Configuration("sourceType", "2");
+            await program.Configuration("sourceCategory", "6");
+            await program.Configuration("effectiveStartDate", "2022-01-01");
+            await program.Configuration("sourceName", "Match");
+            await program.Configuration("responsibleMode", "1");
+            await program.Configuration("sourceCode", "D");
+            await program.Configuration("contributionType", "1");
+            await program.Configuration("limitMinimumDollar", "10");
+            await program.Configuration("limitMinimumPercentage", "10");
+            await program.Configuration("limitMaximumPercentage", "70");
+            await program.Configuration("limitMaximumDollar", "70");
+            //program.Configuration("EmployeeDeferralSource.contributionType", "7");
+            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
+            matchSourceId = sourceSave["source"]["id"].ToString();
         }
 
         public static async Task SaveCompensation(string bearer, string planId)
@@ -1814,8 +1958,8 @@ namespace RefitSandBox
             await program.Configuration("planId", planId);
             await program.Configuration("fileId", fileId);
             await program.Configuration("bankId", fundingBankId);
-            await program.Configuration("amount", "100");
-            await program.Configuration("totalFundingAmount", "100");
+            await program.Configuration("amount", totalAmount.ToString());
+            await program.Configuration("totalFundingAmount", totalAmount.ToString());
             await program.Configuration("forfeitureFundings", null);
             await program.Configuration("achPullFundings", null);
             await program.Configuration("wireFundings", null);
@@ -1838,7 +1982,7 @@ namespace RefitSandBox
             await program.Configuration("fundingType", "Plan");
             await program.Configuration("isACHDebit", "true");
             await program.Configuration("planId", planId);
-            await program.Configuration("amount", "100");
+            await program.Configuration("amount", totalAmount.ToString());
             await program.Configuration("payrollFundingId", payrollFundingId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
             var confirmFundsResponse = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "ConfirmFunds");

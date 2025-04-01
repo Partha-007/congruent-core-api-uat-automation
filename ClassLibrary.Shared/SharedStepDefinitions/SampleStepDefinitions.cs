@@ -153,6 +153,23 @@ namespace SharedStepDefinitions
             await _program.VerifyMasterLoanTypesForEmployee(loanCount, loanType, loanName);
         }
 
+        [Then("Available balance for the employee to avail loan should be {float}")]
+        public async Task ThenAvailableBalanceForTheEmployeeToAvailLoanShouldBe(double expectedAmount)
+        {
+            await _program.VerifyAvailableBalance(expectedAmount);
+        }
+
+        [When("Loan repayment file {string} is selected and edit loan repayment date and loan repayment amount as mentioned below")]
+        public async Task WhenLoanRepaymentFileIsSelectedAndEditLoanRepaymentDateAndLoanRepaymentAmountAsMentionedBelow(string filename, DataTable dataTable)
+        {
+            await _program.WriteMultipleLinesForLoanRepayment(filename, dataTable);
+        }
+
+        [Then("Available balance for the employee to avail loan when no loan has been taken already should be {float}")]
+        public async Task ThenAvailableBalanceForTheEmployeeToAvailLoanWhenNoLoanHasBeenTakenAlreadyShouldBe(double expectedAmount)
+        {
+            await _program.VerifyAvailableBalanceForNewLoan(expectedAmount);
+        }
 
     }
 }
