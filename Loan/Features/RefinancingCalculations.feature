@@ -1,0 +1,1294 @@
+﻿Feature: RefinancingCalculations
+
+A short summary of the feature
+
+@PlanActivation
+Scenario: Refinancing - Multiple scenario - Refinancing by changing the amount
+Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+
+When Configuration has been made as per following
+| propertyName                                  | value           |
+| loanType                                      | 1               |
+| numberOfLoansAllowed                          | 5               |
+| loanPerPlanYear                               | 3               |
+| minimumAmount                                 | 10              |
+| processingTimeForLoan                         | 10              |
+| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
+| numberOfSuspensionsPerLoanAllowed             | 1               |
+| checkFee                                      | 2               |
+| overnightDeliveryFees                         | 1               |
+| maximumAmount                                 | 1               |
+| withdrawalBasis                               | 1               |
+| refinancingAllowed                            | false           |
+| curePeriod                                    | 1               |
+| curePeriodForEmployeeTermination              | 1               |
+| defaultMethod                                 | 1               |
+| minimumLoanRepaymentAmount                    | 10              |
+| loanApportioningMethod                        | 1               |
+| loanInterestRate                              | 3               |
+| loanInterestRateValue                         | 5               |
+| loanFeeAmount                                 | 5               |
+| minimumLengthYears                            | 1               |
+| minimumLengthMonths                           | 0               |
+| maximumLengthYears                            | 5               |
+| maximumLengthMonths                           | 0               |
+| firstRepaymentDateFallsAfter                  | 20              |
+| firstRepaymentDateFallsWithin                 | 25              |
+| masterLoanTypeId                              | 1               |
+| isMaster                                      | true            |
+| loanDescription                               | General Purpose |
+| refinancingAllowed                            | true            |
+| numberOfRefinancingAllowed                    | 2               |
+| loanRefinancingFee                            | 10              |
+
+And Save Loan details in Plan
+
+Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
+| Key                | Value      |
+| HIRE DATE          | 01/01/2021 |
+| HOURS              | 1000       |
+| PAY DATE           | 02/01/2021 |
+| BIRTH DATE         | 04/01/1996 |
+| PAYROLL FREQUENCY  | Daily      |
+| Pretax             | 10000      |
+| PLAN COMPENSATION  | 10000      |
+| GROSS COMPENSATION | 10000      |
+
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
+
+When Configuration has been made as per following
+| propertyName          | value           |
+| loanType              | General Purpose |
+| interestRate          | 5               |
+| requestedAmount       | 5000            |
+| periodicPaymentAmount | 149.85          |
+| paymentMethod         | 1               |
+| repaymentMethod       | 1               |
+| firstRepaymentDate    | 2/1/2023        |
+| repaymentFrequency    | 4               |
+| tenureYears           | 3               |
+| tenureMonths          | 0               |
+| loanStatus            | 3               |
+| loanFeeAmount         | 1               |
+| chequeFees            | 1               |
+| eftFees               | 1               |
+
+And The date property "firstRepaymentDate" is configured as "days" and should add "-329" days to the current date
+
+And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
+
+And Loan request has been approved and trade for loan is executed for "New Loan Request"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
+| Key               | Value      |
+| HIRE DATE         | 01/01/2021 |
+| HOURS             | 1000       |
+| PAY DATE          | 05/08/2024 |
+| BIRTH DATE        | 04/01/1996 |
+| PAYROLL FREQUENCY | Daily      |
+| LOAN REPAYMENT    | 149.85     | 
+| Pretax            | 0          |
+
+When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment date and loan repayment amount as mentioned below
+| Paydate | RepaymentAmount |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |  
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
+
+When Configuration has been made as per following
+| propertyName          | value  |
+| loanAmount            | 1000   |
+| interestRate          | 5      |
+| tenureYears           | 3      |
+| tenureMonths          | 0      |
+| repaymentFrequency    | 4      |
+| periodicPaymentAmount | 192.05 |
+| transactionFees       | 10     |
+| repaymentMethod       | 1      |
+| modificationType      | 2      |
+| loanDocument          |        |
+
+And API request has been sent to the "ILoan" with the method name "SaveLoanRefinance"
+
+And Loan request has been approved and trade for loan is executed for "Loan Refinancing"
+
+Then Employee loan amortization schedule should contain 36 installments and should look like this
+| Principal | Interest | PaymentPerPeriod | OutstandingPrincipal |
+|           |          |                  | 4,870.70             |
+|           |          |                  | 4,741.53             |
+|           |          |                  | 4,611.17             |
+|           |          |                  | 4,480.90             |  
+|           |          |                  | 4,350.08             |
+|           |          |                  | 4,218.11             |
+|           |          |                  | 4,086.17             |
+|           |          |                  | 3,953.11             |
+|           |          |                  | 3,820.05             |
+|           |          |                  | 3,686.42             |
+|           |          |                  | 3,550.71             |
+|           |          |                  | 4,374.43             |
+
+
+
+
+
+
+
+@PlanActivation
+Scenario: Refinancing - Multiple scenario - Refinancing by changing the amount and interest rate
+Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+
+When Configuration has been made as per following
+| propertyName                                  | value           |
+| loanType                                      | 1               |
+| numberOfLoansAllowed                          | 5               |
+| loanPerPlanYear                               | 3               |
+| minimumAmount                                 | 10              |
+| processingTimeForLoan                         | 10              |
+| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
+| numberOfSuspensionsPerLoanAllowed             | 1               |
+| checkFee                                      | 2               |
+| overnightDeliveryFees                         | 1               |
+| maximumAmount                                 | 1               |
+| withdrawalBasis                               | 1               |
+| refinancingAllowed                            | false           |
+| curePeriod                                    | 1               |
+| curePeriodForEmployeeTermination              | 1               |
+| defaultMethod                                 | 1               |
+| minimumLoanRepaymentAmount                    | 10              |
+| loanApportioningMethod                        | 1               |
+| loanInterestRate                              | 3               |
+| loanInterestRateValue                         | 5               |
+| loanFeeAmount                                 | 5               |
+| minimumLengthYears                            | 1               |
+| minimumLengthMonths                           | 0               |
+| maximumLengthYears                            | 5               |
+| maximumLengthMonths                           | 0               |
+| firstRepaymentDateFallsAfter                  | 20              |
+| firstRepaymentDateFallsWithin                 | 25              |
+| masterLoanTypeId                              | 1               |
+| isMaster                                      | true            |
+| loanDescription                               | General Purpose |
+| refinancingAllowed                            | true            |
+| numberOfRefinancingAllowed                    | 2               |
+| loanRefinancingFee                            | 10              |
+
+And Save Loan details in Plan
+
+Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
+| Key                | Value      |
+| HIRE DATE          | 01/01/2021 |
+| HOURS              | 1000       |
+| PAY DATE           | 02/01/2021 |
+| BIRTH DATE         | 04/01/1996 |
+| PAYROLL FREQUENCY  | Daily      |
+| Pretax             | 10000      |
+| PLAN COMPENSATION  | 10000      |
+| GROSS COMPENSATION | 10000      |
+
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
+
+When Configuration has been made as per following
+| propertyName          | value           |
+| loanType              | General Purpose |
+| interestRate          | 5               |
+| requestedAmount       | 5000            |
+| periodicPaymentAmount | 149.85          |
+| paymentMethod         | 1               |
+| repaymentMethod       | 1               |
+| firstRepaymentDate    | 2/1/2023        |
+| repaymentFrequency    | 4               |
+| tenureYears           | 3               |
+| tenureMonths          | 0               |
+| loanStatus            | 3               |
+| loanFeeAmount         | 1               |
+| chequeFees            | 1               |
+| eftFees               | 1               |
+
+And The date property "firstRepaymentDate" is configured as "days" and should add "-329" days to the current date
+
+And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
+
+And Loan request has been approved and trade for loan is executed for "New Loan Request"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
+| Key               | Value      |
+| HIRE DATE         | 01/01/2021 |
+| HOURS             | 1000       |
+| PAY DATE          | 05/08/2024 |
+| BIRTH DATE        | 04/01/1996 |
+| PAYROLL FREQUENCY | Daily      |
+| LOAN REPAYMENT    | 149.85     | 
+| Pretax            | 0          |
+
+When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment date and loan repayment amount as mentioned below
+| Paydate | RepaymentAmount |
+| Monthly | 149.85          |  
+| Monthly | 149.85          |  
+| Monthly | 149.85          |  
+| Monthly | 149.85          |  
+| Monthly | 149.85          |  
+| Monthly | 149.85          |  
+| Monthly | 149.85          |  
+| Monthly | 149.85          |  
+| Monthly | 149.85          |  
+| Monthly | 149.85          |  
+
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
+
+When Configuration has been made as per following
+| propertyName          | value  |
+| loanAmount            | 1000   |
+| interestRate          | 6      |
+| tenureYears           | 3      |
+| tenureMonths          | 0      |
+| repaymentFrequency    | 4      |
+| periodicPaymentAmount | 194.10 |
+| transactionFees       | 10     |
+| repaymentMethod       | 1      |
+| modificationType      | 2      |
+| loanDocument          |        |
+
+And API request has been sent to the "ILoan" with the method name "SaveLoanRefinance"
+
+And Loan request has been approved and trade for loan is executed for "Loan Refinancing"
+
+Then Employee loan amortization schedule should contain 36 installments and should look like this
+| Principal | Interest | PaymentPerPeriod | OutstandingPrincipal |
+|           |          |                  | 4,870.70             |
+|           |          |                  | 4,741.53             |
+|           |          |                  | 4,611.17             |
+|           |          |                  | 4,480.90             |  
+|           |          |                  | 4,350.08             |
+|           |          |                  | 4,218.11             |
+|           |          |                  | 4,086.17             |
+|           |          |                  | 3,953.11             |
+|           |          |                  | 3,820.05             |
+|           |          |                  | 3,686.42             |
+|           |          |                  | 3,550.71             |
+|           |          |                  | 4,374.43             |
+
+
+
+
+
+
+@PlanActivation
+Scenario: Refinancing - Multiple scenario - Refinancing by changing the amount and interest rate also extends the tenure
+Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+
+When Configuration has been made as per following
+| propertyName                                  | value           |
+| loanType                                      | 1               |
+| numberOfLoansAllowed                          | 5               |
+| loanPerPlanYear                               | 3               |
+| minimumAmount                                 | 10              |
+| processingTimeForLoan                         | 10              |
+| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
+| numberOfSuspensionsPerLoanAllowed             | 1               |
+| checkFee                                      | 2               |
+| overnightDeliveryFees                         | 1               |
+| maximumAmount                                 | 1               |
+| withdrawalBasis                               | 1               |
+| refinancingAllowed                            | false           |
+| curePeriod                                    | 1               |
+| curePeriodForEmployeeTermination              | 1               |
+| defaultMethod                                 | 1               |
+| minimumLoanRepaymentAmount                    | 10              |
+| loanApportioningMethod                        | 1               |
+| loanInterestRate                              | 3               |
+| loanInterestRateValue                         | 5               |
+| loanFeeAmount                                 | 5               |
+| minimumLengthYears                            | 1               |
+| minimumLengthMonths                           | 0               |
+| maximumLengthYears                            | 5               |
+| maximumLengthMonths                           | 0               |
+| firstRepaymentDateFallsAfter                  | 20              |
+| firstRepaymentDateFallsWithin                 | 25              |
+| masterLoanTypeId                              | 1               |
+| isMaster                                      | true            |
+| loanDescription                               | General Purpose |
+| refinancingAllowed                            | true            |
+| numberOfRefinancingAllowed                    | 2               |
+| loanRefinancingFee                            | 10              |
+
+And Save Loan details in Plan
+
+Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
+| Key                | Value      |
+| HIRE DATE          | 01/01/2021 |
+| HOURS              | 1000       |
+| PAY DATE           | 02/01/2021 |
+| BIRTH DATE         | 04/01/1996 |
+| PAYROLL FREQUENCY  | Daily      |
+| Pretax             | 10000      |
+| PLAN COMPENSATION  | 10000      |
+| GROSS COMPENSATION | 10000      |
+
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
+
+When Configuration has been made as per following
+| propertyName          | value           |
+| loanType              | General Purpose |
+| interestRate          | 5               |
+| requestedAmount       | 5000            |
+| periodicPaymentAmount | 149.85          |
+| paymentMethod         | 1               |
+| repaymentMethod       | 1               |
+| firstRepaymentDate    | 2/1/2023        |
+| repaymentFrequency    | 4               |
+| tenureYears           | 3               |
+| tenureMonths          | 0               |
+| loanStatus            | 3               |
+| loanFeeAmount         | 1               |
+| chequeFees            | 1               |
+| eftFees               | 1               |
+
+And The date property "firstRepaymentDate" is configured as "days" and should add "-329" days to the current date
+
+And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
+
+And Loan request has been approved and trade for loan is executed for "New Loan Request"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
+| Key               | Value      |
+| HIRE DATE         | 01/01/2021 |
+| HOURS             | 1000       |
+| PAY DATE          | 05/08/2024 |
+| BIRTH DATE        | 04/01/1996 |
+| PAYROLL FREQUENCY | Daily      |
+| LOAN REPAYMENT    | 149.85     | 
+| Pretax            | 0          |
+
+When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment date and loan repayment amount as mentioned below
+| Paydate | RepaymentAmount |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |  
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
+
+When Configuration has been made as per following
+| propertyName          | value  |
+| loanAmount            | 1000   |
+| interestRate          | 6      |
+| tenureYears           | 3      |
+| tenureMonths          | 6      |
+| repaymentFrequency    | 4      |
+| periodicPaymentAmount | 158.83 |
+| transactionFees       | 10     |
+| repaymentMethod       | 1      |
+| modificationType      | 2      |
+| loanDocument          |        |
+
+And API request has been sent to the "ILoan" with the method name "SaveLoanRefinance"
+
+And Loan request has been approved and trade for loan is executed for "Loan Refinancing"
+
+Then Employee loan amortization schedule should contain 42 installments and should look like this
+| Principal | Interest | PaymentPerPeriod | OutstandingPrincipal |
+|           |          |                  | 4,870.70             |
+|           |          |                  | 4,741.53             |
+|           |          |                  | 4,611.17             |
+|           |          |                  | 4,480.90             |  
+|           |          |                  | 4,350.08             |
+|           |          |                  | 4,218.11             |
+|           |          |                  | 4,086.17             |
+|           |          |                  | 3,953.11             |
+|           |          |                  | 3,820.05             |
+|           |          |                  | 3,686.42             |
+|           |          |                  | 3,550.71             |
+|           |          |                  | 4,374.43             |
+
+
+
+
+
+
+
+
+
+@PlanActivation
+Scenario: Refinancing - On pay date
+Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+
+When Configuration has been made as per following
+| propertyName                                  | value           |
+| loanType                                      | 1               |
+| numberOfLoansAllowed                          | 5               |
+| loanPerPlanYear                               | 3               |
+| minimumAmount                                 | 10              |
+| processingTimeForLoan                         | 10              |
+| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
+| numberOfSuspensionsPerLoanAllowed             | 1               |
+| checkFee                                      | 2               |
+| overnightDeliveryFees                         | 1               |
+| maximumAmount                                 | 1               |
+| withdrawalBasis                               | 1               |
+| refinancingAllowed                            | false           |
+| curePeriod                                    | 1               |
+| curePeriodForEmployeeTermination              | 1               |
+| defaultMethod                                 | 1               |
+| minimumLoanRepaymentAmount                    | 10              |
+| loanApportioningMethod                        | 1               |
+| loanInterestRate                              | 3               |
+| loanInterestRateValue                         | 5               |
+| loanFeeAmount                                 | 5               |
+| minimumLengthYears                            | 1               |
+| minimumLengthMonths                           | 0               |
+| maximumLengthYears                            | 5               |
+| maximumLengthMonths                           | 0               |
+| firstRepaymentDateFallsAfter                  | 20              |
+| firstRepaymentDateFallsWithin                 | 25              |
+| masterLoanTypeId                              | 1               |
+| isMaster                                      | true            |
+| loanDescription                               | General Purpose |
+| refinancingAllowed                            | true            |
+| numberOfRefinancingAllowed                    | 2               |
+| loanRefinancingFee                            | 10              |
+
+And Save Loan details in Plan
+
+Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
+| Key                | Value      |
+| HIRE DATE          | 01/01/2021 |
+| HOURS              | 1000       |
+| PAY DATE           | 02/01/2021 |
+| BIRTH DATE         | 04/01/1996 |
+| PAYROLL FREQUENCY  | Daily      |
+| Pretax             | 10000      |
+| PLAN COMPENSATION  | 10000      |
+| GROSS COMPENSATION | 10000      |
+
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
+
+When Configuration has been made as per following
+| propertyName          | value           |
+| loanType              | General Purpose |
+| interestRate          | 5               |
+| requestedAmount       | 5000            |
+| periodicPaymentAmount | 149.85          |
+| paymentMethod         | 1               |
+| repaymentMethod       | 1               |
+| firstRepaymentDate    | 2/1/2023        |
+| repaymentFrequency    | 4               |
+| tenureYears           | 3               |
+| tenureMonths          | 0               |
+| loanStatus            | 3               |
+| loanFeeAmount         | 1               |
+| chequeFees            | 1               |
+| eftFees               | 1               |
+
+And The date property "firstRepaymentDate" is configured as "month" and should add "-11" days to the current date
+
+And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
+
+And Loan request has been approved and trade for loan is executed for "New Loan Request"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
+| Key               | Value      |
+| HIRE DATE         | 01/01/2021 |
+| HOURS             | 1000       |
+| PAY DATE          | 05/08/2024 |
+| BIRTH DATE        | 04/01/1996 |
+| PAYROLL FREQUENCY | Daily      |
+| LOAN REPAYMENT    | 149.85     | 
+| Pretax            | 0          |
+
+When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment date and loan repayment amount as mentioned below
+| Paydate | RepaymentAmount |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |  
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
+
+When Configuration has been made as per following
+| propertyName          | value  |
+| loanAmount            | 500    |
+| interestRate          | 5      |
+| tenureYears           | 3      |
+| tenureMonths          | 6      |
+| repaymentFrequency    | 4      |
+| periodicPaymentAmount | 170.94 |
+| transactionFees       | 10     |
+| repaymentMethod       | 1      |
+| modificationType      | 2      |
+| loanDocument          |        |
+
+And API request has been sent to the "ILoan" with the method name "SaveLoanRefinance"
+
+And Loan request has been approved and trade for loan is executed for "Loan Refinancing"
+
+Then Employee loan amortization schedule should contain 36 installments and should look like this
+| Principal | Interest | PaymentPerPeriod | OutstandingPrincipal |
+|           |          |                  | 4,870.70             |
+|           |          |                  | 4,741.53             |
+|           |          |                  | 4,611.17             |
+|           |          |                  | 4,480.90             |  
+|           |          |                  | 4,350.08             |
+|           |          |                  | 4,218.11             |
+|           |          |                  | 4,086.17             |
+|           |          |                  | 3,953.11             |
+|           |          |                  | 3,820.05             |
+|           |          |                  | 3,686.42             |
+|           |          |                  | 3,550.71             |
+|           |          |                  | 4,374.43             |
+
+
+
+
+
+
+@PlanActivation
+Scenario: Refinancing - On mid of month
+Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+
+When Configuration has been made as per following
+| propertyName                                  | value           |
+| loanType                                      | 1               |
+| numberOfLoansAllowed                          | 5               |
+| loanPerPlanYear                               | 3               |
+| minimumAmount                                 | 10              |
+| processingTimeForLoan                         | 10              |
+| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
+| numberOfSuspensionsPerLoanAllowed             | 1               |
+| checkFee                                      | 2               |
+| overnightDeliveryFees                         | 1               |
+| maximumAmount                                 | 1               |
+| withdrawalBasis                               | 1               |
+| refinancingAllowed                            | false           |
+| curePeriod                                    | 1               |
+| curePeriodForEmployeeTermination              | 1               |
+| defaultMethod                                 | 1               |
+| minimumLoanRepaymentAmount                    | 10              |
+| loanApportioningMethod                        | 1               |
+| loanInterestRate                              | 3               |
+| loanInterestRateValue                         | 5               |
+| loanFeeAmount                                 | 5               |
+| minimumLengthYears                            | 1               |
+| minimumLengthMonths                           | 0               |
+| maximumLengthYears                            | 5               |
+| maximumLengthMonths                           | 0               |
+| firstRepaymentDateFallsAfter                  | 20              |
+| firstRepaymentDateFallsWithin                 | 25              |
+| masterLoanTypeId                              | 1               |
+| isMaster                                      | true            |
+| loanDescription                               | General Purpose |
+| refinancingAllowed                            | true            |
+| numberOfRefinancingAllowed                    | 2               |
+| loanRefinancingFee                            | 10              |
+
+And Save Loan details in Plan
+
+Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
+| Key                | Value      |
+| HIRE DATE          | 01/01/2021 |
+| HOURS              | 1000       |
+| PAY DATE           | 02/01/2021 |
+| BIRTH DATE         | 04/01/1996 |
+| PAYROLL FREQUENCY  | Daily      |
+| Pretax             | 10000      |
+| PLAN COMPENSATION  | 10000      |
+| GROSS COMPENSATION | 10000      |
+
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
+
+When Configuration has been made as per following
+| propertyName          | value           |
+| loanType              | General Purpose |
+| interestRate          | 5               |
+| requestedAmount       | 5000            |
+| periodicPaymentAmount | 149.85          |
+| paymentMethod         | 1               |
+| repaymentMethod       | 1               |
+| firstRepaymentDate    | 2/1/2023        |
+| repaymentFrequency    | 4               |
+| tenureYears           | 3               |
+| tenureMonths          | 0               |
+| loanStatus            | 3               |
+| loanFeeAmount         | 1               |
+| chequeFees            | 1               |
+| eftFees               | 1               |
+
+And The date property "firstRepaymentDate" is configured as "day" and should add "-315" days to the current date
+
+And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
+
+And Loan request has been approved and trade for loan is executed for "New Loan Request"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
+| Key               | Value      |
+| HIRE DATE         | 01/01/2021 |
+| HOURS             | 1000       |
+| PAY DATE          | 05/08/2024 |
+| BIRTH DATE        | 04/01/1996 |
+| PAYROLL FREQUENCY | Daily      |
+| LOAN REPAYMENT    | 149.85     | 
+| Pretax            | 0          |
+
+When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment date and loan repayment amount as mentioned below
+| Paydate | RepaymentAmount |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |  
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
+
+When Configuration has been made as per following
+| propertyName          | value  |
+| loanAmount            | 500    |
+| interestRate          | 5      |
+| tenureYears           | 3      |
+| tenureMonths          | 6      |
+| repaymentFrequency    | 4      |
+| periodicPaymentAmount | 170.94 |
+| transactionFees       | 10     |
+| repaymentMethod       | 1      |
+| modificationType      | 2      |
+| loanDocument          |        |
+
+And API request has been sent to the "ILoan" with the method name "SaveLoanRefinance"
+
+And Loan request has been approved and trade for loan is executed for "Loan Refinancing"
+
+Then Employee loan amortization schedule should contain 36 installments and should look like this
+| Principal | Interest | PaymentPerPeriod | OutstandingPrincipal |
+|           |          |                  | 4,870.70             |
+|           |          |                  | 4,741.53             |
+|           |          |                  | 4,611.17             |
+|           |          |                  | 4,480.90             |  
+|           |          |                  | 4,350.08             |
+|           |          |                  | 4,218.11             |
+|           |          |                  | 4,086.17             |
+|           |          |                  | 3,953.11             |
+|           |          |                  | 3,820.05             |
+|           |          |                  | 3,686.42             |
+|           |          |                  | 3,550.71             |
+|           |          |                  | 4,374.43             |
+
+
+
+
+
+
+
+@PlanActivation
+Scenario: Refinancing - On pay date with interest rate change
+Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+
+When Configuration has been made as per following
+| propertyName                                  | value           |
+| loanType                                      | 1               |
+| numberOfLoansAllowed                          | 5               |
+| loanPerPlanYear                               | 3               |
+| minimumAmount                                 | 10              |
+| processingTimeForLoan                         | 10              |
+| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
+| numberOfSuspensionsPerLoanAllowed             | 1               |
+| checkFee                                      | 2               |
+| overnightDeliveryFees                         | 1               |
+| maximumAmount                                 | 1               |
+| withdrawalBasis                               | 1               |
+| refinancingAllowed                            | false           |
+| curePeriod                                    | 1               |
+| curePeriodForEmployeeTermination              | 1               |
+| defaultMethod                                 | 1               |
+| minimumLoanRepaymentAmount                    | 10              |
+| loanApportioningMethod                        | 1               |
+| loanInterestRate                              | 3               |
+| loanInterestRateValue                         | 5               |
+| loanFeeAmount                                 | 5               |
+| minimumLengthYears                            | 1               |
+| minimumLengthMonths                           | 0               |
+| maximumLengthYears                            | 5               |
+| maximumLengthMonths                           | 0               |
+| firstRepaymentDateFallsAfter                  | 20              |
+| firstRepaymentDateFallsWithin                 | 25              |
+| masterLoanTypeId                              | 1               |
+| isMaster                                      | true            |
+| loanDescription                               | General Purpose |
+| refinancingAllowed                            | true            |
+| numberOfRefinancingAllowed                    | 2               |
+| loanRefinancingFee                            | 10              |
+
+And Save Loan details in Plan
+
+Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
+| Key                | Value      |
+| HIRE DATE          | 01/01/2021 |
+| HOURS              | 1000       |
+| PAY DATE           | 02/01/2021 |
+| BIRTH DATE         | 04/01/1996 |
+| PAYROLL FREQUENCY  | Daily      |
+| Pretax             | 10000      |
+| PLAN COMPENSATION  | 10000      |
+| GROSS COMPENSATION | 10000      |
+
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
+
+When Configuration has been made as per following
+| propertyName          | value           |
+| loanType              | General Purpose |
+| interestRate          | 5               |
+| requestedAmount       | 5000            |
+| periodicPaymentAmount | 149.85          |
+| paymentMethod         | 1               |
+| repaymentMethod       | 1               |
+| firstRepaymentDate    | 2/1/2023        |
+| repaymentFrequency    | 4               |
+| tenureYears           | 3               |
+| tenureMonths          | 0               |
+| loanStatus            | 3               |
+| loanFeeAmount         | 1               |
+| chequeFees            | 1               |
+| eftFees               | 1               |
+
+And The date property "firstRepaymentDate" is configured as "month" and should add "-11" days to the current date
+
+And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
+
+And Loan request has been approved and trade for loan is executed for "New Loan Request"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
+| Key               | Value      |
+| HIRE DATE         | 01/01/2021 |
+| HOURS             | 1000       |
+| PAY DATE          | 05/08/2024 |
+| BIRTH DATE        | 04/01/1996 |
+| PAYROLL FREQUENCY | Daily      |
+| LOAN REPAYMENT    | 149.85     | 
+| Pretax            | 0          |
+
+When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment date and loan repayment amount as mentioned below
+| Paydate | RepaymentAmount |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |  
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
+
+When Configuration has been made as per following
+| propertyName          | value  |
+| loanAmount            | 500    |
+| interestRate          | 6      |
+| tenureYears           | 3      |
+| tenureMonths          | 0      |
+| repaymentFrequency    | 4      |
+| periodicPaymentAmount | 172.75 |
+| transactionFees       | 10     |
+| repaymentMethod       | 1      |
+| modificationType      | 2      |
+| loanDocument          |        |
+
+And API request has been sent to the "ILoan" with the method name "SaveLoanRefinance"
+
+And Loan request has been approved and trade for loan is executed for "Loan Refinancing"
+
+Then Employee loan amortization schedule should contain 36 installments and should look like this
+| Principal | Interest | PaymentPerPeriod | OutstandingPrincipal |
+|           |          |                  | 4,870.70             |
+|           |          |                  | 4,741.53             |
+|           |          |                  | 4,611.17             |
+|           |          |                  | 4,480.90             |  
+|           |          |                  | 4,350.08             |
+|           |          |                  | 4,218.11             |
+|           |          |                  | 4,086.17             |
+|           |          |                  | 3,953.11             |
+|           |          |                  | 3,820.05             |
+|           |          |                  | 3,686.42             |
+|           |          |                  | 3,550.71             |
+|           |          |                  | 4,374.43             |
+
+
+
+
+
+
+
+@PlanActivation
+Scenario: Refinancing - On pay date with tenure changes
+Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+
+When Configuration has been made as per following
+| propertyName                                  | value           |
+| loanType                                      | 1               |
+| numberOfLoansAllowed                          | 5               |
+| loanPerPlanYear                               | 3               |
+| minimumAmount                                 | 10              |
+| processingTimeForLoan                         | 10              |
+| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
+| numberOfSuspensionsPerLoanAllowed             | 1               |
+| checkFee                                      | 2               |
+| overnightDeliveryFees                         | 1               |
+| maximumAmount                                 | 1               |
+| withdrawalBasis                               | 1               |
+| refinancingAllowed                            | false           |
+| curePeriod                                    | 1               |
+| curePeriodForEmployeeTermination              | 1               |
+| defaultMethod                                 | 1               |
+| minimumLoanRepaymentAmount                    | 10              |
+| loanApportioningMethod                        | 1               |
+| loanInterestRate                              | 3               |
+| loanInterestRateValue                         | 5               |
+| loanFeeAmount                                 | 5               |
+| minimumLengthYears                            | 1               |
+| minimumLengthMonths                           | 0               |
+| maximumLengthYears                            | 5               |
+| maximumLengthMonths                           | 0               |
+| firstRepaymentDateFallsAfter                  | 20              |
+| firstRepaymentDateFallsWithin                 | 25              |
+| masterLoanTypeId                              | 1               |
+| isMaster                                      | true            |
+| loanDescription                               | General Purpose |
+| refinancingAllowed                            | true            |
+| numberOfRefinancingAllowed                    | 2               |
+| loanRefinancingFee                            | 10              |
+
+And Save Loan details in Plan
+
+Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
+| Key                | Value      |
+| HIRE DATE          | 01/01/2021 |
+| HOURS              | 1000       |
+| PAY DATE           | 02/01/2021 |
+| BIRTH DATE         | 04/01/1996 |
+| PAYROLL FREQUENCY  | Daily      |
+| Pretax             | 10000      |
+| PLAN COMPENSATION  | 10000      |
+| GROSS COMPENSATION | 10000      |
+
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
+
+When Configuration has been made as per following
+| propertyName          | value           |
+| loanType              | General Purpose |
+| interestRate          | 5               |
+| requestedAmount       | 5000            |
+| periodicPaymentAmount | 149.85          |
+| paymentMethod         | 1               |
+| repaymentMethod       | 1               |
+| firstRepaymentDate    | 2/1/2023        |
+| repaymentFrequency    | 4               |
+| tenureYears           | 3               |
+| tenureMonths          | 0               |
+| loanStatus            | 3               |
+| loanFeeAmount         | 1               |
+| chequeFees            | 1               |
+| eftFees               | 1               |
+
+And The date property "firstRepaymentDate" is configured as "month" and should add "-11" days to the current date
+
+And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
+
+And Loan request has been approved and trade for loan is executed for "New Loan Request"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
+| Key               | Value      |
+| HIRE DATE         | 01/01/2021 |
+| HOURS             | 1000       |
+| PAY DATE          | 05/08/2024 |
+| BIRTH DATE        | 04/01/1996 |
+| PAYROLL FREQUENCY | Daily      |
+| LOAN REPAYMENT    | 149.85     | 
+| Pretax            | 0          |
+
+When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment date and loan repayment amount as mentioned below
+| Paydate | RepaymentAmount |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |  
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
+
+When Configuration has been made as per following
+| propertyName          | value  |
+| loanAmount            | 500    |
+| interestRate          | 5      |
+| tenureYears           | 4      |
+| tenureMonths          | 0      |
+| repaymentFrequency    | 4      |
+| periodicPaymentAmount | 118.35 |
+| transactionFees       | 10     |
+| repaymentMethod       | 1      |
+| modificationType      | 2      |
+| loanDocument          |        |
+
+And API request has been sent to the "ILoan" with the method name "SaveLoanRefinance"
+
+And Loan request has been approved and trade for loan is executed for "Loan Refinancing"
+
+Then Employee loan amortization schedule should contain 46 installments and should look like this
+| Principal | Interest | PaymentPerPeriod | OutstandingPrincipal |
+|           |          |                  | 4,870.70             |
+|           |          |                  | 4,741.53             |
+|           |          |                  | 4,611.17             |
+|           |          |                  | 4,480.90             |  
+|           |          |                  | 4,350.08             |
+|           |          |                  | 4,218.11             |
+|           |          |                  | 4,086.17             |
+|           |          |                  | 3,953.11             |
+|           |          |                  | 3,820.05             |
+|           |          |                  | 3,686.42             |
+|           |          |                  | 3,550.71             |
+|           |          |                  | 4,374.43             |
+
+
+
+
+
+
+
+
+@PlanActivation
+Scenario: Refinancing - On pay date with interest rate change and tenure changes
+Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+
+When Configuration has been made as per following
+| propertyName                                  | value           |
+| loanType                                      | 1               |
+| numberOfLoansAllowed                          | 5               |
+| loanPerPlanYear                               | 3               |
+| minimumAmount                                 | 10              |
+| processingTimeForLoan                         | 10              |
+| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
+| numberOfSuspensionsPerLoanAllowed             | 1               |
+| checkFee                                      | 2               |
+| overnightDeliveryFees                         | 1               |
+| maximumAmount                                 | 1               |
+| withdrawalBasis                               | 1               |
+| refinancingAllowed                            | false           |
+| curePeriod                                    | 1               |
+| curePeriodForEmployeeTermination              | 1               |
+| defaultMethod                                 | 1               |
+| minimumLoanRepaymentAmount                    | 10              |
+| loanApportioningMethod                        | 1               |
+| loanInterestRate                              | 3               |
+| loanInterestRateValue                         | 5               |
+| loanFeeAmount                                 | 5               |
+| minimumLengthYears                            | 1               |
+| minimumLengthMonths                           | 0               |
+| maximumLengthYears                            | 5               |
+| maximumLengthMonths                           | 0               |
+| firstRepaymentDateFallsAfter                  | 20              |
+| firstRepaymentDateFallsWithin                 | 25              |
+| masterLoanTypeId                              | 1               |
+| isMaster                                      | true            |
+| loanDescription                               | General Purpose |
+| refinancingAllowed                            | true            |
+| numberOfRefinancingAllowed                    | 2               |
+| loanRefinancingFee                            | 10              |
+
+And Save Loan details in Plan
+
+Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
+| Key                | Value      |
+| HIRE DATE          | 01/01/2021 |
+| HOURS              | 1000       |
+| PAY DATE           | 02/01/2021 |
+| BIRTH DATE         | 04/01/1996 |
+| PAYROLL FREQUENCY  | Daily      |
+| Pretax             | 10000      |
+| PLAN COMPENSATION  | 10000      |
+| GROSS COMPENSATION | 10000      |
+
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
+
+When Configuration has been made as per following
+| propertyName          | value           |
+| loanType              | General Purpose |
+| interestRate          | 5               |
+| requestedAmount       | 5000            |
+| periodicPaymentAmount | 149.85          |
+| paymentMethod         | 1               |
+| repaymentMethod       | 1               |
+| firstRepaymentDate    | 2/1/2023        |
+| repaymentFrequency    | 4               |
+| tenureYears           | 3               |
+| tenureMonths          | 0               |
+| loanStatus            | 3               |
+| loanFeeAmount         | 1               |
+| chequeFees            | 1               |
+| eftFees               | 1               |
+
+And The date property "firstRepaymentDate" is configured as "month" and should add "-11" days to the current date
+
+And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
+
+And Loan request has been approved and trade for loan is executed for "New Loan Request"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
+| Key               | Value      |
+| HIRE DATE         | 01/01/2021 |
+| HOURS             | 1000       |
+| PAY DATE          | 05/08/2024 |
+| BIRTH DATE        | 04/01/1996 |
+| PAYROLL FREQUENCY | Daily      |
+| LOAN REPAYMENT    | 149.85     | 
+| Pretax            | 0          |
+
+When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment date and loan repayment amount as mentioned below
+| Paydate | RepaymentAmount |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |  
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+| Monthly | 149.85          |
+
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
+
+When Configuration has been made as per following
+| propertyName          | value  |
+| loanAmount            | 500    |
+| interestRate          | 4      |
+| tenureYears           | 2      |
+| tenureMonths          | 0      |
+| repaymentFrequency    | 4      |
+| periodicPaymentAmount | 358.25 |
+| transactionFees       | 10     |
+| repaymentMethod       | 1      |
+| modificationType      | 2      |
+| loanDocument          |        |
+
+And API request has been sent to the "ILoan" with the method name "SaveLoanRefinance"
+
+And Loan request has been approved and trade for loan is executed for "Loan Refinancing"
+
+Then Employee loan amortization schedule should contain 24 installments and should look like this
+| Principal | Interest | PaymentPerPeriod | OutstandingPrincipal |
+|           |          |                  | 4,870.70             |
+|           |          |                  | 4,741.53             |
+|           |          |                  | 4,611.17             |
+|           |          |                  | 4,480.90             |  
+|           |          |                  | 4,350.08             |
+|           |          |                  | 4,218.11             |
+|           |          |                  | 4,086.17             |
+|           |          |                  | 3,953.11             |
+|           |          |                  | 3,820.05             |
+|           |          |                  | 3,686.42             |
+|           |          |                  | 3,550.71             |
+|           |          |                  | 4,374.43             |

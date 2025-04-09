@@ -50,13 +50,13 @@ Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as menti
 | PLAN COMPENSATION  | 100000     |
 | GROSS COMPENSATION | 100000     |
 
-When File upload is executed for the file "CombinedFile.csv"
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
 
@@ -79,13 +79,13 @@ When Configuration has been made as per following
 
 And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
 
-And Loan request has been approved and trade for loan is executed
+And Loan request has been approved and trade for loan is executed for "New Loan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
 | Key               | Value      |
@@ -103,13 +103,13 @@ When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment
 | 05/31/2025 | 1000            |
 | 06/30/2025 | 1000            |
 
-When File upload is executed for the file "LoanRepayment.csv"
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Then Available balance for the employee to avail loan should be 38000
 
@@ -165,13 +165,13 @@ Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as menti
 | PLAN COMPENSATION  | 10000      |
 | GROSS COMPENSATION | 10000      |
 
-When File upload is executed for the file "CombinedFile.csv"
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Then Available balance for the employee to avail loan when no loan has been taken already should be 5000.00
 
@@ -227,13 +227,13 @@ Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as menti
 | PLAN COMPENSATION  | 100000     |
 | GROSS COMPENSATION | 100000     |
 
-When File upload is executed for the file "CombinedFile.csv"
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
 
@@ -256,13 +256,13 @@ When Configuration has been made as per following
 
 And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
 
-And Loan request has been approved and trade for loan is executed
+And Loan request has been approved and trade for loan is executed for "New Loan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
 | Key               | Value      |
@@ -283,13 +283,13 @@ When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment
 | 08/31/2025 | 1000            |
 | 09/30/2025 | 1000            |
 
-When File upload is executed for the file "LoanRepayment.csv"
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Then Available balance for the employee to avail loan should be 38000
 
@@ -346,11 +346,11 @@ When Configuration has been made as per following
 | startDateIndicator                | 1            |
 | vestingComputationalPeriod        | 2            |
 | serviceCreditPeriod               | 2            |
-| vestingSchedule                   | 1            |
+| vestingSchedule                   | 3            |
 | baseYear                          | 0            |
-| firstYear                         | 0            |
-| secondYear                        | 100          |
-| thirdYear                         | 100          |
+| firstYear                         | 25           |  
+| secondYear                        | 50           |
+| thirdYear                         | 75           |
 | fourthYear                        | 100          |
 | fifthYear                         | 100          |
 | sixthYear                         | 100          |
@@ -361,22 +361,41 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 
 Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
 | Key                | Value      |
-| HIRE DATE          | 01/01/2025 |
+| HIRE DATE          | 01/01/2023 |
 | HOURS              | 1000       |
-| PAY DATE           | 02/01/2025 |
+| PAY DATE           | 02/01/2023 |
 | BIRTH DATE         | 04/01/1996 |
 | PAYROLL FREQUENCY  | Daily      |
-| Match              | 10000      |
-| PLAN COMPENSATION  | 100000     |
-| GROSS COMPENSATION | 100000     |
-
-When File upload is executed for the file "CombinedFile.csv"
+| Match              | 5000       |
+| PLAN COMPENSATION  | 1000       |
+| GROSS COMPENSATION | 1000       |
+ 
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+
+Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
+| Key                | Value      |
+| HIRE DATE          | 01/01/2023 |
+| HOURS              | 1000       |
+| PAY DATE           | 03/01/2024 |
+| BIRTH DATE         | 04/01/1996 |
+| PAYROLL FREQUENCY  | Daily      |
+| Match              | 5000       |
+| PLAN COMPENSATION  | 1000       |
+| GROSS COMPENSATION | 1000       |
+
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+
+Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+| Key          | Value |
+| Order Number |       |
+
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 
 
@@ -432,13 +451,13 @@ Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as menti
 | PLAN COMPENSATION  | 100000     |
 | GROSS COMPENSATION | 100000     |
 
-When File upload is executed for the file "CombinedFile.csv"
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
 
@@ -461,13 +480,13 @@ When Configuration has been made as per following
 
 And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
 
-And Loan request has been approved and trade for loan is executed
+And Loan request has been approved and trade for loan is executed for "New Loan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
 | Key               | Value      |
@@ -485,12 +504,12 @@ When Loan repayment file "LoanRepayment.csv" is selected and edit loan repayment
 | 05/31/2025 | 1000            |
 | 06/30/2025 | 1000            |
 
-When File upload is executed for the file "LoanRepayment.csv"
+When File upload is executed for the file "LoanRepayment.csv" and funding is done by "Plan"
 
 Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
 
 Then Available balance for the employee to avail loan should be 15000

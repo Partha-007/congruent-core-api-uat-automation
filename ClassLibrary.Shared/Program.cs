@@ -40,6 +40,8 @@ using NUnit.Framework.Diagnostics;
 using System.Text;
 using Renci.SshNet;
 using System.Runtime.InteropServices.WindowsRuntime;
+using AutoMapper;
+using ClassLibrary.Shared.Enum;
 
 
 namespace RefitSandBox
@@ -79,8 +81,11 @@ namespace RefitSandBox
         public static string payrollFundingId;
         public static string employeeSSN;
         public static string loanDocumentId;
+        public static string loanSettingsId;
         public static double totalAmount;
         public static string businessKey;
+        public static string loanId;
+        public static string firstRepaymentDate;
         public async Task UserLogin()
         {
             string authorizationEndpoint = "https://test.coreretirementsolutions.com/connect/authorize";
@@ -326,11 +331,22 @@ namespace RefitSandBox
             }
         }
 
+        public async Task AssignValueToDateProperty(string ControlName, string pattern, string incrementValue)
+        {
+            int increment = int.Parse(incrementValue);
+            var Value = await GetDate(increment, pattern);
+            if(ControlName == "firstRepaymentDate")
+            {
+                firstRepaymentDate = Value;
+            }
+            await Configuration(ControlName, Value);
+        }
+
         public static List<System.Reflection.PropertyInfo> matchingProperties = new List<System.Reflection.PropertyInfo>();
         public async Task Configuration(string ControlName, string Value)
         {
             var program = new Program();
-            if(ControlName.Contains("1") || ControlName.Contains("2"))
+            if (ControlName.Contains("1") || ControlName.Contains("2"))
             {
                 var match = System.Text.RegularExpressions.Regex.Match(ControlName, @"^\d+");
 
@@ -353,7 +369,7 @@ namespace RefitSandBox
                     .ToList();
             }
 
-            if(ControlName == "employeeClassificationId")
+            if (ControlName == "employeeClassificationId")
             {
                 Value = companyClassificationId;
             }
@@ -396,7 +412,15 @@ namespace RefitSandBox
                                                 if (property.PropertyType == typeof(DateTimeOffset?))
                                                 {
                                                     var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
-                                                    property.SetValue(collectionItem, convertedValue);
+                                                    if(ControlName == "firstRepaymentDate")
+                                                    {
+                                                        string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
+                                                        property.SetValue(collectionItem, convertedValue);
+                                                    }
+                                                    else
+                                                    {
+                                                        property.SetValue(collectionItem, convertedValue);
+                                                    }
                                                 }
                                                 else if (property.PropertyType == typeof(double?))
                                                 {
@@ -461,7 +485,7 @@ namespace RefitSandBox
                             }
                             else
                             {
-                                SetPropertyValueRecursive(modelAfterConvention,property.Name,Value);
+                                SetPropertyValueRecursive(modelAfterConvention, property.Name, Value);
                             }
                         }
                     }
@@ -478,11 +502,20 @@ namespace RefitSandBox
                             if (property.PropertyType == typeof(DateTimeOffset?))
                             {
                                 var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
-                                property.SetValue(modelAfterConvention, convertedValue);
+                                if (ControlName == "firstRepaymentDate")
+                                {
+                                    string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
+                                    property.SetValue(modelAfterConvention, convertedValue);
+                                }
+                                else
+                                {
+                                    property.SetValue(modelAfterConvention, convertedValue);
+                                }
+                                
                             }
                             else if (property.PropertyType == typeof(double?))
                             {
-                                if(String.IsNullOrEmpty(Value))
+                                if (String.IsNullOrEmpty(Value))
                                 {
                                     property.SetValue(modelAfterConvention, null);
                                 }
@@ -498,7 +531,7 @@ namespace RefitSandBox
                                         Console.WriteLine(ex.Message);
                                     }
                                 }
-                                    
+
                             }
                             else
                             {
@@ -506,6 +539,27 @@ namespace RefitSandBox
                                 var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
                                 var convertedValue = Convert.ChangeType(Value, underlyingType);
                                 property.SetValue(modelAfterConvention, convertedValue);
+                            }
+                        }
+                    }
+                    else if (property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>))
+                    {
+                        Console.WriteLine($"Found matching property: {property.Name}");
+                        var propertiesInModel = modelAfterConvention.GetType().GetProperty(property.Name);
+                        var currentModel = propertiesInModel.GetValue(modelAfterConvention);
+                        var typeOfCollection = System.Type.GetType($"MyNamespace.{PropertyDeclaredType}");
+                        if(String.IsNullOrEmpty(Value))
+                        {
+                            try
+                            {
+                                var itemType = property.PropertyType.GetGenericArguments()[0]; // Get the item type T
+                                var listType = typeof(List<>).MakeGenericType(itemType); // Create List<T> type
+                                var collectionInstance = Activator.CreateInstance(listType); // Instantiate the List<T>
+                                property.SetValue(modelAfterConvention, collectionInstance);
+                            }
+                            catch(Exception ex)
+                            {
+
                             }
                         }
                     }
@@ -535,7 +589,7 @@ namespace RefitSandBox
             }
         }
 
-        public static void SetPropertyValueRecursive(object targetObject, string propertyName, object value)
+        public static async Task SetPropertyValueRecursive(object targetObject, string propertyName, object value)
         {
             if (targetObject == null) return;
 
@@ -562,7 +616,15 @@ namespace RefitSandBox
                                 if (property.PropertyType == typeof(DateTimeOffset?))
                                 {
                                     var convertedValue = DateTimeOffset.Parse(value.ToString()); // Parsing the string to DateTimeOffset
-                                    property.SetValue(targetObject, convertedValue);
+                                    if (propertyName == "firstRepaymentDate")
+                                    {
+                                        string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
+                                        property.SetValue(targetObject, convertedValue);
+                                    }
+                                    else
+                                    {
+                                        property.SetValue(targetObject, convertedValue);
+                                    }
                                 }
                                 else if (property.PropertyType == typeof(double?))
                                 {
@@ -615,10 +677,12 @@ namespace RefitSandBox
             }
         }
 
+
+
         public const string BASE_URL = "https://localhost:3200";
         public string APIEndpoint = "api/v1/Payroll/PayrollAndCensusFileUpload";
         public static string uploadedFileName;
-        public async Task<JObject> SendAPIRequestForFileUpload(string filename)
+        public async Task<JObject> SendAPIRequestForFileUpload(string filename, string fundingType)
         {
             MultipartFormDataContent form;
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
@@ -658,7 +722,7 @@ namespace RefitSandBox
 
                         JObject responseObject = JObject.Parse(responseAfterFileUpload.ToString());
                         Console.Write(responseObject.ToString());
-                        await Task.Delay(5000);
+                        await Task.Delay(10000);
                         var fileId = await GetUploadedFilesBasedOnSearchCriteria(_hooks.bearer, companyName, planName, rkPlanNumber);
                         var payrollClient = RestService.For<IPayroll>(httpClient);
                         var fileDetails = await payrollClient.GetFileInformation(fileId);
@@ -666,26 +730,43 @@ namespace RefitSandBox
                         {
                             var acceptAllWarningsClient = RestService.For<IPayroll>(httpClient);
                             var response = await acceptAllWarningsClient.AcceptAllWarningsInaFile(fileId);
+                            if(!response)
+                            {
+                                throw new Exception("Error in accepting warnings");
+                            }
                         }
                         await Task.Delay(5000);
                         var finalSubmit = await payrollClient.FinalSubmit(fileId, "3");
                         await Task.Delay(5000);
-                        await SaveFundingDetailsByPlan(planId, fileId);
-                        await Task.Delay(5000);
-                        var getAwaitingFundsForFile = await payrollClient.GetAwaitingFundingDetailsByPlan(fileId, planId);
-                        payrollFundingId = getAwaitingFundsForFile.PayrollFundingId.ToString();
-                        await ConfirmFunds(planId, fileId, payrollFundingId);
-                        if(filename == "Combined.csv")
+                        if(fundingType == "File")
                         {
-                            await Task.Delay(3000);
+                            var fundByFile = await payrollClient.FinalSubmit(fileId, fundingType);
+                            var responseAfterFileSubmission = fundByFile.IsSuccessfull;
+                            if (!responseAfterFileSubmission)
+                            {
+                                throw new Exception("Error in submitting the file");
+                            }
                         }
                         else
                         {
-                            await Task.Delay(20000);
+                            await SaveFundingDetailsByPlan(planId, fileId);
+                            await Task.Delay(5000);
+                            var getAwaitingFundsForFile = await payrollClient.GetAwaitingFundingDetailsByPlan(fileId, planId);
+                            payrollFundingId = getAwaitingFundsForFile.PayrollFundingId.ToString();
+                            await ConfirmFunds(planId, fileId, payrollFundingId);
+                            if (filename == "Combined.csv")
+                            {
+                                await Task.Delay(3000);
+                            }
+                            else
+                            {
+                                await Task.Delay(10000);
+                            }
+                            await payrollClient.GenerateConsolidation();
+                            await Task.Delay(5000);
                         }
-                        await payrollClient.GenerateConsolidation();
-                        await Task.Delay(5000);
                         return responseObject;
+
                     }
                 }
             }
@@ -879,6 +960,11 @@ namespace RefitSandBox
                 await Configuration("employeeId", employeeId);
                 await Configuration("planId", planId);
                 await Configuration("loanDocumentTypeId", loanDocumentId);
+                await Configuration("loanSettingId", loanSettingsId);
+            }
+            if(methodName == "SaveLoanRefinance")
+            {
+                await Configuration("loanId", loanId);
             }
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
             var response = await SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, methodName);
@@ -1222,7 +1308,8 @@ namespace RefitSandBox
                 { "/api/v1/Payroll/SaveEmployee",() => new PayrollEmployeeViewModel() },
                 { "/api/Loan/SaveLoan", () => new LoanSettingViewModel() },
                 { "/api/v1/Loan/SaveInprogressLoanRequest", () => new EmployeeLoanViewModel()},
-                {"/api/Vesting/SaveVesting", () => new VestingViewModel() }
+                {"/api/Vesting/SaveVesting", () => new VestingViewModel() },
+                {"/api/v1/Loan/SaveLoanRefinance", () => new LoanRefinanceViewModel() }
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -1291,7 +1378,7 @@ namespace RefitSandBox
                 else
                 {
                     Console.WriteLine("Trade order number is not present in Trade response file");
-                    throw new Exception();
+                    throw new Exception("Trade order number is not present in Trade response file");
                 }
             }
             else
@@ -1307,14 +1394,26 @@ namespace RefitSandBox
             
         }
         public static int count = 0;
-        public static void UpdateFile(Dictionary<string, string> fileToEdit, string ColumnHeader, string Value, string FilePath)
+        public static async void UpdateFile(Dictionary<string, string> fileToEdit, string ColumnHeader, string Value, string FilePath)
         {
             
             if (fileToEdit.Count != 0)
             {
-                if(ColumnHeader == "PAY DATE")
+                if(ColumnHeader == "PAY DATE" && firstRepaymentDate != null && Value != "Currentdate")
                 {
-                    count++;
+                    Value = firstRepaymentDate;
+                }
+                if (Value.Contains("Currentdate", StringComparison.OrdinalIgnoreCase))
+                {
+                    var currentDate = await GetDate(0, "day");
+                    Value = currentDate;
+                }
+                if(Value.Contains("days", StringComparison.OrdinalIgnoreCase))
+                {
+                    var date = Value.Split(" ");
+                    int numberOfDays = Convert.ToInt32(date[0]);
+                    var obtainedDate = await GetDate(numberOfDays, date[1]);
+                    Value = obtainedDate;
                 }
                 if (fileToEdit.ContainsKey(ColumnHeader))
                 {
@@ -1383,11 +1482,17 @@ namespace RefitSandBox
                     }
                     if(dataTable != null)
                     {
+                        int count = 1;
                         foreach(var row in dataTable.Rows)
                         {
                             var paydate = row[0];
                             var repaymentAmount = row[1];
+                            if(paydate == "Monthly")
+                            {
+                                paydate = DateTime.Parse(firstRepaymentDate).AddMonths(count).ToString("MM/dd/yyyy");
+                            }
                             FileToEdit["PAY DATE"] = paydate;
+                            count++;
                             var repaymentHeader = FileToEdit.Keys.First(_ => _.Contains("Repayment", StringComparison.OrdinalIgnoreCase));
                             FileToEdit[repaymentHeader] = repaymentAmount;
                             csvWriter.NextRecord();
@@ -1492,49 +1597,64 @@ namespace RefitSandBox
             var responseAfterParsing = JObject.Parse(response.ToString());
             Console.WriteLine("Loan response : " +responseAfterParsing.ToString());
             loanDocumentId = responseAfterParsing["loan"]["loanDocumentType"][0]["id"].ToString();
+            loanSettingsId = responseAfterParsing["loan"]["id"].ToString();
         }
 
-        public async Task LoanApprove()
+        public async Task LoanApprove(string loanType)
         {
             try
             {
-                Console.WriteLine($"Loan approve started on {DateTime.Now}");
-                /*var check = JsonConvert.DeserializeObject<SaveLoanResult>(response.ToString(), new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });*/
-                var loanId = response["loan"]["id"].ToString();
-                businessKey = response["loan"]["businessKey"].ToString();
                 string BaseURL = "https://test.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
                     BaseAddress = new Uri(BaseURL)
                 };
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
-                var loanClient = RestService.For<ILoan>(httpClient);
-                var loanApproved = await loanClient.ApproveLoan(loanId);
-                if(!loanApproved)
+                if (loanType == "Loan Refinancing")
                 {
-                    throw new Exception();
+                    var loanClient = RestService.For<ILoan>(httpClient);
+                    var loanApproved = await loanClient.ApproveLoan(loanId);
+                    if (!loanApproved)
+                    {
+                        throw new Exception();
+                    }
                 }
                 else
                 {
-                    Console.WriteLine($"Loan has been approved on {DateTime.Now}");
-                    await Task.Delay(5000);
-                    var loanActiveResult = await loanClient.GenerateLoan();
-                    var loanResponse = loanActiveResult.IsSuccessful;
-                    if(!loanResponse)
+                    Console.WriteLine($"Loan approve started on {DateTime.Now}");
+                    /*var check = JsonConvert.DeserializeObject<SaveLoanResult>(response.ToString(), new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });*/
+                    loanId = response["loan"]["id"].ToString();
+                    businessKey = response["loan"]["businessKey"].ToString();
+
+                    var loanClient = RestService.For<ILoan>(httpClient);
+                    var loanApproved = await loanClient.ApproveLoan(loanId);
+                    if (!loanApproved)
                     {
                         throw new Exception();
                     }
                     else
                     {
-                        Console.WriteLine($"Generate Loan API returns success on {DateTime.Now}");
+                        Console.WriteLine($"Loan has been approved on {DateTime.Now}");
+                        await Task.Delay(5000);
+                        var loanActiveResult = await loanClient.GenerateLoan();
+                        var loanResponse = loanActiveResult.IsSuccessful;
+                        if (!loanResponse)
+                        {
+                            throw new Exception();
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Generate Loan API returns success on {DateTime.Now}");
+                        }
+                        await Task.Delay(3000);
+                        /*var payrollClient = RestService.For<IPayroll>(httpClient);
+                        var consolidationResult = await payrollClient.GenerateConsolidation();*/
                     }
-                    await Task.Delay(3000);
-                    /*var payrollClient = RestService.For<IPayroll>(httpClient);
-                    var consolidationResult = await payrollClient.GenerateConsolidation();*/
                 }
+                
             }
             catch(Exception ex)
             {
@@ -1568,15 +1688,25 @@ namespace RefitSandBox
 
         public async Task VerifyMasterLoanTypesForEmployee(int expectedLoanCount, int expectedLoanType, string expectedLoanName)
         {
+            await Task.Delay(2000);
             var employeeLoansResponse = await GetEmployeePlanLoans();
             if (employeeLoansResponse != null)
             {
-                var masterLoanTypes = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).Distinct().ToList();
-                ClassicAssert.AreEqual(expectedLoanCount, masterLoanTypes.Count);
-                var masterLoanType = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).FirstOrDefault()?.LoanType;
-                ClassicAssert.AreEqual(expectedLoanType, masterLoanType);
-                var masterLoanName = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).FirstOrDefault()?.Description;
-                ClassicAssert.AreEqual(expectedLoanName, masterLoanName);
+                if(employeeLoansResponse.EmployeePlans.Count != 0)
+                {
+                    var masterLoanTypes = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).Distinct().ToList();
+                    ClassicAssert.AreEqual(expectedLoanCount, masterLoanTypes.Count);
+                    var masterLoanType = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).FirstOrDefault()?.LoanType;
+                    ClassicAssert.AreEqual(expectedLoanType, masterLoanType);
+                    var masterLoanName = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).FirstOrDefault()?.Description;
+                    ClassicAssert.AreEqual(expectedLoanName, masterLoanName);
+                }
+                else
+                {
+                    var masterLoanTypes = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).Distinct().ToList();
+                    ClassicAssert.AreEqual(expectedLoanCount, masterLoanTypes.Count);
+                }
+                
             }
             else
             {
@@ -1655,6 +1785,141 @@ namespace RefitSandBox
             return availableBalance;
         }
 
+        public async Task VerifyAmortizationScheduleForLoan(int NoOfInstallments, Reqnroll.DataTable dataTable)
+        {
+            await Task.Delay(5000);
+            string BaseURL = "https://test.coreretirementsolutions.com/";
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(BaseURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            var loanClient = RestService.For<ILoan>(httpClient);
+            var updatedLoanId = int.Parse(loanId);
+            updatedLoanId = updatedLoanId + 1;
+            var loanAmortization = await loanClient.GetAmortizationSchedule(updatedLoanId.ToString());
+            ClassicAssert.AreEqual(NoOfInstallments, loanAmortization.Count);
+            var OutstandingPrincipalList = new List<double>();
+            var InterestList = new List<double>();  
+            var PrincipalList = new List<double>();
+            foreach (var item in loanAmortization)
+            {
+                InterestList.Add(item.Interest);
+                PrincipalList.Add(item.Principal);
+                OutstandingPrincipalList.Add(item.TotalOutstandingPrincipal);
+            }
+
+            foreach(var amount in OutstandingPrincipalList)
+            {
+                Console.WriteLine("Outstanding amount : " +amount);
+            }
+
+            
+        }
+
+        public async Task VerifyLoanStatus(string expectedStatus)
+        {
+            string BaseURL = "https://test.coreretirementsolutions.com/";
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(BaseURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            var loanClient = RestService.For<ILoan>(httpClient);
+            var checkAndUpdateLoanStatus = await loanClient.CheckAndUpdateLoanStatus(loanId);
+            if(!checkAndUpdateLoanStatus)
+            {
+                throw new Exception("Check and update loan status API returns false");
+            }
+            await Task.Delay(3000);
+            var getLoanResponse = await loanClient.GetLoan(loanId);
+            var loanStatus = getLoanResponse.LoanRequest.LoanStatus;
+            Console.WriteLine("Loan status :" + loanStatus);
+            if(expectedStatus.Contains("DefaultDeemedDistribution",StringComparison.OrdinalIgnoreCase) || expectedStatus.Contains("DefaultBenefitOffset",StringComparison.OrdinalIgnoreCase))
+            {
+                checkAndUpdateLoanStatus = await loanClient.CheckAndUpdateLoanStatus(loanId);
+                if (!checkAndUpdateLoanStatus)
+                {
+                    throw new Exception("Check and update loan status API returns false");
+                }
+                await Task.Delay(3000);
+                getLoanResponse = await loanClient.GetLoan(loanId);
+                loanStatus = getLoanResponse.LoanRequest.LoanStatus;
+            }
+            if (Enum.TryParse(expectedStatus, true, out LoanStatus.LoanStatusesTest statusEnum))
+            {
+                // Assert that the API response matches the enum value.
+                ClassicAssert.AreEqual((int)statusEnum, loanStatus);
+            }
+            else
+            {
+                throw new Exception($"{expectedStatus} is not a valid status, check spelling");
+            }
+        }
+
+        public async Task UpdateEmployeeInformation(Reqnroll.DataTable dataTable)
+        {
+            //Will do research later blud!!
+            /*var employeeId = await GetEmployeeId();
+            string BaseURL = "https://test.coreretirementsolutions.com/";
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(BaseURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            var employeeClient = RestService.For<IEmployee>(httpClient);
+            var employeeResponse = await employeeClient.GetEmployee(employeeId);
+
+            *//*var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Employee,PayrollEmployeeViewModel>()
+                .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.SSN, opt => opt.MapFrom(src => src.SSN))
+                    .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                    .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                    .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                    .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                    .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address));
+            })*//*
+            var employeeModel = new Employee();
+            var payrollEmployeeViewModel = new PayrollEmployeeViewModel();
+            var mapper = new Mapper();
+            payrollEmployeeViewModel = mapper.Map<PayrollEmployeeViewModel>(employeeModel);
+            modelAfterConvention = employeeResponse;
+            
+            var listOfProperties = GetJsonPropertyList(payrollEmployeeViewModel);
+            foreach(var row in dataTable.Rows)
+            {
+                string controlName = row[0];
+                string Value = row[1];
+                await Configuration(controlName, Value);
+            }
+            var employee = (PayrollEmployeeViewModel)employeeResponse;
+            var updateEmployee = employeeClient.UpdateExistingEmployee(employee);*/
+        }
+        public static async Task<string> GetDate(int n, string pattern)
+        {
+            DateTime currentDate = DateTime.Now;
+            DateTime adjustedDate = currentDate;
+
+            if (pattern.Contains("day", StringComparison.OrdinalIgnoreCase))
+            {
+                adjustedDate = currentDate.AddDays(n);
+            }
+            else if (pattern.Contains("month",StringComparison.OrdinalIgnoreCase))
+            {
+                adjustedDate = currentDate.AddMonths(n);
+            }
+            else if (pattern.Contains("year", StringComparison.OrdinalIgnoreCase))
+            {
+                adjustedDate = currentDate.AddYears(n);
+            }
+            string finalDate = adjustedDate.ToString("MM/dd/yyyy");
+            return finalDate;
+        }
 
         public static async Task<string> SaveCompany(string bearer)
         {
@@ -1689,8 +1954,12 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(planModel);
             modelAfterConvention = FakeDataHelper.AssignId(companyId.ToString(), "CompanyId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("effectiveDate", "2021-01-01");
+            await program.Configuration("effectiveDate", "2019-01-01");
             await program.Configuration("name", "ABC123");
+            await program.Configuration("1month", "1");
+            await program.Configuration("1day", "1");
+            await program.Configuration("2month", "12");
+            await program.Configuration("2day", "31");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewPlanAsync");
             planId = planResponse["plan"]["id"].ToString();
@@ -1768,7 +2037,7 @@ namespace RefitSandBox
             await program.Configuration("sourceCategory", "2");
             await program.Configuration("sourceSubCategory", "4");
             await program.Configuration("sourceSubSubCategory", "1");
-            await program.Configuration("effectiveStartDate", "2022-01-01");
+            await program.Configuration("effectiveStartDate", "2020-01-01");
             await program.Configuration("sourceName", "Pretax");
             await program.Configuration("contributionType", "1");
             await program.Configuration("limitMinimumDollar", "10");

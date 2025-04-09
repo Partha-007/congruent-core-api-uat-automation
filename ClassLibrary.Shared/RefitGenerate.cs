@@ -94,6 +94,8 @@ namespace RefitSandBox
 
         [Post("/api/Vesting/SaveVesting")]
         Task<object> SaveVesting([Body] VestingViewModel vesting);
+
+        
     }
 
     public interface ICompanyDetails
@@ -151,6 +153,14 @@ namespace RefitSandBox
         Task<GetEmployeesBySearchCriteriaResult> GetEmployeesBySearchCriteria(SearchCriterias search);
     }
 
+    public interface IEmployee
+    {
+        [Get("/api/v1/Payroll/GetEmployee/{employeeId}")]
+        Task<object> GetEmployee(string employeeId);
+
+        [Post("/api/v1/Payroll/UpdateExistingEmployee")]
+        Task<AddEmployeeResult> UpdateExistingEmployee([Body] PayrollEmployeeViewModel employee);
+    }
     public interface ILoan
     {
         [Post("/api/v1/Loan/SaveInprogressLoanRequest")]
@@ -164,6 +174,18 @@ namespace RefitSandBox
 
         [Get("/api/v1/Loan/GetEmployeePlanLoans/{employeeId}")]
         Task<GetEmployeeEligiblePlanLoansResult> GetEmployeePlanLoans(string employeeId);
+
+        [Post("/api/v1/Loan/SaveLoanRefinance")]
+        Task<object> SaveLoanRefinance([Body] LoanRefinanceViewModel loanRefinance);
+
+        [Get("/api/v1/Loan/GetAmortizationSchedule/{loanId}")]
+        Task<System.Collections.Generic.ICollection<ScheduledRepayment>> GetAmortizationSchedule(string loanId);
+
+        [Get("/api/v1/Loan/CheckAndUpdateLoanStatus/{loanId}")]
+        Task<bool> CheckAndUpdateLoanStatus(string loanId);
+
+        [Get("/api/v1/Loan/GetLoan/{Id}")]
+        Task<GetLoanResult> GetLoan(string Id);
     }
     public class Advisor
     {

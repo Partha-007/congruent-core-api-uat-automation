@@ -123,10 +123,11 @@ namespace SharedStepDefinitions
             await Program.FileConfiguration(filename, dataTable);
         }
 
-        [When("File upload is executed for the file {string}")]
-        public async Task WhenFileUploadIsExecutedForTheFile(string filename)
+
+        [When("File upload is executed for the file {string} and funding is done by {string}")]
+        public async Task WhenFileUploadIsExecutedForTheFileAndFundingIsDoneBy(string filename, string fundingType)
         {
-            await _program.SendAPIRequestForFileUpload(filename);
+            await _program.SendAPIRequestForFileUpload(filename, fundingType);
         }
 
         [When("Generate consolidation API is triggered for {string} and Trade order number extracted from trade response file")]
@@ -135,11 +136,14 @@ namespace SharedStepDefinitions
             await _program.SFTPConnect();
         }
 
-        [When("Loan request has been approved and trade for loan is executed")]
-        public async Task WhenLoanRequestHasBeenApprovedAndTradeForLoanIsExecuted()
+        
+
+        [When("Loan request has been approved and trade for loan is executed for {string}")]
+        public async Task WhenLoanRequestHasBeenApprovedAndTradeForLoanIsExecutedFor(string requestType)
         {
-            await _program.LoanApprove();
+            await _program.LoanApprove(requestType);
         }
+
 
         [Then("Employee Loan request API should respond with error message as {string}")]
         public async Task ThenEmployeeLoanRequestAPIShouldRespondWithErrorMessageAs(string expectedErrorMessage)
@@ -169,6 +173,30 @@ namespace SharedStepDefinitions
         public async Task ThenAvailableBalanceForTheEmployeeToAvailLoanWhenNoLoanHasBeenTakenAlreadyShouldBe(double expectedAmount)
         {
             await _program.VerifyAvailableBalanceForNewLoan(expectedAmount);
+        }
+
+        [When("The date property {string} is configured as {string} and should add {string} days to the current date")]
+        public async Task WhenTheDatePropertyIsConfiguredAsAndShouldAddDaysToTheCurrentDate(string ControlName, string pattern, string incrementValue)
+        {
+            await _program.AssignValueToDateProperty(ControlName, pattern, incrementValue);
+        }
+
+        [Then("Employee loan amortization schedule should contain {int} installments and should look like this")]
+        public async Task ThenEmployeeLoanAmortizationScheduleShouldContainInstallmentsAndShouldLookLikeThis(int NoOfInstallments, DataTable dataTable)
+        {
+            await _program.VerifyAmortizationScheduleForLoan(NoOfInstallments, dataTable);
+        }
+
+        [Then("Loan status should be updated as {string}")]
+        public async Task ThenLoanStatusShouldBeUpdatedAs(string loanStatus)
+        {
+            await _program.VerifyLoanStatus(loanStatus);
+        }
+
+        [When("Employee has been edited as mentioned below")]
+        public async Task WhenEmployeeHasBeenEditedAsMentionedBelow(DataTable dataTable)
+        {
+            await _program.UpdateEmployeeInformation(dataTable);
         }
 
     }
