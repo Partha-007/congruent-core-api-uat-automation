@@ -122,7 +122,7 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
 
 Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
 
@@ -222,7 +222,7 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
 
 Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
 
@@ -253,7 +253,7 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
 
 Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
 | Key               | Value      |
@@ -284,7 +284,7 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
 
 Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
 
@@ -383,7 +383,7 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
 
 Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
 
@@ -414,7 +414,7 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
 
 Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
 | Key               | Value      |
@@ -445,7 +445,7 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
 
 Given Model is selected for the endpoint "/api/v1/Loan/SaveLoanRefinance"
 

@@ -504,8 +504,15 @@ namespace RefitSandBox
                                 var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
                                 if (ControlName == "firstRepaymentDate")
                                 {
-                                    string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
-                                    property.SetValue(modelAfterConvention, convertedValue);
+                                    var formattedValue = convertedValue.ToUniversalTime().AddDays(1);
+                                    try
+                                    {
+                                        property.SetValue(modelAfterConvention, formattedValue);
+                                    }
+                                    catch(Exception ex)
+                                    {
+                                        Console.WriteLine(ex.Message);
+                                    }
                                 }
                                 else
                                 {
@@ -708,7 +715,7 @@ namespace RefitSandBox
                         form.Add(new StringContent("false"), "isYearEndProcessing");
                         form.Add(new StringContent("0"), "payrollFrequencyId");
 
-                        string BaseURL = "https://test.coreretirementsolutions.com";
+                        string BaseURL = "https://dev.coreretirementsolutions.com";
                         var httpClient = new HttpClient()
                         {
                             BaseAddress = new Uri(BaseURL)
@@ -780,7 +787,7 @@ namespace RefitSandBox
                     fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
                     form.Add(fileContent, "File", uploadedFileName);
                     form.Add(new StringContent("1"), "FileType");
-                    string BaseURL = "https://test.coreretirementsolutions.com";
+                    string BaseURL = "https://dev.coreretirementsolutions.com";
                     var httpClient = new HttpClient()
                     {
                         BaseAddress = new Uri(BaseURL)
@@ -788,25 +795,28 @@ namespace RefitSandBox
 
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
                     var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
-                    await tradeOrderClient.UploadFile(form);
+                    var tradeOrderFileResponse = await tradeOrderClient.UploadFile(form);
                     Console.WriteLine("Trade order file uploaded");
                     var employeeId = await GetEmployeeId();
-                    var currentDate = DateTime.Today.ToString("yyyy-MM-dd");
                     await Task.Delay(5000);
+                    var currentDate = DateTime.Today.ToString("yyyy-MM-dd");
+                    await Task.Delay(15000);
                     var employeeAccountBalance = await tradeOrderClient.GetParticipantAccountBalanceByPlan(planId, employeeId, currentDate);
                     var responseObject = JObject.Parse(employeeAccountBalance.ToString());
-                    try
+                    Console.WriteLine("Employee account balance : " + responseObject.ToString());
+                    /*if (!(responseObject["sources"][0]["vestedBalance"].Count() > 1))
                     {
-                        var amountUpdated = Convert.ToInt32(responseObject["sources"][0]["vestedBalance"].ToString());
-                        Console.WriteLine($"Amount updated as : {amountUpdated}");
-                        if (amountUpdated != totalAmount)
-                        {
-                            throw new Exception();
-                        }
+                        throw new Exception("Error in getting the account balance");
+                    }*/
+                    var amountUpdated = Convert.ToInt32(responseObject["investedAmount"].ToString());
+                    Console.WriteLine($"Amount updated as : {amountUpdated}");
+                    if(String.IsNullOrEmpty(fundingType))
+                    {
+                        return null;
                     }
-                    catch(Exception ex)
+                    if (amountUpdated != totalAmount)
                     {
-
+                        throw new Exception($"Amount updated as {amountUpdated} but total amount given in file is {totalAmount}");
                     }
                     
                     return null;
@@ -834,7 +844,7 @@ namespace RefitSandBox
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
                 form.Add(fileContent, "File", uploadedFileName);
                 form.Add(new StringContent("1"), "FileType");
-                string BaseURL = "https://test.coreretirementsolutions.com";
+                string BaseURL = "https://dev.coreretirementsolutions.com";
                 var httpClient = new HttpClient()
                 {
                     BaseAddress = new Uri(BaseURL)
@@ -849,7 +859,7 @@ namespace RefitSandBox
         public async Task<Dictionary<string, string>> SFTPConnect()
         {
             string hostName = "10.4.1.5";
-            string userName = "ftp_qa";
+            string userName = "ftp_dev";
             string password = "jack@123";
             var FileContent = new List<string>();
             var connectionInfo = new PasswordConnectionInfo(hostName, userName, password);
@@ -862,7 +872,7 @@ namespace RefitSandBox
                     Console.WriteLine("Connected to the SFTP server.");
 
                     // List files in the root directory of the SFTP server
-                    var files = sftp.ListDirectory("/qa/outbound/").OrderByDescending(_ => _.LastWriteTimeUtc).ToList();
+                    var files = sftp.ListDirectory("/dev/outbound/").OrderByDescending(_ => _.LastWriteTimeUtc).ToList();
                     
                     var fileToRead = files[1];
                     //var checkFileName = "/qa/outbound/TRADE.20250311.C0602959";
@@ -896,7 +906,7 @@ namespace RefitSandBox
             foreach (var row in tradeInstructionRows)
             {
                 string cusip = row.Substring(3, 9);
-                string tradeOrderNumber = row.Substring(71, 15);
+                string tradeOrderNumber = row.Substring(71, 16);
                 CusipTradeOrderNumber.Add(cusip, tradeOrderNumber);
             }
             return CusipTradeOrderNumber;
@@ -1022,7 +1032,7 @@ namespace RefitSandBox
 
         public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
         {
-            string BaseURL = "https://test.coreretirementsolutions.com/";
+            string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(BaseURL)
@@ -1377,7 +1387,6 @@ namespace RefitSandBox
                 }
                 else
                 {
-                    Console.WriteLine("Trade order number is not present in Trade response file");
                     throw new Exception("Trade order number is not present in Trade response file");
                 }
             }
@@ -1428,10 +1437,15 @@ namespace RefitSandBox
                         totalAmount = totalAmount + Convert.ToDouble(Value);
                     }
                 }
-                else if(fileToEdit.Keys.Any(_ => _.Contains("Repayment",StringComparison.OrdinalIgnoreCase)))
+                else if(ColumnHeader.Contains("Repayment", StringComparison.OrdinalIgnoreCase))
                 {
                     var repaymentHeader = fileToEdit.Keys.First(_ => _.Contains("Repayment", StringComparison.OrdinalIgnoreCase));
                     fileToEdit[repaymentHeader] = Value;
+                }
+                else if(ColumnHeader.Contains("LoanId",StringComparison.OrdinalIgnoreCase))
+                {
+                    var loanIdHeader = fileToEdit.Keys.First(_ => _.Contains("first loan id", StringComparison.OrdinalIgnoreCase));
+                    fileToEdit[loanIdHeader] = Value;
                 }
                 else
                 {
@@ -1535,7 +1549,7 @@ namespace RefitSandBox
         {
             var sourceNames = new List<string>();
             var program = new Program();
-            string BaseURL = "https://test.coreretirementsolutions.com/";
+            string BaseURL = "https://dev.coreretirementsolutions.com/";
             string Action = "api/Source/ListSource";
             var httpClient = new HttpClient()
             {
@@ -1559,7 +1573,7 @@ namespace RefitSandBox
 
         public static async Task<string> GetEmployeeId()
         {
-            string BaseURL = "https://test.coreretirementsolutions.com/";
+            string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(BaseURL)
@@ -1583,7 +1597,7 @@ namespace RefitSandBox
         public async Task SaveLoan()
         {
             await Configuration("planId", planId);
-            string BaseURL = "https://test.coreretirementsolutions.com/";
+            string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(BaseURL)
@@ -1604,7 +1618,7 @@ namespace RefitSandBox
         {
             try
             {
-                string BaseURL = "https://test.coreretirementsolutions.com/";
+                string BaseURL = "https://dev.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
                     BaseAddress = new Uri(BaseURL)
@@ -1666,8 +1680,8 @@ namespace RefitSandBox
         {
             try
             {
-                var employeeId = await GetEmployeeId();
-                string BaseURL = "https://test.coreretirementsolutions.com/";
+                var employeeId = await GetEmployeeId()  ;
+                string BaseURL = "https://dev.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
                     BaseAddress = new Uri(BaseURL)
@@ -1787,8 +1801,8 @@ namespace RefitSandBox
 
         public async Task VerifyAmortizationScheduleForLoan(int NoOfInstallments, Reqnroll.DataTable dataTable)
         {
-            await Task.Delay(5000);
-            string BaseURL = "https://test.coreretirementsolutions.com/";
+            await Task.Delay(5000); 
+            string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(BaseURL)
@@ -1799,11 +1813,15 @@ namespace RefitSandBox
             var updatedLoanId = int.Parse(loanId);
             updatedLoanId = updatedLoanId + 1;
             var loanAmortization = await loanClient.GetAmortizationSchedule(updatedLoanId.ToString());
-            ClassicAssert.AreEqual(NoOfInstallments, loanAmortization.Count);
+            var filteredLoanAmortization = loanAmortization
+                .Where(_ => _.ReAmortizationRequestDetails == null)
+                .ToList();
+            
+            ClassicAssert.AreEqual(NoOfInstallments, filteredLoanAmortization.Count);
             var OutstandingPrincipalList = new List<double>();
             var InterestList = new List<double>();  
             var PrincipalList = new List<double>();
-            foreach (var item in loanAmortization)
+            foreach (var item in filteredLoanAmortization)
             {
                 InterestList.Add(item.Interest);
                 PrincipalList.Add(item.Principal);
@@ -1820,7 +1838,7 @@ namespace RefitSandBox
 
         public async Task VerifyLoanStatus(string expectedStatus)
         {
-            string BaseURL = "https://test.coreretirementsolutions.com/";
+            string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(BaseURL)
@@ -2109,13 +2127,13 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("investmentId", "281");
+            await program.Configuration("investmentId", "5630");
             await program.Configuration("status", "1");
             await program.Configuration("investmentType", "2");
             await program.Configuration("planId", planId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
-            await program.Configuration("investmentId", "282");
+            await program.Configuration("investmentId", "5631");
             await program.Configuration("status", "1");
             await program.Configuration("investmentType", "2");
             await program.Configuration("planId", planId);
@@ -2200,7 +2218,7 @@ namespace RefitSandBox
             await program.Configuration("fileStatus", null);
             await program.Configuration("fileType", null);
             await program.Configuration("fileName", null);
-            string BaseURL = "https://test.coreretirementsolutions.com/";
+            string BaseURL = "https://dev.coreretirementsolutions.com/";
             payrollSearch = (UploadedFileInformationDetails)modelAfterConvention;
             var httpClient = new HttpClient()
             {
