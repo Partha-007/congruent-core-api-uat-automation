@@ -18,13 +18,13 @@ namespace SharedStepDefinitions
         [Given("Model is selected for the endpoint {string}")]
         public async Task GivenModelIsSelectedForTheEndpoint(string endpoint)
         {
-            _program.EndpointToViewModel(endpoint);
+            await _program.EndpointToViewModel(endpoint);
         }
 
         [When("API request has been sent to the {string} with the method name {string}")]
         public async Task WhenAPIRequestHasBeenSentToTheWithTheMethodName(string interfaceName, string methodName)
         {
-                await _program.APIRequestForRefit(interfaceName, methodName);
+            await _program.APIRequestForRefit(interfaceName, methodName);
         }
 
         [When("Save Loan details in Plan")]
@@ -198,6 +198,36 @@ namespace SharedStepDefinitions
         {
             await _program.UpdateEmployeeInformation(dataTable);
         }
+
+        [When("Model portfolio investment configured with {int} investments with ids as {int} and {int} for the property {string}")]
+        public async Task WhenModelPortfolioInvestmentConfiguredWithInvestmentsWithIdsAsAndForTheProperty(int noOfInvestments, int investmentId1, int investmentId2, string propertyName)
+        {
+            await _program.AddValuesToCollection(noOfInvestments, investmentId1, investmentId2, propertyName);
+        }
+
+        [When("Collection in a model is configured with {int} blocks for the property {string} with values as given below")]
+        public async Task WhenCollectionInAModelIsConfiguredWithBlocksForThePropertyWithValuesAsGivenBelow(int noOfBlocks, string propertyName, DataTable dataTable)
+        {
+            await _program.EditCollection(noOfBlocks, propertyName, dataTable);
+            if(propertyName == "InvestmentElectionValuesList")
+            {
+                await _program.SaveEnrollmentForModelPortfolio();
+            }
+        }
+
+        [When("Model portfolio investment added to plan and enrollment configured with {int} blocks for the property {string} with values as given below")]
+        public async Task WhenModelPortfolioInvestmentAddedToPlanAndEnrollmentConfiguredWithBlocksForThePropertyWithValuesAsGivenBelow(int noOfBlocks, string propertyName, DataTable dataTable)
+        {
+            await _program.ModelPortInvestmentAddAndEnrollment(noOfBlocks, propertyName, dataTable);
+        }
+
+        [Then("Employee account balance for the source {string} should be splitted as mentioned below")]
+        public async Task ThenEmployeeAccountBalanceForTheSourceShouldBeSplittedAsMentionedBelow(string sourceName, DataTable dataTable)
+        {
+            await _program.VerifyAccountBalanceForAnEmployeeSourceWise(sourceName, dataTable);
+        }
+
+
 
     }
 }

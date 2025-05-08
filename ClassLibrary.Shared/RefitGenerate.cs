@@ -116,10 +116,16 @@ namespace RefitSandBox
         Task<string> UploadFile([Body] MultipartFormDataContent content);
 
         [Get("/api/v1/Trade/GetParticipantAccountBalanceByPlan")]
-        Task<object> GetParticipantAccountBalanceByPlan(
+        Task<AccountBalanceByPlanResponse> GetParticipantAccountBalanceByPlan(
         [AliasAs("planId")] string planId,
         [AliasAs("participantId")] string participantId,
         [AliasAs("date")] string date);
+    }
+
+    public interface IInvestment
+    {
+        [Post("/api/v1/Investment/AddMasterInvestment")]
+        Task<object> AddMasterInvestment([Body] InvestmentViewModel masterInvestment);
     }
     public interface IPayroll
     {

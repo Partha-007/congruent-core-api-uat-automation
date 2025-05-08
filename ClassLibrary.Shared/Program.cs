@@ -86,6 +86,11 @@ namespace RefitSandBox
         public static string businessKey;
         public static string loanId;
         public static string firstRepaymentDate;
+        public static string modelPortfolioId;
+        public static string modelPortfolioName;
+        public static string modelPortfolioInvestmentId, RegularInvestmentId;
+        public static AccountBalanceByPlanResponse employeeAccountBalance;
+
         public async Task UserLogin()
         {
             string authorizationEndpoint = "https://test.coreretirementsolutions.com/connect/authorize";
@@ -801,20 +806,21 @@ namespace RefitSandBox
                     await Task.Delay(5000);
                     var currentDate = DateTime.Today.ToString("yyyy-MM-dd");
                     await Task.Delay(15000);
-                    var employeeAccountBalance = await tradeOrderClient.GetParticipantAccountBalanceByPlan(planId, employeeId, currentDate);
-                    var responseObject = JObject.Parse(employeeAccountBalance.ToString());
-                    Console.WriteLine("Employee account balance : " + responseObject.ToString());
+                    employeeAccountBalance = await tradeOrderClient.GetParticipantAccountBalanceByPlan(planId, employeeId, currentDate);
+                    var investedAmount = employeeAccountBalance.InvestedAmount;
+                    //var responseObject = JObject.Parse(employeeAccountBalance.ToString());
+                    //Console.WriteLine("Employee account balance : " + employeeAccountBalance.ToString());
                     /*if (!(responseObject["sources"][0]["vestedBalance"].Count() > 1))
                     {
                         throw new Exception("Error in getting the account balance");
                     }*/
-                    var amountUpdated = Convert.ToInt32(responseObject["investedAmount"].ToString());
+                    var amountUpdated = investedAmount;
                     Console.WriteLine($"Amount updated as : {amountUpdated}");
                     if(String.IsNullOrEmpty(fundingType))
                     {
                         return null;
                     }
-                    if (amountUpdated != totalAmount)
+                    if (investedAmount != totalAmount)
                     {
                         throw new Exception($"Amount updated as {amountUpdated} but total amount given in file is {totalAmount}");
                     }
@@ -1081,9 +1087,10 @@ namespace RefitSandBox
                         {
                             var requestBody = JsonConvert.SerializeObject(model);
                             var requestPayload = JObject.Parse(requestBody);
+                            Console.WriteLine("Enrollment request :" + requestPayload);
                             string Action = "api/Enrollment/SaveEnrollmentSetting";
                             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
                             var task = await httpClient.PostAsync($"{BaseURL}{Action}/", data);
                             var contentTask = await task.Content.ReadAsStringAsync();
                             response = JObject.Parse(contentTask);
@@ -1309,7 +1316,7 @@ namespace RefitSandBox
              return Redirect(authURL);
         }
         
-        public Func<object> EndpointToViewModel(string endpoint)
+        public async Task<Func<object>> EndpointToViewModel(string endpoint)
         {
             var endpointToViewModel = new Dictionary<string, Func<object>>
             {
@@ -1319,7 +1326,9 @@ namespace RefitSandBox
                 { "/api/Loan/SaveLoan", () => new LoanSettingViewModel() },
                 { "/api/v1/Loan/SaveInprogressLoanRequest", () => new EmployeeLoanViewModel()},
                 {"/api/Vesting/SaveVesting", () => new VestingViewModel() },
-                {"/api/v1/Loan/SaveLoanRefinance", () => new LoanRefinanceViewModel() }
+                {"/api/v1/Loan/SaveLoanRefinance", () => new LoanRefinanceViewModel() },
+                {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
+                { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()}
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -1327,8 +1336,23 @@ namespace RefitSandBox
                var Model = viewModelType();
                modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
                var listOfProperties = GetJsonPropertyList(Model);
-               return viewModelType;    
+               if (endpoint == "/api/Enrollment/SaveEnrollmentSetting")
+               {
+                   var program = new Program();
+                   var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+                   var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+                   if (listOfPlanInvestments == null)
+                   {
+                       throw new Exception("Investments not mapped to this plan");
+                   }
+                   var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioName);
+                   modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioName].ToString();
+                   RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
+               }
+                return viewModelType;    
             }
+
+            
             
             return null;
 
@@ -1376,19 +1400,34 @@ namespace RefitSandBox
             if (filename == "TradeOrder.csv")
             {
                 var CusipWithTradeOrderNumber = await program.SFTPConnect();
-                var value = CusipWithTradeOrderNumber.GetValueOrDefault("SEAS00001");
-                if(value != null)
-                {
-                    foreach (var row in dataTable.Rows)
-                    {
-                        var Columnname = row[0];
-                        UpdateFile(FileToEdit, Columnname, value, directoryPath);
-                    }
-                }
-                else
+                //var value = CusipWithTradeOrderNumber.GetValueOrDefault("SEAS00001");
+                var matchingCusips = CusipWithTradeOrderNumber.Where(_ => _.Key.Contains("SEAS")).ToList();
+                var tradeOrderNumberList = matchingCusips.Select(_ => _.Value).ToList();
+                if (!matchingCusips.Any())
                 {
                     throw new Exception("Trade order number is not present in Trade response file");
                 }
+                foreach (var value in matchingCusips)
+                {
+                    var tradeOrderNumber = value.Key;
+                    if (tradeOrderNumber != null)
+                    {
+                        foreach (var row in dataTable.Rows)
+                        {
+                            var Columnname = row[0];
+                            if(matchingCusips.Count == 1)
+                            {
+                                UpdateFile(FileToEdit, Columnname, tradeOrderNumber, directoryPath);
+                            }
+                            else if(matchingCusips.Count > 1)
+                            {
+                                UpdateFileWithMultipleLines(FileToEdit, matchingCusips.Count,tradeOrderNumberList, directoryPath);
+                            }
+
+                        }
+                    }
+                }
+                
             }
             else
             {
@@ -1469,6 +1508,33 @@ namespace RefitSandBox
                     foreach (var value in fileToEdit.Values)
                     {
                         csvWriter.WriteField(value);
+                    }
+                }
+
+            }
+        }
+
+        public static async void UpdateFileWithMultipleLines(Dictionary<string, string> fileToEdit, int noOfLines, List<string> Value, string FilePath)
+        {
+            using (var writerEdit = new StreamWriter(FilePath, false))
+            {
+                using (var csvWriter = new CsvWriter(writerEdit, CultureInfo.CurrentCulture))
+                {
+                    foreach (var header in fileToEdit.Keys)
+                    {
+                        csvWriter.WriteField(header);
+                    }
+                    csvWriter.NextRecord();
+                    
+                    for(int i = 0; i < noOfLines; i++)
+                    {
+                        fileToEdit["Order Number"] = Value[i];
+                        foreach (var value in fileToEdit.Values)
+                        {
+                            csvWriter.WriteField(value);
+                        }
+                        csvWriter.NextRecord();
+
                     }
                 }
 
@@ -1877,6 +1943,452 @@ namespace RefitSandBox
             }
         }
 
+        public async Task AddValuesToCollection(int noOfItems, int value1, int value2, string propertyName)
+        {
+            var property = modelAfterConvention.GetType().GetProperty(propertyName);
+            var collection = property.GetValue(modelAfterConvention) as IList;
+
+            if (collection != null)
+            {
+                collection.Clear();
+                for (int i = 0; i < noOfItems; i++)
+                {
+                    collection.Add(i % 2 == 0 ? value1 : value2);
+                }
+            }
+            else
+            {
+                throw new Exception("The property is not a collection type.");
+            }
+            property.SetValue(modelAfterConvention, collection);
+        }
+        /*public async Task<System.Reflection.PropertyInfo> FindProperty(object targetObject, System.Reflection.PropertyInfo propertyInfo, string propertyName)
+        {
+            foreach(var item in targetObject.GetType().GetProperties())
+            {
+                if (item.PropertyType.Name == propertyName)
+                {
+                    return propertyInfo;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return null;
+        }
+        object instance;
+        public async Task EditCollection(int noOfBlocks,string propertyName, Reqnroll.DataTable dataTable)
+        {
+            var property = modelAfterConvention.GetType().GetProperty(propertyName);
+            
+            if (property == null)
+            {
+                foreach (var item in modelAfterConvention.GetType().GetProperties())
+                {
+                    if(item.PropertyType.IsGenericType && item.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>))
+                    {
+                        instance = item.GetValue(modelAfterConvention);
+                    }
+                    var result = await FindProperty(instance,item, propertyName);
+                    if(result != null)
+                    {
+                        property = result;
+                        return;
+                    }
+                }
+            }
+
+            var collection = property.GetValue(modelAfterConvention) as IList;
+            if (collection == null)
+            {
+                throw new Exception("The property is not a collection type.");
+            }
+
+            collection.Clear();
+            var elementType = property.PropertyType.GetGenericArguments().FirstOrDefault();
+            if (elementType == null)
+            {
+                throw new Exception("Could not determine collection element type.");
+            }
+            for (int i = 0; i < noOfBlocks; i++)
+            {
+                var newElement = Activator.CreateInstance(elementType);
+                foreach (var row in dataTable.Rows)
+                {
+                    var propertyName1 = row[1];
+                    var value = row[2];
+                    var blockNumber = row[0];
+                    if(i == (Convert.ToInt32(blockNumber)-1))
+                    {
+                        var elementProperty = elementType.GetProperty(propertyName1);
+                        if (elementProperty != null)
+                        {
+                            var propertyType = elementProperty.PropertyType;
+                            if (propertyType == typeof(int))
+                            {
+                                var convertedValue = Convert.ToInt32(value);
+                                elementProperty.SetValue(newElement, convertedValue);
+                            }
+                            else if (propertyType == typeof(double))
+                            {
+                                var convertedValue = Convert.ToDouble(value);
+                                elementProperty.SetValue(newElement, convertedValue);
+                            }
+                            
+                            else if (propertyType == typeof(bool))
+                            {
+                                var convertedValue = Convert.ToBoolean(value);
+                                elementProperty.SetValue(newElement, convertedValue);
+                            }
+                            else if (propertyType == typeof(DateTime))
+                            {
+                                var convertedValue = DateTime.Parse(value);
+                                elementProperty.SetValue(newElement, convertedValue);
+                            }
+                            else if (propertyType == typeof(string))
+                            {
+                                var convertedValue = value.ToString();
+                                elementProperty.SetValue(newElement, convertedValue);
+                            }
+                            if (Nullable.GetUnderlyingType(propertyType) != null)
+                            {
+                                if (value == null)
+                                {
+                                    // Set the property to null if the value is null
+                                    elementProperty.SetValue(newElement, null);
+                                }
+                                else
+                                {
+                                    if (propertyType == typeof(DateTimeOffset?))
+                                    {
+                                        var convertedValue = DateTimeOffset.Parse(value); // Parsing the string to DateTimeOffset
+                                        elementProperty.SetValue(newElement, convertedValue);
+                                    }
+                                    else if (propertyType == typeof(double?))
+                                    {
+                                        var convertedValue = double.Parse(value);
+                                        try
+                                        {
+                                            elementProperty.SetValue(newElement, convertedValue);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine(ex.Message);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Otherwise, convert the value to the underlying type and set it
+                                        var underlyingType = Nullable.GetUnderlyingType(propertyType);
+                                        var convertedValue = Convert.ChangeType(value, underlyingType);
+                                        elementProperty.SetValue(newElement, convertedValue);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                
+                            }
+                        }
+                    }
+                    
+                }
+                collection.Add(newElement);
+            }
+            property.SetValue(modelAfterConvention, collection);
+        }*/
+
+        public class PropertySearchResult
+        {
+            public System.Reflection.PropertyInfo Property { get; set; }
+            public object Owner { get; set; }
+        }
+
+        public async Task<PropertySearchResult> FindProperty(object targetObject, string propertyName)
+        {
+            if (targetObject == null)
+                return null;
+
+            var type = targetObject.GetType();
+
+            // 1. Direct match
+            foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (prop.Name == propertyName)
+                {
+                    return new PropertySearchResult
+                    {
+                        Property = prop,
+                        Owner = targetObject
+                    };
+                }
+            }
+
+            // 2. Recurse into properties that are complex objects
+            foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                var value = prop.GetValue(targetObject);
+
+                if (value == null) continue;
+
+                var propType = prop.PropertyType;
+
+                // Avoid primitive types and strings
+                if (propType == typeof(string) || propType.IsPrimitive)
+                    continue;
+
+                // Recurse into collections
+                if (typeof(IEnumerable).IsAssignableFrom(propType) && propType != typeof(string))
+                {
+                    foreach (var item in (IEnumerable)value)
+                    {
+                        var result = await FindProperty(item, propertyName);
+                        if (result != null)
+                            return result;
+                    }
+                }
+                else if (propType.IsClass) // Recurse into complex types
+                {
+                    var result = await FindProperty(value, propertyName);
+                    if (result != null)
+                        return result;
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<string> IdentifyValue(string value)
+        {
+            if (value == "<MPInvestmentId>") return modelPortfolioInvestmentId;
+            else if (value == "<MPInvestmentName>") return modelPortfolioName;
+            else if (value == "<RInvestmentId>") return RegularInvestmentId;
+            else if (value == "<RInvestmentName>") return "SEAS003";
+            else return null;
+        }
+
+        public async Task EditCollection(int noOfBlocks, string propertyName, Reqnroll.DataTable dataTable)
+        {
+            var modelType = modelAfterConvention.GetType();
+            var property = modelType.GetProperty(propertyName);
+            object targetObject = modelAfterConvention;
+
+            // Search recursively if property not found at top level
+            if (property == null)
+            {
+                var searchResult = await FindProperty(modelAfterConvention, propertyName);
+                if (searchResult == null)
+                    throw new Exception($"Property '{propertyName}' not found in the object graph.");
+
+                property = searchResult.Property;
+                targetObject = searchResult.Owner;
+            }
+
+            // Get the collection instance
+            var collection = property.GetValue(targetObject) as IList;
+            if (collection == null)
+                throw new Exception("The property is not a collection type.");
+
+            collection.Clear();
+
+            var elementType = property.PropertyType.GetGenericArguments().FirstOrDefault();
+            if (elementType == null)
+                throw new Exception("Could not determine collection element type.");
+
+            for (int i = 0; i < noOfBlocks; i++)
+            {
+                var newElement = Activator.CreateInstance(elementType);
+
+                foreach (var row in dataTable.Rows)
+                {
+                    var blockNumber = Convert.ToInt32(row[0]);
+                    if (i != (blockNumber - 1)) continue;
+
+                    var elementPropName = row[1].ToString();
+                    var value = row[2];
+                    if(value.Contains("<"))
+                    {
+                        value = await IdentifyValue(value);
+                    }
+                    var elementProperty = elementType.GetProperty(elementPropName);
+
+                    //if (elementProperty == null) continue;
+
+                    var propType = elementProperty.PropertyType;
+                    var underlyingType = Nullable.GetUnderlyingType(propType) ?? propType;
+
+                    try
+                    {
+                        object convertedValue = null;
+
+                        if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+                        {
+                            convertedValue = null;
+                        }
+                        else if (underlyingType == typeof(int))
+                        {
+                            convertedValue = Convert.ToInt32(value);
+                        }
+                        else if (underlyingType == typeof(double))
+                        {
+                            convertedValue = Convert.ToDouble(value);
+                        }
+                        else if (underlyingType == typeof(bool))
+                        {
+                            convertedValue = Convert.ToBoolean(value);
+                        }
+                        else if (underlyingType == typeof(DateTime))
+                        {
+                            convertedValue = DateTime.Parse(value.ToString());
+                        }
+                        else if (underlyingType == typeof(DateTimeOffset))
+                        {
+                            convertedValue = DateTimeOffset.Parse(value.ToString());
+                        }
+                        else if (underlyingType == typeof(string))
+                        {
+                            convertedValue = value.ToString();
+                        }
+                        else
+                        {
+                            convertedValue = Convert.ChangeType(value, underlyingType);
+                        }
+
+                        elementProperty.SetValue(newElement, convertedValue);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error setting property '{elementPropName}': {ex.Message}");
+                    }
+                }
+
+                collection.Add(newElement);
+            }
+
+            // Re-set the collection on the correct object
+            property.SetValue(targetObject, collection);
+        }
+
+
+
+
+        public async Task ModelPortInvestmentAddAndEnrollment(int noOfBlocks, string PropertyName, Reqnroll.DataTable dataTable)
+        {
+            modelPortfolioId = response["investment"]["id"].ToString();
+            modelPortfolioName = response["investment"]["name"].ToString();
+            if (modelPortfolioId == "0") throw new Exception("Model portfolio investment not saved");
+            await AddInvestmentsToPlan(planId, modelPortfolioId, "6068", noOfBlocks, PropertyName, dataTable);
+        }
+
+        public static async Task<Dictionary<string, int>> GetInvestmentIdsByNames(JObject jsonObject, string targetName)
+        {
+            var result = new Dictionary<string, int>();
+
+            // Ensure the operation was successful
+            if (!(bool)jsonObject["isSuccessful"]) return result;
+
+            JArray investmentPlans = (JArray)jsonObject["investmentPlanDetails"];
+
+            foreach (var plan in investmentPlans)
+            {
+                string name = plan["name"]?.ToString();
+                if ((name == "SEAS003" || name == targetName) && int.TryParse(plan["id"]?.ToString(), out int id))
+                {
+                    result[name] = id;
+                }
+            }
+
+            return result;
+        }
+
+        /*public static async Task VerifyAccountBalanceForAnEmployeeSourceWise(string sourceName, Reqnroll.DataTable dataTable)
+        {
+            var program = new Program();
+            if (employeeAccountBalance == null) throw new Exception("Employee account balance is empty");
+            var modelPortfolioName = await program.IdentifyValue("<MPInvestmentName>");
+
+            //source wise investment account balances
+            var sourceBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).Select(_ => _.VestedBalance);
+            var modelPortfolioInvestmentBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.ModelPortfolioName == modelPortfolioName).Sum(_ => _.RegularAccountBalance);
+            var MPInv1AccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS001").Select(_ => _.RegularAccountBalance);
+            var MPInv2AccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS002").Select(_ => _.RegularAccountBalance);
+            var RegularInvestmentAccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Select(_ => _.RegularAccountBalance);
+
+            //investment wise account balances
+            foreach(var row in dataTable.Rows)
+            {
+                var sourceBalanceExpected = row[0];
+            }
+        }*/
+
+        public async Task VerifyAccountBalanceForAnEmployeeSourceWise(string sourceName, Reqnroll.DataTable dataTable)
+        {
+            var program = new Program();
+            if (employeeAccountBalance == null)
+                throw new Exception("Employee account balance is empty");
+
+            var modelPortfolioName = await program.IdentifyValue("<MPInvestmentName>");
+
+            // Source-wise balances
+            var sourceBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).Sum(_ => _.VestedBalance);
+            var modelPortfolioInvestmentBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.ModelPortfolioName == modelPortfolioName).Sum(_ => _.RegularAccountBalance);
+            var MPInv1AccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS001").Sum(_ => _.RegularAccountBalance);
+            var MPInv2AccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS002").Sum(_ => _.RegularAccountBalance);
+            var RegularInvestmentAccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularAccountBalance);
+            var MPInv1Units = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS001").Sum(_ => _.RegularBalanceUnits);
+            var MPInv2Units = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS002").Sum(_ => _.RegularBalanceUnits);
+            var RegularInvestmentUnits = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularBalanceUnits);
+            // Assertions based on table
+            foreach (var row in dataTable.Rows)
+            {
+                var key = row["Key"]?.ToString();
+                var expectedValueStr = row["Value"]?.ToString();
+
+                if (!double.TryParse(expectedValueStr, out var expectedValue))
+                    throw new Exception($"Invalid decimal value for key {key}: {expectedValueStr}");
+
+                switch (key)
+                {
+                    case "SourceBalance":
+                        ClassicAssert.AreEqual(expectedValue, sourceBalance, $"Mismatch in {key}");
+                        break;
+
+                    case "ModelPortfolioBalance":
+                        ClassicAssert.AreEqual(expectedValue, modelPortfolioInvestmentBalance, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv1Balance":
+                        ClassicAssert.AreEqual(expectedValue, MPInv1AccountBalance, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv2Balance":
+                        ClassicAssert.AreEqual(expectedValue, MPInv2AccountBalance, $"Mismatch in {key}");
+                        break;
+
+                    case "RInvBalance":
+                        ClassicAssert.AreEqual(expectedValue, RegularInvestmentAccountBalance, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv1Units":
+                        ClassicAssert.AreEqual(expectedValue,MPInv1Units,$"Mismatch in {key}");
+                        break;
+
+                    case "MPInv2Units":
+                        ClassicAssert.AreEqual(expectedValue, MPInv2Units, $"Mismatch in {key}");
+                        break;
+
+                    case "RInvUnits":
+                        ClassicAssert.AreEqual(expectedValue, RegularInvestmentUnits, $"Mismatch in {key}");
+                        break;
+
+                    default:
+                        throw new Exception($"Unknown key in balance table: {key}");
+                }
+            }
+        }
+
+
         public async Task UpdateEmployeeInformation(Reqnroll.DataTable dataTable)
         {
             //Will do research later blud!!
@@ -2141,6 +2653,27 @@ namespace RefitSandBox
             var addedToPlan = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
         }
 
+        public static async Task AddInvestmentsToPlan(string planId, string modelPortfolioId, string investmentId2, int noOfBlocks,string propertyName, Reqnroll.DataTable dataTable)
+        {
+            var program = new Program();
+            var investmentPlanMapping = new AddInvestmentsInput();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            await program.Configuration("investmentId", modelPortfolioId);
+            await program.Configuration("status", "1");
+            await program.Configuration("investmentType", "1");
+            await program.Configuration("planId", planId);
+            await program.EditCollection(noOfBlocks, propertyName, dataTable);
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var planStatus = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+            await program.Configuration("investmentId", investmentId2);
+            await program.Configuration("status", "1");
+            await program.Configuration("investmentType", "2");
+            await program.Configuration("planId", planId);
+            var addedToPlan = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+        }
+
         public static async Task SaveEnrollmentSettings(string bearer, string planId)
         {
             var program = new Program();
@@ -2178,6 +2711,44 @@ namespace RefitSandBox
             var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
         }
 
+        public async Task SaveEnrollmentForModelPortfolio()
+        {
+            var program = new Program();
+            var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments,modelPortfolioName);
+            modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioName].ToString();
+            RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
+            await program.Configuration("planId", planId);
+            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            await program.Configuration("sourceName", "Pretax");
+            await program.Configuration("contributionRate", "12");
+            await program.Configuration("autoDeferralIncreaseProgram", "true");
+            await program.Configuration("increaseAllowanceDays", "30");
+            await program.Configuration("periodOfIncrease", "1");
+            await program.Configuration("applyADITo", "0");
+            await program.Configuration("adiApplicableTo", "2");
+            await program.Configuration("subjecttoAutoEnrollment", "True");
+            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            await program.Configuration("numberOfDaysWindowIsOpen", "3");
+            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            await program.Configuration("exclusionType", "0");
+            await program.Configuration("usePlanDefaultDeferralElection", "true");
+            await program.Configuration("usePlanDefaultInvestmentElection", "true");
+            await program.Configuration("sendEnrollmentInvite", "1");
+            await program.Configuration("deferralContributionRateUponRehire", "2");
+            await program.Configuration("contributionType", "1");
+            await program.Configuration("sourceId", sourceId);
+            await program.Configuration("autoDeferralIncreasePercentage", "15");
+            await program.Configuration("maximumADIPercentage", "18");
+            /*await program.Configuration("1investmentId", RegularInvestmentId);
+            await program.Configuration("2investmentId", modelPortfolioInvestmentId);
+            await program.Configuration("1investmentName", "SEAS003");
+            await program.Configuration("21investmentName", modelPortfolioName);*/
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
+        }
         public static async Task SaveFunding(string bearer, string planId)
         {
             var program = new Program();

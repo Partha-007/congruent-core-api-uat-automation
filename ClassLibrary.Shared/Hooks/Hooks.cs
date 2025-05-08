@@ -18,7 +18,7 @@ namespace RefitSandBox.Hooks
     public class Hooks
     {
         public Program program;
-        
+
         public string bearer;
         public string planId;
         [BeforeScenario]
@@ -57,7 +57,7 @@ namespace RefitSandBox.Hooks
             var bearerToken = await page.EvaluateAsync<string>("window.localStorage.getItem('COREIIuser:https://dev.coreretirementsolutions.com:COREII')");
             JObject jwt = JObject.Parse(bearerToken.ToString());
             bearer = jwt["access_token"].ToString();
-            if(bearer != null)
+            if (bearer != null)
             {
                 await browser.CloseAsync();
             }
@@ -85,6 +85,24 @@ namespace RefitSandBox.Hooks
             return planId;
         }
 
+        [BeforeScenario("@PlanActivationWithoutInvestmentAndEnrollment")]
+        public async Task PlanActivationWithoutInvestment()
+        {
+            string companyId = await Program.SaveCompany(bearer); // Static method call
+            planId = await Program.SavePlan(bearer, companyId);
+            await Program.SaveSponsor(bearer, planId);
+            await Program.ClearingPartnerPlanMapping(bearer, planId);
+            await Program.EligibilityConfiguration(bearer, planId);
+            await Program.SaveEntryDate(bearer, planId);
+            await Program.SavePretaxSource(bearer, planId);
+            await Program.SaveMatchSource(bearer, planId);
+            await Program.SaveCompensation(bearer, planId);
+            await Program.UpdatePlanStatus(bearer, planId, "2");
+            await Program.UpdatePlanStatus(bearer, planId, "3");
+            await Program.SaveFunding(bearer, planId);
+        }
+
         
+
     }
 }
