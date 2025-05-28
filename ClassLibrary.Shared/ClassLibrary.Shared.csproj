@@ -18,6 +18,10 @@
 		<PackageReference Include="CsvHelper" Version="33.0.1" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
 		<PackageReference Include="Microsoft.NETCore.App" Version="2.1.30" />
 		<PackageReference Include="Microsoft.Playwright" Version="1.50.0-beta-2" />

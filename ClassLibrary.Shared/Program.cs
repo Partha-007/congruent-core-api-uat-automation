@@ -46,7 +46,7 @@ using ClassLibrary.Shared.Enum;
 
 namespace RefitSandBox
 {
-    public class Program : Controller
+    public class Program : TestBase
     {
         public static string bearer;
         public static JObject response;
@@ -56,11 +56,13 @@ namespace RefitSandBox
         System.Type Model;
         public static object modelAfterConvention;
         public static Hooks.Hooks _hooks;
+        public static string _url;
         
         public Program(FakeDataHelper fake, Hooks.Hooks hooks)
         {
             _fakeDataHelper = fake;
             _hooks = hooks;
+            _url = Settings.ApplicationURL;
         }
 
         public Program()
@@ -720,10 +722,10 @@ namespace RefitSandBox
                         form.Add(new StringContent("false"), "isYearEndProcessing");
                         form.Add(new StringContent("0"), "payrollFrequencyId");
 
-                        string BaseURL = "https://dev.coreretirementsolutions.com";
+                        //string BaseURL = "https://dev.coreretirementsolutions.com";
                         var httpClient = new HttpClient()
                         {
-                            BaseAddress = new Uri(BaseURL)
+                            BaseAddress = new Uri(_url)
                         };
 
                         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
@@ -792,10 +794,10 @@ namespace RefitSandBox
                     fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
                     form.Add(fileContent, "File", uploadedFileName);
                     form.Add(new StringContent("1"), "FileType");
-                    string BaseURL = "https://dev.coreretirementsolutions.com";
+                    //string BaseURL = "https://dev.coreretirementsolutions.com";
                     var httpClient = new HttpClient()
                     {
-                        BaseAddress = new Uri(BaseURL)
+                        BaseAddress = new Uri(_url)
                     };
 
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
@@ -850,10 +852,10 @@ namespace RefitSandBox
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
                 form.Add(fileContent, "File", uploadedFileName);
                 form.Add(new StringContent("1"), "FileType");
-                string BaseURL = "https://dev.coreretirementsolutions.com";
+                //string BaseURL = "https://dev.coreretirementsolutions.com";
                 var httpClient = new HttpClient()
                 {
-                    BaseAddress = new Uri(BaseURL)
+                    BaseAddress = new Uri(_url)
                 };
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
@@ -1038,10 +1040,10 @@ namespace RefitSandBox
 
         public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
         {
-            string BaseURL = "https://dev.coreretirementsolutions.com/";
+            //string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(BaseURL)
+                BaseAddress = new Uri(Settings.ApplicationURL)
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
@@ -1077,7 +1079,7 @@ namespace RefitSandBox
                             string Action = "api/v1/EligibleRule/SavePlanAmendmentEligibleRule";
                             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
                             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{BaseURL}{Action}/", data);
+                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
                             var contentTask = await task.Content.ReadAsStringAsync();
                             response = JObject.Parse(contentTask);
                             Console.Write(response.ToString());
@@ -1091,7 +1093,7 @@ namespace RefitSandBox
                             string Action = "api/Enrollment/SaveEnrollmentSetting";
                             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
                             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
-                            var task = await httpClient.PostAsync($"{BaseURL}{Action}/", data);
+                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
                             var contentTask = await task.Content.ReadAsStringAsync();
                             response = JObject.Parse(contentTask);
                             Console.Write(response.ToString());
@@ -1104,7 +1106,7 @@ namespace RefitSandBox
                             string Action = "api/Funding/SaveFunding";
                             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
                             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{BaseURL}{Action}/", data);
+                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
                             var contentTask = await task.Content.ReadAsStringAsync();
                             response = JObject.Parse(contentTask);
                             Console.Write(response.ToString());
@@ -1117,7 +1119,7 @@ namespace RefitSandBox
                             string Action = "api/v1/Loan/SaveInprogressLoanRequest";
                             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
                             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{BaseURL}{Action}/", data);
+                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
                             var contentTask = await task.Content.ReadAsStringAsync();
                             response = JObject.Parse(contentTask);
                             Console.Write(response.ToString());
@@ -1310,11 +1312,11 @@ namespace RefitSandBox
             return responseContent;  // Should contain the access token if successful
         }
 
-        public ActionResult RedirectResponse(string authURL)
+        /*public ActionResult RedirectResponse(string authURL)
         {
 
              return Redirect(authURL);
-        }
+        }*/
         
         public async Task<Func<object>> EndpointToViewModel(string endpoint)
         {
@@ -1615,11 +1617,11 @@ namespace RefitSandBox
         {
             var sourceNames = new List<string>();
             var program = new Program();
-            string BaseURL = "https://dev.coreretirementsolutions.com/";
+            //string BaseURL = "https://dev.coreretirementsolutions.com/";
             string Action = "api/Source/ListSource";
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(BaseURL)
+                BaseAddress = new Uri(_url)
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
@@ -1639,10 +1641,10 @@ namespace RefitSandBox
 
         public static async Task<string> GetEmployeeId()
         {
-            string BaseURL = "https://dev.coreretirementsolutions.com/";
+            //string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(BaseURL)
+                BaseAddress = new Uri(_url)
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
@@ -1663,10 +1665,10 @@ namespace RefitSandBox
         public async Task SaveLoan()
         {
             await Configuration("planId", planId);
-            string BaseURL = "https://dev.coreretirementsolutions.com/";
+            //string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(BaseURL)
+                BaseAddress = new Uri(_url)
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
@@ -1684,10 +1686,10 @@ namespace RefitSandBox
         {
             try
             {
-                string BaseURL = "https://dev.coreretirementsolutions.com/";
+                //string BaseURL = "https://dev.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
-                    BaseAddress = new Uri(BaseURL)
+                    BaseAddress = new Uri(_url)
                 };
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
                 if (loanType == "Loan Refinancing")
@@ -1747,10 +1749,10 @@ namespace RefitSandBox
             try
             {
                 var employeeId = await GetEmployeeId()  ;
-                string BaseURL = "https://dev.coreretirementsolutions.com/";
+                //string BaseURL = "https://dev.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
-                    BaseAddress = new Uri(BaseURL)
+                    BaseAddress = new Uri(_url)
                 };
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
@@ -1868,10 +1870,10 @@ namespace RefitSandBox
         public async Task VerifyAmortizationScheduleForLoan(int NoOfInstallments, Reqnroll.DataTable dataTable)
         {
             await Task.Delay(5000); 
-            string BaseURL = "https://dev.coreretirementsolutions.com/";
+            //string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(BaseURL)
+                BaseAddress = new Uri(_url)
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
@@ -1904,10 +1906,10 @@ namespace RefitSandBox
 
         public async Task VerifyLoanStatus(string expectedStatus)
         {
-            string BaseURL = "https://dev.coreretirementsolutions.com/";
+            //string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(BaseURL)
+                BaseAddress = new Uri(_url)
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
@@ -2789,11 +2791,11 @@ namespace RefitSandBox
             await program.Configuration("fileStatus", null);
             await program.Configuration("fileType", null);
             await program.Configuration("fileName", null);
-            string BaseURL = "https://dev.coreretirementsolutions.com/";
+            //string BaseURL = "https://dev.coreretirementsolutions.com/";
             payrollSearch = (UploadedFileInformationDetails)modelAfterConvention;
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(BaseURL)
+                BaseAddress = new Uri(_url)
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
