@@ -11,7 +11,7 @@ public abstract class TestBase
     protected TestBase()
     {
         var config = new ConfigurationBuilder()
-            .SetBasePath("D:\\API_AutomationSuite\\Congruent.Core.API.TestAutomation\\ClassLibrary.Shared\\AppSettings")
+            .SetBasePath("D:\\NewBackEndAutomation\\Congruent.Core.API.TestAutomation\\ClassLibrary.Shared\\AppSettings")
             .AddJsonFile("appsettings.json")
             .Build();
 

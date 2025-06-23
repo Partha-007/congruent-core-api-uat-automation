@@ -71,4 +71,8 @@
 	<ItemGroup>
 	  <Folder Include="NewFolder\" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\SourceGenerator\SourceGenerator.csproj" />
+	</ItemGroup>
 </Project>

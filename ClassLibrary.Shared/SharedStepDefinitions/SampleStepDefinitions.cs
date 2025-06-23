@@ -136,7 +136,7 @@ namespace SharedStepDefinitions
             await _program.SFTPConnect();
         }
 
-        
+
 
         [When("Loan request has been approved and trade for loan is executed for {string}")]
         public async Task WhenLoanRequestHasBeenApprovedAndTradeForLoanIsExecutedFor(string requestType)
@@ -205,14 +205,38 @@ namespace SharedStepDefinitions
             await _program.AddValuesToCollection(noOfInvestments, investmentId1, investmentId2, propertyName);
         }
 
+        [When("Model portfolio investment configured with {int} investments with ids as {int} and {int} and {int} for the property {string}")]
+        public async Task WhenModelPortfolioInvestmentConfiguredWithInvestmentsWithIdsAsAndForTheProperty1(int noOfInvestments, int investmentId1, int investmentId2, int investmentId3, string propertyName)
+        {
+            await _program.AddValuesToCollection1(noOfInvestments, investmentId1, investmentId2, investmentId3, propertyName);
+        }
+
+        [When("Model portfolio investment configured with the following investments for the property {string}")]
+        public async Task WhenModelPortfolioInvestmentConfiguredWithInvestmentsWithIdsAndForTheProperty(string propertyName, Reqnroll.DataTable dataTable)
+        {
+            await _program.AddValuesToCollectionFromTable(propertyName, dataTable);
+        }
+
         [When("Collection in a model is configured with {int} blocks for the property {string} with values as given below")]
         public async Task WhenCollectionInAModelIsConfiguredWithBlocksForThePropertyWithValuesAsGivenBelow(int noOfBlocks, string propertyName, DataTable dataTable)
         {
             await _program.EditCollection(noOfBlocks, propertyName, dataTable);
-            if(propertyName == "InvestmentElectionValuesList")
+
+        }
+
+        [When("Collection in a model is configured with {int} blocks for the property {string} with values to save model portfolio as given below")]
+        public async Task WhenCollectionInAModelIsConfiguredWithBlocksForThePropertyWithValuesToSaveModelPortFolioAsGivenBelow(int noOfBlocks, string propertyName, DataTable dataTable)
+        {
+            await _program.EditCollection(noOfBlocks, propertyName, dataTable);
+            if (noOfBlocks == 2)
             {
                 await _program.SaveEnrollmentForModelPortfolio();
             }
+            else
+            {
+                await _program.SaveEnrollmentForModelPortfolioWithDiffernentInvestionElectionToAllSources();
+            }
+
         }
 
         [When("Model portfolio investment added to plan and enrollment configured with {int} blocks for the property {string} with values as given below")]

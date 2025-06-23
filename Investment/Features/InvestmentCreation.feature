@@ -1,0 +1,35 @@
+﻿Feature: Investment creation
+
+
+
+@PlanActivationWithoutInvestmentAndEnrollment
+Scenario: Investment creation
+
+Given Model is selected for the endpoint "/api/v1/Investment/AddMasterInvestment"
+
+When Configuration has been made as per following
+| Key                 | Value        |
+| includeInvestmentIn | 1            |
+| type                | 2            |
+| status              | 1            |
+| name                | SEAS029      |
+| typeOfEarnings      | 1            |
+| isInvestmentQDIA    | true         |
+| investmentCategory  | 2            |
+| fundCode            | ABCDEF       |
+| cusip               | SEAS00028    |
+| ticker              | SEAS1        |
+| fundFamily          |              |
+| volatility          | 1            |
+| accountType         | 1            |
+| tenantId            | 1            |
+| shareClass          | 1            |
+| isin                | SEAS00001234 |
+| sedol               | SEAS001      |
+| suspendedFromDate   |          |
+| suspendedToDate     |          |
+
+#When the property "name" is configured with "alphabets" with 10 characters
+
+
+When API request has been sent to the "IInvestment" with the method name "AddMasterInvestment"

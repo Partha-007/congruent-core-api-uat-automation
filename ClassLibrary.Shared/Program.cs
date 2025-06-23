@@ -42,6 +42,8 @@ using Renci.SshNet;
 using System.Runtime.InteropServices.WindowsRuntime;
 using AutoMapper;
 using ClassLibrary.Shared.Enum;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 
 
 namespace RefitSandBox
@@ -57,7 +59,7 @@ namespace RefitSandBox
         public static object modelAfterConvention;
         public static Hooks.Hooks _hooks;
         public static string _url;
-        
+
         public Program(FakeDataHelper fake, Hooks.Hooks hooks)
         {
             _fakeDataHelper = fake;
@@ -78,6 +80,7 @@ namespace RefitSandBox
         public static string rkPlanNumber;
         public static string sourceId;
         public static string matchSourceId;
+        public static string rothSourceId;
         public static string uploadedFileId;
         public static string fundingBankId;
         public static string payrollFundingId;
@@ -90,7 +93,7 @@ namespace RefitSandBox
         public static string firstRepaymentDate;
         public static string modelPortfolioId;
         public static string modelPortfolioName;
-        public static string modelPortfolioInvestmentId, RegularInvestmentId;
+        public static string modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2;
         public static AccountBalanceByPlanResponse employeeAccountBalance;
 
         public async Task UserLogin()
@@ -170,7 +173,7 @@ namespace RefitSandBox
                 code.ToString();
             }
 
-            
+
             using (var client2 = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false, UseCookies = true }))
             {
                 HttpResponseMessage responseMessagewithCode = await client2.GetAsync(codeRequestUrl);
@@ -214,13 +217,13 @@ namespace RefitSandBox
             JObject jwt = JObject.Parse(bearerToken.ToString());
             bearer = jwt["access_token"].ToString();
         }
-        
+
         public async Task LoadPlanBasicDetails()
         {
             planModel = new PlanDetailsViewModel();
             FakeDataHelper.PopulateModelWithFakeData(planModel);
             Console.WriteLine(planModel.ToString());
-            
+
             //request = JsonConvert.SerializeObject(planModel, Formatting.Indented);
         }
         public List<string> JsonProperties = new List<string>();
@@ -342,7 +345,7 @@ namespace RefitSandBox
         {
             int increment = int.Parse(incrementValue);
             var Value = await GetDate(increment, pattern);
-            if(ControlName == "firstRepaymentDate")
+            if (ControlName == "firstRepaymentDate")
             {
                 firstRepaymentDate = Value;
             }
@@ -419,7 +422,7 @@ namespace RefitSandBox
                                                 if (property.PropertyType == typeof(DateTimeOffset?))
                                                 {
                                                     var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
-                                                    if(ControlName == "firstRepaymentDate")
+                                                    if (ControlName == "firstRepaymentDate")
                                                     {
                                                         string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
                                                         property.SetValue(collectionItem, convertedValue);
@@ -516,7 +519,7 @@ namespace RefitSandBox
                                     {
                                         property.SetValue(modelAfterConvention, formattedValue);
                                     }
-                                    catch(Exception ex)
+                                    catch (Exception ex)
                                     {
                                         Console.WriteLine(ex.Message);
                                     }
@@ -525,7 +528,7 @@ namespace RefitSandBox
                                 {
                                     property.SetValue(modelAfterConvention, convertedValue);
                                 }
-                                
+
                             }
                             else if (property.PropertyType == typeof(double?))
                             {
@@ -562,7 +565,7 @@ namespace RefitSandBox
                         var propertiesInModel = modelAfterConvention.GetType().GetProperty(property.Name);
                         var currentModel = propertiesInModel.GetValue(modelAfterConvention);
                         var typeOfCollection = System.Type.GetType($"MyNamespace.{PropertyDeclaredType}");
-                        if(String.IsNullOrEmpty(Value))
+                        if (String.IsNullOrEmpty(Value))
                         {
                             try
                             {
@@ -571,7 +574,7 @@ namespace RefitSandBox
                                 var collectionInstance = Activator.CreateInstance(listType); // Instantiate the List<T>
                                 property.SetValue(modelAfterConvention, collectionInstance);
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
 
                             }
@@ -701,7 +704,7 @@ namespace RefitSandBox
             MultipartFormDataContent form;
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
             uploadedFileName = Path.Combine(projectDirectory, "Templates", filename);
-            if(filename == "CombinedFile.csv" || filename == "LoanRepayment.csv")
+            if (filename == "CombinedFile.csv" || filename == "LoanRepayment.csv")
             {
                 using (form = new MultipartFormDataContent())
                 {
@@ -744,7 +747,7 @@ namespace RefitSandBox
                         {
                             var acceptAllWarningsClient = RestService.For<IPayroll>(httpClient);
                             var response = await acceptAllWarningsClient.AcceptAllWarningsInaFile(fileId);
-                            if(!response)
+                            if (!response)
                             {
                                 throw new Exception("Error in accepting warnings");
                             }
@@ -752,7 +755,7 @@ namespace RefitSandBox
                         await Task.Delay(5000);
                         var finalSubmit = await payrollClient.FinalSubmit(fileId, "3");
                         await Task.Delay(5000);
-                        if(fundingType == "File")
+                        if (fundingType == "File")
                         {
                             var fundByFile = await payrollClient.FinalSubmit(fileId, fundingType);
                             var responseAfterFileSubmission = fundByFile.IsSuccessfull;
@@ -776,15 +779,17 @@ namespace RefitSandBox
                             {
                                 await Task.Delay(10000);
                             }
+                            
                             await payrollClient.GenerateConsolidation();
-                            await Task.Delay(5000);
+
+                            await Task.Delay(40000);
                         }
                         return responseObject;
 
                     }
                 }
             }
-            else if(filename == "TradeOrder.csv")
+            else if (filename == "TradeOrder.csv")
             {
                 using (form = new MultipartFormDataContent())
                 {
@@ -818,7 +823,7 @@ namespace RefitSandBox
                     }*/
                     var amountUpdated = investedAmount;
                     Console.WriteLine($"Amount updated as : {amountUpdated}");
-                    if(String.IsNullOrEmpty(fundingType))
+                    if (String.IsNullOrEmpty(fundingType))
                     {
                         return null;
                     }
@@ -826,7 +831,7 @@ namespace RefitSandBox
                     {
                         throw new Exception($"Amount updated as {amountUpdated} but total amount given in file is {totalAmount}");
                     }
-                    
+
                     return null;
                 }
             }
@@ -834,9 +839,9 @@ namespace RefitSandBox
             {
                 return null;
             }
-            
+
             //var formData = HandlingFileUpload(filename);
-            
+
         }
 
         public async Task TradeOrderFileUpload(string filename)
@@ -866,9 +871,21 @@ namespace RefitSandBox
 
         public async Task<Dictionary<string, string>> SFTPConnect()
         {
-            string hostName = "10.4.1.5";
-            string userName = "ftp_dev";
-            string password = "jack@123";
+
+            var configuration = new ConfigurationBuilder()
+            .SetBasePath("D:\\NewBackEndAutomation\\Congruent.Core.API.TestAutomation\\ClassLibrary.Shared\\AppSettings")
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+
+            string url = configuration["AppSettings:ApplicationURL"];
+            string ftp_user = configuration["AppSettings:ftp_user"];
+            string userName = configuration["AppSettings:ftp_userName"];
+            string password = configuration["AppSettings:ftp_password"];
+            string hostName = configuration["AppSettings:ftp_host"];
+
+            //string hostName = "10.4.1.5";
+            //string userName = "ftp_dev";
+            //string password = "jack@123";
             var FileContent = new List<string>();
             var connectionInfo = new PasswordConnectionInfo(hostName, userName, password);
             using (var sftp = new SftpClient(connectionInfo))
@@ -880,8 +897,9 @@ namespace RefitSandBox
                     Console.WriteLine("Connected to the SFTP server.");
 
                     // List files in the root directory of the SFTP server
-                    var files = sftp.ListDirectory("/dev/outbound/").OrderByDescending(_ => _.LastWriteTimeUtc).ToList();
-                    
+                    var sftpDirectory = $"/{ftp_user}/outbound/";
+                    var files = sftp.ListDirectory(sftpDirectory).OrderByDescending(_ => _.LastWriteTimeUtc).ToList();
+
                     var fileToRead = files[1];
                     //var checkFileName = "/qa/outbound/TRADE.20250311.C0602959";
                     using (var fileStream = sftp.OpenRead(fileToRead.FullName))
@@ -923,9 +941,9 @@ namespace RefitSandBox
         string errorCode;
         public void AssertResponse(string expectedValue)
         {
-            
+
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
-            if(responseBody.ErrorMessages.Count > 1)
+            if (responseBody.ErrorMessages.Count > 1)
             {
                 Console.WriteLine("More than one error is returned");
                 Assert.Fail();
@@ -948,7 +966,7 @@ namespace RefitSandBox
         public void VerifyResponse()
         {
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
-            if(responseBody.ErrorMessages.Count == 0 && responseBody.isSuccessful)
+            if (responseBody.ErrorMessages.Count == 0 && responseBody.isSuccessful)
             {
                 Assert.Pass();
             }
@@ -960,19 +978,19 @@ namespace RefitSandBox
         }
         public async Task APIRequestForRefit(string interfaceName, string methodName)
         {
-            if(interfaceName == "IPlanDetailsSave" && methodName != "CreateNewPlanAsync")
+            if (interfaceName == "IPlanDetailsSave" && methodName != "CreateNewPlanAsync")
             {
-                if(methodName == "SaveLoan")
+                if (methodName == "SaveLoan")
                 {
                     await Configuration("sourceId", sourceId);
                 }
-                if(methodName == "SaveVesting")
+                if (methodName == "SaveVesting")
                 {
                     await Configuration("sourceId", matchSourceId);
                 }
                 FakeDataHelper.AssignId(planId, "PlanId", modelAfterConvention);
             }
-            if(methodName == "SaveInprogressLoanRequest")
+            if (methodName == "SaveInprogressLoanRequest")
             {
                 var employeeId = await GetEmployeeId();
                 await Configuration("employeeId", employeeId);
@@ -980,12 +998,13 @@ namespace RefitSandBox
                 await Configuration("loanDocumentTypeId", loanDocumentId);
                 await Configuration("loanSettingId", loanSettingsId);
             }
-            if(methodName == "SaveLoanRefinance")
+            if (methodName == "SaveLoanRefinance")
             {
                 await Configuration("loanId", loanId);
             }
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
             var response = await SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, methodName);
+            Console.WriteLine("Response : " + response.ToString());
         }
 
         /*public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
@@ -1055,7 +1074,7 @@ namespace RefitSandBox
             var methodToSearch = interfaceType.GetMethod(methodName);
             if (methodToSearch != null)
             {
-                
+
                 try
                 {
                     object responseObject = null;
@@ -1070,9 +1089,9 @@ namespace RefitSandBox
                         {
                             model = Convert.ChangeType(model, parameterType); // Convert the model to the expected type
                         }
-                        
+
                         Console.WriteLine(JsonConvert.SerializeObject(model));
-                        if(methodName == "SavePlanAmendmentEligibleRule")
+                        if (methodName == "SavePlanAmendmentEligibleRule")
                         {
                             var requestBody = JsonConvert.SerializeObject(model);
                             var requestPayload = JObject.Parse(requestBody);
@@ -1085,21 +1104,28 @@ namespace RefitSandBox
                             Console.Write(response.ToString());
                             return response;
                         }
-                        else if(methodName == "SaveEnrollmentSettings")
+                        else if (methodName == "SaveEnrollmentSettings")
                         {
                             var requestBody = JsonConvert.SerializeObject(model);
                             var requestPayload = JObject.Parse(requestBody);
                             Console.WriteLine("Enrollment request :" + requestPayload);
                             string Action = "api/Enrollment/SaveEnrollmentSetting";
                             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                           
+                            //    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                          
+                            // Use _hooks.bearer if available, otherwise fallback to the provided bearer
+                            string token = _hooks != null && !string.IsNullOrEmpty(_hooks.bearer) ? _hooks.bearer : bearer;
+                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                            Task.Delay(10000);
                             var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
                             var contentTask = await task.Content.ReadAsStringAsync();
                             response = JObject.Parse(contentTask);
                             Console.Write(response.ToString());
                             return response;
                         }
-                        else if(methodName == "SaveFunding")
+                        else if (methodName == "SaveFunding")
                         {
                             var requestBody = JsonConvert.SerializeObject(model);
                             var requestPayload = JObject.Parse(requestBody);
@@ -1112,7 +1138,7 @@ namespace RefitSandBox
                             Console.Write(response.ToString());
                             return response;
                         }
-                        else if(methodName == "SaveInprogressLoanRequest")
+                        else if (methodName == "SaveInprogressLoanRequest")
                         {
                             var requestBody = JsonConvert.SerializeObject(model);
                             var requestPayload = JObject.Parse(requestBody);
@@ -1138,7 +1164,7 @@ namespace RefitSandBox
                             Console.WriteLine("Response: " + responseObject?.ToString());
                         }
                         // Call method dynamically based on the passed model
-                        
+
                     }
                     else
                     {
@@ -1146,20 +1172,20 @@ namespace RefitSandBox
                     }
 
                     Console.WriteLine("Response: " + responseObject?.ToString());
-                    if(responseObject is bool)
+                    if (responseObject is bool)
                     {
                         Console.WriteLine("API Returned true");
                         return response;
                     }
-                    else 
+                    else
                     {
                         response = JObject.Parse(responseObject?.ToString());
 
                         Console.Write(responseObject.ToString());
                         return response;
                     }
-                    
-                   
+
+
                 }
                 catch (Exception ex)
                 {
@@ -1199,21 +1225,21 @@ namespace RefitSandBox
                 }
             }
         }
-        
+
         public async Task Main(string[] args)
         {
             string authorizationEndpoint = "https://test.coreretirementsolutions.com/connect/authorize";
             string redirectUri = "https://test.coreretirementsolutions.com/api/swagger/oauth2-redirect.html";
-            string codeChallenge;  
+            string codeChallenge;
             string codeChallengeMethod;
             (codeChallenge, codeChallengeMethod) = PKCEHelper.GeneratePKCE();
             codeChallengeMethod = "plain";
             string authRequestUrl = $"{authorizationEndpoint}?response_type=code&client_id=CoreII-Swagger&redirect_uri={Uri.EscapeDataString(redirectUri)}&code_challenge={Uri.EscapeDataString(codeChallenge)}&code_challenge_method={codeChallengeMethod}";
-            
+
             //Program prg = new Program();
             Uri finalUrl;
             string[] requestid;
-            using (var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true } ))
+            using (var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true }))
             {
                 // Send a GET request to the provided URL
                 HttpResponseMessage response = await client.GetAsync(authRequestUrl);
@@ -1222,7 +1248,7 @@ namespace RefitSandBox
                 finalUrl = response.RequestMessage.RequestUri;
 
                 // Return the final redirected URL
-                
+
                 Uri uri = new Uri(finalUrl.ToString());
                 string returnUrl = HttpUtility.ParseQueryString(uri.Query)["ReturnUrl"];
 
@@ -1234,7 +1260,7 @@ namespace RefitSandBox
 
                 requestid = queryParams.GetValues(0);
                 // Step 4: Extract the request_id
-                foreach(var items in requestid)
+                foreach (var items in requestid)
                 {
                     Console.WriteLine(items);
                 }
@@ -1245,24 +1271,24 @@ namespace RefitSandBox
 
             string codeRequestUrl = $"https://test.coreretirementsolutions.com/connect/authorize?request_id={requestid[0]}";
 
-            using (var client1 = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false}))
+            using (var client1 = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }))
             {
-               
+
                 string username = "vigneshwaran.n@cspl.com";
                 string password = "Admin@123";
                 HttpResponseMessage responseMessage = await client1.GetAsync(codeRequestUrl);
                 var redirectURL = responseMessage.Headers.Location.ToString();
                 var redirectResponse = await client1.GetAsync(redirectURL);
                 redirectResponse.EnsureSuccessStatusCode();
-                
+
                 var loginPageContent = await redirectResponse.Content.ReadAsStringAsync();
 
                 var htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(loginPageContent);
                 var tokenNode = htmlDoc.DocumentNode.SelectSingleNode("//input[@name='__RequestVerificationToken']");
-                var csrfToken = tokenNode.GetAttributeValue("value","");
+                var csrfToken = tokenNode.GetAttributeValue("value", "");
                 Uri code = responseMessage.RequestMessage.RequestUri;
-                
+
                 var loginData = new Dictionary<string, string>
                 {
                     { "Input.Email", username },
@@ -1282,12 +1308,12 @@ namespace RefitSandBox
             {
                 HttpResponseMessage responseMessagewithCode = await client2.GetAsync(codeRequestUrl);
             }
-               
+
             //var response1 = prg.RedirectResponse(authRequestUrl);
-            
-            
+
+
             var httpClient1 = new HttpClient();
-            
+
             var res = httpClient1.GetAsync(authRequestUrl);
         }
 
@@ -1317,7 +1343,7 @@ namespace RefitSandBox
 
              return Redirect(authURL);
         }*/
-        
+
         public async Task<Func<object>> EndpointToViewModel(string endpoint)
         {
             var endpointToViewModel = new Dictionary<string, Func<object>>
@@ -1335,34 +1361,36 @@ namespace RefitSandBox
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
             {
-               var Model = viewModelType();
-               modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
-               var listOfProperties = GetJsonPropertyList(Model);
-               if (endpoint == "/api/Enrollment/SaveEnrollmentSetting")
-               {
-                   var program = new Program();
-                   var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-                   var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
-                   if (listOfPlanInvestments == null)
-                   {
-                       throw new Exception("Investments not mapped to this plan");
-                   }
-                   var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioName);
-                   modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioName].ToString();
-                   RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
-               }
-                return viewModelType;    
+                var Model = viewModelType();
+                modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
+                var listOfProperties = GetJsonPropertyList(Model);
+                if (endpoint == "/api/Enrollment/SaveEnrollmentSetting")
+                {
+                    var program = new Program();
+                    var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+                    var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+                    if (listOfPlanInvestments == null)
+                    {
+                        throw new Exception("Investments not mapped to this plan");
+                    }
+                    var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
+
+                    modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
+                    modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
+                    RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
+                }
+                return viewModelType;
             }
 
-            
-            
+
+
             return null;
 
         }
 
         public static async Task FileConfiguration(string filename, Reqnroll.DataTable dataTable)
         {
-            switch(filename)
+            switch (filename)
             {
                 case "CombinedFile.csv":
                     var sourceNames = await GetSourceNameHeader(_hooks.planId);
@@ -1394,11 +1422,11 @@ namespace RefitSandBox
             string directoryPath = Path.Combine(projectDirectory, "Templates", filename);
             var FileToEdit = new Dictionary<string, string>();
             FileToEdit = await ReadCsvToDictionary(directoryPath);
-            if(employeeSSN == null)
+            if (employeeSSN == null)
             {
                 employeeSSN = FileToEdit.GetValueOrDefault("SSN");
             }
-            
+
             if (filename == "TradeOrder.csv")
             {
                 var CusipWithTradeOrderNumber = await program.SFTPConnect();
@@ -1411,25 +1439,25 @@ namespace RefitSandBox
                 }
                 foreach (var value in matchingCusips)
                 {
-                    var tradeOrderNumber = value.Key;
+                    var tradeOrderNumber = value.Value;
                     if (tradeOrderNumber != null)
                     {
                         foreach (var row in dataTable.Rows)
                         {
                             var Columnname = row[0];
-                            if(matchingCusips.Count == 1)
+                            if (matchingCusips.Count == 1)
                             {
                                 UpdateFile(FileToEdit, Columnname, tradeOrderNumber, directoryPath);
                             }
-                            else if(matchingCusips.Count > 1)
+                            else if (matchingCusips.Count > 1)
                             {
-                                UpdateFileWithMultipleLines(FileToEdit, matchingCusips.Count,tradeOrderNumberList, directoryPath);
+                                UpdateFileWithMultipleLines(FileToEdit, matchingCusips.Count, tradeOrderNumberList, directoryPath);
                             }
 
                         }
                     }
                 }
-                
+
             }
             else
             {
@@ -1440,16 +1468,16 @@ namespace RefitSandBox
                     UpdateFile(FileToEdit, Columnname, Value, directoryPath);
                 }
             }
-            
-            
+
+
         }
         public static int count = 0;
         public static async void UpdateFile(Dictionary<string, string> fileToEdit, string ColumnHeader, string Value, string FilePath)
         {
-            
+
             if (fileToEdit.Count != 0)
             {
-                if(ColumnHeader == "PAY DATE" && firstRepaymentDate != null && Value != "Currentdate")
+                if (ColumnHeader == "PAY DATE" && firstRepaymentDate != null && Value != "Currentdate")
                 {
                     Value = firstRepaymentDate;
                 }
@@ -1458,7 +1486,7 @@ namespace RefitSandBox
                     var currentDate = await GetDate(0, "day");
                     Value = currentDate;
                 }
-                if(Value.Contains("days", StringComparison.OrdinalIgnoreCase))
+                if (Value.Contains("days", StringComparison.OrdinalIgnoreCase))
                 {
                     var date = Value.Split(" ");
                     int numberOfDays = Convert.ToInt32(date[0]);
@@ -1469,21 +1497,21 @@ namespace RefitSandBox
                 {
                     fileToEdit[ColumnHeader] = Value;
                 }
-                else if(fileToEdit.Keys.Any(_ => _.Contains(ColumnHeader,StringComparison.OrdinalIgnoreCase)))
+                else if (fileToEdit.Keys.Any(_ => _.Contains(ColumnHeader, StringComparison.OrdinalIgnoreCase)))
                 {
                     var pretaxHeader = fileToEdit.Keys.First(_ => _.Contains(ColumnHeader, StringComparison.OrdinalIgnoreCase));
                     fileToEdit[pretaxHeader] = Value;
-                    if(Value is string)
+                    if (Value is string)
                     {
                         totalAmount = totalAmount + Convert.ToDouble(Value);
                     }
                 }
-                else if(ColumnHeader.Contains("Repayment", StringComparison.OrdinalIgnoreCase))
+                else if (ColumnHeader.Contains("Repayment", StringComparison.OrdinalIgnoreCase))
                 {
                     var repaymentHeader = fileToEdit.Keys.First(_ => _.Contains("Repayment", StringComparison.OrdinalIgnoreCase));
                     fileToEdit[repaymentHeader] = Value;
                 }
-                else if(ColumnHeader.Contains("LoanId",StringComparison.OrdinalIgnoreCase))
+                else if (ColumnHeader.Contains("LoanId", StringComparison.OrdinalIgnoreCase))
                 {
                     var loanIdHeader = fileToEdit.Keys.First(_ => _.Contains("first loan id", StringComparison.OrdinalIgnoreCase));
                     fileToEdit[loanIdHeader] = Value;
@@ -1527,8 +1555,8 @@ namespace RefitSandBox
                         csvWriter.WriteField(header);
                     }
                     csvWriter.NextRecord();
-                    
-                    for(int i = 0; i < noOfLines; i++)
+
+                    for (int i = 0; i < noOfLines; i++)
                     {
                         fileToEdit["Order Number"] = Value[i];
                         foreach (var value in fileToEdit.Values)
@@ -1562,14 +1590,14 @@ namespace RefitSandBox
                     {
                         csvWriter.WriteField(value);
                     }
-                    if(dataTable != null)
+                    if (dataTable != null)
                     {
                         int count = 1;
-                        foreach(var row in dataTable.Rows)
+                        foreach (var row in dataTable.Rows)
                         {
                             var paydate = row[0];
                             var repaymentAmount = row[1];
-                            if(paydate == "Monthly")
+                            if (paydate == "Monthly")
                             {
                                 paydate = DateTime.Parse(firstRepaymentDate).AddMonths(count).ToString("MM/dd/yyyy");
                             }
@@ -1578,7 +1606,7 @@ namespace RefitSandBox
                             var repaymentHeader = FileToEdit.Keys.First(_ => _.Contains("Repayment", StringComparison.OrdinalIgnoreCase));
                             FileToEdit[repaymentHeader] = repaymentAmount;
                             csvWriter.NextRecord();
-                            foreach(var value in FileToEdit.Values)
+                            foreach (var value in FileToEdit.Values)
                             {
                                 csvWriter.WriteField(value);
                             }
@@ -1591,12 +1619,12 @@ namespace RefitSandBox
         public static async Task<Dictionary<string, string>> ReadCsvToDictionary(string filePath)
         {
             var dictionary = new Dictionary<string, string>();
-            
+
             using (var reader = new StreamReader(filePath))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 // Read the CSV file
-                var records = csv.GetRecords<dynamic>().ToList();  
+                var records = csv.GetRecords<dynamic>().ToList();
 
                 if (records.Any())
                 {
@@ -1650,7 +1678,7 @@ namespace RefitSandBox
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
             var searchBody = new SearchCriterias()
             {
-                SearchBySSNEmpIdName = employeeSSN.Replace("-",""),
+                SearchBySSNEmpIdName = employeeSSN.Replace("-", ""),
                 From = 0,
                 Offset = 20
             };
@@ -1661,7 +1689,7 @@ namespace RefitSandBox
             var employeeId = getEmployee.SearchEmployeeResults.Select(_ => _.Id).FirstOrDefault().ToString();
             return employeeId;
         }
-        
+
         public async Task SaveLoan()
         {
             await Configuration("planId", planId);
@@ -1677,7 +1705,7 @@ namespace RefitSandBox
             loanSettings = (LoanSettingViewModel)modelAfterConvention;
             var response = await planClient.SaveLoan(loanSettings);
             var responseAfterParsing = JObject.Parse(response.ToString());
-            Console.WriteLine("Loan response : " +responseAfterParsing.ToString());
+            Console.WriteLine("Loan response : " + responseAfterParsing.ToString());
             loanDocumentId = responseAfterParsing["loan"]["loanDocumentType"][0]["id"].ToString();
             loanSettingsId = responseAfterParsing["loan"]["id"].ToString();
         }
@@ -1736,9 +1764,9 @@ namespace RefitSandBox
                         var consolidationResult = await payrollClient.GenerateConsolidation();*/
                     }
                 }
-                
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -1748,7 +1776,7 @@ namespace RefitSandBox
         {
             try
             {
-                var employeeId = await GetEmployeeId()  ;
+                var employeeId = await GetEmployeeId();
                 //string BaseURL = "https://dev.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
@@ -1761,7 +1789,7 @@ namespace RefitSandBox
                 var employeeLoansResponse = await loanClient.GetEmployeePlanLoans(employeeId);
                 return employeeLoansResponse;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return null;
@@ -1774,7 +1802,7 @@ namespace RefitSandBox
             var employeeLoansResponse = await GetEmployeePlanLoans();
             if (employeeLoansResponse != null)
             {
-                if(employeeLoansResponse.EmployeePlans.Count != 0)
+                if (employeeLoansResponse.EmployeePlans.Count != 0)
                 {
                     var masterLoanTypes = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).Distinct().ToList();
                     ClassicAssert.AreEqual(expectedLoanCount, masterLoanTypes.Count);
@@ -1788,21 +1816,21 @@ namespace RefitSandBox
                     var masterLoanTypes = employeeLoansResponse.EmployeePlans.SelectMany(_ => _.LoanSettings).Select(_ => _.MasterLoanType).Distinct().ToList();
                     ClassicAssert.AreEqual(expectedLoanCount, masterLoanTypes.Count);
                 }
-                
+
             }
             else
             {
                 throw new Exception();
             }
         }
-        
+
 
         public async Task VerifyErrorMessage(string expectedErrorMessage)
         {
             try
             {
                 var loanResponse = JObject.Parse(response.ToString());
-                Console.WriteLine("Loan response :" +loanResponse.ToString());
+                Console.WriteLine("Loan response :" + loanResponse.ToString());
                 var loanRequestResult = JsonConvert.DeserializeObject<SaveLoanResult>(response.ToString(), new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Include
@@ -1816,16 +1844,16 @@ namespace RefitSandBox
                         var message = errorMessage.Message.ToString();
                         ClassicAssert.AreEqual(expectedErrorMessage, $"{errorCode} : {message}");
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         throw new Exception(ex.Message);
                     }
-                    
+
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine("Deserializing the response failed : " +ex.Message);
+                Console.WriteLine("Deserializing the response failed : " + ex.Message);
                 throw new Exception();
             }
         }
@@ -1842,14 +1870,14 @@ namespace RefitSandBox
             var actualAmount = sourceBalance * 0.5;
             ClassicAssert.AreEqual(expectedAmount, actualAmount);
         }
-        
+
         public async Task VerifyAvailableBalance(double expectedAmount)
         {
             var employeeLoanDetails = await GetEmployeePlanLoans();
             var highestOutstandingLoanBalance = employeeLoanDetails.EmployeePlans.FirstOrDefault()?.HighestOutstandingLoanBalance;
             var outstandingLoanBalance = employeeLoanDetails.EmployeePlans.FirstOrDefault()?.OutstandingLoanBalance;
             var availableSources = employeeLoanDetails.EmployeePlans.SelectMany(_ => _.SourceBalances).ToList();
-            foreach(var source in availableSources)
+            foreach (var source in availableSources)
             {
                 sourceBalance += source.VestedBalance;
             }
@@ -1869,7 +1897,7 @@ namespace RefitSandBox
 
         public async Task VerifyAmortizationScheduleForLoan(int NoOfInstallments, Reqnroll.DataTable dataTable)
         {
-            await Task.Delay(5000); 
+            await Task.Delay(5000);
             //string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
@@ -1884,10 +1912,10 @@ namespace RefitSandBox
             var filteredLoanAmortization = loanAmortization
                 .Where(_ => _.ReAmortizationRequestDetails == null)
                 .ToList();
-            
+
             ClassicAssert.AreEqual(NoOfInstallments, filteredLoanAmortization.Count);
             var OutstandingPrincipalList = new List<double>();
-            var InterestList = new List<double>();  
+            var InterestList = new List<double>();
             var PrincipalList = new List<double>();
             foreach (var item in filteredLoanAmortization)
             {
@@ -1896,12 +1924,12 @@ namespace RefitSandBox
                 OutstandingPrincipalList.Add(item.TotalOutstandingPrincipal);
             }
 
-            foreach(var amount in OutstandingPrincipalList)
+            foreach (var amount in OutstandingPrincipalList)
             {
-                Console.WriteLine("Outstanding amount : " +amount);
+                Console.WriteLine("Outstanding amount : " + amount);
             }
 
-            
+
         }
 
         public async Task VerifyLoanStatus(string expectedStatus)
@@ -1915,7 +1943,7 @@ namespace RefitSandBox
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
             var loanClient = RestService.For<ILoan>(httpClient);
             var checkAndUpdateLoanStatus = await loanClient.CheckAndUpdateLoanStatus(loanId);
-            if(!checkAndUpdateLoanStatus)
+            if (!checkAndUpdateLoanStatus)
             {
                 throw new Exception("Check and update loan status API returns false");
             }
@@ -1923,7 +1951,7 @@ namespace RefitSandBox
             var getLoanResponse = await loanClient.GetLoan(loanId);
             var loanStatus = getLoanResponse.LoanRequest.LoanStatus;
             Console.WriteLine("Loan status :" + loanStatus);
-            if(expectedStatus.Contains("DefaultDeemedDistribution",StringComparison.OrdinalIgnoreCase) || expectedStatus.Contains("DefaultBenefitOffset",StringComparison.OrdinalIgnoreCase))
+            if (expectedStatus.Contains("DefaultDeemedDistribution", StringComparison.OrdinalIgnoreCase) || expectedStatus.Contains("DefaultBenefitOffset", StringComparison.OrdinalIgnoreCase))
             {
                 checkAndUpdateLoanStatus = await loanClient.CheckAndUpdateLoanStatus(loanId);
                 if (!checkAndUpdateLoanStatus)
@@ -2101,6 +2129,58 @@ namespace RefitSandBox
             property.SetValue(modelAfterConvention, collection);
         }*/
 
+        public async Task AddValuesToCollection1(int noOfItems, int value1, int value2, int value3, string propertyName)
+        {
+            var property = modelAfterConvention.GetType().GetProperty(propertyName);
+            var collection = property.GetValue(modelAfterConvention) as IList;
+
+            if (collection != null)
+            {
+                collection.Clear();
+
+                collection.Add(value1);
+                collection.Add(value2);
+                collection.Add(value3);
+            }
+            else
+            {
+                throw new Exception("The property is not a collection type.");
+            }
+            property.SetValue(modelAfterConvention, collection);
+        }
+
+        public async Task AddValuesToCollectionFromTable(string propertyName, Reqnroll.DataTable dataTable)
+        {
+            var property = modelAfterConvention.GetType().GetProperty(propertyName);
+            var collection = property.GetValue(modelAfterConvention) as IList;
+
+            if (collection == null)
+                throw new Exception("The property is not a collection type.");
+
+            collection.Clear();
+
+            var elementType = property.PropertyType.GetGenericArguments().FirstOrDefault();
+            if (elementType == null)
+                throw new Exception("Could not determine collection element type.");
+
+
+            var propName = dataTable.Header.ElementAt(0);
+            var elementProperty = elementType.GetProperty(propName);
+            if (elementProperty == null)
+                throw new Exception($"Property '{propName}' not found on element type.");
+
+            foreach (var row in dataTable.Rows)
+            {
+                var newElement = Activator.CreateInstance(elementType);
+                var value = row[0];
+                var convertedValue = Convert.ChangeType(value, elementProperty.PropertyType);
+                elementProperty.SetValue(newElement, convertedValue);
+                collection.Add(newElement);
+            }
+
+            property.SetValue(modelAfterConvention, collection);
+        }
+
         public class PropertySearchResult
         {
             public System.Reflection.PropertyInfo Property { get; set; }
@@ -2164,9 +2244,14 @@ namespace RefitSandBox
         public async Task<string> IdentifyValue(string value)
         {
             if (value == "<MPInvestmentId>") return modelPortfolioInvestmentId;
-            else if (value == "<MPInvestmentName>") return modelPortfolioName;
+            else if (value == "<MPInvestmentName>") return modelPortfolioNames.First();
+            else if (value == "<MPInvestmentId2>") return modelPortfolioInvestmentId2;
+            else if (value == "<MPInvestmentName2>") return modelPortfolioNames.Last();
             else if (value == "<RInvestmentId>") return RegularInvestmentId;
             else if (value == "<RInvestmentName>") return "SEAS003";
+            else if (value == "<PretaxSourceID>") return sourceId;
+            else if (value == "<RothSourceID>") return rothSourceId;
+            else if (value == "<MatchSourceID>") return matchSourceId;
             else return null;
         }
 
@@ -2209,7 +2294,7 @@ namespace RefitSandBox
 
                     var elementPropName = row[1].ToString();
                     var value = row[2];
-                    if(value.Contains("<"))
+                    if (value.Contains("<"))
                     {
                         value = await IdentifyValue(value);
                     }
@@ -2275,15 +2360,40 @@ namespace RefitSandBox
 
 
 
+        public static List<string> modelPortfolioNames = new List<string>();
+
         public async Task ModelPortInvestmentAddAndEnrollment(int noOfBlocks, string PropertyName, Reqnroll.DataTable dataTable)
         {
             modelPortfolioId = response["investment"]["id"].ToString();
-            modelPortfolioName = response["investment"]["name"].ToString();
+            //public static List<string> modelPortfolioNames = new List<string>();
+
+            var investments = response["investments"] as JArray;
+            if (investments != null)
+            {
+                foreach (var inv in investments)
+                {
+                    var name = inv["name"]?.ToString();
+                    if (!string.IsNullOrEmpty(name))
+                        modelPortfolioNames.Add(name);
+                }
+            }
+            else
+            {
+                var name = response["investment"]?["name"]?.ToString();
+                if (!string.IsNullOrEmpty(name))
+                    modelPortfolioNames.Add(name);
+                foreach (var modelPortFolioName in modelPortfolioNames)
+                {
+                    Console.WriteLine(modelPortFolioName);
+                }
+            }
+
             if (modelPortfolioId == "0") throw new Exception("Model portfolio investment not saved");
-            await AddInvestmentsToPlan(planId, modelPortfolioId, "6068", noOfBlocks, PropertyName, dataTable);
+            await AddInvestmentsToPlan(planId, modelPortfolioId, "2037", noOfBlocks, PropertyName, dataTable);
         }
 
-        public static async Task<Dictionary<string, int>> GetInvestmentIdsByNames(JObject jsonObject, string targetName)
+
+        public static async Task<Dictionary<string, int>> GetInvestmentIdsByNames(JObject jsonObject, List<string> targetNames)
         {
             var result = new Dictionary<string, int>();
 
@@ -2295,7 +2405,8 @@ namespace RefitSandBox
             foreach (var plan in investmentPlans)
             {
                 string name = plan["name"]?.ToString();
-                if ((name == "SEAS003" || name == targetName) && int.TryParse(plan["id"]?.ToString(), out int id))
+
+                if ((name == "SEAS003" || (targetNames != null && targetNames.Contains(name))) && int.TryParse(plan["id"]?.ToString(), out int id))
                 {
                     result[name] = id;
                 }
@@ -2335,12 +2446,39 @@ namespace RefitSandBox
             // Source-wise balances
             var sourceBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).Sum(_ => _.VestedBalance);
             var modelPortfolioInvestmentBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.ModelPortfolioName == modelPortfolioName).Sum(_ => _.RegularAccountBalance);
-            var MPInv1AccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS001").Sum(_ => _.RegularAccountBalance);
-            var MPInv2AccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS002").Sum(_ => _.RegularAccountBalance);
-            var RegularInvestmentAccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularAccountBalance);
-            var MPInv1Units = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS001").Sum(_ => _.RegularBalanceUnits);
-            var MPInv2Units = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS002").Sum(_ => _.RegularBalanceUnits);
-            var RegularInvestmentUnits = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularBalanceUnits);
+
+            var modelPortfolioInvestmentBalance1 = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).Where(_ => _.Name == modelPortfolioNames.First()).Sum(_ => _.RegularAccountBalance);
+            var modelPortfolioInvestmentBalance2 = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).Where(_ => _.Name == modelPortfolioNames.Last()).Sum(_ => _.RegularAccountBalance);
+
+
+            var MPInv1AccountBalanceActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS001").Sum(_ => _.RegularAccountBalance);
+            var MPInv2AccountBalanceActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS002").Sum(_ => _.RegularAccountBalance);
+            var MPInv3AccountBalanceActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularAccountBalance);
+
+            var MPInv4AccountBalanceActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS004").Sum(_ => _.RegularAccountBalance);
+            var MPInv5AccountBalanceActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS005").Sum(_ => _.RegularAccountBalance);
+            var MPInv6AccountBalanceActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS006").Sum(_ => _.RegularAccountBalance);
+
+            var MPInv1UnitsActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS001").Sum(_ => _.RegularBalanceUnits);
+            var MPInv2UnitsActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS002").Sum(_ => _.RegularBalanceUnits);
+            var MPInv3UnitsActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularBalanceUnits);
+
+            var MPInv4UnitsActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS004").Sum(_ => _.RegularBalanceUnits);
+            var MPInv5UnitsActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS005").Sum(_ => _.RegularBalanceUnits);
+            var MPInv6UnitsActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.ModelPortfolioInvestmentBalances).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS006").Sum(_ => _.RegularBalanceUnits);
+
+            var RegularInvestmentAccountBalanceActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.RegularInvestmentBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularAccountBalance);
+            var RegularInvestmentUnitsActual = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.RegularInvestmentBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularBalanceUnits);
+
+            //var MPInv1AccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS001").Sum(_ => _.RegularAccountBalance);
+            //var MPInv2AccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS002").Sum(_ => _.RegularAccountBalance);
+            //var MPInv3AccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularAccountBalance);
+
+            //var RegularInvestmentAccountBalance = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularAccountBalance);
+            //var MPInv1Units = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS001").Sum(_ => _.RegularBalanceUnits);
+            //var MPInv2Units = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS002").Sum(_ => _.RegularBalanceUnits);
+            //var MPInv3Units = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularBalanceUnits);
+            //var RegularInvestmentUnits = employeeAccountBalance.Sources.Where(_ => _.SourceName == sourceName).SelectMany(_ => _.InvestmentwiseBalances).Where(_ => _.Name == "SEAS003").Sum(_ => _.RegularBalanceUnits);
             // Assertions based on table
             foreach (var row in dataTable.Rows)
             {
@@ -2360,28 +2498,68 @@ namespace RefitSandBox
                         ClassicAssert.AreEqual(expectedValue, modelPortfolioInvestmentBalance, $"Mismatch in {key}");
                         break;
 
+                    case "ModelPortfolioBalance1":
+                        ClassicAssert.AreEqual(expectedValue, modelPortfolioInvestmentBalance1, $"Mismatch in {key}");
+                        break;
+
+                    case "ModelPortfolioBalance2":
+                        ClassicAssert.AreEqual(expectedValue, modelPortfolioInvestmentBalance2, $"Mismatch in {key}");
+                        break;
+
                     case "MPInv1Balance":
-                        ClassicAssert.AreEqual(expectedValue, MPInv1AccountBalance, $"Mismatch in {key}");
+                        ClassicAssert.AreEqual(expectedValue, MPInv1AccountBalanceActual, $"Mismatch in {key}");
                         break;
 
                     case "MPInv2Balance":
-                        ClassicAssert.AreEqual(expectedValue, MPInv2AccountBalance, $"Mismatch in {key}");
+                        ClassicAssert.AreEqual(expectedValue, MPInv2AccountBalanceActual, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv3Balance":
+                        ClassicAssert.AreEqual(expectedValue, MPInv3AccountBalanceActual, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv4Balance":
+                        ClassicAssert.AreEqual(expectedValue, MPInv4AccountBalanceActual, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv5Balance":
+                        ClassicAssert.AreEqual(expectedValue, MPInv5AccountBalanceActual, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv6Balance":
+                        ClassicAssert.AreEqual(expectedValue, MPInv6AccountBalanceActual, $"Mismatch in {key}");
                         break;
 
                     case "RInvBalance":
-                        ClassicAssert.AreEqual(expectedValue, RegularInvestmentAccountBalance, $"Mismatch in {key}");
+                        ClassicAssert.AreEqual(expectedValue, RegularInvestmentAccountBalanceActual, $"Mismatch in {key}");
                         break;
 
                     case "MPInv1Units":
-                        ClassicAssert.AreEqual(expectedValue,MPInv1Units,$"Mismatch in {key}");
+                        ClassicAssert.AreEqual(expectedValue, MPInv1UnitsActual, $"Mismatch in {key}");
                         break;
 
                     case "MPInv2Units":
-                        ClassicAssert.AreEqual(expectedValue, MPInv2Units, $"Mismatch in {key}");
+                        ClassicAssert.AreEqual(expectedValue, MPInv2UnitsActual, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv3Units":
+                        ClassicAssert.AreEqual(expectedValue, MPInv3UnitsActual, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv4Units":
+                        ClassicAssert.AreEqual(expectedValue, MPInv4UnitsActual, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv5Units":
+                        ClassicAssert.AreEqual(expectedValue, MPInv5UnitsActual, $"Mismatch in {key}");
+                        break;
+
+                    case "MPInv6Units":
+                        ClassicAssert.AreEqual(expectedValue, MPInv6UnitsActual, $"Mismatch in {key}");
                         break;
 
                     case "RInvUnits":
-                        ClassicAssert.AreEqual(expectedValue, RegularInvestmentUnits, $"Mismatch in {key}");
+                        ClassicAssert.AreEqual(expectedValue, RegularInvestmentUnitsActual, $"Mismatch in {key}");
                         break;
 
                     default:
@@ -2441,7 +2619,7 @@ namespace RefitSandBox
             {
                 adjustedDate = currentDate.AddDays(n);
             }
-            else if (pattern.Contains("month",StringComparison.OrdinalIgnoreCase))
+            else if (pattern.Contains("month", StringComparison.OrdinalIgnoreCase))
             {
                 adjustedDate = currentDate.AddMonths(n);
             }
@@ -2514,7 +2692,7 @@ namespace RefitSandBox
         {
             var program = new Program();
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var clearingPartnerIds = await program.SendAPIRequest(bearer,1,interfaceType, "GetClearingPartnersId");
+            var clearingPartnerIds = await program.SendAPIRequest(bearer, 1, interfaceType, "GetClearingPartnersId");
             var clearingPartnerId = clearingPartnerIds["clearingPartnerListResponses"][0]["id"].ToString();
             var CPAddToPlan = new PlanWithClearingPartnerViewModel();
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", CPAddToPlan);
@@ -2531,7 +2709,7 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanAmendments.PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("exclusionType", "0"); 
+            await program.Configuration("exclusionType", "0");
             await program.Configuration("isLTPTApplicable", "false");
             await program.Configuration("ltptHours", "500");
             await program.Configuration("isRevaluationRequired", "false");
@@ -2540,7 +2718,7 @@ namespace RefitSandBox
             await program.Configuration("planId", planId.ToString());
             await program.Configuration("age", "20");
             await program.Configuration("ltptAgeInYears", "20");
-            
+
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SavePlanAmendmentEligibleRule");
         }
@@ -2608,6 +2786,32 @@ namespace RefitSandBox
             matchSourceId = sourceSave["source"]["id"].ToString();
         }
 
+        public static async Task SaveRothSource(string bearer, string planId)
+        {
+            var program = new Program();
+            var sourceModel = new SourceViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            var currentDate = DateTime.UtcNow;
+            await program.Configuration("sourceType", "1");
+            await program.Configuration("sourceCategory", "2");
+            await program.Configuration("sourceSubCategory", "5");
+            await program.Configuration("sourceSubSubCategory", "1");
+            await program.Configuration("effectiveStartDate", "2020-01-01");
+            await program.Configuration("sourceName", "Roth");
+            await program.Configuration("contributionType", "1");
+            await program.Configuration("limitMinimumDollar", "10");
+            await program.Configuration("limitMinimumPercentage", "10");
+            await program.Configuration("limitMaximumPercentage", "70");
+            await program.Configuration("limitMaximumDollar", "70");
+            await program.Configuration("sourceCode", "Q");
+            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
+            rothSourceId = sourceSave["source"]["id"].ToString();
+        }
+
+
         public static async Task SaveCompensation(string bearer, string planId)
         {
             var program = new Program();
@@ -2627,7 +2831,7 @@ namespace RefitSandBox
             var program = new Program();
             var updatePlanStatusModel = new UpdatePlanStatusViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(updatePlanStatusModel);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(),"PlanId",modelAfterConvention);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
             await program.Configuration("planStatus", statusCode);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
@@ -2641,13 +2845,13 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("investmentId", "5630");
+            await program.Configuration("investmentId", "281");
             await program.Configuration("status", "1");
             await program.Configuration("investmentType", "2");
             await program.Configuration("planId", planId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
-            await program.Configuration("investmentId", "5631");
+            await program.Configuration("investmentId", "282");
             await program.Configuration("status", "1");
             await program.Configuration("investmentType", "2");
             await program.Configuration("planId", planId);
@@ -2655,7 +2859,7 @@ namespace RefitSandBox
             var addedToPlan = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
         }
 
-        public static async Task AddInvestmentsToPlan(string planId, string modelPortfolioId, string investmentId2, int noOfBlocks,string propertyName, Reqnroll.DataTable dataTable)
+        public static async Task AddInvestmentsToPlan(string planId, string modelPortfolioId, string investmentId2, int noOfBlocks, string propertyName, Reqnroll.DataTable dataTable)
         {
             var program = new Program();
             var investmentPlanMapping = new AddInvestmentsInput();
@@ -2718,8 +2922,9 @@ namespace RefitSandBox
             var program = new Program();
             var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
-            var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments,modelPortfolioName);
-            modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioName].ToString();
+            var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
+            modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
+            modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
             RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
             await program.Configuration("planId", planId);
             await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
@@ -2742,6 +2947,47 @@ namespace RefitSandBox
             await program.Configuration("deferralContributionRateUponRehire", "2");
             await program.Configuration("contributionType", "1");
             await program.Configuration("sourceId", sourceId);
+            await program.Configuration("autoDeferralIncreasePercentage", "15");
+            await program.Configuration("maximumADIPercentage", "18");
+            /*await program.Configuration("1investmentId", RegularInvestmentId);
+            await program.Configuration("2investmentId", modelPortfolioInvestmentId);
+            await program.Configuration("1investmentName", "SEAS003");
+            await program.Configuration("21investmentName", modelPortfolioName);*/
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
+        }
+
+        public async Task SaveEnrollmentForModelPortfolioWithDiffernentInvestionElectionToAllSources()
+        {
+            var program = new Program();
+            var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
+            modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
+            modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
+            RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
+            await program.Configuration("planId", planId);
+            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            await program.Configuration("sourceName", "Pretax");
+            await program.Configuration("contributionRate", "12");
+            await program.Configuration("autoDeferralIncreaseProgram", "true");
+            await program.Configuration("increaseAllowanceDays", "30");
+            await program.Configuration("periodOfIncrease", "1");
+            await program.Configuration("applyADITo", "0");
+            await program.Configuration("adiApplicableTo", "2");
+            await program.Configuration("subjecttoAutoEnrollment", "True");
+            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            await program.Configuration("numberOfDaysWindowIsOpen", "3");
+            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            await program.Configuration("exclusionType", "0");
+            await program.Configuration("usePlanDefaultDeferralElection", "true");
+            await program.Configuration("usePlanDefaultInvestmentElection", "false");
+            await program.Configuration("sameInvestmentElectionToAllSources", "false");
+            await program.Configuration("sendEnrollmentInvite", "1");
+            await program.Configuration("deferralContributionRateUponRehire", "2");
+            await program.Configuration("contributionType", "1");
+            //await program.Configuration("sourceId", sourceId);
             await program.Configuration("autoDeferralIncreasePercentage", "15");
             await program.Configuration("maximumADIPercentage", "18");
             /*await program.Configuration("1investmentId", RegularInvestmentId);
@@ -2784,7 +3030,7 @@ namespace RefitSandBox
             var payrollSearch = new UploadedFileInformationDetails();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(payrollSearch);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("companyName",companyName);
+            await program.Configuration("companyName", companyName);
             await program.Configuration("planName", planName);
             await program.Configuration("rkPlanNumber", rkPlanNumber);
             await program.Configuration("uploadedOn", null);
@@ -2799,7 +3045,7 @@ namespace RefitSandBox
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
-            
+
             var apiClient = RestService.For<IPayroll>(httpClient);
             var response = await apiClient.GetUploadedFilesBasedOnSearchCriteria(payrollSearch);
             var responseArray = JArray.Parse(response.ToString());
@@ -2831,7 +3077,7 @@ namespace RefitSandBox
             var fundByPlan = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
         }
 
-        
+
         public static async Task ConfirmFunds(string planId, string fileId, string payrollFundingId)
         {
             var program = new Program();
