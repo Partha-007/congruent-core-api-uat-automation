@@ -29,7 +29,5 @@ When Configuration has been made as per following
 | suspendedFromDate   |          |
 | suspendedToDate     |          |
 
-#When the property "name" is configured with "alphabets" with 10 characters
-
 
 When API request has been sent to the "IInvestment" with the method name "AddMasterInvestment"
