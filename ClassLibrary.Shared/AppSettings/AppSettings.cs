@@ -19,6 +19,7 @@ namespace ClassLibrary.Shared.AppSettings
         public string Password { get; set; }
 
         public string ftp_user { get; set; }
+        public string ftp_username { get; set; }
         public string ftp_password { get; set; }
         public string ftp_host { get; set; }
         public bool Headless { get; set; }
