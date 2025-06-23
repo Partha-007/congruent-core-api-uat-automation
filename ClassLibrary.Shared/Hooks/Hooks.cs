@@ -11,7 +11,6 @@ using NSwag.CodeGeneration.CSharp;
 using NSwag;
 using Renci.SshNet;
 using Refit;
-using Generator.sourceGenerator;
 
 namespace RefitSandBox.Hooks
 {
@@ -26,8 +25,6 @@ namespace RefitSandBox.Hooks
         [BeforeScenario]
         public async Task UserLogin()
         {
-
-            await Programs.GenerateApiClientAsync();
             var playwright = await Playwright.CreateAsync();
             string chromePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
 

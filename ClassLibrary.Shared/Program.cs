@@ -872,22 +872,22 @@ namespace RefitSandBox
         public async Task<Dictionary<string, string>> SFTPConnect()
         {
 
-            var configuration = new ConfigurationBuilder()
+            /*var configuration = new ConfigurationBuilder()
             .SetBasePath("D:\\NewBackEndAutomation\\Congruent.Core.API.TestAutomation\\ClassLibrary.Shared\\AppSettings")
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .Build();
+            .Build();*/
 
-            string url = configuration["AppSettings:ApplicationURL"];
-            string ftp_user = configuration["AppSettings:ftp_user"];
+            //string url = configuration["AppSettings:ApplicationURL"];
+            /*string ftp_user = configuration["AppSettings:ftp_user"];
             string userName = configuration["AppSettings:ftp_userName"];
             string password = configuration["AppSettings:ftp_password"];
-            string hostName = configuration["AppSettings:ftp_host"];
+            string hostName = configuration["AppSettings:ftp_host"];*/
 
             //string hostName = "10.4.1.5";
             //string userName = "ftp_dev";
             //string password = "jack@123";
             var FileContent = new List<string>();
-            var connectionInfo = new PasswordConnectionInfo(hostName, userName, password);
+            var connectionInfo = new PasswordConnectionInfo(Settings.ftp_host, Settings.ftp_username, Settings.ftp_password);
             using (var sftp = new SftpClient(connectionInfo))
             {
                 try
@@ -897,7 +897,7 @@ namespace RefitSandBox
                     Console.WriteLine("Connected to the SFTP server.");
 
                     // List files in the root directory of the SFTP server
-                    var sftpDirectory = $"/{ftp_user}/outbound/";
+                    var sftpDirectory = $"/{Settings.ftp_user}/outbound/";
                     var files = sftp.ListDirectory(sftpDirectory).OrderByDescending(_ => _.LastWriteTimeUtc).ToList();
 
                     var fileToRead = files[1];
@@ -1777,10 +1777,9 @@ namespace RefitSandBox
             try
             {
                 var employeeId = await GetEmployeeId();
-                //string BaseURL = "https://dev.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
-                    BaseAddress = new Uri(_url)
+                    BaseAddress = new Uri(Settings.ApplicationURL)
                 };
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);

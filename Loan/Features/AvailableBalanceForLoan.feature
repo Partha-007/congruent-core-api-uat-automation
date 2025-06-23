@@ -109,7 +109,7 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
 
 Then Available balance for the employee to avail loan should be 38000
 
