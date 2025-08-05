@@ -12,20 +12,20 @@ When Configuration has been made as per following
 | includeInvestmentIn | 1            |
 | type                | 2            |
 | status              | 1            |
-| name                | SEAS029      |
+| name                | SEAS010      |
 | typeOfEarnings      | 1            |
 | isInvestmentQDIA    | true         |
 | investmentCategory  | 2            |
-| fundCode            | ABCDEF       |
-| cusip               | SEAS00028    |
-| ticker              | SEAS1        |
+| fundCode            | ABshyy       |
+| cusip               | SEAS00010    |
+| ticker              | SEA10        |
 | fundFamily          |              |
 | volatility          | 1            |
 | accountType         | 1            |
 | tenantId            | 1            |
 | shareClass          | 1            |
-| isin                | SEAS00001234 |
-| sedol               | SEAS001      |
+| isin                | SEAS00001210 |
+| sedol               | SEAS010      |
 | suspendedFromDate   |          |
 | suspendedToDate     |          |
 

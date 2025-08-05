@@ -1324,14 +1324,14 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 2 investments with ids as 281 and 282 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 2 investments with ids as 2 and 3 for the property "ApplicableInvestments"
 
 And Collection in a model is configured with 2 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 281   |
+| 1           | InvestmentId         | 2   |
 | 1           | AllocationPercentage | 60.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 282   |
+| 2           | InvestmentId         | 3   |
 | 2           | AllocationPercentage | 40.00 |
 | 2           | IsDeleted            | false |
 
@@ -1339,9 +1339,9 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 And Model portfolio investment added to plan and enrollment configured with 2 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 281   |
+| 1           | InvestmentId      | 2   |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 282   |
+| 2           | InvestmentId      | 3   |
 | 2           | Status            | 1     |
 
 Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"

@@ -30,14 +30,14 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 2 investments with ids as 281 and 282 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 2 investments with ids as 2 and 3 for the property "ApplicableInvestments"
 
 And Collection in a model is configured with 2 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 281   |
+| 1           | InvestmentId         | 2   |
 | 1           | AllocationPercentage | 60.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 282   |
+| 2           | InvestmentId         | 3   |
 | 2           | AllocationPercentage | 40.00 |
 | 2           | IsDeleted            | false |
 
@@ -45,9 +45,9 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 And Model portfolio investment added to plan and enrollment configured with 2 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 281   |
+| 1           | InvestmentId      | 2   |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 282   |
+| 2           | InvestmentId      | 3   |
 | 2           | Status            | 1     |
 
 Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
@@ -132,21 +132,21 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 3 investments with ids as 281 and 282 and 2037 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 3 investments with ids as 2 and 3 and 993 for the property "ApplicableInvestments"
 
 #And Model portfolio investment configured with the following investments for the property "ApplicableInvestments"
-#    | 281         |
-#    | 282         |
+#    | 2         |
+#    | 3         |
  
 And Collection in a model is configured with 3 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 281   |
+| 1           | InvestmentId         | 2   |
 | 1           | AllocationPercentage | 40.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 282   |
+| 2           | InvestmentId         | 3   |
 | 2           | AllocationPercentage | 40.00 |
 | 2           | IsDeleted            | false |
-| 3           | InvestmentId         | 2037  |
+| 3           | InvestmentId         | 993  |
 | 3           | AllocationPercentage | 20.00 |
 | 3           | IsDeleted            | false |
 
@@ -154,11 +154,11 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 And Model portfolio investment added to plan and enrollment configured with 3 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 281   |
+| 1           | InvestmentId      | 2   |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 282   |
+| 2           | InvestmentId      | 3   |
 | 2           | Status            | 1     |
-| 3           | InvestmentId      | 2037  |
+| 3           | InvestmentId      | 993  |
 | 3           | Status            | 1     |
 
 Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
@@ -244,21 +244,21 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 3 investments with ids as 281 and 282 and 2037 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 3 investments with ids as 2 and 3 and 993 for the property "ApplicableInvestments"
 
 #And Model portfolio investment configured with the following investments for the property "ApplicableInvestments"
-#    | 281         |
-#    | 282         |
+#    | 2         |
+#    | 3         |
  
 And Collection in a model is configured with 3 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 281   |
+| 1           | InvestmentId         | 2   |
 | 1           | AllocationPercentage | 40.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 282   |
+| 2           | InvestmentId         | 3   |
 | 2           | AllocationPercentage | 40.00 |
 | 2           | IsDeleted            | false |
-| 3           | InvestmentId         | 2037  |
+| 3           | InvestmentId         | 993  |
 | 3           | AllocationPercentage | 20.00 |
 | 3           | IsDeleted            | false |
 
@@ -266,11 +266,11 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 And Model portfolio investment added to plan and enrollment configured with 3 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 281   |
+| 1           | InvestmentId      | 2   |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 282   |
+| 2           | InvestmentId      | 3   |
 | 2           | Status            | 1     |
-| 3           | InvestmentId      | 2037  |
+| 3           | InvestmentId      | 993  |
 | 3           | Status            | 1     |
 
 Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
@@ -384,21 +384,21 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 3 investments with ids as 281 and 282 and 2037 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 3 investments with ids as 2 and 3 and 993 for the property "ApplicableInvestments"
 
 #And Model portfolio investment configured with the following investments for the property "ApplicableInvestments"
-#    | 281         |
-#    | 282         |
+#    | 2         |
+#    | 3         |
  
 And Collection in a model is configured with 3 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 281   |
+| 1           | InvestmentId         | 2   |
 | 1           | AllocationPercentage | 50.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 282   |
+| 2           | InvestmentId         | 3   |
 | 2           | AllocationPercentage | 30.00 |
 | 2           | IsDeleted            | false |
-| 3           | InvestmentId         | 2037  |
+| 3           | InvestmentId         | 993  |
 | 3           | AllocationPercentage | 20.00 |
 | 3           | IsDeleted            | false |
 
@@ -406,11 +406,11 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 When Model portfolio investment added to plan and enrollment configured with 3 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 281   |
+| 1           | InvestmentId      | 2   |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 282   |
+| 2           | InvestmentId      | 3   |
 | 2           | Status            | 1     |
-| 3           | InvestmentId      | 2037  |
+| 3           | InvestmentId      | 993  |
 | 3           | Status            | 1     |
 
 
@@ -440,21 +440,21 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 3 investments with ids as 2038 and 2039 and 2040 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 3 investments with ids as 994 and 995 and 1519 for the property "ApplicableInvestments"
 
 #And Model portfolio investment configured with the following investments for the property "ApplicableInvestments"
-#    | 281         |
-#    | 282         |
+#    | 2         |
+#    | 3         |
  
 And Collection in a model is configured with 3 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 2038  |
+| 1           | InvestmentId         | 994  |
 | 1           | AllocationPercentage | 35.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 2039  |
+| 2           | InvestmentId         | 995  |
 | 2           | AllocationPercentage | 35.00 |
 | 2           | IsDeleted            | false |
-| 3           | InvestmentId         | 2040  |
+| 3           | InvestmentId         | 1519  |
 | 3           | AllocationPercentage | 30.00 |
 | 3           | IsDeleted            | false |
 
@@ -462,11 +462,11 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 And Model portfolio investment added to plan and enrollment configured with 3 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 2038  |
+| 1           | InvestmentId      | 994  |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 2039  |
+| 2           | InvestmentId      | 995  |
 | 2           | Status            | 1     |
-| 3           | InvestmentId      | 2040  |
+| 3           | InvestmentId      | 1519  |
 | 3           | Status            | 1     |
 
 Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
@@ -559,21 +559,21 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 3 investments with ids as 281 and 282 and 2037 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 3 investments with ids as 2 and 3 and 993 for the property "ApplicableInvestments"
 
 #And Model portfolio investment configured with the following investments for the property "ApplicableInvestments"
-#    | 281         |
-#    | 282         |
+#    | 2         |
+#    | 3         |
  
 And Collection in a model is configured with 3 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 281   |
+| 1           | InvestmentId         | 2   |
 | 1           | AllocationPercentage | 50.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 282   |
+| 2           | InvestmentId         | 3   |
 | 2           | AllocationPercentage | 30.00 |
 | 2           | IsDeleted            | false |
-| 3           | InvestmentId         | 2037  |
+| 3           | InvestmentId         | 993  |
 | 3           | AllocationPercentage | 20.00 |
 | 3           | IsDeleted            | false |
 
@@ -581,11 +581,11 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 When Model portfolio investment added to plan and enrollment configured with 3 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 281   |
+| 1           | InvestmentId      | 2   |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 282   |
+| 2           | InvestmentId      | 3   |
 | 2           | Status            | 1     |
-| 3           | InvestmentId      | 2037  |
+| 3           | InvestmentId      | 993  |
 | 3           | Status            | 1     |
 
 
@@ -615,21 +615,21 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 3 investments with ids as 2038 and 2039 and 2040 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 3 investments with ids as 994 and 995 and 1519 for the property "ApplicableInvestments"
 
 #And Model portfolio investment configured with the following investments for the property "ApplicableInvestments"
-#    | 281         |
-#    | 282         |
+#    | 2         |
+#    | 3         |
  
 And Collection in a model is configured with 3 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 2038  |
+| 1           | InvestmentId         | 994  |
 | 1           | AllocationPercentage | 35.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 2039  |
+| 2           | InvestmentId         | 995  |
 | 2           | AllocationPercentage | 35.00 |
 | 2           | IsDeleted            | false |
-| 3           | InvestmentId         | 2040  |
+| 3           | InvestmentId         | 1519  |
 | 3           | AllocationPercentage | 30.00 |
 | 3           | IsDeleted            | false |
 
@@ -637,11 +637,11 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 And Model portfolio investment added to plan and enrollment configured with 3 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 2038  |
+| 1           | InvestmentId      | 994  |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 2039  |
+| 2           | InvestmentId      | 995  |
 | 2           | Status            | 1     |
-| 3           | InvestmentId      | 2040  |
+| 3           | InvestmentId      | 1519  |
 | 3           | Status            | 1     |
 
 Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
@@ -771,21 +771,21 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 3 investments with ids as 281 and 282 and 2037 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 3 investments with ids as 2 and 3 and 993 for the property "ApplicableInvestments"
 
 #And Model portfolio investment configured with the following investments for the property "ApplicableInvestments"
-#    | 281         |
-#    | 282         |
+#    | 2         |
+#    | 3         |
  
 And Collection in a model is configured with 3 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 281   |
+| 1           | InvestmentId         | 2   |
 | 1           | AllocationPercentage | 50.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 282   |
+| 2           | InvestmentId         | 3   |
 | 2           | AllocationPercentage | 30.00 |
 | 2           | IsDeleted            | false |
-| 3           | InvestmentId         | 2037  |
+| 3           | InvestmentId         | 993  |
 | 3           | AllocationPercentage | 20.00 |
 | 3           | IsDeleted            | false |
 
@@ -793,11 +793,11 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 When Model portfolio investment added to plan and enrollment configured with 3 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 281   |
+| 1           | InvestmentId      | 2   |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 282   |
+| 2           | InvestmentId      | 3   |
 | 2           | Status            | 1     |
-| 3           | InvestmentId      | 2037  |
+| 3           | InvestmentId      | 993  |
 | 3           | Status            | 1     |
 
 
@@ -827,21 +827,21 @@ When Configuration has been made as per following
 
 When the property "name" is configured with "alphabets" with 10 characters
 
-And Model portfolio investment configured with 3 investments with ids as 2038 and 2039 and 2040 for the property "ApplicableInvestments"
+And Model portfolio investment configured with 3 investments with ids as 994 and 995 and 1519 for the property "ApplicableInvestments"
 
 #And Model portfolio investment configured with the following investments for the property "ApplicableInvestments"
-#    | 281         |
-#    | 282         |
+#    | 2         |
+#    | 3         |
  
 And Collection in a model is configured with 3 blocks for the property "PercentageElections" with values as given below
 | BlockNumber | Key                  | Value |
-| 1           | InvestmentId         | 2038  |
+| 1           | InvestmentId         | 994  |
 | 1           | AllocationPercentage | 35.00 |
 | 1           | IsDeleted            | false |
-| 2           | InvestmentId         | 2039  |
+| 2           | InvestmentId         | 995  |
 | 2           | AllocationPercentage | 35.00 |
 | 2           | IsDeleted            | false |
-| 3           | InvestmentId         | 2040  |
+| 3           | InvestmentId         | 1519  |
 | 3           | AllocationPercentage | 30.00 |
 | 3           | IsDeleted            | false |
 
@@ -849,11 +849,11 @@ When API request has been sent to the "IInvestment" with the method name "AddMas
 
 And Model portfolio investment added to plan and enrollment configured with 3 blocks for the property "ApplicableInvestments" with values as given below
 | BlockNumber | Key               | Value |
-| 1           | InvestmentId      | 2038  |
+| 1           | InvestmentId      | 994  |
 | 1           | Status            | 1     |
-| 2           | InvestmentId      | 2039  |
+| 2           | InvestmentId      | 995  |
 | 2           | Status            | 1     |
-| 3           | InvestmentId      | 2040  |
+| 3           | InvestmentId      | 1519  |
 | 3           | Status            | 1     |
 
 Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"

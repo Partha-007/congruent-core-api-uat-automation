@@ -2388,7 +2388,7 @@ namespace RefitSandBox
             }
 
             if (modelPortfolioId == "0") throw new Exception("Model portfolio investment not saved");
-            await AddInvestmentsToPlan(planId, modelPortfolioId, "2037", noOfBlocks, PropertyName, dataTable);
+            await AddInvestmentsToPlan(planId, modelPortfolioId, "993", noOfBlocks, PropertyName, dataTable);
         }
 
 
@@ -2844,13 +2844,13 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("investmentId", "281");
+            await program.Configuration("investmentId", "2");
             await program.Configuration("status", "1");
             await program.Configuration("investmentType", "2");
             await program.Configuration("planId", planId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
-            await program.Configuration("investmentId", "282");
+            await program.Configuration("investmentId", "3");
             await program.Configuration("status", "1");
             await program.Configuration("investmentType", "2");
             await program.Configuration("planId", planId);
