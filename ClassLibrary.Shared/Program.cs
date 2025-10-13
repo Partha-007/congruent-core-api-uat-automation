@@ -962,11 +962,36 @@ namespace RefitSandBox
             Console.WriteLine("Error message : " +errorMessage.MessageCode);*/
             ClassicAssert.AreEqual(expectedValue, $"{errorCode} : {errorMessage}");
         }
+        public async Task VerifyMultipleErrors(int NoOfErrors, Reqnroll.DataTable dataTable)
+        {
+            var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
+            if (responseBody.ErrorMessages.Count != NoOfErrors)
+                throw new Exception("Error count mismatch");
 
+            foreach(var row in dataTable.Rows)
+            {
+                string errorCode = row["error_code"].Trim();
+                string errorMessage = row["error_message"].Trim();
+
+                string expectedError = $"{errorCode} : {errorMessage}";
+
+                for(int i = 0; i < responseBody.ErrorMessages.Count; i++)
+                {
+                    var actualErrorCode = responseBody.ErrorMessages[i].ErrorCode;
+                    var actualErrorMessage = responseBody.ErrorMessages[i].Message;
+
+                    var actualError = $"{actualErrorCode} : {actualErrorMessage}";
+
+                    if (expectedError == actualError)
+                        Assert.Pass();
+                }
+                
+            }
+        }
         public void VerifyResponse()
         {
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
-            if (responseBody.ErrorMessages.Count == 0 && responseBody.isSuccessful)
+            if (responseBody.isSuccessful && responseBody.ErrorMessages == null)
             {
                 Assert.Pass();
             }
@@ -2297,6 +2322,12 @@ namespace RefitSandBox
                     {
                         value = await IdentifyValue(value);
                     }
+                    if(value.Contains("random"))
+                    {
+                        var splitted = value.Split(" ");
+                        Pattern pattern = splitted[2];
+                        value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), (Pattern)splitted[2]);
+                    }
                     var elementProperty = elementType.GetProperty(elementPropName);
 
                     //if (elementProperty == null) continue;
@@ -3092,5 +3123,6 @@ namespace RefitSandBox
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
             var confirmFundsResponse = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
+
     }
 }

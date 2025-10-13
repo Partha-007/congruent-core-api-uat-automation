@@ -38,12 +38,12 @@ namespace RefitSandBox.Hooks
             var page = await browser.NewPageAsync();
 
 
-            await page.GotoAsync("https://test.coreretirementsolutions.com/");
+            await page.GotoAsync("https://sit.coreretirementsolutions.com/");
             var UserNameField = page.Locator("//input[@name = 'Input.Email']");
             var PasswordField = page.Locator("//input[@name = 'Input.Password']");
             var LoginButton = page.Locator("//button[text()='Log in']");
             var PlanConfig = page.Locator("//span[text()='Plan Config']");
-            await UserNameField.FillAsync("mageshwaran.u@cspl.com");
+            await UserNameField.FillAsync("aswin.k@cspl.com");
             await PasswordField.FillAsync("Admin@123");
             await LoginButton.ClickAsync();
             //await PlanConfig.ClickAsync();
@@ -55,7 +55,7 @@ namespace RefitSandBox.Hooks
             var localStorage = page.EvaluateAsync<string>("window.localStorage");
             var length = await page.EvaluateAsync<string>("window.localStorage.length");
             var key = await page.EvaluateAsync<string>("window.localStorage.key(0)");
-            var bearerToken = await page.EvaluateAsync<string>("window.localStorage.getItem('COREIIuser:https://test.coreretirementsolutions.com:COREII')");
+            var bearerToken = await page.EvaluateAsync<string>("window.localStorage.getItem('COREIIuser:https://sit.coreretirementsolutions.com:COREII')");
             JObject jwt = JObject.Parse(bearerToken.ToString());
             bearer = jwt["access_token"].ToString();
             if (bearer != null)

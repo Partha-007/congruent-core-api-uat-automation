@@ -887,10 +887,11 @@ When Collection in a model is configured with 2 blocks for the property "PlanInv
 When Collection in a model is configured with 2 blocks for the property "InvestmentElectionValuesList" with values to save model portfolio as given below
 | BlockNumber | Key                  | Value              |
 | 1           | InvestmentId         | <MPInvestmentId>   |
+| 1           | FrequencyName        | random 5 alphabets |
 | 1           | InvestmentName       | <MPInvestmentName> |
 | 1           | InvestmentPercentage | 50.00              |
 | 2           | InvestmentId         | <RInvestmentId>    |
-| 2           | InvestmentName       | <RInvestmentName>  |  
+| 2           | InvestmentName       | <RInvestmentName>  |
 | 2           | InvestmentPercentage | 50.00              |
 
 
