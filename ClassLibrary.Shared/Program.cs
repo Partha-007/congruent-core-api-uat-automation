@@ -1,49 +1,50 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
-using NUnit.Framework.Legacy;
-using Refit;
-using System.Web;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Microsoft.Playwright;
-using MyNamespace;
-using System.Security.Cryptography.X509Certificates;
+﻿using AutoFixture;
+using AutoMapper;
+using Bogus;
+using Bogus.Bson;
+using Bogus.DataSets;
+using ClassLibrary.Shared.Enum;
+using ClassLibrary.Shared.TestDataGenerator;
+using CsvHelper;
+using FizzWare.NBuilder;
+using FizzWare.NBuilder.Extensions;
+using Fluid.Values;
+using HtmlAgilityPack;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Http;
-using System.Net.Http;
-using System;
-using System.Collections.Specialized;
-using System.Text.RegularExpressions;
-using HtmlAgilityPack;
-using Bogus;
-using FizzWare.NBuilder;
-using AutoFixture;
-using System.Reflection;
-using RefitSandBox.TestDataGenerator;
-using System.Data;
-using Reqnroll;
-using Bogus.Bson;
-using FizzWare.NBuilder.Extensions;
-using RefitSandBox;
-using NSwag.CodeGeneration.Models;
-using System.ComponentModel;
-using CsvHelper;
-using System.Globalization;
-using Bogus.DataSets;
-using ClassLibrary.Shared.TestDataGenerator;
-using RefitSandBox.Hooks;
-using Fluid.Values;
-using System.Collections;
-using NUnit.Framework.Diagnostics;
-using System.Text;
-using Renci.SshNet;
-using System.Runtime.InteropServices.WindowsRuntime;
-using AutoMapper;
-using ClassLibrary.Shared.Enum;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using Microsoft.Playwright;
+using MyNamespace;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NSwag.CodeGeneration.Models;
+using NUnit.Framework;
+using NUnit.Framework.Diagnostics;
+using NUnit.Framework.Legacy;
+using Refit;
+using RefitSandBox;
+using RefitSandBox.Hooks;
+using RefitSandBox.TestDataGenerator;
+using Renci.SshNet;
+using Reqnroll;
+using System;
+using System.Collections;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Data;
+using System.Globalization;
+using System.Net.Http;
+using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
 
 
 namespace RefitSandBox
@@ -2325,8 +2326,9 @@ namespace RefitSandBox
                     if(value.Contains("random"))
                     {
                         var splitted = value.Split(" ");
-                        Pattern pattern = splitted[2];
-                        value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), (Pattern)splitted[2]);
+                   
+                        Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
+                        value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
                     }
                     var elementProperty = elementType.GetProperty(elementPropName);
 

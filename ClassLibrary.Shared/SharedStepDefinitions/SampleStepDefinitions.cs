@@ -257,14 +257,14 @@ namespace SharedStepDefinitions
         public async Task WhenCollectionInAModelIsConfiguredWithBlocksForThePropertyWithValuesToSaveModelPortFolioAsGivenBelow(int noOfBlocks, string propertyName, DataTable dataTable)
         {
             await _program.EditCollection(noOfBlocks, propertyName, dataTable);
-            if (noOfBlocks == 2)
+            /*if (noOfBlocks == 2)
             {
                 await _program.SaveEnrollmentForModelPortfolio();
             }
             else
             {
                 await _program.SaveEnrollmentForModelPortfolioWithDiffernentInvestionElectionToAllSources();
-            }
+            }*/
 
         }
 
