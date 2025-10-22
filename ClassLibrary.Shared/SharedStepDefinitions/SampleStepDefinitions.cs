@@ -94,6 +94,10 @@ namespace SharedStepDefinitions
 
                 var ObjectName = row[0];
                 var Value = row[1];
+                if (Value.Contains("<"))
+                {
+                    Value = await _program.IdentifyValue(Value);
+                }
                 await _program.Configuration(ObjectName, Value);
             }
         }

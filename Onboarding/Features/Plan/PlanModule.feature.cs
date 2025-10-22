@@ -101,14 +101,14 @@ this.ScenarioInitialize(scenarioInfo);
 #line 8
  await testRunner.WhenAsync("New plan basic details filled and saved", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-                global::Reqnroll.Table table39 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table44 = new global::Reqnroll.Table(new string[] {
                             "Object",
                             "Value"});
-                table39.AddRow(new string[] {
+                table44.AddRow(new string[] {
                             "CompanyId",
                             "593"});
 #line 9
- await testRunner.AndAsync("Configuration has been done as mentioned below", ((string)(null)), table39, "And ");
+ await testRunner.AndAsync("Configuration has been done as mentioned below", ((string)(null)), table44, "And ");
 #line hidden
 #line 12
  await testRunner.ThenAsync("Verify New Plan is saved", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");

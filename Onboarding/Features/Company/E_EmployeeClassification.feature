@@ -7,10 +7,11 @@ A short summary of the feature
 | BlockNumber | Key                                     | Value                                       |
 | 1           | ClassificationName                      | random 5 alphabets                          |
 | 1           | EmployeeClassificationType              | 1                                           |
-
- And Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values as given below
-| BlockNumber | Key  | Value |
-| 1           | Code | 2     |
+ #And Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
+ And Collection in a model is configured with 2 blocks for the property "EmployeeClassificationCodes" with values as given below
+ | BlockNumber | Key  | Value |
+ | 1           | Code | 2     |
+ 
 
  
 #| 1           | EmployeeClassificationCodes             | 2                                           |
@@ -138,8 +139,8 @@ Then the API response should contain the 4 following errors
   Given Model is selected for the endpoint "/api/v1/Company"
   When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
 | BlockNumber | Key                        | Value               |
-| 1           | ClassificationName         | random 5 alphabets |
-| 1           | EmployeeClassificationType | random 45 alphabets   |
+| 1           | ClassificationName         | random 5 alphabets  |
+| 1           | EmployeeClassificationType | random 45 alphabets |
 | 1           | Code                       | random 5 numerics   |
 #When addMasterClassificationType is executed
 
