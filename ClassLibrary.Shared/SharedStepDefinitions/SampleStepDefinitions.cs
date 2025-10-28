@@ -58,13 +58,46 @@ namespace SharedStepDefinitions
             _program.AssertResponse(expectedValue);
         }
 
+
+        [Then("the API response should contain the following errors")]
+        public async Task ThenTheAPIResponseShouldContainTheFollowingErrors(DataTable dataTable, string expectedErrorMessage)
+        {
+            foreach (var row in dataTable.Rows) 
+            {
+                string expectedCode = row["error_code"]?.Trim();
+                string expectedMsg = row["error_message"]?.Trim();
+
+                if (expectedCode != null)
+                {
+                    {
+                        await _program.VerifyErrorMessage(expectedErrorMessage);
+                        _program.AssertResponse(expectedErrorMessage);
+                    }
+
+                }
+            }
+        }
+
+        [Then("the API response should contain the {int} following errors")]
+        public async Task ThenTheAPIResponseShouldContainTheFollowingErrors(int noOfErrors, DataTable dataTable)
+        {
+              await _program.VerifyMultipleErrors(noOfErrors, dataTable);
+        }
+
+
+
         [When("Configuration has been made as per following")]
         public async Task WhenConfigurationHasBeenMadeAsPerFollowing(DataTable dataTable)
         {
             foreach (var row in dataTable.Rows)
             {
+
                 var ObjectName = row[0];
                 var Value = row[1];
+                if (Value.Contains("<"))
+                {
+                    Value = await _program.IdentifyValue(Value);
+                }
                 await _program.Configuration(ObjectName, Value);
             }
         }
@@ -228,14 +261,14 @@ namespace SharedStepDefinitions
         public async Task WhenCollectionInAModelIsConfiguredWithBlocksForThePropertyWithValuesToSaveModelPortFolioAsGivenBelow(int noOfBlocks, string propertyName, DataTable dataTable)
         {
             await _program.EditCollection(noOfBlocks, propertyName, dataTable);
-            if (noOfBlocks == 2)
+            /*if (noOfBlocks == 2)
             {
                 await _program.SaveEnrollmentForModelPortfolio();
             }
             else
             {
                 await _program.SaveEnrollmentForModelPortfolioWithDiffernentInvestionElectionToAllSources();
-            }
+            }*/
 
         }
 

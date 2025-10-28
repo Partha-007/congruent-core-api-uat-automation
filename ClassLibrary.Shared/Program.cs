@@ -1,49 +1,51 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
-using NUnit.Framework.Legacy;
-using Refit;
-using System.Web;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Microsoft.Playwright;
-using MyNamespace;
-using System.Security.Cryptography.X509Certificates;
+﻿using AutoFixture;
+using AutoMapper;
+using Bogus;
+using Bogus.Bson;
+using Bogus.DataSets;
+using ClassLibrary.Shared.Enum;
+using ClassLibrary.Shared.TestDataGenerator;
+using CsvHelper;
+using FizzWare.NBuilder;
+using FizzWare.NBuilder.Extensions;
+using Fluid.Values;
+using HtmlAgilityPack;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Http;
-using System.Net.Http;
-using System;
-using System.Collections.Specialized;
-using System.Text.RegularExpressions;
-using HtmlAgilityPack;
-using Bogus;
-using FizzWare.NBuilder;
-using AutoFixture;
-using System.Reflection;
-using RefitSandBox.TestDataGenerator;
-using System.Data;
-using Reqnroll;
-using Bogus.Bson;
-using FizzWare.NBuilder.Extensions;
-using RefitSandBox;
-using NSwag.CodeGeneration.Models;
-using System.ComponentModel;
-using CsvHelper;
-using System.Globalization;
-using Bogus.DataSets;
-using ClassLibrary.Shared.TestDataGenerator;
-using RefitSandBox.Hooks;
-using Fluid.Values;
-using System.Collections;
-using NUnit.Framework.Diagnostics;
-using System.Text;
-using Renci.SshNet;
-using System.Runtime.InteropServices.WindowsRuntime;
-using AutoMapper;
-using ClassLibrary.Shared.Enum;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using Microsoft.Playwright;
+using MyNamespace;
+using Namotion.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NSwag.CodeGeneration.Models;
+using NUnit.Framework;
+using NUnit.Framework.Diagnostics;
+using NUnit.Framework.Legacy;
+using Refit;
+using RefitSandBox;
+using RefitSandBox.Hooks;
+using RefitSandBox.TestDataGenerator;
+using Renci.SshNet;
+using Reqnroll;
+using System;
+using System.Collections;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Data;
+using System.Globalization;
+using System.Net.Http;
+using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
 
 
 namespace RefitSandBox
@@ -731,7 +733,7 @@ namespace RefitSandBox
                             BaseAddress = new Uri(_url)
                         };
 
-                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
 
                         var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
                         var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileAsync(form);
@@ -740,7 +742,7 @@ namespace RefitSandBox
                         JObject responseObject = JObject.Parse(responseAfterFileUpload.ToString());
                         Console.Write(responseObject.ToString());
                         await Task.Delay(10000);
-                        var fileId = await GetUploadedFilesBasedOnSearchCriteria(_hooks.bearer, companyName, planName, rkPlanNumber);
+                        var fileId = await GetUploadedFilesBasedOnSearchCriteria(Hooks.Hooks.bearer!, companyName, planName, rkPlanNumber);
                         var payrollClient = RestService.For<IPayroll>(httpClient);
                         var fileDetails = await payrollClient.GetFileInformation(fileId);
                         if (fileDetails.FileStatus == "ErrorCorrectionRequired")
@@ -805,7 +807,7 @@ namespace RefitSandBox
                         BaseAddress = new Uri(_url)
                     };
 
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
                     var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
                     var tradeOrderFileResponse = await tradeOrderClient.UploadFile(form);
                     Console.WriteLine("Trade order file uploaded");
@@ -863,7 +865,7 @@ namespace RefitSandBox
                     BaseAddress = new Uri(_url)
                 };
 
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
                 var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
                 var tradeOrderFileUploadResult = await tradeOrderClient.UploadFile(form);
             }
@@ -962,11 +964,36 @@ namespace RefitSandBox
             Console.WriteLine("Error message : " +errorMessage.MessageCode);*/
             ClassicAssert.AreEqual(expectedValue, $"{errorCode} : {errorMessage}");
         }
+        public async Task VerifyMultipleErrors(int NoOfErrors, Reqnroll.DataTable dataTable)
+        {
+            var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
+            if (responseBody.ErrorMessages.Count != NoOfErrors)
+                throw new Exception("Error count mismatch");
 
+            foreach(var row in dataTable.Rows)
+            {
+                string errorCode = row["error_code"].Trim();
+                string errorMessage = row["error_message"].Trim();
+
+                string expectedError = $"{errorCode} : {errorMessage}";
+
+                for(int i = 0; i < responseBody.ErrorMessages.Count; i++)
+                {
+                    var actualErrorCode = responseBody.ErrorMessages[i].ErrorCode;
+                    var actualErrorMessage = responseBody.ErrorMessages[i].Message;
+
+                    var actualError = $"{actualErrorCode} : {actualErrorMessage}";
+
+                    if (expectedError == actualError)
+                        Assert.Pass();
+                }
+                
+            }
+        }
         public void VerifyResponse()
         {
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
-            if (responseBody.ErrorMessages.Count == 0 && responseBody.isSuccessful)
+            if (responseBody.isSuccessful && responseBody.ErrorMessages == null)
             {
                 Assert.Pass();
             }
@@ -1003,7 +1030,7 @@ namespace RefitSandBox
                 await Configuration("loanId", loanId);
             }
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
-            var response = await SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, methodName);
+            var response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
             Console.WriteLine("Response : " + response.ToString());
         }
 
@@ -1114,8 +1141,8 @@ namespace RefitSandBox
                            
                             //    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
                           
-                            // Use _hooks.bearer if available, otherwise fallback to the provided bearer
-                            string token = _hooks != null && !string.IsNullOrEmpty(_hooks.bearer) ? _hooks.bearer : bearer;
+                            // Use Hooks.Hooks.bearer! if available, otherwise fallback to the provided bearer
+                            string token = _hooks != null && !string.IsNullOrEmpty(Hooks.Hooks.bearer!) ? Hooks.Hooks.bearer! : bearer;
                             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                             Task.Delay(10000);
@@ -1361,14 +1388,15 @@ namespace RefitSandBox
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
             {
-                var Model = viewModelType();
+                var Model = viewModelType();                
                 modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
+                
                 var listOfProperties = GetJsonPropertyList(Model);
                 if (endpoint == "/api/Enrollment/SaveEnrollmentSetting")
                 {
                     var program = new Program();
                     var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-                    var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+                    var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
                     if (listOfPlanInvestments == null)
                     {
                         throw new Exception("Investments not mapped to this plan");
@@ -1652,7 +1680,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             /*var task = await httpClient.GetAsync($"{BaseURL}{Action}/{planId}");
             var contentTask = await task.Content.ReadAsStringAsync();
             var response = JObject.Parse(contentTask);*/
@@ -1675,7 +1703,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var searchBody = new SearchCriterias()
             {
                 SearchBySSNEmpIdName = employeeSSN.Replace("-", ""),
@@ -1699,7 +1727,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var planClient = RestService.For<IPlanDetailsSave>(httpClient);
             var loanSettings = new LoanSettingViewModel();
             loanSettings = (LoanSettingViewModel)modelAfterConvention;
@@ -1719,7 +1747,7 @@ namespace RefitSandBox
                 {
                     BaseAddress = new Uri(_url)
                 };
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
                 if (loanType == "Loan Refinancing")
                 {
                     var loanClient = RestService.For<ILoan>(httpClient);
@@ -1782,7 +1810,7 @@ namespace RefitSandBox
                     BaseAddress = new Uri(Settings.ApplicationURL)
                 };
 
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
                 var loanClient = RestService.For<ILoan>(httpClient);
                 await Task.Delay(5000);
                 var employeeLoansResponse = await loanClient.GetEmployeePlanLoans(employeeId);
@@ -1903,7 +1931,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var loanClient = RestService.For<ILoan>(httpClient);
             var updatedLoanId = int.Parse(loanId);
             updatedLoanId = updatedLoanId + 1;
@@ -1939,7 +1967,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var loanClient = RestService.For<ILoan>(httpClient);
             var checkAndUpdateLoanStatus = await loanClient.CheckAndUpdateLoanStatus(loanId);
             if (!checkAndUpdateLoanStatus)
@@ -2251,6 +2279,7 @@ namespace RefitSandBox
             else if (value == "<PretaxSourceID>") return sourceId;
             else if (value == "<RothSourceID>") return rothSourceId;
             else if (value == "<MatchSourceID>") return matchSourceId;
+            else if (value == "<CompanyId>") return Hooks.Hooks.companyId!;
             else return null;
         }
 
@@ -2297,6 +2326,40 @@ namespace RefitSandBox
                     {
                         value = await IdentifyValue(value);
                     }
+                    if(value.Contains("random"))
+                    {
+                        var splitted = value.Split(" ");
+                   
+                        Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
+                        value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                    }
+                    // Date and time *****
+                    if (property.PropertyType == typeof(DateTimeOffset?))
+                    {
+                        var convertedValue = DateTimeOffset.Parse(value.ToString()); // Parsing the string to DateTimeOffset
+                        if (propertyName == "scheduleBeginDate" || propertyName == "scheduleEndDate")
+                        {
+                            string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
+                            property.SetValue(targetObject, convertedValue);
+                        }
+                        else
+                        {
+                            property.SetValue(targetObject, convertedValue);
+                        }
+                    }
+                    if (value.Contains("12:00:00 AM"))
+                    {
+                        value = await IdentifyValue(value);
+
+
+                        DateTime start = new DateTime(2023, 1, 2);
+                        DateTime end = new DateTime(2023, 12, 31);
+                        DateTime startweekly = new DateTime(2023, 1, 8);
+                        DateTime startbiweekly = new DateTime(2023, 1, 15);
+                        DateTime startsemimonthly = new DateTime(2023, 1, 14);
+                    }
+
+                    //******
                     var elementProperty = elementType.GetProperty(elementPropName);
 
                     //if (elementProperty == null) continue;
@@ -2578,7 +2641,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(BaseURL)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var employeeClient = RestService.For<IEmployee>(httpClient);
             var employeeResponse = await employeeClient.GetEmployee(employeeId);
 
@@ -2630,7 +2693,7 @@ namespace RefitSandBox
             return finalDate;
         }
 
-        public static async Task<string> SaveCompany(string bearer)
+        public static async Task<string> SaveCompany(string? bearer)
         {
             var program = new Program();
             var companyModel = new CompanyViewModel();
@@ -2656,7 +2719,7 @@ namespace RefitSandBox
             return companyId;
         }
 
-        public static async Task<string> SavePlan(string bearer, string companyId)
+        public static async Task<string> SavePlan(string? bearer, string companyId)
         {
             var program = new Program();
             var planModel = new PlanDetailsViewModel();
@@ -2871,12 +2934,12 @@ namespace RefitSandBox
             await program.Configuration("planId", planId);
             await program.EditCollection(noOfBlocks, propertyName, dataTable);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var planStatus = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+            var planStatus = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
             await program.Configuration("investmentId", investmentId2);
             await program.Configuration("status", "1");
             await program.Configuration("investmentType", "2");
             await program.Configuration("planId", planId);
-            var addedToPlan = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+            var addedToPlan = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
         }
 
         public static async Task SaveEnrollmentSettings(string bearer, string planId)
@@ -2920,7 +2983,7 @@ namespace RefitSandBox
         {
             var program = new Program();
             var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
             var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
             modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
             modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
@@ -2960,7 +3023,7 @@ namespace RefitSandBox
         {
             var program = new Program();
             var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
             var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
             modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
             modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
@@ -3043,7 +3106,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
 
             var apiClient = RestService.For<IPayroll>(httpClient);
             var response = await apiClient.GetUploadedFilesBasedOnSearchCriteria(payrollSearch);
@@ -3073,7 +3136,7 @@ namespace RefitSandBox
             await program.Configuration("totalEmployerContribution", "0");
             await program.Configuration("bankFundings", null);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var fundByPlan = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
+            var fundByPlan = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
         }
 
 
@@ -3090,7 +3153,8 @@ namespace RefitSandBox
             await program.Configuration("amount", totalAmount.ToString());
             await program.Configuration("payrollFundingId", payrollFundingId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var confirmFundsResponse = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "ConfirmFunds");
+            var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
+
     }
 }

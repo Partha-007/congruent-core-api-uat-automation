@@ -20,10 +20,11 @@ namespace RefitSandBox.Hooks
         public Program program;
         
         
-        public string bearer;
+        public static string? bearer;
         public string planId;
-        [BeforeScenario]
-        public async Task UserLogin()
+        public static string? companyId;
+        //[BeforeScenario]
+        public static async Task UserLogin()
         {
             var playwright = await Playwright.CreateAsync();
             string chromePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
@@ -38,12 +39,12 @@ namespace RefitSandBox.Hooks
             var page = await browser.NewPageAsync();
 
 
-            await page.GotoAsync("https://test.coreretirementsolutions.com/");
+            await page.GotoAsync("https://sit.coreretirementsolutions.com/");
             var UserNameField = page.Locator("//input[@name = 'Input.Email']");
             var PasswordField = page.Locator("//input[@name = 'Input.Password']");
             var LoginButton = page.Locator("//button[text()='Log in']");
             var PlanConfig = page.Locator("//span[text()='Plan Config']");
-            await UserNameField.FillAsync("mageshwaran.u@cspl.com");
+            await UserNameField.FillAsync("aswin.k@cspl.com");
             await PasswordField.FillAsync("Admin@123");
             await LoginButton.ClickAsync();
             //await PlanConfig.ClickAsync();
@@ -55,7 +56,7 @@ namespace RefitSandBox.Hooks
             var localStorage = page.EvaluateAsync<string>("window.localStorage");
             var length = await page.EvaluateAsync<string>("window.localStorage.length");
             var key = await page.EvaluateAsync<string>("window.localStorage.key(0)");
-            var bearerToken = await page.EvaluateAsync<string>("window.localStorage.getItem('COREIIuser:https://test.coreretirementsolutions.com:COREII')");
+            var bearerToken = await page.EvaluateAsync<string>("window.localStorage.getItem('COREIIuser:https://sit.coreretirementsolutions.com:COREII')");
             JObject jwt = JObject.Parse(bearerToken.ToString());
             bearer = jwt["access_token"].ToString();
             if (bearer != null)
@@ -68,9 +69,9 @@ namespace RefitSandBox.Hooks
         [BeforeScenario("@PlanActivation")]
         public async Task<string> PlanActivation()
         {
-            string companyId = await Program.SaveCompany(bearer); // Static method call
+            string companyId = await Program.SaveCompany(Hooks.bearer); // Static method call
             planId = await Program.SavePlan(bearer, companyId);
-            await Program.SaveSponsor(bearer, planId);
+            await Program.SaveSponsor(bearer!, planId);
             await Program.ClearingPartnerPlanMapping(bearer, planId);
             await Program.EligibilityConfiguration(bearer, planId);
             await Program.SaveEntryDate(bearer, planId);
@@ -105,7 +106,14 @@ namespace RefitSandBox.Hooks
             await Program.SaveFunding(bearer, planId);
         }
 
-        
+        [BeforeTestRun]
+        public static async Task CompanyCreation()
+        {
+            await UserLogin();
+            companyId = await Program.SaveCompany(bearer); // Static method call
+            
 
-    }
+        }
+
+        }
 }
