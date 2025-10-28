@@ -20,10 +20,11 @@ namespace RefitSandBox.Hooks
         public Program program;
         
         
-        public string bearer;
+        public static string? bearer;
         public string planId;
-        [BeforeScenario]
-        public async Task UserLogin()
+        public static string? companyId;
+        //[BeforeScenario]
+        public static async Task UserLogin()
         {
             var playwright = await Playwright.CreateAsync();
             string chromePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
@@ -68,9 +69,9 @@ namespace RefitSandBox.Hooks
         [BeforeScenario("@PlanActivation")]
         public async Task<string> PlanActivation()
         {
-            string companyId = await Program.SaveCompany(bearer); // Static method call
+            string companyId = await Program.SaveCompany(Hooks.bearer); // Static method call
             planId = await Program.SavePlan(bearer, companyId);
-            await Program.SaveSponsor(bearer, planId);
+            await Program.SaveSponsor(bearer!, planId);
             await Program.ClearingPartnerPlanMapping(bearer, planId);
             await Program.EligibilityConfiguration(bearer, planId);
             await Program.SaveEntryDate(bearer, planId);
@@ -105,7 +106,14 @@ namespace RefitSandBox.Hooks
             await Program.SaveFunding(bearer, planId);
         }
 
-        
+        [BeforeTestRun]
+        public static async Task CompanyCreation()
+        {
+            await UserLogin();
+            companyId = await Program.SaveCompany(bearer); // Static method call
+            
 
-    }
+        }
+
+        }
 }

@@ -46,7 +46,6 @@
 	
   <ItemGroup>
     <Folder Include="Drivers\" />
-    <Folder Include="Features\Company\" />
     <Folder Include="Support\" />
   </ItemGroup>
 

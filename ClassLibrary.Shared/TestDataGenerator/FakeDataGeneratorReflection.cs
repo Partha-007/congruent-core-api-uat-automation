@@ -86,7 +86,7 @@ namespace RefitSandBox.TestDataGenerator
                 {
                     // Handle other property types as in the original code
                     property.SetValue(obj,
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Id") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "PlanAmendmentId") ? null :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Id") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "PlanAmendmentId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CompanyId") ? null :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "tenantid") ? 1 :
                         propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
                         propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? faker.Name.FirstName() :
@@ -109,6 +109,8 @@ namespace RefitSandBox.TestDataGenerator
                         propertyName == "IrsPlanNumber" ? faker.Random.Number(3, 3).ToString() :
                         propertyName == "LetterSerialNumber" || propertyName.Contains("CustomData", StringComparison.OrdinalIgnoreCase) || propertyName == "MepPlanId" || propertyName == "Level" || propertyName == "Prototype" || propertyName == "PlanTerminationDate" || propertyName.Contains("Enddate", StringComparison.OrdinalIgnoreCase) || propertyName == "PostSeveranceCompensationCategories" || propertyName == "EmployeeClasificationCategories" ? null :
                         propertyName == "PensionBenefitCode" || propertyName == "WelfareBenefitCode" ? faker.Random.Number(1, 2).ToString() :
+                        propertyName.Equals("FrequencyType") ? 1 :
+                        propertyName == "frequencyName" ? faker.Random.AlphaNumeric(10) :
                         propertyName.Contains("CompanyName", StringComparison.OrdinalIgnoreCase) ? null :
                         propertyName == "PlanStatus" ? 0 :
                         propertyName == "PlanType" || propertyName == "EligibilityRuleFor" || propertyName == "EntryDateRuleFor" || propertyName == "ContributionType" ? 1 :
