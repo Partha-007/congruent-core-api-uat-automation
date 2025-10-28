@@ -15,7 +15,7 @@ using Refit;
 namespace RefitSandBox.Hooks
 {
     [Binding]
-    public class Hooks
+    public class Hooks : TestBase
     {
         public Program program;
         
@@ -38,13 +38,13 @@ namespace RefitSandBox.Hooks
             var page = await browser.NewPageAsync();
 
 
-            await page.GotoAsync("https://test.coreretirementsolutions.com/");
+            await page.GotoAsync(Settings.ApplicationURL);
             var UserNameField = page.Locator("//input[@name = 'Input.Email']");
             var PasswordField = page.Locator("//input[@name = 'Input.Password']");
             var LoginButton = page.Locator("//button[text()='Log in']");
             var PlanConfig = page.Locator("//span[text()='Plan Config']");
-            await UserNameField.FillAsync("mageshwaran.u@cspl.com");
-            await PasswordField.FillAsync("Admin@123");
+            await UserNameField.FillAsync(Settings.UserName);
+            await PasswordField.FillAsync(Settings.Password);
             await LoginButton.ClickAsync();
             //await PlanConfig.ClickAsync();
             await Task.Delay(3000);
@@ -52,10 +52,10 @@ namespace RefitSandBox.Hooks
 
             var isLocalStorageAvailable = await page.EvaluateAsync<bool>("typeof window.localStorage !== 'undefined'");
             Console.WriteLine("localStorage available: " + isLocalStorageAvailable);
-            var localStorage = page.EvaluateAsync<string>("window.localStorage");
+            var localStorage = await page.EvaluateAsync<dynamic>("window.localStorage");
             var length = await page.EvaluateAsync<string>("window.localStorage.length");
             var key = await page.EvaluateAsync<string>("window.localStorage.key(0)");
-            var bearerToken = await page.EvaluateAsync<string>("window.localStorage.getItem('COREIIuser:https://test.coreretirementsolutions.com:COREII')");
+            var bearerToken = await page.EvaluateAsync<string>($"window.localStorage.getItem('COREIIuser:{Settings.ApplicationURL}:COREII')");
             JObject jwt = JObject.Parse(bearerToken.ToString());
             bearer = jwt["access_token"].ToString();
             if (bearer != null)
