@@ -35,7 +35,7 @@ namespace RefitSandBox
 
     public interface IAdvisorDetails 
     {
-        [Post("/api/Advisor/UpsertAdvisorRepresentative")]frequencytype
+        [Post("/api/Advisor/UpsertAdvisorRepresentative")]
         [Headers("Content-Type: application/json")]
         Task<object> CreateAdvisorDetailsAsync([Body] object advisor);
     }

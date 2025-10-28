@@ -2348,7 +2348,7 @@ namespace RefitSandBox
                         }
                     }
                     if (value.Contains("12:00:00 AM"))
-                    { 
+                    {
                         value = await IdentifyValue(value);
 
 
@@ -2357,7 +2357,6 @@ namespace RefitSandBox
                         DateTime startweekly = new DateTime(2023, 1, 8);
                         DateTime startbiweekly = new DateTime(2023, 1, 15);
                         DateTime startsemimonthly = new DateTime(2023, 1, 14);
-
                     }
 
                     //******
