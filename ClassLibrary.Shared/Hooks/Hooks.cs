@@ -39,7 +39,7 @@ namespace RefitSandBox.Hooks
 
             while (!string.IsNullOrEmpty(currentDir))
             {
-                var potentialPath = Path.Combine(currentDir, "ClassLibrary.Shared");
+                var potentialPath = Path.Combine(currentDir, "ClassLibrary.Shared","AppSettings");
 
                 if (Directory.Exists(potentialPath))
                     return potentialPath;
