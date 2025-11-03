@@ -2454,6 +2454,11 @@ namespace RefitSandBox
             await AddInvestmentsToPlan(planId, modelPortfolioId, "993", noOfBlocks, PropertyName, dataTable);
         }
 
+        public async Task TaxeinValues(string control_name, int length1, int length2, Pattern pattern)
+        {
+            response["planAdministrator"]["taxEIN"] = GenerateTestData.RandomString(length1, pattern) + "-" + GenerateTestData.RandomString(length2, pattern);
+        }
+
 
         public static async Task<Dictionary<string, int>> GetInvestmentIdsByNames(JObject jsonObject, List<string> targetNames)
         {

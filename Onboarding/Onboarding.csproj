@@ -46,6 +46,8 @@
 	
   <ItemGroup>
     <Folder Include="Drivers\" />
+    <Folder Include="Features\B_plan Source\" />
+    <Folder Include="Features\PlanEligibility\" />
     <Folder Include="Support\" />
   </ItemGroup>
 

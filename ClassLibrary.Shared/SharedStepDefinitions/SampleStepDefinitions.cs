@@ -98,6 +98,13 @@ namespace SharedStepDefinitions
                 {
                     Value = await _program.IdentifyValue(Value);
                 }
+                if (Value.Contains("random"))
+                {
+                    var splitted = Value.Split(" ");
+
+                    Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
+                    Value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                }
                 await _program.Configuration(ObjectName, Value);
             }
         }
@@ -271,6 +278,15 @@ namespace SharedStepDefinitions
             }*/
 
         }
+
+
+        [When("the property {string} is configured with {string} and {string} random generated {string}")]
+        public async Task ThenThePropertyIsConfiguredWithAndRandomGenerated(string control_name, int length1, int length2, Pattern pattern)
+        {
+
+            await _program.TaxeinValues(control_name, length1, length2, pattern);
+        }
+
 
         [When("Model portfolio investment added to plan and enrollment configured with {int} blocks for the property {string} with values as given below")]
         public async Task WhenModelPortfolioInvestmentAddedToPlanAndEnrollmentConfiguredWithBlocksForThePropertyWithValuesAsGivenBelow(int noOfBlocks, string propertyName, DataTable dataTable)
