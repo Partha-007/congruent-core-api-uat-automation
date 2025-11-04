@@ -1,21 +1,28 @@
-﻿using Microsoft.Playwright;
-using Newtonsoft.Json.Linq;
-using Reqnroll;
+﻿using ClassLibrary.Shared.AppSettings;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Playwright;
+using Microsoft.Playwright;
+using Newtonsoft.Json.Linq;
+using NSwag;
+using NSwag.CodeGeneration.CSharp;
+using Refit;
+using Renci.SshNet;
+using Reqnroll;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using NSwag.CodeGeneration.CSharp;
-using NSwag;
-using Renci.SshNet;
-using Refit;
 
 namespace RefitSandBox.Hooks
 {
     [Binding]
-    public class Hooks
+    public class Hooks : TestBase
     {
         public Program program;
         
@@ -23,47 +30,161 @@ namespace RefitSandBox.Hooks
         public static string? bearer;
         public string planId;
         public static string? companyId;
-        //[BeforeScenario]
+        private static AppSettings? _appSettings;
+        public static string? url, name, password;
+
+        public static string GetAppsettingsPath()
+        {
+            var currentDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            while (!string.IsNullOrEmpty(currentDir))
+            {
+                var potentialPath = Path.Combine(currentDir, "ClassLibrary.Shared","AppSettings");
+
+                if (Directory.Exists(potentialPath))
+                    return potentialPath;
+
+                currentDir = Directory.GetParent(currentDir)?.FullName;
+            }
+
+            throw new DirectoryNotFoundException($"Helpers folder not found starting from {AppDomain.CurrentDomain.BaseDirectory}");
+        }
+
+        public static IConfiguration BuildConfig(string sharedConfigPath)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(sharedConfigPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            return builder.Build();
+        }
+
+        public static async Task getAppSettings()
+        {
+            string sharedConfigPath = GetAppsettingsPath();
+            var config = BuildConfig(sharedConfigPath);
+            _appSettings = config.GetSection(AppSettings.Name).Get<AppSettings>();
+
+            url = _appSettings?.ApplicationURL;
+            name = _appSettings?.UserName; password = _appSettings?.Password;
+        }
+
+        private static async Task<string> GetToken(string baseUrl, string clientId, string clientSecret, string redirectUri, string username, string password, bool enableDebug = false)
+        {
+            void Log(string msg)
+            {
+                if (!enableDebug) return;
+                string log = $"[{DateTime.Now:HH:mm:ss}] {msg}";
+                Console.WriteLine(log);
+                File.AppendAllText("oauth_debug.log", log + Environment.NewLine);
+            }
+
+            try
+            {
+                using var handler = new HttpClientHandler
+                {
+                    CookieContainer = new CookieContainer(),
+                    UseCookies = true,
+                    AllowAutoRedirect = true
+                };
+
+                using var client = new HttpClient(handler);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+                // PKCE: generate verifier and challenge
+                string codeVerifier = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
+                    .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+                string codeChallenge = Convert.ToBase64String(
+                    SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier)))
+                    .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+
+                string state = Guid.NewGuid().ToString("N");
+                string authorizeUrl = $"{baseUrl}/connect/authorize" +
+                    $"?client_id={clientId}" +
+                    $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
+                    $"&response_type=code" +
+                    $"&scope=api openid profile roles offline_access" +
+                    $"&state={state}" +
+                    $"&code_challenge={codeChallenge}" +
+                    $"&code_challenge_method=S256" +
+                    $"&response_mode=query";
+
+                Log("Fetching authorization page...");
+                var authResp = await client.GetAsync(authorizeUrl);
+                var authHtml = await authResp.Content.ReadAsStringAsync();
+
+                var tokenMatch = Regex.Match(authHtml, @"__RequestVerificationToken.*?value=""([^""]+)""");
+                if (!tokenMatch.Success) throw new Exception("Verification token not found in login page.");
+
+                string verificationToken = tokenMatch.Groups[1].Value;
+
+                // Submit login form
+                var loginForm = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    { "Input.Email", username },
+                    { "Input.Password", password },
+                    { "__RequestVerificationToken", verificationToken }
+                });
+
+                Log("Submitting login form...");
+                var loginResp = await client.PostAsync(authResp.RequestMessage.RequestUri.ToString(), loginForm);
+
+                string redirectedUrl = loginResp.RequestMessage.RequestUri?.ToString() ?? "";
+                var codeMatch = Regex.Match(redirectedUrl, @"code=([^&]+)");
+                if (!codeMatch.Success) throw new Exception("Authorization code not found in redirect URL.");
+
+                string authCode = codeMatch.Groups[1].Value;
+                Log($"Received auth code: {authCode.Substring(0, 8)}...");
+
+                // Exchange code for token
+                var tokenForm = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    { "client_id", clientId },
+                    { "client_secret", clientSecret },
+                    { "grant_type", "authorization_code" },
+                    { "redirect_uri", redirectUri },
+                    { "code_verifier", codeVerifier },
+                    { "code", authCode }
+                });
+
+                Log("Exchanging code for token...");
+                var tokenResp = await client.PostAsync($"{baseUrl}/connect/token", tokenForm);
+                string tokenJson = await tokenResp.Content.ReadAsStringAsync();
+
+                if (!tokenResp.IsSuccessStatusCode)
+                {
+                    Log($"Token error response: {tokenJson}");
+                    throw new Exception($"Token request failed: {tokenResp.StatusCode}");
+                }
+
+                var doc = JsonDocument.Parse(tokenJson);
+                return doc.RootElement.GetProperty("access_token").GetString()!;
+            }
+            catch (Exception ex)
+            {
+                Log($"ERROR: {ex.Message}");
+                throw;
+            }
+        }
+        
         public static async Task UserLogin()
         {
-            var playwright = await Playwright.CreateAsync();
-            string chromePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
+            string sharedConfigPath = GetAppsettingsPath();
+            var config = BuildConfig(sharedConfigPath);
+            _appSettings = config.GetSection(AppSettings.Name).Get<AppSettings>();
 
-            var browserType = playwright.Chromium;
-            var browser = await browserType.LaunchAsync(new BrowserTypeLaunchOptions
-            {
-                ExecutablePath = chromePath,  // My visual studio is not identifying Chrome path so giving manually
-                Headless = true  //For checking Im using Headless false
-            });
+            url = _appSettings?.ApplicationURL;
+            name = _appSettings?.UserName; password = _appSettings?.Password;
 
-            var page = await browser.NewPageAsync();
-
-
-            await page.GotoAsync("https://sit.coreretirementsolutions.com/");
-            var UserNameField = page.Locator("//input[@name = 'Input.Email']");
-            var PasswordField = page.Locator("//input[@name = 'Input.Password']");
-            var LoginButton = page.Locator("//button[text()='Log in']");
-            var PlanConfig = page.Locator("//span[text()='Plan Config']");
-            await UserNameField.FillAsync("aswin.k@cspl.com");
-            await PasswordField.FillAsync("Admin@123");
-            await LoginButton.ClickAsync();
-            //await PlanConfig.ClickAsync();
-            await Task.Delay(3000);
-            await page.WaitForLoadStateAsync();
-
-            var isLocalStorageAvailable = await page.EvaluateAsync<bool>("typeof window.localStorage !== 'undefined'");
-            Console.WriteLine("localStorage available: " + isLocalStorageAvailable);
-            var localStorage = page.EvaluateAsync<string>("window.localStorage");
-            var length = await page.EvaluateAsync<string>("window.localStorage.length");
-            var key = await page.EvaluateAsync<string>("window.localStorage.key(0)");
-            var bearerToken = await page.EvaluateAsync<string>("window.localStorage.getItem('COREIIuser:https://sit.coreretirementsolutions.com:COREII')");
-            JObject jwt = JObject.Parse(bearerToken.ToString());
-            bearer = jwt["access_token"].ToString();
-            if (bearer != null)
-            {
-                await browser.CloseAsync();
-            }
-           // bearer = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkMyN0E0MEI4ODkyOTU2Q0YzOTkxNkQ5MDgzRDY1NEYzRjZDNzlBNzQiLCJ4NXQiOiJ3bnBBdUlrcFZzODVrVzJRZzlaVThfYkhtblEiLCJ0eXAiOiJhdCtqd3QifQ.eyJvaV9wcnN0IjoiQ09SRUlJIiwiaXNzIjoiaHR0cHM6Ly90ZXN0LmNvcmVyZXRpcmVtZW50c29sdXRpb25zLmNvbS8iLCJvaV9hdV9pZCI6Ijk4ZDM1ZWQyLWZkZGQtNDFjNy04ZmQ4LWFlZGEyMGNhNWIzNiIsIlVzZXJJZCI6IjE1Iiwic3ViIjoiMTUiLCJlbWFpbCI6InZpZ25lc2h3YXJhbi5uQGNzcGwuY29tIiwibmFtZSI6InZpZ25lc2h3YXJhbi5uQGNzcGwuY29tIiwidXNlcm5hbWUiOiJ2aWduZXNod2FyYW4ubkBjc3BsLmNvbSIsInJvbGUiOiJTUFUiLCJjbGllbnRfaWQiOiJDT1JFSUkiLCJvaV90a25faWQiOiI3MTg4YjYyNS05YTk5LTRmOWEtODU5NC1mODI1YTVkYmRkMTYiLCJzY29wZSI6ImFwaSBvcGVuaWQgcHJvZmlsZSByb2xlcyBvZmZsaW5lX2FjY2VzcyIsImp0aSI6IjlmOTg4MTg0LTgyZDItNGMwNi1iOGVjLTVmODFkZTQ3ZGI4MyIsImV4cCI6MTc0MDk4NDc5MywiaWF0IjoxNzQwOTgxMTkzfQ.iDFesBukZlnQQ1IWE5bFcTXZNYrK3AoVT52gKO4L8E88V8yRNE5ATjtxKDG7etF2sCgDfcSZsuiQcmr0M2iE0acFkdrxXX3ZjsoEYtgCGEGBWr6pcRhyA16jfqrD3ok-sfhugtkVZzytJL-dpQTFuyTrWR4vOKofL7T6iBIHyIg0EkkxtccRlnPPZIzLbpXMY6-42MPfL6gPqrUFXDB43tkCreTHnxFaNEAHYRDryCMNnf9wKmnwpR5Y6BIiJExul4UQH_Ts0-zDQfD3AWEOBP380zVSjZKCcMkq3uWFxTc6NfPxnD-604UkPCKaDhVjkfL5HoleQpIbQVYOaRKunw";
+            bearer = await GetToken(
+              url!,
+              "COREII",
+              "postman-secret",
+              $"{url!}/authentication/login-callback",
+              name!,
+              password!,
+              enableDebug: true
+          );
         }
 
         [BeforeScenario("@PlanActivation")]
@@ -115,5 +236,5 @@ namespace RefitSandBox.Hooks
 
         }
 
-        }
+    }
 }
