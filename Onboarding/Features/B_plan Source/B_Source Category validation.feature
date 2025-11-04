@@ -64,25 +64,70 @@ When Configuration has been made as per following
 |           9 | SecondTierCompensationMatchPercent |     78 |
 |           9 | ThirdTierMatchPercent              |    101 |
 |           9 | ThirdTierCompensationMatchPercent  |     78 |
-|           10 | SourceType                         |      2 |
-|           10| SourceCategory                     |      5 |
-|           10 | IsSafeHarbourMatch                 | false  |
-|           10| EmployerContributionType           |      1 |
-|           10| FirstTierMatchPercent              |     76 |
-|           10| FirstTierCompensationMatchPercent  |     78 |
-|           10| SecondTierMatchPercent             |     76 |
-|           10| SecondTierCompensationMatchPercent |     78 |
-|           10| ThirdTierMatchPercent              |     76 |
-|           10| ThirdTierCompensationMatchPercent  |    101 |
-|           11| SourceType                         |      2 |
-|           11| SourceCategory                     |      5 |
-|           11| PercentageOfCompensation           | 111.00 |
-|           12| SourceType                         |      2 |
-|           12| SourceCategory                     |      6 |
-|           12| IsSafeHarbourMatch                 | true   |
-|           12| SafeHarbourType                    |      3 |
-|           12| UptoPercentageOfDeferral           |      3 |
-|           12| EnhancedshMatchPercentage          |    101 |
+|          10 | SourceType                         |      2 |
+|          10 | SourceCategory                     |      5 |
+|          10 | IsSafeHarbourMatch                 | false  |
+|          10 | EmployerContributionType           |      1 |
+|          10 | FirstTierMatchPercent              |     76 |
+|          10 | FirstTierCompensationMatchPercent  |     78 |
+|          10 | SecondTierMatchPercent             |     76 |
+|          10 | SecondTierCompensationMatchPercent |     78 |
+|          10 | ThirdTierMatchPercent              |     76 |
+|          10 | ThirdTierCompensationMatchPercent  |    101 |
+|          11 | SourceType                         |      2 |
+|          11 | SourceCategory                     |      5 |
+|          11 | PercentageOfCompensation           | 111.00 |
+|          12 | SourceType                         |      2 |
+|          12 | SourceCategory                     |      6 |
+|          12 | IsSafeHarbourMatch                 | true   |
+|          12 | SafeHarbourType                    |      3 |
+|          12 | UptoPercentageOfDeferral           |      3 |
+|          12 | EnhancedshMatchPercentage          |    101 |
+|          13 | SourceType                         |      2 |
+|          13 | SourceCategory                     |      6 |
+|          13 | EmployerContributionType           |      2 |
+|          13 | PercentageOfCalculation            |    101 |
+|          13 | PercentageOfCompensation           |     10 |
+|          14 | SourceType                         |      2 |
+|          14 | SourceCategory                     |      6 |
+|          14 | EmployerContributionType           |      2 |
+|          14 | PercentageOfCalculation            |     10 |
+|          14 | PercentageOfCompensation           |    101 |
+|          15 | SourceType                         |      2 |
+|          15 | SourceCategory                     |      5 |
+|          15 | PercentageOfCompensation           |   0.00 |
+|          16 | SourceType                         |      2 |
+|          16 | SourceCategory                     |      6 |
+|          16 | IsSafeHarbourMatch                 | true   |
+|          16 | SafeHarbourType                    |      3 |
+|          16 | EnhancedshMatchPercentage          |     10 |
+|          16 | UptoPercentageOfDeferral           |    101 |
+|          17 | SourceType                         |      2 |
+|          17 | SourceCategory                     |      6 |
+|          17 | IsSafeHarbourMatch                 | true   |
+|          17 | SafeHarbourType                    |      3 |
+|          17 | EnhancedshMatchPercentage          |     10 |
+|          17 | UptoPercentageOfDeferral           |    0.0 |
+|          18 | SourceType                         |      2 |
+|          18 | SourceCategory                     |      6 |
+|          18 | isMaximumLimitApplicable           | true   |
+|          18 | maximumDollarLimit                 |        |
+|          19 | SourceType                         |      2 |
+|          19 | SourceCategory                     |      6 |
+|          19 | IsNonPayPeriodApplicable           | true   |
+|          19 | IsLastDayRule                      | true   |
+|          19 | IsHoursRequirement                 | true   |
+|          19 | Hours                              |        |
+|          20 | SourceType                         |      2 |
+|          20 | SourceCategory                     |      6 |
+|          20 | IsNonPayPeriodApplicable           | true   |
+|          20 | IsLastDayRule                      | true   |
+|          20 | IsHoursRequirement                 | true   |
+|          20 | Hours                              |   2000 |
+|          21 | SourceType                         |      2 |
+|          21 | SourceCategory                     |      6 |
+|          21 | IsLastDayRuleApplicable            | true   |
+
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
 Then the API response should contain the 4 following errors
@@ -99,7 +144,15 @@ Then the API response should contain the 4 following errors
 |            | null                                                            |
 | PL244      | When percentage compensation is greater than 100                |
 | PL396      | Required                                                        |
-
+|            | null                                                            |
+| PL244      | When percentage compensation is greater than 100                |
+| PL395      | Required                                                        |
+|            | null                                                            |
+| PL255      | Required                                                        |
+| PL1118     | Required                                                        |
+| PL1190     | Required                                                        |
+| PL1174     | Hours should not be greater than 1000                           |
+| PL1008     | Required                                                        |
 Scenario: To Verify the Source Category Mandatory Validation for Employee Source
 Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
 When Configuration has been made as per following
@@ -290,6 +343,68 @@ When Collection in a model is configured with 6 blocks for the property "Sources
 |          28 | SecondTierCompensationMatchPercent |             78 |
 |          28 | ThirdTierMatchPercent              |             76 |
 |          28 | ThirdTierCompensationMatchPercent  |            100 |
+|          29 | SourceType                         |              2 |
+|          29 | SourceCategory                     |              6 |
+|          29 | IsSafeHarbourMatch                 | true           |
+|          29 | SafeHarbourType                    |              3 |
+|          29 | EnhancedshMatchPercentage          |             10 |
+|          29 | UptoPercentageOfDeferral           |            123 |
+|          30 | SourceType                         |              2 |
+|          30 | SourceCategory                     |              6 |
+|          30 | IsMaximumLimitApplicable           | true           |
+|          30 | MaximumDollarLimit                 |            100 |
+|          31 | SourceType                         |              2 |
+|          31 | SourceCategory                     |              6 |
+|          31 | IsMaximumLimitApplicable           | true           |
+|          31 | MaximumDollarLimit                 |     8738388.33 |
+|          32 | SourceType                         |              2 |
+|          32 | SourceCategory                     |              6 |
+|          32 | IsMaximumLimitApplicable           | true           |
+|          32 | MaximumDollarLimit                 |       87383.33 |
+|          33 | SourceType                         |              2 |
+|          33 | SourceCategory                     |              6 |
+|          33 | IsMaximumLimitApplicable           | true           |
+|          33 | MaximumDollarLimit                 |    87383333.33 |
+|          34 | SourceType                         |              2 |
+|          34 | SourceCategory                     |              6 |
+|          34 | IsMaximumLimitApplicable           | true           |
+|          34 | MaximumDollarLimit                 |    8738333.333 |
+|          35 | SourceType                         |              2 |
+|          35 | SourceCategory                     |              6 |
+|          35 | IsNonPayPeriodApplicable           | true           |
+|          36 | SourceType                         |              2 |
+|          36 | SourceCategory                     |              6 |
+|          36 | IsNonPayPeriodApplicable           | true           |
+|          36 | IsIncludeDefferals                 | true           |
+|          37 | SourceType                         |              2 |
+|          37 | SourceCategory                     |              6 |
+|          37 | IsNonPayPeriodApplicable           | true           |
+|          37 | IsIncludePlanCompensation          | true           |
+|          38 | SourceType                         |              2 |
+|          38 | SourceCategory                     |              6 |
+|          38 | IsNonPayPeriodApplicable           | true           |
+|          38 | IsLastDayRule                      | true           |
+|          39 | SourceType                         |              2 |
+|          39 | SourceCategory                     |              6 |
+|          39 | IsNonPayPeriodApplicable           | true           |
+|          39 | IsLastDayRule                      | true           |
+|          39 | IsHoursRequirement                 | true           |
+|          39 | Hours                              |            200 |
+|          40 | SourceType                         |              2 |
+|          40 | SourceCategory                     |              6 |
+|          40 | IsNonPayPeriodApplicable           | true           |
+|          40 | IsLastDayRule                      | true           |
+|          40 | IsHoursRequirement                 | true           |
+|          40 | Hours                              |           1000 |
+|          41 | SourceType                         |              2 |
+|          41 | SourceCategory                     |              6 |
+|          41 | IsNonPayPeriodApplicable           | true           |
+|          41 | IsHoursRequirement                 | true           |
+|          41 | Hours                              |            100 |
+|          41 | IsNormalRetirement                 | true           |
+|          41 | IsEarlyRetirement                  | true           |
+|          41 | IsDeath                            | true           |
+|          41 | IsDisability                       | true           |
 
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
