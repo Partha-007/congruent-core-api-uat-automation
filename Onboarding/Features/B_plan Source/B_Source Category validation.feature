@@ -1,423 +1,425 @@
 ﻿Feature: B_Source Category validation
 [BeforeTestRun]
 
-Scenario: To Verify the Source Category Mandatory Validation for Employee Source with error message
-Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-
-  When Collection in a model is configured with 6 blocks for the property "Sources" with values to save model portfolio as given below
-| BlockNumber | Key                                | Value  |
-|           1 | SourceCategory                     |        |
-|           2 | SourceType                         |      2 |
-|           2 | SourceCategory                     |        |
-|           3 | SourceType                         |      1 |
-|           3 | SourceCategory                     |      1 |
-|           3 | SourceSubCategory                  |        |
-|           4 | SourceType                         |      1 |
-|           4 | SourceCategory                     |      1 |
-|           4 | RehireDeferralPercentage           |    102 |
-|           5 | SourceType                         |      2 |
-|           5 | SourceCategory                     |      6 |
-|           5 | IsSafeHarbourMatch                 | true   |
-|           5 | SafeHarbourType                    |      3 |
-|           5 | EnhancedshMatchPercentage          |        |
-|           5 | UptoPercentageOfDeferral           |     10 |
-|           6 | SourceType                         |      2 |
-|           6 | SourceCategory                     |      5 |
-|           6 | IsSafeHarbourMatch                 | false  |
-|           6 | EmployerContributionType           |      1 |
-|           6 | FirstTierMatchPercent              |     76 |
-|           6 | FirstTierCompensationMatchPercent  |    101 |
-|           6 | SecondTierMatchPercent             |     76 |
-|           6 | SecondTierCompensationMatchPercent |     78 |
-|           6 | ThirdTierMatchPercent              |     76 |
-|           6 | ThirdTierCompensationMatchPercent  |     78 |
-|           7 | SourceType                         |      2 |
-|           7 | SourceCategory                     |      5 |
-|           7 | IsSafeHarbourMatch                 | false  |
-|           7 | EmployerContributionType           |      1 |
-|           7 | FirstTierMatchPercent              |     76 |
-|           7 | FirstTierCompensationMatchPercent  |     78 |
-|           7 | SecondTierMatchPercent             |    101 |
-|           7 | SecondTierCompensationMatchPercent |     78 |
-|           7 | ThirdTierMatchPercent              |     76 |
-|           7 | ThirdTierCompensationMatchPercent  |     78 |
-|           8 | SourceType                         |      2 |
-|           8 | SourceCategory                     |      5 |
-|           8 | IsSafeHarbourMatch                 | false  |
-|           8 | EmployerContributionType           |      1 |
-|           8 | FirstTierMatchPercent              |     76 |
-|           8 | FirstTierCompensationMatchPercent  |     78 |
-|           8 | SecondTierMatchPercent             |     76 |
-|           8 | SecondTierCompensationMatchPercent |    101 |
-|           8 | ThirdTierMatchPercent              |     76 |
-|           8 | ThirdTierCompensationMatchPercent  |     78 |
-|           9 | SourceType                         |      2 |
-|           9 | SourceCategory                     |      5 |
-|           9 | IsSafeHarbourMatch                 | false  |
-|           9 | EmployerContributionType           |      1 |
-|           9 | FirstTierMatchPercent              |     76 |
-|           9 | FirstTierCompensationMatchPercent  |     78 |
-|           9 | SecondTierMatchPercent             |     76 |
-|           9 | SecondTierCompensationMatchPercent |     78 |
-|           9 | ThirdTierMatchPercent              |    101 |
-|           9 | ThirdTierCompensationMatchPercent  |     78 |
-|          10 | SourceType                         |      2 |
-|          10 | SourceCategory                     |      5 |
-|          10 | IsSafeHarbourMatch                 | false  |
-|          10 | EmployerContributionType           |      1 |
-|          10 | FirstTierMatchPercent              |     76 |
-|          10 | FirstTierCompensationMatchPercent  |     78 |
-|          10 | SecondTierMatchPercent             |     76 |
-|          10 | SecondTierCompensationMatchPercent |     78 |
-|          10 | ThirdTierMatchPercent              |     76 |
-|          10 | ThirdTierCompensationMatchPercent  |    101 |
-|          11 | SourceType                         |      2 |
-|          11 | SourceCategory                     |      5 |
-|          11 | PercentageOfCompensation           | 111.00 |
-|          12 | SourceType                         |      2 |
-|          12 | SourceCategory                     |      6 |
-|          12 | IsSafeHarbourMatch                 | true   |
-|          12 | SafeHarbourType                    |      3 |
-|          12 | UptoPercentageOfDeferral           |      3 |
-|          12 | EnhancedshMatchPercentage          |    101 |
-|          13 | SourceType                         |      2 |
-|          13 | SourceCategory                     |      6 |
-|          13 | EmployerContributionType           |      2 |
-|          13 | PercentageOfCalculation            |    101 |
-|          13 | PercentageOfCompensation           |     10 |
-|          14 | SourceType                         |      2 |
-|          14 | SourceCategory                     |      6 |
-|          14 | EmployerContributionType           |      2 |
-|          14 | PercentageOfCalculation            |     10 |
-|          14 | PercentageOfCompensation           |    101 |
-|          15 | SourceType                         |      2 |
-|          15 | SourceCategory                     |      5 |
-|          15 | PercentageOfCompensation           |   0.00 |
-|          16 | SourceType                         |      2 |
-|          16 | SourceCategory                     |      6 |
-|          16 | IsSafeHarbourMatch                 | true   |
-|          16 | SafeHarbourType                    |      3 |
-|          16 | EnhancedshMatchPercentage          |     10 |
-|          16 | UptoPercentageOfDeferral           |    101 |
-|          17 | SourceType                         |      2 |
-|          17 | SourceCategory                     |      6 |
-|          17 | IsSafeHarbourMatch                 | true   |
-|          17 | SafeHarbourType                    |      3 |
-|          17 | EnhancedshMatchPercentage          |     10 |
-|          17 | UptoPercentageOfDeferral           |    0.0 |
-|          18 | SourceType                         |      2 |
-|          18 | SourceCategory                     |      6 |
-|          18 | isMaximumLimitApplicable           | true   |
-|          18 | maximumDollarLimit                 |        |
-|          19 | SourceType                         |      2 |
-|          19 | SourceCategory                     |      6 |
-|          19 | IsNonPayPeriodApplicable           | true   |
-|          19 | IsLastDayRule                      | true   |
-|          19 | IsHoursRequirement                 | true   |
-|          19 | Hours                              |        |
-|          20 | SourceType                         |      2 |
-|          20 | SourceCategory                     |      6 |
-|          20 | IsNonPayPeriodApplicable           | true   |
-|          20 | IsLastDayRule                      | true   |
-|          20 | IsHoursRequirement                 | true   |
-|          20 | Hours                              |   2000 |
-|          21 | SourceType                         |      2 |
-|          21 | SourceCategory                     |      6 |
-|          21 | IsLastDayRuleApplicable            | true   |
-
-
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
-Then the API response should contain the 4 following errors
-| error_code | error_message                                                   |
-| PL175      | Required                                                        |
-| PL175      | Required                                                        |
-| PL176      | Required                                                        |
-| PL191      | Deferral percentage for rehire should not exceed 100 percentage |
-| PL251      | Required                                                        |
-|            | null                                                            |
-|            | null                                                            |
-|            | null                                                            |
-|            | null                                                            |
-|            | null                                                            |
-| PL244      | When percentage compensation is greater than 100                |
-| PL396      | Required                                                        |
-|            | null                                                            |
-| PL244      | When percentage compensation is greater than 100                |
-| PL395      | Required                                                        |
-|            | null                                                            |
-| PL255      | Required                                                        |
-| PL1118     | Required                                                        |
-| PL1190     | Required                                                        |
-| PL1174     | Hours should not be greater than 1000                           |
-| PL1008     | Required                                                        |
-Scenario: To Verify the Source Category Mandatory Validation for Employee Source
-Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Collection in a model is configured with 6 blocks for the property "Sources" with values to save model portfolio as given below
-| BlockNumber | Key                                | Value          |
-|           1 | SourceType                         |              1 |
-|           1 | SourceCategory                     |              1 |
-|           1 | RehireDeferralPercentage           |            100 |
-|           2 | SourceType                         |              1 |
-|           2 | SourceCategory                     |              1 |
-|           2 | RehireDeferralPercentage           |          99.00 |
-|           3 | SourceType                         |              2 |
-|           3 | SourceCategory                     |              5 |
-|           3 | PercentageOfCompensation           |          99.00 |
-|           4 | SourceType                         |              2 |
-|           4 | SourceCategory                     |              6 |
-|           4 | IsSafeHarbourMatch                 | true           |
-|           4 | SafeHarbourType                    |              3 |
-|           4 | EnhancedshMatchPercentage          |             88 |
-|           4 | UptoPercentageOfDeferral           |          99.00 |
-|           5 | SourceType                         |              1 |
-|           5 | SourceCategory                     |              1 |
-|           5 | ContributionType                   |              2 |
-|           5 | LimitMinimumDollar                 |       10000.00 |
-|           6 | SourceType                         |              1 |
-|           6 | SourceCategory                     |              1 |
-|           6 | ContributionType                   |              2 |
-|           6 | LimitMinimumDollar                 | 10000000000.00 |
-|           7 | SourceType                         |              1 |
-|           7 | SourceCategory                     |              1 |
-|           7 | ContributionType                   |              1 |
-|           7 | LimitMinimumPercentage             |             75 |
-|           8 | SourceType                         |              1 |
-|           8 | SourceCategory                     |              1 |
-|           8 | ContributionType                   |              2 |
-|           8 | LimitMaximumDollar                 |       12350.00 |
-|           9 | SourceType                         |              1 |
-|           9 | SourceCategory                     |              1 |
-|           9 | ContributionType                   |              2 |
-|           9 | LimitMaximumDollar                 | 10000000000.00 |
-|          10 | SourceType                         |              1 |
-|          10 | SourceCategory                     |              1 |
-|          10 | ContributionType                   |              2 |
-|          10 | MaximumDollarCompensation          |      342445.00 |
-|          11 | SourceType                         |              1 |
-|          11 | SourceCategory                     |              1 |
-|          11 | ContributionType                   |              2 |
-|          11 | MaximumDollarCompensation          | 10000000000.00 |
-|          12 | SourceType                         |              2 |
-|          12 | SourceCategory                     |              6 |
-|          12 | IsSafeHarbourMatch                 | true           |
-|          12 | SafeHarbourType                    |              3 |
-|          12 | EnhancedshMatchPercentage          |            100 |
-|          12 | UptoPercentageOfDeferral           |          10.00 |
-|          13 | SourceType                         |              2 |
-|          13 | SourceCategory                     |              6 |
-|          13 | IsSafeHarbourMatch                 | true           |
-|          13 | SafeHarbourType                    |              3 |
-|          13 | EnhancedshMatchPercentage          |            100 |
-|          13 | UptoPercentageOfDeferral           |         100.00 |
-|          14 | SourceType                         |              2 |
-|          14 | SourceCategory                     |              6 |
-|          14 | IsSafeHarbourMatch                 | true           |
-|          14 | SafeHarbourType                    |              3 |
-|          14 | EnhancedshMatchPercentage          |            100 |
-|          14 | PercentageOfCompensation           |            100 |
-|          14 | UptoPercentageOfDeferral           |          10.00 |
-|          15 | SourceType                         |              2 |
-|          15 | SourceCategory                     |              6 |
-|          15 | IsSafeHarbourMatch                 | true           |
-|          15 | SafeHarbourType                    |              3 |
-|          15 | EnhancedshMatchPercentage          |            123 |
-|          15 | UptoPercentageOfDeferral           |          10.00 |
-|          16 | SourceType                         |              2 |
-|          16 | SourceCategory                     |              5 |
-|          16 | IsSafeHarbourMatch                 | true           |
-|          16 | SafeHarbourType                    |              3 |
-|          16 | PercentageOfCompensation           |             17 |
-|          16 | EnhancedshMatchPercentage          |             10 |
-|          16 | UptoPercentageOfDeferral           |             10 |
-|          17 | SourceType                         |              2 |
-|          17 | SourceCategory                     |              5 |
-|          17 | IsSafeHarbourMatch                 | false          |
-|          17 | EmployerContributionType           |              2 |
-|          17 | PercentageOfCalculation            |            100 |
-|          17 | PercentageOfCompensation           |             10 |
-|          18 | SourceType                         |              2 |
-|          18 | SourceCategory                     |              5 |
-|          18 | IsSafeHarbourMatch                 | false          |
-|          18 | EmployerContributionType           |              2 |
-|          18 | PercentageOfCalculation            |             76 |
-|          18 | PercentageOfCompensation           |             10 |
-|          19 | SourceType                         |              2 |
-|          19 | SourceCategory                     |              5 |
-|          19 | IsSafeHarbourMatch                 | false          |
-|          19 | EmployerContributionType           |              2 |
-|          19 | PercentageOfCalculation            |             76 |
-|          19 | PercentageOfCompensation           |             78 |
-|          20 | SourceType                         |              2 |
-|          20 | SourceCategory                     |              5 |
-|          20 | IsSafeHarbourMatch                 | false          |
-|          20 | EmployerContributionType           |              1 |
-|          20 | FirstTierMatchPercent              |            100 |
-|          20 | FirstTierCompensationMatchPercent  |             78 |
-|          20 | SecondTierMatchPercent             |             76 |
-|          20 | SecondTierCompensationMatchPercent |             78 |
-|          20 | ThirdTierMatchPercent              |             76 |
-|          20 | ThirdTierCompensationMatchPercent  |             78 |
-|          21 | SourceType                         |              2 |
-|          21 | SourceCategory                     |              5 |
-|          21 | IsSafeHarbourMatch                 | false          |
-|          21 | EmployerContributionType           |              1 |
-|          21 | FirstTierMatchPercent              |             76 |
-|          21 | FirstTierCompensationMatchPercent  |             78 |
-|          21 | SecondTierMatchPercent             |             76 |
-|          21 | SecondTierCompensationMatchPercent |             78 |
-|          21 | ThirdTierMatchPercent              |             76 |
-|          21 | ThirdTierCompensationMatchPercent  |             78 |
-|          22 | SourceType                         |              2 |
-|          22 | SourceCategory                     |              5 |
-|          22 | IsSafeHarbourMatch                 | false          |
-|          22 | EmployerContributionType           |              1 |
-|          22 | FirstTierMatchPercent              |             76 |
-|          22 | FirstTierCompensationMatchPercent  |             78 |
-|          22 | SecondTierMatchPercent             |            100 |
-|          22 | SecondTierCompensationMatchPercent |             78 |
-|          22 | ThirdTierMatchPercent              |             76 |
-|          22 | ThirdTierCompensationMatchPercent  |             78 |
-|          23 | SourceType                         |              2 |
-|          23 | SourceCategory                     |              6 |
-|          23 | IsSafeHarbourMatch                 | false          |
-|          23 | EmployerContributionType           |              3 |
-|          23 | FirstTierMatchPercent              |            101 |
-|          23 | FirstTierCompensationMatchPercent  |             78 |
-|          23 | SecondTierMatchPercent             |             76 |
-|          23 | SecondTierCompensationMatchPercent |             78 |
-|          23 | ThirdTierMatchPercent              |             76 |
-|          23 | ThirdTierCompensationMatchPercent  |             78 |
-|          24 | SourceType                         |              2 |
-|          24 | SourceCategory                     |              5 |
-|          24 | IsSafeHarbourMatch                 | false          |
-|          24 | EmployerContributionType           |              1 |
-|          24 | FirstTierMatchPercent              |             76 |
-|          24 | FirstTierCompensationMatchPercent  |             78 |
-|          24 | SecondTierMatchPercent             |             76 |
-|          24 | SecondTierCompensationMatchPercent |             78 |
-|          24 | ThirdTierMatchPercent              |             76 |
-|          24 | ThirdTierCompensationMatchPercent  |             78 |
-|          25 | SourceType                         |              2 |
-|          25 | SourceCategory                     |              5 |
-|          25 | IsSafeHarbourMatch                 | false          |
-|          25 | EmployerContributionType           |              1 |
-|          25 | FirstTierMatchPercent              |             76 |
-|          25 | FirstTierCompensationMatchPercent  |             78 |
-|          25 | SecondTierMatchPercent             |            100 |
-|          25 | SecondTierCompensationMatchPercent |             78 |
-|          25 | ThirdTierMatchPercent              |             76 |
-|          25 | ThirdTierCompensationMatchPercent  |             78 |
-|          26 | SourceType                         |              2 |
-|          26 | SourceCategory                     |              5 |
-|          26 | IsSafeHarbourMatch                 | false          |
-|          26 | EmployerContributionType           |              1 |
-|          26 | FirstTierMatchPercent              |             76 |
-|          26 | FirstTierCompensationMatchPercent  |             78 |
-|          26 | SecondTierMatchPercent             |             76 |
-|          26 | SecondTierCompensationMatchPercent |            100 |
-|          26 | ThirdTierMatchPercent              |             76 |
-|          26 | ThirdTierCompensationMatchPercent  |             78 |
-|          27 | SourceType                         |              2 |
-|          27 | SourceCategory                     |              5 |
-|          27 | IsSafeHarbourMatch                 | false          |
-|          27 | EmployerContributionType           |              1 |
-|          27 | FirstTierMatchPercent              |             76 |
-|          27 | FirstTierCompensationMatchPercent  |             78 |
-|          27 | SecondTierMatchPercent             |             76 |
-|          27 | SecondTierCompensationMatchPercent |             78 |
-|          27 | ThirdTierMatchPercent              |            100 |
-|          27 | ThirdTierCompensationMatchPercent  |             78 |
-|          28 | SourceType                         |              2 |
-|          28 | SourceCategory                     |              5 |
-|          28 | IsSafeHarbourMatch                 | false          |
-|          28 | EmployerContributionType           |              1 |
-|          28 | FirstTierMatchPercent              |             76 |
-|          28 | FirstTierCompensationMatchPercent  |             78 |
-|          28 | SecondTierMatchPercent             |             76 |
-|          28 | SecondTierCompensationMatchPercent |             78 |
-|          28 | ThirdTierMatchPercent              |             76 |
-|          28 | ThirdTierCompensationMatchPercent  |            100 |
-|          29 | SourceType                         |              2 |
-|          29 | SourceCategory                     |              6 |
-|          29 | IsSafeHarbourMatch                 | true           |
-|          29 | SafeHarbourType                    |              3 |
-|          29 | EnhancedshMatchPercentage          |             10 |
-|          29 | UptoPercentageOfDeferral           |            123 |
-|          30 | SourceType                         |              2 |
-|          30 | SourceCategory                     |              6 |
-|          30 | IsMaximumLimitApplicable           | true           |
-|          30 | MaximumDollarLimit                 |            100 |
-|          31 | SourceType                         |              2 |
-|          31 | SourceCategory                     |              6 |
-|          31 | IsMaximumLimitApplicable           | true           |
-|          31 | MaximumDollarLimit                 |     8738388.33 |
-|          32 | SourceType                         |              2 |
-|          32 | SourceCategory                     |              6 |
-|          32 | IsMaximumLimitApplicable           | true           |
-|          32 | MaximumDollarLimit                 |       87383.33 |
-|          33 | SourceType                         |              2 |
-|          33 | SourceCategory                     |              6 |
-|          33 | IsMaximumLimitApplicable           | true           |
-|          33 | MaximumDollarLimit                 |    87383333.33 |
-|          34 | SourceType                         |              2 |
-|          34 | SourceCategory                     |              6 |
-|          34 | IsMaximumLimitApplicable           | true           |
-|          34 | MaximumDollarLimit                 |    8738333.333 |
-|          35 | SourceType                         |              2 |
-|          35 | SourceCategory                     |              6 |
-|          35 | IsNonPayPeriodApplicable           | true           |
-|          36 | SourceType                         |              2 |
-|          36 | SourceCategory                     |              6 |
-|          36 | IsNonPayPeriodApplicable           | true           |
-|          36 | IsIncludeDefferals                 | true           |
-|          37 | SourceType                         |              2 |
-|          37 | SourceCategory                     |              6 |
-|          37 | IsNonPayPeriodApplicable           | true           |
-|          37 | IsIncludePlanCompensation          | true           |
-|          38 | SourceType                         |              2 |
-|          38 | SourceCategory                     |              6 |
-|          38 | IsNonPayPeriodApplicable           | true           |
-|          38 | IsLastDayRule                      | true           |
-|          39 | SourceType                         |              2 |
-|          39 | SourceCategory                     |              6 |
-|          39 | IsNonPayPeriodApplicable           | true           |
-|          39 | IsLastDayRule                      | true           |
-|          39 | IsHoursRequirement                 | true           |
-|          39 | Hours                              |            200 |
-|          40 | SourceType                         |              2 |
-|          40 | SourceCategory                     |              6 |
-|          40 | IsNonPayPeriodApplicable           | true           |
-|          40 | IsLastDayRule                      | true           |
-|          40 | IsHoursRequirement                 | true           |
-|          40 | Hours                              |           1000 |
-|          41 | SourceType                         |              2 |
-|          41 | SourceCategory                     |              6 |
-|          41 | IsNonPayPeriodApplicable           | true           |
-|          41 | IsHoursRequirement                 | true           |
-|          41 | Hours                              |            100 |
-|          41 | IsNormalRetirement                 | true           |
-|          41 | IsEarlyRetirement                  | true           |
-|          41 | IsDeath                            | true           |
-|          41 | IsDisability                       | true           |
+#Scenario: To Verify the Source Category Mandatory Validation for Employee Source with error message
+#Given Model is selected for the endpoint "/api/Source/SaveSource"
+#When Configuration has been made as per following
+#           | key       | value       |
+#           | companyId | <CompanyId> |
+#
+#  And Configuration has been made as per following
+#| block | propertyName                       | value  |
+#|     1 | sourceCategory                     |        |
+#|     2 | sourceType                         |      2 |
+#|     2 | sourceCategory                     |        |
+#|     3 | sourceType                         |      1 |
+#|     3 | sourceCategory                     |      1 |
+#|     3 | SourceSubCategory                  |        |
+#|     4 | sourceType                         |      1 |
+#|     4 | sourceCategory                     |      1 |
+#|     4 | RehireDeferralPercentage           |    102 |
+#|     5 | sourceType                         |      2 |
+#|     5 | sourceCategory                     |      6 |
+#|     5 | isSafeHarbourMatch                 | true   |
+#|     5 | safeHarbourType                    |      3 |
+#|     5 | enhancedshMatchPercentage          |        |
+#|     5 | uptoPercentageOfDeferral           |     10 |
+#|     6 | sourceType                         |      2 |
+#|     6 | sourceCategory                     |      5 |
+#|     6 | isSafeHarbourMatch                 | false  |
+#|     6 | employercontributionType           |      1 |
+#|     6 | firstTierMatchPercent              |     76 |
+#|     6 | firstTierCompensationMatchPercent  |    101 |
+#|     6 | secondTierMatchPercent             |     76 |
+#|     6 | secondTierCompensationMatchPercent |     78 |
+#|     6 | thirdTierMatchPercent              |     76 |
+#|     6 | thirdTierCompensationMatchPercent  |     78 |
+#|     7 | sourceType                         |      2 |
+#|     7 | sourceCategory                     |      5 |
+#|     7 | isSafeHarbourMatch                 | false  |
+#|     7 | employercontributionType           |      1 |
+#|     7 | firstTierMatchPercent              |     76 |
+#|     7 | firstTierCompensationMatchPercent  |     78 |
+#|     7 | secondTierMatchPercent             |    101 |
+#|     7 | secondTierCompensationMatchPercent |     78 |
+#|     7 | thirdTierMatchPercent              |     76 |
+#|     7 | thirdTierCompensationMatchPercent  |     78 |
+#|     8 | sourceType                         |      2 |
+#|     8 | sourceCategory                     |      5 |
+#|     8 | isSafeHarbourMatch                 | false  |
+#|     8 | employercontributionType           |      1 |
+#|     8 | firstTierMatchPercent              |     76 |
+#|     8 | firstTierCompensationMatchPercent  |     78 |
+#|     8 | secondTierMatchPercent             |     76 |
+#|     8 | secondTierCompensationMatchPercent |    101 |
+#|     8 | thirdTierMatchPercent              |     76 |
+#|     8 | thirdTierCompensationMatchPercent  |     78 |
+#|     9 | sourceType                         |      2 |
+#|     9 | sourceCategory                     |      5 |
+#|     9 | isSafeHarbourMatch                 | false  |
+#|     9 | employercontributionType           |      1 |
+#|     9 | firstTierMatchPercent              |     76 |
+#|     9 | firstTierCompensationMatchPercent  |     78 |
+#|     9 | secondTierMatchPercent             |     76 |
+#|     9 | secondTierCompensationMatchPercent |     78 |
+#|     9 | thirdTierMatchPercent              |    101 |
+#|     9 | thirdTierCompensationMatchPercent  |     78 |
+#|    10 | sourceType                         |      2 |
+#|    10 | sourceCategory                     |      5 |
+#|    10 | isSafeHarbourMatch                 | false  |
+#|    10 | employercontributionType           |      1 |
+#|    10 | firstTierMatchPercent              |     76 |
+#|    10 | firstTierCompensationMatchPercent  |     78 |
+#|    10 | secondTierMatchPercent             |     76 |
+#|    10 | secondTierCompensationMatchPercent |     78 |
+#|    10 | thirdTierMatchPercent              |     76 |
+#|    10 | thirdTierCompensationMatchPercent  |    101 |
+#|    11 | sourceType                         |      2 |
+#|    11 | sourceCategory                     |      5 |
+#|    11 | percentageOfCompensation           | 111.00 |
+#|    12 | sourceType                         |      2 |
+#|    12 | sourceCategory                     |      6 |
+#|    12 | isSafeHarbourMatch                 | true   |
+#|    12 | safeHarbourType                    |      3 |
+#|    12 | uptoPercentageOfDeferral           |      3 |
+#|    12 | enhancedshMatchPercentage          |    101 |
+#|    13 | sourceType                         |      2 |
+#|    13 | sourceCategory                     |      6 |
+#|    13 | employercontributionType           |      2 |
+#|    13 | PercentageOfCalculation            |    101 |
+#|    13 | percentageOfCompensation           |     10 |
+#|    14 | sourceType                         |      2 |
+#|    14 | sourceCategory                     |      6 |
+#|    14 | employercontributionType           |      2 |
+#|    14 | PercentageOfCalculation            |     10 |
+#|    14 | percentageOfCompensation           |    101 |
+#|    15 | sourceType                         |      2 |
+#|    15 | sourceCategory                     |      5 |
+#|    15 | percentageOfCompensation           |   0.00 |
+#|    16 | sourceType                         |      2 |
+#|    16 | sourceCategory                     |      6 |
+#|    16 | isSafeHarbourMatch                 | true   |
+#|    16 | safeHarbourType                    |      3 |
+#|    16 | enhancedshMatchPercentage          |     10 |
+#|    16 | uptoPercentageOfDeferral           |    101 |
+#|    17 | sourceType                         |      2 |
+#|    17 | sourceCategory                     |      6 |
+#|    17 | isSafeHarbourMatch                 | true   |
+#|    17 | safeHarbourType                    |      3 |
+#|    17 | enhancedshMatchPercentage          |     10 |
+#|    17 | uptoPercentageOfDeferral           |    0.0 |
+#|    18 | sourceType                         |      2 |
+#|    18 | sourceCategory                     |      6 |
+#|    18 | isMaximumLimitApplicable           | true   |
+#|    18 | maximumDollarLimit                 |        |
+#|    19 | sourceType                         |      2 |
+#|    19 | sourceCategory                     |      6 |
+#|    19 | isNonPayPeriodApplicable           | true   |
+#|    19 | IsLastDayRule                      | true   |
+#|    19 | IsHoursRequirement                 | true   |
+#|    19 | Hours                              |        |
+#|    20 | sourceType                         |      2 |
+#|    20 | sourceCategory                     |      6 |
+#|    20 | isNonPayPeriodApplicable           | true   |
+#|    20 | IsLastDayRule                      | true   |
+#|    20 | IsHoursRequirement                 | true   |
+#|    20 | Hours                              |   2000 |
+#|    21 | sourceType                         |      2 |
+#|    21 | sourceCategory                     |      6 |
+#|    21 | IsLastDayRuleApplicable            | true   |
+#
+#
+#And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+#Then the API response should contain the 21 following errors
+#| error_code | error_message                                                   |
+#| PL175      | Required                                                        |
+#| PL175      | Required                                                        |
+#| PL176      | Required                                                        |
+#| PL191      | Deferral percentage for rehire should not exceed 100 percentage |
+#| PL251      | Required                                                        |
+#|            | null                                                            |
+#|            | null                                                            |
+#|            | null                                                            |
+#|            | null                                                            |
+#|            | null                                                            |
+#| PL244      | When percentage compensation is greater than 100                |
+#| PL396      | Required                                                        |
+#|            | null                                                            |
+#| PL244      | When percentage compensation is greater than 100                |
+#| PL395      | Required                                                        |
+#|            | null                                                            |
+#| PL255      | Required                                                        |
+#| PL1118     | Required                                                        |
+#| PL1190     | Required                                                        |
+#| PL1174     | Hours should not be greater than 1000                           |
+#| PL1008     | Required                                                        |
 
 
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
-Then API should respond with successful message
+#Scenario: To Verify the Source Category Mandatory Validation for Employee Source
+#Given Model is selected for the endpoint "/api/Source/SaveSource"
+#When Configuration has been made as per following
+#           | key       | value       |
+#           | companyId | <CompanyId> |
+#And Configuration has been made as per following
+#| block | propertyName                       | value          |
+#|     1 | sourceType                         |              1 |
+#|     1 | sourceCategory                     |              1 |
+#|     1 | RehireDeferralPercentage           |            100 |
+#|     2 | sourceType                         |              1 |
+#|     2 | sourceCategory                     |              1 |
+#|     2 | RehireDeferralPercentage           |          99.00 |
+#|     3 | sourceType                         |              2 |
+#|     3 | sourceCategory                     |              5 |
+#|     3 | percentageOfCompensation           |          99.00 |
+#|     4 | sourceType                         |              2 |
+#|     4 | sourceCategory                     |              6 |
+#|     4 | isSafeHarbourMatch                 | true           |
+#|     4 | safeHarbourType                    |              3 |
+#|     4 | enhancedshMatchPercentage          |             88 |
+#|     4 | uptoPercentageOfDeferral           |          99.00 |
+#|     5 | sourceType                         |              1 |
+#|     5 | sourceCategory                     |              1 |
+#|     5 | contributionType                   |              2 |
+#|     5 | limitMinimumDollar                 |       10000.00 |
+#|     6 | sourceType                         |              1 |
+#|     6 | sourceCategory                     |              1 |
+#|     6 | contributionType                   |              2 |
+#|     6 | limitMinimumDollar                 | 10000000000.00 |
+#|     7 | sourceType                         |              1 |
+#|     7 | sourceCategory                     |              1 |
+#|     7 | contributionType                   |              1 |
+#|     7 | limitMinimumPercentage             |             75 |
+#|     8 | sourceType                         |              1 |
+#|     8 | sourceCategory                     |              1 |
+#|     8 | contributionType                   |              2 |
+#|     8 | LimitMaximumDollar                 |       12350.00 |
+#|     9 | sourceType                         |              1 |
+#|     9 | sourceCategory                     |              1 |
+#|     9 | contributionType                   |              2 |
+#|     9 | LimitMaximumDollar                 | 10000000000.00 |
+#|    10 | sourceType                         |              1 |
+#|    10 | sourceCategory                     |              1 |
+#|    10 | contributionType                   |              2 |
+#|    10 | maximumDollarCompensation          |      342445.00 |
+#|    11 | sourceType                         |              1 |
+#|    11 | sourceCategory                     |              1 |
+#|    11 | contributionType                   |              2 |
+#|    11 | maximumDollarCompensation          | 10000000000.00 |
+#|    12 | sourceType                         |              2 |
+#|    12 | sourceCategory                     |              6 |
+#|    12 | isSafeHarbourMatch                 | true           |
+#|    12 | safeHarbourType                    |              3 |
+#|    12 | enhancedshMatchPercentage          |            100 |
+#|    12 | uptoPercentageOfDeferral           |          10.00 |
+#|    13 | sourceType                         |              2 |
+#|    13 | sourceCategory                     |              6 |
+#|    13 | isSafeHarbourMatch                 | true           |
+#|    13 | safeHarbourType                    |              3 |
+#|    13 | enhancedshMatchPercentage          |            100 |
+#|    13 | uptoPercentageOfDeferral           |         100.00 |
+#|    14 | sourceType                         |              2 |
+#|    14 | sourceCategory                     |              6 |
+#|    14 | isSafeHarbourMatch                 | true           |
+#|    14 | safeHarbourType                    |              3 |
+#|    14 | enhancedshMatchPercentage          |            100 |
+#|    14 | percentageOfCompensation           |            100 |
+#|    14 | uptoPercentageOfDeferral           |          10.00 |
+#|    15 | sourceType                         |              2 |
+#|    15 | sourceCategory                     |              6 |
+#|    15 | isSafeHarbourMatch                 | true           |
+#|    15 | safeHarbourType                    |              3 |
+#|    15 | enhancedshMatchPercentage          |            123 |
+#|    15 | uptoPercentageOfDeferral           |          10.00 |
+#|    16 | sourceType                         |              2 |
+#|    16 | sourceCategory                     |              5 |
+#|    16 | isSafeHarbourMatch                 | true           |
+#|    16 | safeHarbourType                    |              3 |
+#|    16 | percentageOfCompensation           |             17 |
+#|    16 | enhancedshMatchPercentage          |             10 |
+#|    16 | uptoPercentageOfDeferral           |             10 |
+#|    17 | sourceType                         |              2 |
+#|    17 | sourceCategory                     |              5 |
+#|    17 | isSafeHarbourMatch                 | false          |
+#|    17 | employercontributionType           |              2 |
+#|    17 | PercentageOfCalculation            |            100 |
+#|    17 | percentageOfCompensation           |             10 |
+#|    18 | sourceType                         |              2 |
+#|    18 | sourceCategory                     |              5 |
+#|    18 | isSafeHarbourMatch                 | false          |
+#|    18 | employercontributionType           |              2 |
+#|    18 | PercentageOfCalculation            |             76 |
+#|    18 | percentageOfCompensation           |             10 |
+#|    19 | sourceType                         |              2 |
+#|    19 | sourceCategory                     |              5 |
+#|    19 | isSafeHarbourMatch                 | false          |
+#|    19 | employercontributionType           |              2 |
+#|    19 | PercentageOfCalculation            |             76 |
+#|    19 | percentageOfCompensation           |             78 |
+#|    20 | sourceType                         |              2 |
+#|    20 | sourceCategory                     |              5 |
+#|    20 | isSafeHarbourMatch                 | false          |
+#|    20 | employercontributionType           |              1 |
+#|    20 | firstTierMatchPercent              |            100 |
+#|    20 | firstTierCompensationMatchPercent  |             78 |
+#|    20 | secondTierMatchPercent             |             76 |
+#|    20 | secondTierCompensationMatchPercent |             78 |
+#|    20 | thirdTierMatchPercent              |             76 |
+#|    20 | thirdTierCompensationMatchPercent  |             78 |
+#|    21 | sourceType                         |              2 |
+#|    21 | sourceCategory                     |              5 |
+#|    21 | isSafeHarbourMatch                 | false          |
+#|    21 | employercontributionType           |              1 |
+#|    21 | firstTierMatchPercent              |             76 |
+#|    21 | firstTierCompensationMatchPercent  |             78 |
+#|    21 | secondTierMatchPercent             |             76 |
+#|    21 | secondTierCompensationMatchPercent |             78 |
+#|    21 | thirdTierMatchPercent              |             76 |
+#|    21 | thirdTierCompensationMatchPercent  |             78 |
+#|    22 | sourceType                         |              2 |
+#|    22 | sourceCategory                     |              5 |
+#|    22 | isSafeHarbourMatch                 | false          |
+#|    22 | employercontributionType           |              1 |
+#|    22 | firstTierMatchPercent              |             76 |
+#|    22 | firstTierCompensationMatchPercent  |             78 |
+#|    22 | secondTierMatchPercent             |            100 |
+#|    22 | secondTierCompensationMatchPercent |             78 |
+#|    22 | thirdTierMatchPercent              |             76 |
+#|    22 | thirdTierCompensationMatchPercent  |             78 |
+#|    23 | sourceType                         |              2 |
+#|    23 | sourceCategory                     |              6 |
+#|    23 | isSafeHarbourMatch                 | false          |
+#|    23 | employercontributionType           |              3 |
+#|    23 | firstTierMatchPercent              |            101 |
+#|    23 | firstTierCompensationMatchPercent  |             78 |
+#|    23 | secondTierMatchPercent             |             76 |
+#|    23 | secondTierCompensationMatchPercent |             78 |
+#|    23 | thirdTierMatchPercent              |             76 |
+#|    23 | thirdTierCompensationMatchPercent  |             78 |
+#|    24 | sourceType                         |              2 |
+#|    24 | sourceCategory                     |              5 |
+#|    24 | isSafeHarbourMatch                 | false          |
+#|    24 | employercontributionType           |              1 |
+#|    24 | firstTierMatchPercent              |             76 |
+#|    24 | firstTierCompensationMatchPercent  |             78 |
+#|    24 | secondTierMatchPercent             |             76 |
+#|    24 | secondTierCompensationMatchPercent |             78 |
+#|    24 | thirdTierMatchPercent              |             76 |
+#|    24 | thirdTierCompensationMatchPercent  |             78 |
+#|    25 | sourceType                         |              2 |
+#|    25 | sourceCategory                     |              5 |
+#|    25 | isSafeHarbourMatch                 | false          |
+#|    25 | employercontributionType           |              1 |
+#|    25 | firstTierMatchPercent              |             76 |
+#|    25 | firstTierCompensationMatchPercent  |             78 |
+#|    25 | secondTierMatchPercent             |            100 |
+#|    25 | secondTierCompensationMatchPercent |             78 |
+#|    25 | thirdTierMatchPercent              |             76 |
+#|    25 | thirdTierCompensationMatchPercent  |             78 |
+#|    26 | sourceType                         |              2 |
+#|    26 | sourceCategory                     |              5 |
+#|    26 | isSafeHarbourMatch                 | false          |
+#|    26 | employercontributionType           |              1 |
+#|    26 | firstTierMatchPercent              |             76 |
+#|    26 | firstTierCompensationMatchPercent  |             78 |
+#|    26 | secondTierMatchPercent             |             76 |
+#|    26 | secondTierCompensationMatchPercent |            100 |
+#|    26 | thirdTierMatchPercent              |             76 |
+#|    26 | thirdTierCompensationMatchPercent  |             78 |
+#|    27 | sourceType                         |              2 |
+#|    27 | sourceCategory                     |              5 |
+#|    27 | isSafeHarbourMatch                 | false          |
+#|    27 | employercontributionType           |              1 |
+#|    27 | firstTierMatchPercent              |             76 |
+#|    27 | firstTierCompensationMatchPercent  |             78 |
+#|    27 | secondTierMatchPercent             |             76 |
+#|    27 | secondTierCompensationMatchPercent |             78 |
+#|    27 | thirdTierMatchPercent              |            100 |
+#|    27 | thirdTierCompensationMatchPercent  |             78 |
+#|    28 | sourceType                         |              2 |
+#|    28 | sourceCategory                     |              5 |
+#|    28 | isSafeHarbourMatch                 | false          |
+#|    28 | employercontributionType           |              1 |
+#|    28 | firstTierMatchPercent              |             76 |
+#|    28 | firstTierCompensationMatchPercent  |             78 |
+#|    28 | secondTierMatchPercent             |             76 |
+#|    28 | secondTierCompensationMatchPercent |             78 |
+#|    28 | thirdTierMatchPercent              |             76 |
+#|    28 | thirdTierCompensationMatchPercent  |            100 |
+#|    29 | sourceType                         |              2 |
+#|    29 | sourceCategory                     |              6 |
+#|    29 | isSafeHarbourMatch                 | true           |
+#|    29 | safeHarbourType                    |              3 |
+#|    29 | enhancedshMatchPercentage          |             10 |
+#|    29 | uptoPercentageOfDeferral           |            123 |
+#|    30 | sourceType                         |              2 |
+#|    30 | sourceCategory                     |              6 |
+#|    30 | isMaximumLimitApplicable           | true           |
+#|    30 | maximumDollarLimit                 |            100 |
+#|    31 | sourceType                         |              2 |
+#|    31 | sourceCategory                     |              6 |
+#|    31 | isMaximumLimitApplicable           | true           |
+#|    31 | maximumDollarLimit                 |     8738388.33 |
+#|    32 | sourceType                         |              2 |
+#|    32 | sourceCategory                     |              6 |
+#|    32 | isMaximumLimitApplicable           | true           |
+#|    32 | maximumDollarLimit                 |       87383.33 |
+#|    33 | sourceType                         |              2 |
+#|    33 | sourceCategory                     |              6 |
+#|    33 | isMaximumLimitApplicable           | true           |
+#|    33 | maximumDollarLimit                 |    87383333.33 |
+#|    34 | sourceType                         |              2 |
+#|    34 | sourceCategory                     |              6 |
+#|    34 | isMaximumLimitApplicable           | true           |
+#|    34 | maximumDollarLimit                 |    8738333.333 |
+#|    35 | sourceType                         |              2 |
+#|    35 | sourceCategory                     |              6 |
+#|    35 | isNonPayPeriodApplicable           | true           |
+#|    36 | sourceType                         |              2 |
+#|    36 | sourceCategory                     |              6 |
+#|    36 | isNonPayPeriodApplicable           | true           |
+#|    36 | isIncludeDefferals                 | true           |
+#|    37 | sourceType                         |              2 |
+#|    37 | sourceCategory                     |              6 |
+#|    37 | isNonPayPeriodApplicable           | true           |
+#|    37 | IsIncludePlanCompensation          | true           |
+#|    38 | sourceType                         |              2 |
+#|    38 | sourceCategory                     |              6 |
+#|    38 | isNonPayPeriodApplicable           | true           |
+#|    38 | IsLastDayRule                      | true           |
+#|    39 | sourceType                         |              2 |
+#|    39 | sourceCategory                     |              6 |
+#|    39 | isNonPayPeriodApplicable           | true           |
+#|    39 | IsLastDayRule                      | true           |
+#|    39 | IsHoursRequirement                 | true           |
+#|    39 | Hours                              |            200 |
+#|    40 | sourceType                         |              2 |
+#|    40 | sourceCategory                     |              6 |
+#|    40 | isNonPayPeriodApplicable           | true           |
+#|    40 | IsLastDayRule                      | true           |
+#|    40 | IsHoursRequirement                 | true           |
+#|    40 | Hours                              |           1000 |
+#|    41 | sourceType                         |              2 |
+#|    41 | sourceCategory                     |              6 |
+#|    41 | isNonPayPeriodApplicable           | true           |
+#|    41 | IsHoursRequirement                 | true           |
+#|    41 | Hours                              |            100 |
+#|    41 | isNormalRetirement                 | true           |
+#|    41 | IsEarlyRetirement                  | true           |
+#|    41 | IsDeath                            | true           |
+#|    41 | IsDisability                       | true           |
+#
+#
+#And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+#Then API should respond with successful message
 
 
 
 Scenario: To verify the  Allocation formula description data type acceptance
-Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
-When Collection in a model is configured with 5 blocks for the property "AdditionalDeferralSource" with values to save model portfolio as given below
+When Collection in a model is configured with 21 blocks for the property "AdditionalDeferralSource" with values to save model portfolio as given below
 | BlockNumber | Key                          | Value                                                                                                                                                                          |
 |           1 | AllocationFormulaDescription | ajhdkjfhsd346546546                                                                                                                                                            |
 |           2 | AllocationFormulaDescription | alpjdghkjdgfjg                                                                                                                                                                 |
@@ -458,5 +460,1174 @@ When Collection in a model is configured with 5 blocks for the property "Additio
 
 
 
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
+
+
+
+
+
+
+
+
+
+Scenario:1 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     1 |
+           | sourceCategory           |     1 |
+           | rehireDeferralPercentage |   100 |
+           | limitMaximumPercentage   |   100 |
+           | limitMinimumPercentage   |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:2 To Verify the Source Category Mandatory Validation for Employee Source 
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value  |
+           | sourceType               |      1 |
+           | sourceCategory           |      1 |
+           | rehireDeferralPercentage |  99.00 |
+           | limitMaximumPercentage   |    100 |
+           | limitMinimumPercentage   |     20 |
+           | sourceName               | abc123 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:3 To Verify the Source Category Mandatory Validation for Employee Source 
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     5 |
+           | percentageOfCompensation | 99.00 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:4 To Verify the Source Category Mandatory Validation for Employee Source 
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value |
+           | sourceType                |     2 |
+           | sourceCategory            |     6 |
+           | isSafeHarbourMatch        | true  |
+           | safeHarbourType           |     3 |
+           | enhancedshMatchPercentage |    88 |
+           | uptoPercentageOfDeferral  | 99.00 |
+           | limitMaximumPercentage    |   100 |
+           | limitMinimumPercentage    |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:5 To Verify the Source Category Mandatory Validation for Employee Source 
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                    | value    |
+           | sourceType             |        1 |
+           | sourceCategory         |        1 |
+           | contributionType       |        2 |
+           | limitMinimumDollar     | 10000.00 |
+           | limitMaximumPercentage |      100 |
+           | limitMinimumPercentage |       20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:6 To Verify the Source Category Mandatory Validation for Employee Source 
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                    | value          |
+           | sourceType             |              1 |
+           | sourceCategory         |              1 |
+           | contributionType       |              2 |
+           | limitMinimumDollar     | 10000000000.00 |
+           | limitMaximumPercentage |            100 |
+           | limitMinimumPercentage |             20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:7 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                    | value |
+           | sourceType             |     1 |
+           | sourceCategory         |     1 |
+           | contributionType       |     1 |
+           | limitMinimumPercentage |    75 |
+           | limitMaximumPercentage |   100 |
+           | limitMinimumPercentage |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:8 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                    | value    |
+           | sourceType             |        1 |
+           | sourceCategory         |        1 |
+           | contributionType       |        2 |
+           | limitMaximumDollar     | 12350.00 |
+           | limitMaximumPercentage |      100 |
+           | limitMinimumPercentage |       20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:9 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                    | value          |
+           | sourceType             |              1 |
+           | sourceCategory         |              1 |
+           | contributionType       |              2 |
+           | limitMaximumDollar     | 10000000000.00 |
+           | limitMaximumPercentage |            100 |
+           | limitMinimumPercentage |             20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:10 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value     |
+           | sourceType                |         1 |
+           | sourceCategory            |         1 |
+           | contributionType          |         2 |
+           | maximumDollarCompensation | 342445.00 |
+           | limitMaximumPercentage    |       100 |
+           | limitMinimumPercentage    |        20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:11 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value          |
+           | sourceType                |              1 |
+           | sourceCategory            |              1 |
+           | contributionType          |              2 |
+           | maximumDollarCompensation | 10000000000.00 |
+           | limitMaximumPercentage    |            100 |
+           | limitMinimumPercentage    |             20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:12 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value |
+           | sourceType                |     2 |
+           | sourceCategory            |     6 |
+           | isSafeHarbourMatch        | true  |
+           | safeHarbourType           |     3 |
+           | enhancedshMatchPercentage |   100 |
+           | uptoPercentageOfDeferral  | 10.00 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:13 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value  |
+           | sourceType                |      2 |
+           | sourceCategory            |      6 |
+           | isSafeHarbourMatch        | true   |
+           | safeHarbourType           |      3 |
+           | enhancedshMatchPercentage |    100 |
+           | uptoPercentageOfDeferral  | 100.00 |
+           | limitMaximumPercentage    |    100 |
+           | limitMinimumPercentage    |     20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:14 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value |
+           | sourceType                |     2 |
+           | sourceCategory            |     6 |
+           | isSafeHarbourMatch        | true  |
+           | safeHarbourType           |     3 |
+           | enhancedshMatchPercentage |   100 |
+           | percentageOfCompensation  |   100 |
+           | uptoPercentageOfDeferral  | 10.00 |
+           | limitMaximumPercentage    |   100 |
+           | limitMinimumPercentage    |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:15 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value |
+           | sourceType                |     2 |
+           | sourceCategory            |     6 |
+           | isSafeHarbourMatch        | true  |
+           | safeHarbourType           |     3 |
+           | enhancedshMatchPercentage |   123 |
+           | uptoPercentageOfDeferral  | 10.00 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:16 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value |
+           | sourceType                |     2 |
+           | sourceCategory            |     5 |
+           | isSafeHarbourMatch        | true  |
+           | safeHarbourType           |     3 |
+           | percentageOfCompensation  |    17 |
+           | enhancedshMatchPercentage |    10 |
+           | uptoPercentageOfDeferral  |    10 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:17 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     5 |
+           | isSafeHarbourMatch       | false |
+           | employercontributionType |     2 |
+           | percentageOfCalculation  |   100 |
+           | percentageOfCompensation |    10 |
+           | limitMaximumPercentage   |   100 |
+           | limitMinimumPercentage   |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:18 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     5 |
+           | isSafeHarbourMatch       | false |
+           | employercontributionType |     2 |
+           | percentageOfCalculation  |    76 |
+           | percentageOfCompensation |    10 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:19 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | isSafeHarbourMatch       | false |
+           | employercontributionType |     2 |
+           | percentageOfCalculation  |    76 |
+           | percentageOfCompensation |    78 |
+           | sourceType               |     2 |
+           | sourceCategory           |     5 |
+           | limitMaximumPercentage   |   100 |
+           | limitMinimumPercentage   |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:20 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                                | value |
+           | sourceType                         |     2 |
+           | sourceCategory                     |     5 |
+           | isSafeHarbourMatch                 | false |
+           | employercontributionType           |     1 |
+           | firstTierMatchPercent              |   100 |
+           | firstTierCompensationMatchPercent  |    78 |
+           | secondTierMatchPercent             |    76 |
+           | secondTierCompensationMatchPercent |    78 |
+           | thirdTierMatchPercent              |    76 |
+           | thirdTierCompensationMatchPercent  |    78 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:21 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                                | value |
+           | sourceType                         |     2 |
+           | sourceCategory                     |     5 |
+           | isSafeHarbourMatch                 | false |
+           | employercontributionType           |     1 |
+           | firstTierMatchPercent              |    76 |
+           | firstTierCompensationMatchPercent  |    78 |
+           | secondTierMatchPercent             |    76 |
+           | secondTierCompensationMatchPercent |    78 |
+           | thirdTierMatchPercent              |    76 |
+           | thirdTierCompensationMatchPercent  |    78 |
+           | limitMaximumPercentage             |   100 |
+           | limitMinimumPercentage             |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:22 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                                | value |
+           | sourceType                         |     2 |
+           | sourceCategory                     |     5 |
+           | isSafeHarbourMatch                 | false |
+           | employercontributionType           |     1 |
+           | firstTierMatchPercent              |    76 |
+           | firstTierCompensationMatchPercent  |    78 |
+           | secondTierMatchPercent             |   100 |
+           | secondTierCompensationMatchPercent |    78 |
+           | thirdTierMatchPercent              |    76 |
+           | thirdTierCompensationMatchPercent  |    78 |
+           | limitMaximumPercentage             |   100 |
+           | limitMinimumPercentage             |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:23 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                                | value |
+           | sourceType                         |     2 |
+           | sourceCategory                     |     6 |
+           | isSafeHarbourMatch                 | false |
+           | employercontributionType           |     3 |
+           | firstTierMatchPercent              |   101 |
+           | firstTierCompensationMatchPercent  |    78 |
+           | secondTierMatchPercent             |    76 |
+           | secondTierCompensationMatchPercent |    78 |
+           | thirdTierMatchPercent              |    76 |
+           | thirdTierCompensationMatchPercent  |    78 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:24 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                                | value |
+           | sourceType                         |     2 |
+           | sourceCategory                     |     5 |
+           | isSafeHarbourMatch                 | false |
+           | employercontributionType           |     1 |
+           | firstTierMatchPercent              |    76 |
+           | firstTierCompensationMatchPercent  |    78 |
+           | secondTierMatchPercent             |    76 |
+           | secondTierCompensationMatchPercent |    78 |
+           | thirdTierMatchPercent              |    76 |
+           | thirdTierCompensationMatchPercent  |    78 |
+           | limitMaximumPercentage             |   100 |
+           | limitMinimumPercentage             |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:25 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                                | value |
+           | sourceType                         |     2 |
+           | sourceCategory                     |     5 |
+           | isSafeHarbourMatch                 | false |
+           | employercontributionType           |     1 |
+           | firstTierMatchPercent              |    76 |
+           | firstTierCompensationMatchPercent  |    78 |
+           | secondTierMatchPercent             |   100 |
+           | secondTierCompensationMatchPercent |    78 |
+           | thirdTierMatchPercent              |    76 |
+           | thirdTierCompensationMatchPercent  |    78 |
+           | limitMaximumPercentage             |   100 |
+           | limitMinimumPercentage             |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:26 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                                | value |
+           | sourceType                         |     2 |
+           | sourceCategory                     |     5 |
+           | isSafeHarbourMatch                 | false |
+           | employercontributionType           |     1 |
+           | firstTierMatchPercent              |    76 |
+           | firstTierCompensationMatchPercent  |    78 |
+           | secondTierMatchPercent             |    76 |
+           | secondTierCompensationMatchPercent |   100 |
+           | thirdTierMatchPercent              |    76 |
+           | thirdTierCompensationMatchPercent  |    78 |
+           | limitMaximumPercentage             |   100 |
+           | limitMinimumPercentage             |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:27 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                                | value |
+           | sourceType                         |     2 |
+           | sourceCategory                     |     5 |
+           | isSafeHarbourMatch                 | false |
+           | employercontributionType           |     1 |
+           | firstTierMatchPercent              |    76 |
+           | firstTierCompensationMatchPercent  |    78 |
+           | secondTierMatchPercent             |    76 |
+           | secondTierCompensationMatchPercent |    78 |
+           | thirdTierMatchPercent              |   100 |
+           | thirdTierCompensationMatchPercent  |    78 |
+           | limitMaximumPercentage             |   100 |
+           | limitMinimumPercentage             |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:28 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                                | value  |
+           | sourceType                         |      2 |
+           | sourceCategory                     |      5 |
+           | isSafeHarbourMatch                 | false  |
+           | employercontributionType           |      1 |
+           | firstTierMatchPercent              |     76 |
+           | firstTierCompensationMatchPercent  |     78 |
+           | secondTierMatchPercent             |     76 |
+           | secondTierCompensationMatchPercent |     78 |
+           | thirdTierMatchPercent              |     76 |
+           | thirdTierCompensationMatchPercent  |    100 |
+           | limitMaximumPercentage             |    100 |
+           | limitMinimumPercentage             |     20 |
+           | sourceName                         | abc123 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:29 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value |
+           | sourceType                |     2 |
+           | sourceCategory            |     6 |
+           | isSafeHarbourMatch        | true  |
+           | safeHarbourType           |     3 |
+           | enhancedshMatchPercentage |    10 |
+           | uptoPercentageOfDeferral  |   123 |
+           | limitMaximumPercentage    |   100 |
+           | limitMinimumPercentage    |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:30 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     6 |
+           | isMaximumLimitApplicable | true  |
+           | maximumDollarLimit       |   100 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:31 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value      |
+           | sourceType               |          2 |
+           | sourceCategory           |          6 |
+           | isMaximumLimitApplicable | true       |
+           | maximumDollarLimit       | 8738388.33 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:32 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value    |
+           | sourceType               |        2 |
+           | sourceCategory           |        6 |
+           | isMaximumLimitApplicable | true     |
+           | maximumDollarLimit       | 87383.33 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:33 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value       |
+           | sourceType               |           2 |
+           | sourceCategory           |           6 |
+           | isMaximumLimitApplicable | true        |
+           | maximumDollarLimit       | 87383333.33 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:34 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value       |
+           | sourceType               |           2 |
+           | sourceCategory           |           6 |
+           | isMaximumLimitApplicable | true        |
+           | maximumDollarLimit       | 8738333.333 |
+           | limitMaximumPercentage   |         100 |
+           | limitMinimumPercentage   |          20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:35 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     6 |
+           | isNonPayPeriodApplicable | true  |
+           | limitMaximumPercentage   |   100 |
+           | limitMinimumPercentage   |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:36 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value  |
+           | sourceType               |      2 |
+           | sourceCategory           |      6 |
+           | isNonPayPeriodApplicable | true   |
+           | isIncludeDefferals       | true   |
+           | limitMaximumPercentage   |    100 |
+           | limitMinimumPercentage   |     20 |
+           | souceName                | abc123 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:37 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                       | value |
+           | sourceType                |     2 |
+           | sourceCategory            |     6 |
+           | isNonPayPeriodApplicable  | true  |
+           | IsIncludePlanCompensation | true  |
+           | limitMaximumPercentage    |   100 |
+           | limitMinimumPercentage    |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:38 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     6 |
+           | isNonPayPeriodApplicable | true  |
+           | IsLastDayRule            | true  |
+           | limitMaximumPercentage   |   100 |
+           | limitMinimumPercentage   |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:39 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     6 |
+           | isNonPayPeriodApplicable | true  |
+           | IsLastDayRule            | true  |
+           | IsHoursRequirement       | true  |
+           | Hours                    |   200 |
+           | limitMaximumPercentage   |   100 |
+           | limitMinimumPercentage   |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:40 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     6 |
+           | isNonPayPeriodApplicable | true  |
+           | IsLastDayRule            | true  |
+           | IsHoursRequirement       | true  |
+           | Hours                    |  1000 |
+           | limitMaximumPercentage   |   100 |
+           | limitMinimumPercentage   |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario:41 To Verify the Source Category Mandatory Validation for Employee Source
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     6 |
+           | isNonPayPeriodApplicable | true  |
+           | isHoursRequirement       | true  |
+           | hours                    |   100 |
+           | isNormalRetirement       | true  |
+           | isEarlyRetirement        | true  |
+           | isDeath                  | true  |
+           | isDisability             | true  |
+           | limitMaximumPercentage   |   100 |
+           | limitMinimumPercentage   |    20 |
+
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+
+
+
+Scenario:1 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+| key                    | value  |
+| sourceCategory         |        |
+| limitMaximumPercentage |    100 |
+| limitMinimumPercentage |     20 |
+| SourceName             | abc123 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL175 : Required"
+
+Scenario:2 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                    | value |
+  | sourceType             |     2 |
+  | sourceCategory         |       |
+  | limitMaximumPercentage |   100 |
+  | limitMinimumPercentage |    20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL175 :Required"
+
+Scenario:3 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                    | value |
+  | sourceType             |     1 |
+  | sourceCategory         |     1 |
+  | SourceSubCategory      |       |
+  | limitMaximumPercentage |   100 |
+  | limitMinimumPercentage |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL176 :Required"
+
+Scenario:4 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                      | value |
+  | sourceType               |     1 |
+  | sourceCategory           |     1 |
+  | rehireDeferralPercentage |   102 |
+  | limitMaximumPercentage   |   100 |
+  | limitMinimumPercentage   |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL191 :Deferral percentage for rehire should not exceed 100 percentage"
+
+Scenario:5 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                       | value |
+  | sourceType                |     2 |
+  | sourceCategory            |     6 |
+  | isSafeHarbourMatch        | true  |
+  | safeHarbourType           |     3 |
+  | enhancedshMatchPercentage |       |
+  | uptoPercentageOfDeferral  |    10 |
+  | limitMaximumPercentage    |   100 |
+  | limitMinimumPercentage    |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL251 :Required"
+
+Scenario:6 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                                | value |
+  | sourceType                         |     2 |
+  | sourceCategory                     |     5 |
+  | isSafeHarbourMatch                 | false |
+  | employercontributionType           |     1 |
+  | firstTierMatchPercent              |    76 |
+  | firstTierCompensationMatchPercent  |   101 |
+  | secondTierMatchPercent             |    76 |
+  | secondTierCompensationMatchPercent |    78 |
+  | thirdTierMatchPercent              |    76 |
+  | thirdTierCompensationMatchPercent  |    78 |
+  | limitMaximumPercentage             |   100 |
+  | limitMinimumPercentage             |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as ""
+
+Scenario:7 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                                | value |
+  | sourceType                         |     2 |
+  | sourceCategory                     |     5 |
+  | isSafeHarbourMatch                 | false |
+  | employercontributionType           |     1 |
+  | firstTierMatchPercent              |    76 |
+  | firstTierCompensationMatchPercent  |    78 |
+  | secondTierMatchPercent             |   101 |
+  | secondTierCompensationMatchPercent |    78 |
+  | thirdTierMatchPercent              |    76 |
+  | thirdTierCompensationMatchPercent  |    78 |
+  | limitMaximumPercentage             |   100 |
+  | limitMinimumPercentage             |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as ""
+
+Scenario:8 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                                | value |
+  | sourceType                         |     2 |
+  | sourceCategory                     |     5 |
+  | isSafeHarbourMatch                 | false |
+  | employercontributionType           |     1 |
+  | firstTierMatchPercent              |    76 |
+  | firstTierCompensationMatchPercent  |    78 |
+  | secondTierMatchPercent             |    76 |
+  | secondTierCompensationMatchPercent |   101 |
+  | thirdTierMatchPercent              |    76 |
+  | thirdTierCompensationMatchPercent  |    78 |
+  | limitMaximumPercentage             |   100 |
+  | limitMinimumPercentage             |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as ""
+
+Scenario:9 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                                | value |
+  | sourceType                         |     2 |
+  | sourceCategory                     |     5 |
+  | isSafeHarbourMatch                 | false |
+  | employercontributionType           |     1 |
+  | firstTierMatchPercent              |    76 |
+  | firstTierCompensationMatchPercent  |    78 |
+  | secondTierMatchPercent             |    76 |
+  | secondTierCompensationMatchPercent |    78 |
+  | thirdTierMatchPercent              |   101 |
+  | thirdTierCompensationMatchPercent  |    78 |
+  | limitMaximumPercentage             |   100 |
+  | limitMinimumPercentage             |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as ""
+
+Scenario:10 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                                | value |
+  | sourceType                         |     2 |
+  | sourceCategory                     |     5 |
+  | isSafeHarbourMatch                 | false |
+  | employercontributionType           |     1 |
+  | firstTierMatchPercent              |    76 |
+  | firstTierCompensationMatchPercent  |    78 |
+  | secondTierMatchPercent             |    76 |
+  | secondTierCompensationMatchPercent |    78 |
+  | thirdTierMatchPercent              |    76 |
+  | thirdTierCompensationMatchPercent  |   101 |
+  | limitMaximumPercentage             |   100 |
+  | limitMinimumPercentage             |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as ""
+
+Scenario:11 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                      | value  |
+  | sourceType               |      2 |
+  | sourceCategory           |      5 |
+  | percentageOfCompensation | 111.00 |
+  | limitMaximumPercentage   |    100 |
+  | limitMinimumPercentage   |     20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL244 :When percentage compensation is greater than 100"
+
+Scenario:12 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                       | value |
+  | sourceType                |     2 |
+  | sourceCategory            |     6 |
+  | isSafeHarbourMatch        | true  |
+  | safeHarbourType           |     3 |
+  | uptoPercentageOfDeferral  |     3 |
+  | enhancedshMatchPercentage |   101 |
+  | limitMaximumPercentage    |   100 |
+  | limitMinimumPercentage    |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL396 :Required"
+
+Scenario:13 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                      | value |
+  | sourceType               |     2 |
+  | sourceCategory           |     6 |
+  | employercontributionType |     2 |
+  | PercentageOfCalculation  |   101 |
+  | percentageOfCompensation |    10 |
+  | limitMaximumPercentage   |   100 |
+  | limitMinimumPercentage   |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as ""
+
+Scenario:14 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                      | value |
+  | sourceType               |     2 |
+  | sourceCategory           |     6 |
+  | employercontributionType |     2 |
+  | percentageOfCalculation  |    10 |
+  | percentageOfCompensation |   101 |
+  | limitMaximumPercentage   |   100 |
+  | limitMinimumPercentage   |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL244 :When percentage compensation is greater than 100  "
+
+Scenario:15 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                      | value |
+  | sourceType               |     2 |
+  | sourceCategory           |     5 |
+  | percentageOfCompensation |  0.00 |
+  | limitMaximumPercentage   |   100 |
+  | limitMinimumPercentage   |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL395 :Required"
+
+Scenario:16 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                       | value |
+  | sourceType                |     2 |
+  | sourceCategory            |     6 |
+  | isSafeHarbourMatch        | true  |
+  | safeHarbourType           |     3 |
+  | enhancedshMatchPercentage |    10 |
+  | uptoPercentageOfDeferral  |   101 |
+  | limitMaximumPercentage    |   100 |
+  | limitMinimumPercentage    |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as ""
+
+Scenario:17 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                       | value |
+  | sourceType                |     2 |
+  | sourceCategory            |     6 |
+  | isSafeHarbourMatch        | true  |
+  | safeHarbourType           |     3 |
+  | enhancedshMatchPercentage |    10 |
+  | uptoPercentageOfDeferral  |   0.0 |
+  | limitMaximumPercentage    |   100 |
+  | limitMinimumPercentage    |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL255 :Required"
+
+Scenario:18 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                      | value |
+  | sourceType               |     2 |
+  | sourceCategory           |     6 |
+  | isMaximumLimitApplicable | true  |
+  | maximumDollarLimit       |       |
+  | limitMaximumPercentage   |   100 |
+  | limitMinimumPercentage   |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL1118 :Required"
+
+Scenario:19 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                      | value |
+  | sourceType               |     2 |
+  | sourceCategory           |     6 |
+  | isNonPayPeriodApplicable | true  |
+  | isLastDayRule            | true  |
+  | isHoursRequirement       | true  |
+  | hours                    |       |
+  | limitMaximumPercentage   |   100 |
+  | limitMinimumPercentage   |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL1190 :Required"
+
+Scenario:20 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                      | value |
+  | sourceType               |     2 |
+  | sourceCategory           |     6 |
+  | isNonPayPeriodApplicable | true  |
+  | isLastDayRule            | true  |
+  | isHoursRequirement       | true  |
+  | hours                    |  2000 |
+  | limitMaximumPercentage   |   100 |
+  | limitMinimumPercentage   |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL1174 :Hours should not be greater than 1000"
+
+Scenario:21 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                     | value |
+  | sourceType              |     2 |
+  | sourceCategory          |     6 |
+  | isLastDayRuleApplicable | true  |
+  | limitMaximumPercentage  |   100 |
+  | limitMinimumPercentage  |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL1008 :Required"
+
+
+
+
+

@@ -945,24 +945,28 @@ namespace RefitSandBox
         {
 
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
-            if (responseBody.ErrorMessages.Count > 1)
+            if (responseBody.ErrorMessages.Count != null)
             {
-                Console.WriteLine("More than one error is returned");
-                Assert.Fail();
+                if (responseBody.ErrorMessages.Count > 1)
+                {
+                    Console.WriteLine("More than one error is returned");
+                    Assert.Fail();
+                }
+                else
+                {
+                    errorMessage = responseBody.ErrorMessages.First().Message;
+                    errorCode = responseBody.ErrorMessages.First().ErrorCode;
+                }
+
+                /*var errorObject= JsonConvert.DeserializeObject<dynamic>(response.ToString());
+     var errorMessage = new ErrorMessages()
+     {
+         MessageCode = errorObject["errorMessages"][0]["errorCode"],
+         MessageDescCode = errorObject["errorMessages"][0]["message"],
+     };
+     Console.WriteLine("Error message : " +errorMessage.MessageCode);*/
+                ClassicAssert.AreEqual(expectedValue, $"{errorCode} : {errorMessage}");
             }
-            else
-            {
-                errorMessage = responseBody.ErrorMessages.First().Message;
-                errorCode = responseBody.ErrorMessages.First().ErrorCode;
-            }
-            /*var errorObject= JsonConvert.DeserializeObject<dynamic>(response.ToString());
-            var errorMessage = new ErrorMessages()
-            {
-                MessageCode = errorObject["errorMessages"][0]["errorCode"],
-                MessageDescCode = errorObject["errorMessages"][0]["message"],
-            };
-            Console.WriteLine("Error message : " +errorMessage.MessageCode);*/
-            ClassicAssert.AreEqual(expectedValue, $"{errorCode} : {errorMessage}");
         }
         public async Task VerifyMultipleErrors(int NoOfErrors, Reqnroll.DataTable dataTable)
         {
@@ -1383,7 +1387,8 @@ namespace RefitSandBox
                 {"/api/Vesting/SaveVesting", () => new VestingViewModel() },
                 {"/api/v1/Loan/SaveLoanRefinance", () => new LoanRefinanceViewModel() },
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
-                { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()}
+                { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
+                {"/api/Source/SaveSource",() => new SourceViewModel() }
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -1421,7 +1426,7 @@ namespace RefitSandBox
             switch (filename)
             {
                 case "CombinedFile.csv":
-                    var sourceNames = await GetSourceNameHeader(_hooks.planId);
+                    var sourceNames = await GetSourceNameHeader(planId);
                     FakeDataHelper.WriteHeadersWithConventionalData(filename, sourceNames);
                     await EditFile(filename, dataTable);
                     break;
@@ -1431,7 +1436,7 @@ namespace RefitSandBox
                     break;
 
                 case "LoanRepayment.csv":
-                    var sourceNames1 = await GetSourceNameHeader(_hooks.planId);
+                    var sourceNames1 = await GetSourceNameHeader(planId);
                     FakeDataHelper.WriteHeadersWithConventionalData(filename, sourceNames1);
                     await EditFile(filename, dataTable);
                     break;

@@ -1,8 +1,10 @@
-using System;
 using ClassLibrary.Shared.TestDataGenerator;
+using CucumberExpressions.Ast;
 using MyNamespace;
 using RefitSandBox;
 using Reqnroll;
+using System;
+using System.Text.RegularExpressions;
 
 namespace SharedStepDefinitions
 {
@@ -91,7 +93,9 @@ namespace SharedStepDefinitions
         {
             foreach (var row in dataTable.Rows)
             {
-
+                //var modelType = modelAfterConvention.GetType();
+                //var property = modelType.GetProperty(propertyName);
+                //object targetObject = modelAfterConvention;
                 var ObjectName = row[0];
                 var Value = row[1];
                 if (Value.Contains("<"))
@@ -103,8 +107,21 @@ namespace SharedStepDefinitions
                     var splitted = Value.Split(" ");
 
                     Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
-                    Value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                    Value = Regex.Replace(Regex.Replace(GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue), @"[^\w\s]", " "), @"\s+", " ").Trim();
                 }
+                //if (property.PropertyType == typeof(DateTimeOffset?))
+                //{
+                //    var convertedValue = DateTimeOffset.Parse(Value.ToString()); // Parsing the string to DateTimeOffset
+                //    if (propertyName == "effectiveStartDate" || propertyName == "effectiveEndDate")
+                //    {
+                //        string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
+                //        property.SetValue(targetObject, convertedValue);
+                //    }
+                //    else
+                //    {
+                //        property.SetValue(targetObject, convertedValue);
+                //    }
+                //}
                 await _program.Configuration(ObjectName, Value);
             }
         }
