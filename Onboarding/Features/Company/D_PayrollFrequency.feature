@@ -337,33 +337,38 @@ A short summary of the feature
 
 Scenario: PayrollFrequency (successful response)
   Given Model is selected for the endpoint "/api/v1/Company"
-  When Collection in a model is configured with 8 blocks for the property "PayrollFrequencies" with values to save model portfolio as given below
-| BlockNumber | Key           | Value               |
-| 1           | FrequencyName | weeklyFreqInput1    |
-| 1           | FrequencyType | 1                   |
-| 1           | StartDay      | 1                   |
-| 2           | FrequencyName | random 5 alphabets  |
-| 2           | FrequencyType | 4                   |
-| 2           | StartDay      | 1                   |
-| 3           | FrequencyName | random 5 alphabets  |
-| 3           | FrequencyType | 7                   |
-| 3           | StartMonth    | 1                   |
-| 3           | StartDay      | 1                   |
-| 4           | FrequencyName | random 5 alphabets  |
-| 4           | FrequencyType | 6                   |
-| 4           | StartMonth    | 1                   |
-| 5           | FrequencyName | random 5 alphabets  |
-| 5           | FrequencyType | 5                   |
-| 5           | StartMonth    | 1                   |
-| 6           | FrequencyName | random 20 alphabets |
-| 6           | FrequencyType | 1                   |
-| 7           | FrequencyName | random 18 alphabets |
-| 7           | FrequencyType | 1                   |
-| 8           | FrequencyName | random 5 numerics   |
-| 8           | FrequencyType | 1                   |
-| 9           | FrequencyName | weeklyFreqInput1    |
-| 9           | FrequencyType | 1                   |
-| 9           | StartDay      | 1                   |
+  When Collection in a model is configured with 11 blocks for the property "PayrollFrequencies" with values to save model portfolio as given below
+| BlockNumber | Key           | Value                  |
+|           1 | FrequencyName | weeklyFreqInput1       |
+|           1 | FrequencyType |                      1 |
+|           1 | StartDay      |                      1 |
+|           2 | FrequencyName | random 5 alphabets     |
+|           2 | FrequencyType |                      4 |
+|           2 | StartDay      |                      1 |
+|           2 | StartDate     |                      1 |
+|           3 | FrequencyName | random 5 alphabets     |
+|           3 | FrequencyType |                      7 |
+|           3 | StartMonth    |                      1 |
+|           3 | StartDay      |                      1 |
+|           3 | StartDate     |                      1 |
+|           4 | FrequencyName | random 5 alphabets     |
+|           4 | FrequencyType |                      6 |
+|           4 | StartMonth    |                      1 |
+|           5 | FrequencyName | random 5 alphabets     |
+|           5 | FrequencyType |                      5 |
+|           5 | StartMonth    |                      1 |
+|           6 | FrequencyName | random 20 alphabets    |
+|           6 | FrequencyType |                      1 |
+|           7 | FrequencyName | random 18 alphabets    |
+|           7 | FrequencyType |                      1 |
+|           8 | FrequencyName | random 5 numerics      |
+|           8 | FrequencyType |                      1 |
+|           9 | FrequencyName | random 5 alphabets     |
+|           9 | FrequencyType |                      1 |
+|          10 | FrequencyName | random 5 alphaNumerics |
+|          10 | FrequencyType |                      1 |
+|          11 | FrequencyName | random 5 alphabets     |
+|          11 | FrequencyType |                      1 |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then API should respond with successful message
 
@@ -440,7 +445,13 @@ Then the API response should contain the 15 following errors
 
  
 
-
+ Scenario: Validating Payroll frequency name with existing frequency name
+	Given Model is selected for the endpoint "/api/v1/Company"
+	When the property "frequencyName" is configured as "abcdefg"
+	When API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
+	When the property "frequencyName" is configured as "abcdefg"
+	When API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
+	Then API should give response as "CM067:Frequency Name already exists"
 
 
 

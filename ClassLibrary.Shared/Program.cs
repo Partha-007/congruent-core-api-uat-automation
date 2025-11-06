@@ -46,6 +46,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using System.Xml.Linq;
 
 
 namespace RefitSandBox
@@ -97,6 +98,7 @@ namespace RefitSandBox
         public static string modelPortfolioName;
         public static string modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2;
         public static AccountBalanceByPlanResponse employeeAccountBalance;
+        public static int? recordKeeperId;
 
         public async Task UserLogin()
         {
@@ -1021,6 +1023,7 @@ namespace RefitSandBox
                 }
                 FakeDataHelper.AssignId(planId, "PlanId", modelAfterConvention);
             }
+            
             if (methodName == "SaveInprogressLoanRequest")
             {
                 var employeeId = await GetEmployeeId();
@@ -1033,9 +1036,29 @@ namespace RefitSandBox
             {
                 await Configuration("loanId", loanId);
             }
+            if (methodName == "SaveRecordKeepersAsync")
+                recordKeeperId = await GetRecordKeeperId();
+
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
             var response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
             Console.WriteLine("Response : " + response.ToString());
+            //if (methodName == "SaveRecordKeepersAsync")
+            //    recordKeeperId = await GetRecordKeeperId();
+        }
+
+
+        public async Task<int> GetRecordKeeperId()
+        {
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+            var apiClient = RestService.For<ICompanyDetails>(httpClient);
+            var recordKeepers = await apiClient.GetRecordKeepers();
+            recordKeeperId = recordKeepers.Count;
+            return (int)recordKeeperId;
         }
 
         /*public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
@@ -1388,14 +1411,18 @@ namespace RefitSandBox
                 {"/api/v1/Loan/SaveLoanRefinance", () => new LoanRefinanceViewModel() },
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
-                {"/api/Source/SaveSource",() => new SourceViewModel() }
+                {"/api/Source/SaveSource",() => new SourceViewModel() },
+                {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() }
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
             {
                 var Model = viewModelType();                
                 modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
-                
+                if(recordKeeperId != null)
+                {
+                    await Configuration("recordKeeperId", recordKeeperId.ToString());
+                }
                 var listOfProperties = GetJsonPropertyList(Model);
                 if (endpoint == "/api/Enrollment/SaveEnrollmentSetting")
                 {
@@ -2285,6 +2312,7 @@ namespace RefitSandBox
             else if (value == "<RothSourceID>") return rothSourceId;
             else if (value == "<MatchSourceID>") return matchSourceId;
             else if (value == "<CompanyId>") return Hooks.Hooks.companyId!;
+            else if (value == "<RecordKeeperId>") return recordKeeperId.ToString();
             else return null;
         }
 

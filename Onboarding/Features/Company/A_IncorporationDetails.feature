@@ -552,10 +552,18 @@ Then API should give response as "CM001 : Required"
 
 
 Scenario: recordkeeper
-Given Model is selected for the endpoint "/api/v1/Company"
-When the property "name" is configured with "alphabets" with 30 characters
-When the property "name" is configured with "alphabets" with 10 characters
-And the property "email" is configured as "abcdefghi"
+Given Model is selected for the endpoint "api/v1/Company/SaveRecordKeepers"
+  
+  When Configuration has been made as per following
+           | key  | value              |
+           | name | <recordKeeperName> |
+
+  And API request has been sent to the "ICompanyDetails" with the method name "SaveRecordKeepersAsync"
+  Given Model is selected for the endpoint "/api/v1/Company"
+ When Configuration has been made as per following
+           | key  | value  |
+           | recordKeeperId | <RecordKeeperId> |
+
 And Configuration has been done as mentioned below
 | key                        | value    |
 | frequencyName              | Daily    |
@@ -567,31 +575,57 @@ And Configuration has been done as mentioned below
 | code                       | L1       |
 | classificationName         | Location |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
-Then the API response should contain the 2 following errors
-| error_code | error_message                                |
-| CM007      | ZIP Code should be either 5 or 9 characters. |
-| CM009      | Email address is invalid                     |
+Then API should respond with successful message
+Examples: 
+
+| recordKeeperName            |
+| random 30 alphabets         |
+| random 29 alphabets         |
+| random 10 alphabets         |
+| random 10 alphaNumerics     |
+| random 10 numerics          |
+| random 10 specialcharacters |
 
 
+Scenario: Validating the taxEIN field with existing taxEIN
+Given Model is selected for the endpoint "/api/v1/Company"
 
+When the property "taxEIN" is configured as "31-2229682" 
 
+And Configuration has been done as mentioned below
+| key                        | value    |
+| frequencyName              | Daily    |
+| frequencyType              | 1        |
+| modeOfHours                | 1        |
+| modeOfCompensation         | 1        |
+| modeOfContribution         | 1        |
+| employeeClassificationType | 1        |
+| code                       | L1       |
+| classificationName         | Location |
 
+And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 
+And the property "taxEIN" is configured as "31-2229682" 
+And Configuration has been done as mentioned below
+| key                        | value    |
+| frequencyName              | Daily    |
+| frequencyType              | 1        |
+| modeOfHours                | 1        |
+| modeOfCompensation         | 1        |
+| modeOfContribution         | 1        |
+| employeeClassificationType | 1        |
+| code                       | L1       |
+| classificationName         | Location |
 
+And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 
+Then API should give response as "CM014 : Tax EIN already exists"
 
-
-
-
-
-
-
-
-
-
-
-
-
+#Scenario: Company taxiEin field required validation
+#	Given Model is selected for the endpoint "/api/v1/Company"
+#	When the property "taxEIN" is configured as ""
+#	And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
+#	Then API should give response as "CM057 : Required"
 
 
 

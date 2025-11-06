@@ -102,6 +102,13 @@ namespace RefitSandBox
     {
         [Post("/api/v1/Company")]
         Task<object> CreateNewCompanyAsync([Body] CompanyViewModel companyViewModel);
+
+        [Post("/api/v1/Company/SaveRecordKeepers")]
+        Task<object> SaveRecordKeepersAsync([Body] SaveRecordKeeperViewModel saveRecordKeeperViewModel);
+
+        [Get("/api/v1/Company/GetRecordKeepers")]
+        Task<ICollection<RecordKeeper>> GetRecordKeepers();
+
     }
 
     public interface IPayrollFileUpload
