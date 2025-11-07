@@ -4,11 +4,11 @@ A short summary of the feature
  Scenario: Employee classification (successful response)
   Given Model is selected for the endpoint "/api/v1/Company"
   When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
-| BlockNumber | Key                                     | Value                                       |
-| 1           | ClassificationName                      | random 5 alphabets                          |
-| 1           | EmployeeClassificationType              | 1                                           |
+| BlockNumber | Key                        | Value              |
+|           1 | ClassificationName         | random 5 alphabets |
+|           1 | EmployeeClassificationType |                  1 |
  #And Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
- And Collection in a model is configured with 2 blocks for the property "EmployeeClassificationCodes" with values as given below
+ And Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
  | BlockNumber | Key  | Value |
  | 1           | Code | 2     |
  
@@ -108,28 +108,23 @@ Then API should respond with successful message
 
 
 
- Scenario: Employee classification(error validation)
-  Given Model is selected for the endpoint "/api/v1/Company"
-  When Collection in a model is configured with 4 blocks for the property "Classifications" with values to save model portfolio as given below
-| BlockNumber | Key                         | Value               |
-| 1           | ClassificationName          | random 51 alphabets |
-| 1           | EmployeeClassificationType  | random 1 numerics   |
-| 1           | EmployeeClassificationCodes | random 1 numerics   |
-| 2           | ClassificationName          | random 0 alphabets  |
-| 2           | EmployeeClassificationCodes | random 1 numerics   |
-| 3           | ClassificationName          | random 5 alphabets  |
-| 3           | EmployeeClassificationType  | 1                   |
-| 3           | EmployeeClassificationCodes | random 251 numerics |
-| 4           | EmployeeClassificationType  | 1                   |
-| 4           | EmployeeClassificationCodes | array               |
 
+
+
+ Scenario: Employee classification(error validation)
+ Given Model is selected for the endpoint "/api/v1/Company"
+ When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
+| BlockNumber | Key                        | Value               |
+|           1 | ClassificationName         | random 51 alphabets |
+|           1 | EmployeeClassificationType | random 1 numerics   |
+  When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
+| BlockNumber | Key  | Value             |
+|           1 | Code | random 1 numerics |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
-Then the API response should contain the 4 following errors
-| error_code | error_message                                                                                             |
-| CM029      | Classification type  length should not exceed 50 characters"                                              |
-| CM091      | Required                                                                                                  |
-| CM060      | Classification code length should not exceed 250 characters                                               |
-| CM074      | At least one Employee Classification should be available to save the Employee Classification Type details |
+Then the API response should contain the 1 following errors
+| error_code | error_message                                               |
+| CM029      | Classification type  length should not exceed 50 characters |
+
 
 
 
@@ -137,7 +132,7 @@ Then the API response should contain the 4 following errors
 
  Scenario: Employee classification(error validation) with double excecution
   Given Model is selected for the endpoint "/api/v1/Company"
-  When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
+  When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
 | BlockNumber | Key                        | Value               |
 | 1           | ClassificationName         | random 5 alphabets  |
 | 1           | EmployeeClassificationType | random 45 alphabets |
@@ -145,5 +140,19 @@ Then the API response should contain the 4 following errors
 #When addMasterClassificationType is executed
 
 #And saveCompany is executed
+And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
+Then API should respond with successful message
+
+
+
+
+Scenario: Employee classification1
+Given Model is selected for the endpoint "/api/v1/Company"
+When Configuration has been made as per following
+           | key                        | value               |
+           | ClassificationName         | random 51 alphabets |
+           | EmployeeClassificationType | 2random 1 numerics  |
+           | Code                       | random 1 numerics   |
+           | frequencyName              | abc123              |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then API should respond with successful message
