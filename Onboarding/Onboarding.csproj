@@ -46,6 +46,10 @@
 	
   <ItemGroup>
     <Folder Include="Drivers\" />
+    <Folder Include="Features\B_Plan\E_Plan EntryDate\" />
+    <Folder Include="Features\B_Plan\F_Plan Loan\" />
+    <Folder Include="Features\B_Plan\G_Plan Distribution\" />
+    <Folder Include="Features\B_Plan\H_Plan YOS\" />
     <Folder Include="Support\" />
   </ItemGroup>
 
