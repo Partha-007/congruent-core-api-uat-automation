@@ -1414,7 +1414,7 @@ namespace RefitSandBox
                 {"/api/v1/Loan/SaveLoanRefinance", () => new LoanRefinanceViewModel() },
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
-                { "/api/Transfer/SaveTransfer",() => new TransferViewModel()}
+                { "/api/Transfer/SaveTransfer",() => new TransferViewModel()},
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
                 {"/api/Source/SaveSource",() => new SourceViewModel() },
                 {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() },
