@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ReqnrollObsoleteCodeBehindFiles Remove="Features\Plan\PlanModule.feature.cs" />
+    <ReqnrollObsoleteCodeBehindFiles Remove="Features\B_Plan\PlanModule.feature.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,8 +46,6 @@
 	
   <ItemGroup>
     <Folder Include="Drivers\" />
-    <Folder Include="Features\B_plan Source\" />
-    <Folder Include="Features\PlanEligibility\" />
     <Folder Include="Support\" />
   </ItemGroup>
 
@@ -56,13 +54,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Features\Plan\PlanModule.feature.cs">
+    <Compile Update="Features\B_Plan\A_BasicPlanDetails\PlanModule.feature.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <ReqnrollFeatureFiles Update="Features\Plan\PlanModule.feature">
+    <ReqnrollFeatureFiles Update="Features\B_Plan\A_BasicPlanDetails\PlanModule.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </ReqnrollFeatureFiles>

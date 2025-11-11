@@ -321,7 +321,7 @@ namespace RefitSandBox
 
 
 
-        public void ConfigureWithTestDate(string ControlName, int length, Pattern pattern)
+        public async Task ConfigureWithTestDate(string ControlName, int length, Pattern pattern)
         {
             var value = GenerateTestData.RandomString(length, pattern);
 
@@ -336,7 +336,8 @@ namespace RefitSandBox
                 var property = entry.Value;
                 try
                 {
-                    property.SetValue(modelAfterConvention, value);
+                    await Configuration(ControlName, value);
+                    //property.SetValue(modelAfterConvention, value);
                 }
                 catch (Exception ex)
                 {
@@ -1412,7 +1413,10 @@ namespace RefitSandBox
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
                 {"/api/Source/SaveSource",() => new SourceViewModel() },
-                {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() }
+                {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() },
+                {"/api/Sponsor/SaveSponsor",() => new SponsorViewModel() },
+                {"/api/v1/EligibleRule/SavePlanAmendmentEligibleRule",() => new EligibilityRuleViewModel() }
+
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -2487,10 +2491,30 @@ namespace RefitSandBox
             await AddInvestmentsToPlan(planId, modelPortfolioId, "993", noOfBlocks, PropertyName, dataTable);
         }
 
-        public async Task TaxeinValues(string control_name, int length1, int length2, Pattern pattern)
-        {
-            response["planAdministrator"]["taxEIN"] = GenerateTestData.RandomString(length1, pattern) + "-" + GenerateTestData.RandomString(length2, pattern);
-        }
+        //public async Task doubleLength(string control_name, int length1, int length2, Pattern pattern)
+        //{
+        //    //   response["planAdministrator"]["taxEIN"] = GenerateTestData.RandomString(length1, pattern) + "-" + GenerateTestData.RandomString(length2, pattern);
+        //    var value = GenerateTestData.RandomString(length1,length2, pattern);
+        //    // Find matching entries in the list
+        //    var matchingProperties = jsonPropertyListTotal
+        //        .Where(entry => entry.Key == ControlName)
+        //        .ToList();
+
+        //    // If we have at least one matching property, set the value
+        //    foreach (var entry in matchingProperties)
+        //    {
+        //        var property = entry.Value;
+        //        try
+        //        {
+        //            property.SetValue(modelAfterConvention, value);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Console.WriteLine($"Error setting value for property {property.Name}: {ex.Message}");
+        //        }
+        //    }
+        //}
+        //}
 
 
         public static async Task<Dictionary<string, int>> GetInvestmentIdsByNames(JObject jsonObject, List<string> targetNames)

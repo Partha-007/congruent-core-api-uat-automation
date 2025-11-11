@@ -10,7 +10,7 @@
            | key          | value          |
            | PlanName     | <planName>     |
            | RkPlanNumber | <rkPlanNumber> |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then the API response should contain the 3 following errors
 | block | error_code | error_message                                                        |
 | 1     | PL007      | Required                                                             |
@@ -36,7 +36,7 @@ Examples:
            | key          | value          |
            | PlanName     | <planName>     |
            | RkPlanNumber | <rkPlanNumber> |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should respond with successful message
 
 Examples:

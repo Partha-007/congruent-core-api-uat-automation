@@ -36,9 +36,9 @@ namespace SharedStepDefinitions
         }
 
         [When("the property {string} is configured with {string} with {int} characters")]
-        public void WhenThePropertyIsConfiguredWithWithCharacters(string ControlName, Pattern patternType, int length)
+        public async Task WhenThePropertyIsConfiguredWithWithCharacters(string ControlName, Pattern patternType, int length)
         {
-            _program.ConfigureWithTestDate(ControlName, length, patternType);
+            await _program.ConfigureWithTestDate(ControlName, length, patternType);
         }
 
 
@@ -296,13 +296,20 @@ namespace SharedStepDefinitions
 
         }
 
+        //[When("Collection in a model is configured with {int} blocks for the property {string} and {string} with values to save model portfolio as given below")]
+        //public void WhenCollectionInAModelIsConfiguredWithBlocksForThePropertyAndWithValuesToSaveModelPortfolioAsGivenBelow(int noOfBlocks, string collection1, string collection2)
+        //{
+        //    await _program.Collection(noOfBlocks, collection1,collection2);
+        //}
 
-        [When("the property {string} is configured with {string} and {string} random generated {string}")]
-        public async Task ThenThePropertyIsConfiguredWithAndRandomGenerated(string control_name, int length1, int length2, Pattern pattern)
-        {
 
-            await _program.TaxeinValues(control_name, length1, length2, pattern);
-        }
+
+        //[When("the property {string} is configured with {string} and {string} random generated {string}")]
+        //public async Task ThenThePropertyIsConfiguredWithAndRandomGenerated(string control_name, int length1, int length2, Pattern pattern)
+        //{
+
+        //    await _program.doubleLength(control_name, length1, length2, pattern);
+        //}
 
 
         [When("Model portfolio investment added to plan and enrollment configured with {int} blocks for the property {string} with values as given below")]

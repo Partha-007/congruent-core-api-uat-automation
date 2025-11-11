@@ -7,11 +7,11 @@ A short summary of the feature
 | BlockNumber | Key                        | Value              |
 |           1 | ClassificationName         | random 5 alphabets |
 |           1 | EmployeeClassificationType |                  1 |
- #And Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
  And Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
  | BlockNumber | Key  | Value |
  | 1           | Code | 2     |
  
+ #And Collection in a model is configured with 1 blocks for the property "Classifications" and "EmployeeClassificationCodes" with values to save model portfolio as given below
 
  
 #| 1           | EmployeeClassificationCodes             | 2                                           |
