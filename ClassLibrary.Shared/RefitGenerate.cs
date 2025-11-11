@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ClassLibrary.Shared;
 using MyNamespace;
+using Newtonsoft.Json.Linq;
 using Refit;
 using Refit.Implementation;
 
@@ -95,6 +96,8 @@ namespace RefitSandBox
         [Post("/api/Vesting/SaveVesting")]
         Task<object> SaveVesting([Body] VestingViewModel vesting);
 
+        [Post("/api/Transfer/SaveTransfer")]
+        Task<object> SaveTransfers([Body] TransferViewModel transfer);
         
     }
 
@@ -126,6 +129,9 @@ namespace RefitSandBox
     {
         [Post("/api/v1/Investment/AddMasterInvestment")]
         Task<object> AddMasterInvestment([Body] InvestmentViewModel masterInvestment);
+
+        [Post("/api/v1/Investment/GetMasterInvestmentBySearchCriteria")]
+        Task<JArray> GetMasterInvestmentBySearchCriteria([Body] MasterInvestmentSearchModel masterInvestmentSearch);
     }
     public interface IPayroll
     {

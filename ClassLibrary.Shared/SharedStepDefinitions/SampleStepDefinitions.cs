@@ -284,6 +284,12 @@ namespace SharedStepDefinitions
             await _program.VerifyAccountBalanceForAnEmployeeSourceWise(sourceName, dataTable);
         }
 
+        [Given("Investment {string} has been mapped to the plan")]
+        public async Task GivenInvestmentHasBeenMappedToThePlan(string investmentName)
+        {
+            await _program.AddInvestmentToPlan(investmentName);
+        }
+
 
 
     }
