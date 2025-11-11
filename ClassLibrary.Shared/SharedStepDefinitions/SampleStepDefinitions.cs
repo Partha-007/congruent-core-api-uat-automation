@@ -1,8 +1,10 @@
-using System;
 using ClassLibrary.Shared.TestDataGenerator;
+using CucumberExpressions.Ast;
 using MyNamespace;
 using RefitSandBox;
 using Reqnroll;
+using System;
+using System.Text.RegularExpressions;
 
 namespace SharedStepDefinitions
 {
@@ -34,9 +36,9 @@ namespace SharedStepDefinitions
         }
 
         [When("the property {string} is configured with {string} with {int} characters")]
-        public void WhenThePropertyIsConfiguredWithWithCharacters(string ControlName, Pattern patternType, int length)
+        public async Task WhenThePropertyIsConfiguredWithWithCharacters(string ControlName, Pattern patternType, int length)
         {
-            _program.ConfigureWithTestDate(ControlName, length, patternType);
+            await _program.ConfigureWithTestDate(ControlName, length, patternType);
         }
 
 
@@ -91,13 +93,35 @@ namespace SharedStepDefinitions
         {
             foreach (var row in dataTable.Rows)
             {
-
+                //var modelType = modelAfterConvention.GetType();
+                //var property = modelType.GetProperty(propertyName);
+                //object targetObject = modelAfterConvention;
                 var ObjectName = row[0];
                 var Value = row[1];
                 if (Value.Contains("<"))
                 {
                     Value = await _program.IdentifyValue(Value);
                 }
+                if (Value.Contains("random"))
+                {
+                    var splitted = Value.Split(" ");
+
+                    Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
+                    Value = Regex.Replace(Regex.Replace(GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue), @"[^\w\s]", " "), @"\s+", " ").Trim();
+                }
+                //if (property.PropertyType == typeof(DateTimeOffset?))
+                //{
+                //    var convertedValue = DateTimeOffset.Parse(Value.ToString()); // Parsing the string to DateTimeOffset
+                //    if (propertyName == "effectiveStartDate" || propertyName == "effectiveEndDate")
+                //    {
+                //        string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
+                //        property.SetValue(targetObject, convertedValue);
+                //    }
+                //    else
+                //    {
+                //        property.SetValue(targetObject, convertedValue);
+                //    }
+                //}
                 await _program.Configuration(ObjectName, Value);
             }
         }
@@ -271,6 +295,22 @@ namespace SharedStepDefinitions
             }*/
 
         }
+
+        //[When("Collection in a model is configured with {int} blocks for the property {string} and {string} with values to save model portfolio as given below")]
+        //public void WhenCollectionInAModelIsConfiguredWithBlocksForThePropertyAndWithValuesToSaveModelPortfolioAsGivenBelow(int noOfBlocks, string collection1, string collection2)
+        //{
+        //    await _program.Collection(noOfBlocks, collection1,collection2);
+        //}
+
+
+
+        //[When("the property {string} is configured with {string} and {string} random generated {string}")]
+        //public async Task ThenThePropertyIsConfiguredWithAndRandomGenerated(string control_name, int length1, int length2, Pattern pattern)
+        //{
+
+        //    await _program.doubleLength(control_name, length1, length2, pattern);
+        //}
+
 
         [When("Model portfolio investment added to plan and enrollment configured with {int} blocks for the property {string} with values as given below")]
         public async Task WhenModelPortfolioInvestmentAddedToPlanAndEnrollmentConfiguredWithBlocksForThePropertyWithValuesAsGivenBelow(int noOfBlocks, string propertyName, DataTable dataTable)

@@ -12,6 +12,8 @@ namespace ClassLibrary.Shared.TestDataGenerator
         Numerics,
         SpecialCharacters,
         AlphaNumerics,
-        AlphaNumericWithSpecialCharacters
+        AlphaNumericWithSpecialCharacters,
+        Phone,
+        Email
     }
 }

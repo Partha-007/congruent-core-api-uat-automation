@@ -47,6 +47,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using System.Xml.Linq;
 
 
 namespace RefitSandBox
@@ -98,6 +99,7 @@ namespace RefitSandBox
         public static string modelPortfolioName;
         public static string modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2;
         public static AccountBalanceByPlanResponse employeeAccountBalance;
+        public static int? recordKeeperId;
         public static Dictionary<string , string> InvestmentNameAndPlanMappingIdDict = new Dictionary<string , string>();
 
         public async Task UserLogin()
@@ -321,7 +323,7 @@ namespace RefitSandBox
 
 
 
-        public void ConfigureWithTestDate(string ControlName, int length, Pattern pattern)
+        public async Task ConfigureWithTestDate(string ControlName, int length, Pattern pattern)
         {
             var value = GenerateTestData.RandomString(length, pattern);
 
@@ -336,7 +338,8 @@ namespace RefitSandBox
                 var property = entry.Value;
                 try
                 {
-                    property.SetValue(modelAfterConvention, value);
+                    await Configuration(ControlName, value);
+                    //property.SetValue(modelAfterConvention, value);
                 }
                 catch (Exception ex)
                 {
@@ -947,24 +950,28 @@ namespace RefitSandBox
         {
 
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
-            if (responseBody.ErrorMessages.Count > 1)
+            if (responseBody.ErrorMessages.Count != null)
             {
-                Console.WriteLine("More than one error is returned");
-                Assert.Fail();
+                if (responseBody.ErrorMessages.Count > 1)
+                {
+                    Console.WriteLine("More than one error is returned");
+                    Assert.Fail();
+                }
+                else
+                {
+                    errorMessage = responseBody.ErrorMessages.First().Message;
+                    errorCode = responseBody.ErrorMessages.First().ErrorCode;
+                }
+
+                /*var errorObject= JsonConvert.DeserializeObject<dynamic>(response.ToString());
+     var errorMessage = new ErrorMessages()
+     {
+         MessageCode = errorObject["errorMessages"][0]["errorCode"],
+         MessageDescCode = errorObject["errorMessages"][0]["message"],
+     };
+     Console.WriteLine("Error message : " +errorMessage.MessageCode);*/
+                ClassicAssert.AreEqual(expectedValue, $"{errorCode} : {errorMessage}");
             }
-            else
-            {
-                errorMessage = responseBody.ErrorMessages.First().Message;
-                errorCode = responseBody.ErrorMessages.First().ErrorCode;
-            }
-            /*var errorObject= JsonConvert.DeserializeObject<dynamic>(response.ToString());
-            var errorMessage = new ErrorMessages()
-            {
-                MessageCode = errorObject["errorMessages"][0]["errorCode"],
-                MessageDescCode = errorObject["errorMessages"][0]["message"],
-            };
-            Console.WriteLine("Error message : " +errorMessage.MessageCode);*/
-            ClassicAssert.AreEqual(expectedValue, $"{errorCode} : {errorMessage}");
         }
         public async Task VerifyMultipleErrors(int NoOfErrors, Reqnroll.DataTable dataTable)
         {
@@ -1019,6 +1026,7 @@ namespace RefitSandBox
                 }
                 FakeDataHelper.AssignId(planId, "PlanId", modelAfterConvention);
             }
+            
             if (methodName == "SaveInprogressLoanRequest")
             {
                 var employeeId = await GetEmployeeId();
@@ -1031,9 +1039,29 @@ namespace RefitSandBox
             {
                 await Configuration("loanId", loanId);
             }
+            if (methodName == "SaveRecordKeepersAsync")
+                recordKeeperId = await GetRecordKeeperId();
+
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
             var response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
             Console.WriteLine("Response : " + response.ToString());
+            //if (methodName == "SaveRecordKeepersAsync")
+            //    recordKeeperId = await GetRecordKeeperId();
+        }
+
+
+        public async Task<int> GetRecordKeeperId()
+        {
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+            var apiClient = RestService.For<ICompanyDetails>(httpClient);
+            var recordKeepers = await apiClient.GetRecordKeepers();
+            recordKeeperId = recordKeepers.Count;
+            return (int)recordKeeperId;
         }
 
         /*public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
@@ -1387,13 +1415,23 @@ namespace RefitSandBox
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
                 { "/api/Transfer/SaveTransfer",() => new TransferViewModel()}
+                { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
+                {"/api/Source/SaveSource",() => new SourceViewModel() },
+                {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() },
+                {"/api/Sponsor/SaveSponsor",() => new SponsorViewModel() },
+                {"/api/v1/EligibleRule/SavePlanAmendmentEligibleRule",() => new EligibilityRuleViewModel() },
+                {"/api/EntryDate/SaveEntryDate",() => new EntryDateRuleViewModel() }
+
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
             {
                 var Model = viewModelType();                
                 modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
-                
+                if(recordKeeperId != null)
+                {
+                    await Configuration("recordKeeperId", recordKeeperId.ToString());
+                }
                 var listOfProperties = GetJsonPropertyList(Model);
                 if (endpoint == "/api/Enrollment/SaveEnrollmentSetting")
                 {
@@ -2289,6 +2327,7 @@ namespace RefitSandBox
             else if (value == "<CompanyId>") return Hooks.Hooks.companyId!;
             else if (value == "<Auto Transfer1>") return InvestmentNameAndPlanMappingIdDict["Auto Transfer1"];
             else if (value == "<Auto Transfer2>") return InvestmentNameAndPlanMappingIdDict["Auto Transfer2"];
+            else if (value == "<RecordKeeperId>") return recordKeeperId.ToString();
             else return null;
         }
 
@@ -2462,6 +2501,31 @@ namespace RefitSandBox
             if (modelPortfolioId == "0") throw new Exception("Model portfolio investment not saved");
             await AddInvestmentsToPlan(planId, modelPortfolioId, "993", noOfBlocks, PropertyName, dataTable);
         }
+
+        //public async Task doubleLength(string control_name, int length1, int length2, Pattern pattern)
+        //{
+        //    //   response["planAdministrator"]["taxEIN"] = GenerateTestData.RandomString(length1, pattern) + "-" + GenerateTestData.RandomString(length2, pattern);
+        //    var value = GenerateTestData.RandomString(length1,length2, pattern);
+        //    // Find matching entries in the list
+        //    var matchingProperties = jsonPropertyListTotal
+        //        .Where(entry => entry.Key == ControlName)
+        //        .ToList();
+
+        //    // If we have at least one matching property, set the value
+        //    foreach (var entry in matchingProperties)
+        //    {
+        //        var property = entry.Value;
+        //        try
+        //        {
+        //            property.SetValue(modelAfterConvention, value);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Console.WriteLine($"Error setting value for property {property.Name}: {ex.Message}");
+        //        }
+        //    }
+        //}
+        //}
 
 
         public static async Task<Dictionary<string, int>> GetInvestmentIdsByNames(JObject jsonObject, List<string> targetNames)

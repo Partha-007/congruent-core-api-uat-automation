@@ -232,7 +232,7 @@ namespace RefitSandBox.Hooks
         {
             await UserLogin();
             companyId = await Program.SaveCompany(bearer); // Static method call
-            
+            planId = await Program.SavePlan(bearer, companyId);
 
         }
 
