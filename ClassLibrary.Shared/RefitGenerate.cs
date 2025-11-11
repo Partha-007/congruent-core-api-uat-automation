@@ -95,7 +95,10 @@ namespace RefitSandBox
         [Post("/api/Vesting/SaveVesting")]
         Task<object> SaveVesting([Body] VestingViewModel vesting);
 
-        
+        [Post("/api/PlanYOS/SavePlanYOS")]
+        Task<object> SavePlanYOSAsync([Body] YearsOfServiceViewModel yearsOfServiceViewModel);
+
+
     }
 
     public interface ICompanyDetails

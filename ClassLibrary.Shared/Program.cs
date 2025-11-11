@@ -1416,7 +1416,8 @@ namespace RefitSandBox
                 {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() },
                 {"/api/Sponsor/SaveSponsor",() => new SponsorViewModel() },
                 {"/api/v1/EligibleRule/SavePlanAmendmentEligibleRule",() => new EligibilityRuleViewModel() },
-                {"/api/EntryDate/SaveEntryDate",() => new EntryDateRuleViewModel() }
+                {"/api/EntryDate/SaveEntryDate",() => new EntryDateRuleViewModel() },
+                {"/api/PlanYOS/SavePlanYOS",() => new YearsOfServiceViewModel() }
 
             };
 
