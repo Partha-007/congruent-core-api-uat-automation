@@ -29,6 +29,12 @@ namespace ClassLibrary.Shared.TestDataGenerator
                 case Pattern.SpecialCharacters:
                     return RandomSpecialCharachter(length);
                     break;
+                case Pattern.Phone:
+                    return RandomPhoneNumber(length);
+                    break;
+                case Pattern.Email:
+                    return RandomEmail(length);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException($"The pattern {pattern} is not supported. Check the spelling or if the pattern is supported");
                     break;
@@ -60,7 +66,19 @@ namespace ClassLibrary.Shared.TestDataGenerator
             var faker = new Faker();
             return faker.Random.String2(length, chars: "123456789");
         }
-        
+
+        public static string RandomPhoneNumber(int length)
+        {
+            var faker = new Faker();
+            return faker.Person.Phone;
+        }
+
+        public static string RandomEmail(int length)
+        {
+            var faker = new Faker();
+            return faker.Person.Email;
+        }
+
     }
 }
 

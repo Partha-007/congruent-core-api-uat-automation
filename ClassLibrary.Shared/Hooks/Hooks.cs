@@ -28,8 +28,8 @@ namespace RefitSandBox.Hooks
         
         
         public static string? bearer;
-        public string planId;
-        public static string? companyId;
+        //public string planId;
+        public static string? companyId, planId;
         private static AppSettings? _appSettings;
         public static string? url, name, password;
 
@@ -232,7 +232,7 @@ namespace RefitSandBox.Hooks
         {
             await UserLogin();
             companyId = await Program.SaveCompany(bearer); // Static method call
-            
+            planId = await Program.SavePlan(bearer, companyId);
 
         }
 
