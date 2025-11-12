@@ -98,7 +98,17 @@ namespace RefitSandBox
         [Post("/api/PlanYOS/SavePlanYOS")]
         Task<object> SavePlanYOSAsync([Body] YearsOfServiceViewModel yearsOfServiceViewModel);
 
+        [Post("/api/Withdrawal/SaveWithdrawal")]
+        Task<object> SaveWithdrawalAsync([Body] WithdrawalViewModel withdrawalViewModel);
 
+        [Post("/api/Rollover/SaveRollover")]
+        Task<object> SaveRollOverAsync([Body] RolloverViewModel rolloverViewModel);
+
+        [Post("/api/Transfer/SaveTransfer")]
+        Task<object> SaveTransferAsync([Body] TransferViewModel transferViewModel);
+
+        [Post("/api/v1/Plan/SaveSourceLimits")]
+        Task<object> SaveSourceLimitsAsync([Body] SourceLimitsViewModel sourceLimitsViewModel);
     }
 
     public interface ICompanyDetails
