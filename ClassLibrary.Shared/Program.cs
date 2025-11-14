@@ -383,6 +383,25 @@ namespace RefitSandBox
                     .Select(entry => entry.Value)
                     .ToList();
             }
+            //if (ControlName.Contains(","))
+            //{
+            //    var splitted = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            //    foreach (var arr in splitted)
+            //    {
+            //        Console.WriteLine(arr.Trim());
+            //    }
+            //    for (int i = 0; i <Value.Length; i++)
+            //    {
+            //        char PropertyName = Value[i];
+            //        var convertedValue =Value.ToString();
+            //        //string formattedValue = convertedValue.ToString("i");
+            //    // property.SetValue(targetObject, convertedValue);
+            //    }
+
+
+            //}
+
 
             if (ControlName == "employeeClassificationId")
             {
@@ -3062,81 +3081,46 @@ namespace RefitSandBox
         }
 
 
-        //public static async Task SaveEnrollmentSettings(string bearer, string planId)
+        
+
+        //public static async Task<string> SaveRollOverSource(string? bearer,string planId)
         //{
         //    var program = new Program();
-        //    var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-        //    var listOfPlanInvestments = await program.SendAPIRequest(bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
-        //    var investmentPlanMappingId = listOfPlanInvestments["investmentPlanDetails"][0]["id"].ToString();
-        //    var enrollmentSettings = new EnrollmentViewModel();
-        //    modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(enrollmentSettings);
-        //    var list = GetJsonPropertyList(modelAfterConvention);
+        //    var RolloOver = new RolloverViewModel();
+        //    modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(RolloOver);
+        //    modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "planId", modelAfterConvention);
+        //    var listOfProperties = GetJsonPropertyList(modelAfterConvention);
         //    await program.Configuration("planId", planId);
-        //    await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
-        //    await program.Configuration("sourceName", "Pretax");
-        //    await program.Configuration("contributionRate", "12");
-        //    await program.Configuration("autoDeferralIncreaseProgram", "true");
-        //    await program.Configuration("increaseAllowanceDays", "30");
-        //    await program.Configuration("periodOfIncrease", "1");
-        //    await program.Configuration("applyADITo", "0");
-        //    await program.Configuration("adiApplicableTo", "2");
-        //    await program.Configuration("subjecttoAutoEnrollment", "True");
-        //    await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
-        //    await program.Configuration("numberOfDaysWindowIsOpen", "3");
-        //    await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
-        //    await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
-        //    await program.Configuration("exclusionType", "0");
-        //    await program.Configuration("usePlanDefaultDeferralElection", "true");
-        //    await program.Configuration("usePlanDefaultInvestmentElection", "true");
-        //    await program.Configuration("sendEnrollmentInvite", "1");
-        //    await program.Configuration("deferralContributionRateUponRehire", "2");
+        //    await program.Configuration("sourceName", "PretaxRollover");
+        //    await program.Configuration("sourceType","1");
+        //    await program.Configuration("sourceCategory", "4");
+        //    await program.Configuration("sourceSubCategory", "7");
+        //    await program.Configuration("sourceSubSubCategory", null);
+        //    await program.Configuration("sourceCode", "8");
+        //    await program.Configuration("effectiveStartDate", "2025-04-01T00:00:00Z");
+        //    await program.Configuration("effectiveEndDate", null);
+        //    await program.Configuration("isSourceOfferdInthisPlan", "True");
+        //    await program.Configuration("recordKeepingNumber", null);
+        //    await program.Configuration("isNewContributionAllowed", "false");
+        //    await program.Configuration("isDisplayToParticipantWebsite", "false");
+        //    await program.Configuration("isEligibilityRulesUniqueThisSource", "false");
+        //    await program.Configuration("employerSourceExclusion", "");
+        //    await program.Configuration("employeeDeferralSource", null);
+        //    await program.Configuration("employerDiscretionarySource", null);
+        //    await program.Configuration("employerMatchSource", null);
+        //    await program.Configuration("employerOtherSource", null);
         //    await program.Configuration("contributionType", "1");
-        //    await program.Configuration("sourceId", sourceId);
-        //    await program.Configuration("autoDeferralIncreasePercentage", "15");
-        //    await program.Configuration("maximumADIPercentage", "18");
-        //    await program.Configuration("investmentId", investmentPlanMappingId);
-        //    var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-        //    var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
+        //    await program.Configuration("employerSourceExcludedEmployeeClassifications", "");
+        //    await program.Configuration("employerSourceExcludedEmploymentStatuses", "");
+        //    await program.Configuration("isValid", null);
+        //    await program.Configuration("validate", null);
+        //    System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+        //    var planResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveRollOverAsync");
+        //    string RollOverSource = planResponse["plan"]["id"].ToString();
+        //    rkPlanNumber = planResponse["plan"]["rkPlanNumber"].ToString();
+        //    planName = planResponse["plan"]["planName"].ToString();
+        //    return RollOverSource;
         //}
-
-        public static async Task<string> SaveRollOverSource(string? bearer,string planId)
-        {
-            var program = new Program();
-            var RolloOver = new RolloverViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(RolloOver);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "planId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("planId", planId);
-            await program.Configuration("sourceName", "PretaxRollover");
-            await program.Configuration("sourceType","1");
-            await program.Configuration("sourceCategory", "4");
-            await program.Configuration("sourceSubCategory", "7");
-            await program.Configuration("sourceSubSubCategory", null);
-            await program.Configuration("sourceCode", "8");
-            await program.Configuration("effectiveStartDate", "2025-04-01T00:00:00Z");
-            await program.Configuration("effectiveEndDate", null);
-            await program.Configuration("isSourceOfferdInthisPlan", "True");
-            await program.Configuration("recordKeepingNumber", null);
-            await program.Configuration("isNewContributionAllowed", "false");
-            await program.Configuration("isDisplayToParticipantWebsite", "false");
-            await program.Configuration("isEligibilityRulesUniqueThisSource", "false");
-            await program.Configuration("employerSourceExclusion", "");
-            await program.Configuration("employeeDeferralSource", null);
-            await program.Configuration("employerDiscretionarySource", null);
-            await program.Configuration("employerMatchSource", null);
-            await program.Configuration("employerOtherSource", null);
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("employerSourceExcludedEmployeeClassifications", "");
-            await program.Configuration("employerSourceExcludedEmploymentStatuses", "");
-            await program.Configuration("isValid", null);
-            await program.Configuration("validate", null);
-            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var planResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveRollOverAsync");
-            string RollOverSource = planResponse["plan"]["id"].ToString();
-            rkPlanNumber = planResponse["plan"]["rkPlanNumber"].ToString();
-            planName = planResponse["plan"]["planName"].ToString();
-            return RollOverSource;
-        }
 
         public async Task SaveEnrollmentForModelPortfolioWithDiffernentInvestionElectionToAllSources()
         {
