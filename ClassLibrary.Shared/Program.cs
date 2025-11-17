@@ -3080,8 +3080,47 @@ namespace RefitSandBox
             var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
         }
 
+        public async Task SaveEnrollmentForModelPortfolio()
+        {
+            var program = new Program();
+            var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
+            modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
+            modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
+            RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
+            await program.Configuration("planId", planId);
+            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            await program.Configuration("sourceName", "Pretax");
+            await program.Configuration("contributionRate", "12");
+            await program.Configuration("autoDeferralIncreaseProgram", "true");
+            await program.Configuration("increaseAllowanceDays", "30");
+            await program.Configuration("periodOfIncrease", "1");
+            await program.Configuration("applyADITo", "0");
+            await program.Configuration("adiApplicableTo", "2");
+            await program.Configuration("subjecttoAutoEnrollment", "True");
+            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            await program.Configuration("numberOfDaysWindowIsOpen", "3");
+            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            await program.Configuration("exclusionType", "0");
+            await program.Configuration("usePlanDefaultDeferralElection", "true");
+            await program.Configuration("usePlanDefaultInvestmentElection", "true");
+            await program.Configuration("sendEnrollmentInvite", "1");
+            await program.Configuration("deferralContributionRateUponRehire", "2");
+            await program.Configuration("contributionType", "1");
+            await program.Configuration("sourceId", sourceId);
+            await program.Configuration("autoDeferralIncreasePercentage", "15");
+            await program.Configuration("maximumADIPercentage", "18");
+            /*await program.Configuration("1investmentId", RegularInvestmentId);
+            await program.Configuration("2investmentId", modelPortfolioInvestmentId);
+            await program.Configuration("1investmentName", "SEAS003");
+            await program.Configuration("21investmentName", modelPortfolioName);*/
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
+        }
 
-        
+
 
         //public static async Task<string> SaveRollOverSource(string? bearer,string planId)
         //{
