@@ -1,29 +1,11 @@
-﻿Feature: B_AllowMultipleActiveLoansYesAndNo
+﻿Feature: H_CurePeriod
 [BeforeTestRun]
 
-Scenario: To Validate Allow multiple active loans? field  as No and waitingPeriodBetweenLoansPayoffAndLoanRequest as null
+Scenario:  Cure Period with End of the Calendar Quarter following default quarter and Fixed number of days
  Given Model is selected for the endpoint "/api/Loan/SaveLoan"
   When Configuration has been made as per following
-           | key                                           | value |
-           | allowMultipleActiveLoans                      | false |
-           | waitingPeriodBetweenLoansPayoffAndLoanRequest |       |
-  And Configuration has been made as per following
-           | key                          | value |
-           | loanPerPlanYear              |     1 |
-           | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
-  Then API should give response as "PL316 : Required"
-
-  
-Scenario: To Validate Allow multiple active loans? field  as yes
- Given Model is selected for the endpoint "/api/Loan/SaveLoan"
-  When Configuration has been made as per following
-           | key                      | value |
-           | allowMultipleActiveLoans | true  |
+           | key        | value   |
+           | curePeriod | <Value> |
   And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -34,13 +16,51 @@ Scenario: To Validate Allow multiple active loans? field  as yes
            | minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
 Then API should respond with successful message
+Examples: 
+| Value |
+|     1 |
+|     2 |
 
-Scenario: To Validate Allow multiple active loans? field  as No and waitingPeriodBetweenLoansPayoffAndLoanRequest as length as 3 digits
+Scenario:  Cure Period with Null
  Given Model is selected for the endpoint "/api/Loan/SaveLoan"
   When Configuration has been made as per following
-           | key                                           | value |
-           | allowMultipleActiveLoans                      | false |
-           | waitingPeriodBetweenLoansPayoffAndLoanRequest |   999 |
+           | key        | value   |
+           | curePeriod |         |
+  And Configuration has been made as per following
+           | key                          | value |
+           | loanPerPlanYear              |     1 |
+           | firstRepaymentDateFallsAfter |     1 |
+           | maximumLengthYears           |     3 |
+           | maximumLengthMonths          |     0 |
+           | minimumLengthYears           |     1 |
+           | minimumLengthMonths          |     0 |
+  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
+Then API should give response as "PL275 : Required"
+
+Scenario:  Cure Period with Fixed number of days as Null
+ Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+  When Configuration has been made as per following
+           | key                         | value |
+           | curePeriod                  |     2 |
+           | curePeriodFixedNumberOfDays |       |
+  And Configuration has been made as per following
+           | key                          | value |
+           | loanPerPlanYear              |     1 |
+           | firstRepaymentDateFallsAfter |     1 |
+           | maximumLengthYears           |     3 |
+           | maximumLengthMonths          |     0 |
+           | minimumLengthYears           |     1 |
+           | minimumLengthMonths          |     0 |
+  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
+Then API should give response as "PL276 : Required"
+
+
+Scenario:  Cure Period with Fixed number of days
+ Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+  When Configuration has been made as per following
+           | key                         | value   |
+           | curePeriod                  | <Value> |
+           | curePeriodFixedNumberOfDays | <days>  |
   And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -51,37 +71,10 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
            | minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
 Then API should respond with successful message
-
-Scenario:  To Validate Allow multiple active loans? field  as No and waitingPeriodBetweenLoansPayoffAndLoanRequest as length as 4 digits
- Given Model is selected for the endpoint "/api/Loan/SaveLoan"
-  When Configuration has been made as per following
-           | key                                           | value |
-           | allowMultipleActiveLoans                      | false |
-           | waitingPeriodBetweenLoansPayoffAndLoanRequest |  1000 |
-  And Configuration has been made as per following
-           | key                          | value |
-           | loanPerPlanYear              |     1 |
-           | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
-  Then API should give response as "PL316 : Required"
-
-  Scenario: To Validate Allow multiple active loans? field  as No and waitingPeriodBetweenLoansPayoffAndLoanRequest as length as 2 digits
- Given Model is selected for the endpoint "/api/Loan/SaveLoan"
-  When Configuration has been made as per following
-           | key                                           | value |
-           | allowMultipleActiveLoans                      | false |
-           | waitingPeriodBetweenLoansPayoffAndLoanRequest |    20 |
-  And Configuration has been made as per following
-           | key                          | value |
-           | loanPerPlanYear              |     1 |
-           | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
-Then API should respond with successful message
+Examples: 
+| Value | days |
+|     2 |    0 |
+|     2 |    1 |
+|     2 |   99 |
+|     2 |  100 |
+|     2 |  999 |

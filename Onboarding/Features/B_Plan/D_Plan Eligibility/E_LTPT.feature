@@ -11,14 +11,28 @@ Scenario:  Save Long Term Part Time (LTPT) Eligibility with valid data(error mes
            | ltptAgeInMonths  | <LtptAgeInMonths>  |
   And the property "ltptHours" is configured as "500"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then the API response should contain the 3 following errors
+ Then the API response should contain the 1 following errors
 | block | error_code | error_message                                                           |
 |     1 | PL299      | Eligibility age must be less than or equal to 21 years and 0 months.    |
-|     2 | PL213      | Eligibility age must be equal to or greater than 16 years and 0 months. |
-|     3 | PL213      | Eligibility age must be equal to or greater than 16 years and 0 months. |
  Examples: 
  | IsLTPTApplicable | LtptAgeInYears | LtptAgeInMonths |
  | true             |             21 |               6 |
+
+ Scenario:  Save Long Term Part Time (LTPT) Eligibility with valid data(error message2)
+  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
+  When the property "name" is configured with "alphabets" with 10 characters
+  And Configuration has been made as per following
+           | key              | value              |
+           | isLTPTApplicable | <IsLTPTApplicable> |
+           | ltptAgeInYears   | <LtptAgeInYears>   |
+           | ltptAgeInMonths  | <LtptAgeInMonths>  |
+  And the property "ltptHours" is configured as "500"
+  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
+ Then the API response should contain the 1 following errors
+| block | error_code | error_message                                                           |
+|     1 | PL213      | Eligibility age must be equal to or greater than 16 years and 0 months. |
+ Examples: 
+ | IsLTPTApplicable | LtptAgeInYears | LtptAgeInMonths |
  | true             |             11 |               6 |
  | true             |              0 |               0 |
 
@@ -51,17 +65,33 @@ Scenario: Save Long Term Part Time (LTPT) Eligibility with valid data( succcessf
            | ltptHours        | <LtptHours>        |
   And the property "ltptHours" is configured as "500"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then the API response should contain the 3 following errors
+ Then the API response should contain the 1 following errors
 | block | error_code | error_message                                              |
 |     1 | PL212      | Number of hours of service should not be greater than 1000 |
-|     2 | PL1143     | Number of hours of service should not be less than 500     |
-|     3 | PL1143     | Number of hours of service should not be less than 500     |
  Examples: 
  | IsLTPTApplicable | LtptAgeInYears | LtptAgeInMonths | LtptHours |
  | true             |             20 |               0 |      2000 |
+
+
+ 
+ Scenario:  To validate Long Term Part Time (LTPT) Eligibility Hours(error message2)
+  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
+  When the property "name" is configured with "alphabets" with 10 characters
+  And Configuration has been made as per following
+           | key              | value              |
+           | isLTPTApplicable | <IsLTPTApplicable> |
+           | ltptAgeInYears   | <LtptAgeInYears>   |
+           | ltptAgeInMonths  | <LtptAgeInMonths>  |
+           | ltptHours        | <LtptHours>        |
+  And the property "ltptHours" is configured as "500"
+  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
+ Then the API response should contain the 1 following errors
+| block | error_code | error_message                                              |
+|     1 | PL1143     | Number of hours of service should not be less than 500     |
+ Examples: 
+ | IsLTPTApplicable | LtptAgeInYears | LtptAgeInMonths | LtptHours |
  | true             |             20 |               0 |       100 |
  | true             |             20 |               0 |         0 |
-
  
 
 
@@ -108,10 +138,10 @@ Scenario: Save Long Term Part Time (LTPT) Eligibility with valid data( succcessf
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
   And Configuration has been made as per following
-           | key                          | value |
-           | isLTPTApplicable             | true  |
-           | ltptAgeInYears               |    20 |
-           | ltptAgeInMonths              |     0 |
+           | key                             | value |
+           | isLTPTApplicable                | true  |
+           | ltptAgeInYears                  |    20 |
+           | ltptAgeInMonths                 |     0 |
  And the property "ltptVestingComputationPeriod" is configured as ""
   And the property "ltptHours" is configured as "500"
  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
