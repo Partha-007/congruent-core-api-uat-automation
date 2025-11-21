@@ -8,20 +8,35 @@
            | companyId | <CompanyId> |
   When Configuration has been made as per following
            | key          | value          |
-           | PlanName     | <planName>     |
-           | RkPlanNumber | <rkPlanNumber> |
+           | PlanName     | random 10 alphabets     |
+           | RkPlanNumber | random 0 alphabets  |
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
-Then the API response should contain the 3 following errors
-| block | error_code | error_message                                                        |
-| 1     | PL007      | Required                                                             |
-| 2     | PL009      | Recording Keeping Plan Number length should not exceed 15 characters |
-| 3     | PL008      | Record Keeping Plan Number must be alphanumeric (including hyphen)   |
+ Then API should give response as "PL007 : Required"
 
-Examples:
-| planName            | rkPlanNumber                |
-| random 10 alphabets | random 0 alphabets          |
-| random 20 alphabets | random 20 alphabets         |
-| random 10 alphabets | random 10 specialCharacters |
+
+ Scenario:  RK Plan number field validate above 15 characters
+  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+  When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+  When Configuration has been made as per following
+           | key          | value               |
+           | PlanName     | random 20 alphabets |
+           | RkPlanNumber | random 20 alphabets |
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
+ Then API should give response as "PL009 : Recording Keeping Plan Number length should not exceed 15 characters"
+
+ Scenario: RK Plan number field acceptance special characters
+   Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+  When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+  When Configuration has been made as per following
+           | key          | value                       |
+           | PlanName     | random 10 alphabets         |
+           | RkPlanNumber | random 10 specialCharacters |
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
+ Then API should give response as "PL008 : Record Keeping Plan Number must be alphanumeric (including hyphen) "
     
 
 
@@ -41,11 +56,11 @@ Then API should respond with successful message
 
 Examples:
 | planName            | rkPlanNumber            |
-| random 15 alphabets | random 15 alphabets     |
-| random 10 alphabets | random 13 alphabets     |
-| random 10 alphabets | random 10 alphabets     |
-| random 10 alphabets | random 10 numerics      |
-| random 10 alphabets | random 10 alphaNumerics |
+| random 15 alphabets | random 15 alphabets     |13880
+| random 10 alphabets | random 13 alphabets     |13881
+| random 10 alphabets | random 10 alphabets     |13882
+| random 10 alphabets | random 10 numerics      |13883
+| random 10 alphabets | random 10 alphaNumerics |13885
 
 
 

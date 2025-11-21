@@ -1,28 +1,34 @@
 ﻿Feature: F_PlanEmailAddress
 [BeforeTestRun]
 
- Scenario: Plan Email Address criteria of invalid email 
-
+ Scenario:13915 Plan Email Address criteria of invalid email 
   Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 And Configuration has been made as per following
-           | key           | value              |
-           | PlanName      | random 5 alphabets |
-           | RkPlanNumber  | random 10 Numerics |
-           | Email         | <email>            |
+           | key          | value              |
+           | PlanName     | random 5 alphabets |
+           | RkPlanNumber | random 10 Numerics |
+           | Email        | random 5 Numerics  |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
-Then the API response should contain the 2 following errors
-| block | error_code | error_message                                                  |
-| 1     | PL040      | Email is in invalid format                                     |
-| 2     | PL041      | Email address length should not exceed more than 80 characters |
+ Then API should give response as "PL040 : Email is in invalid format"
 
-Examples: 
-| email              |
-| random 5 Numerics  |
-| random 76 Numerics |
+
+Scenario:13916 Plan Email Address acceptance criteria of above 80 characters   
+Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+  When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+And Configuration has been made as per following
+           | key          | value              |
+           | PlanName     | random 5 alphabets |
+           | RkPlanNumber | random 10 Numerics |
+           | Email        | random 76 Numerics |  
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+ Then API should give response as "PL041 : Email address length should not exceed more than 80 characters"
 
 
 
