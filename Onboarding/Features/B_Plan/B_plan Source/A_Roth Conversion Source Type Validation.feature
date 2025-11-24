@@ -20,7 +20,7 @@ And the property "SourceSubSubCategory" is configured as "3"
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL949 : Only one In-Plan Roth Conversion source is allowed per plan"
 
-Scenario: To verify the Save of the Roth Conversion Source Type 
+ Scenario: To verify the Save of the Roth Conversion Source Type 
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
