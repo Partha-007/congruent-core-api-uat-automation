@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Microsoft.Playwright;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 using MyNamespace;
 using Namotion.Reflection;
 using Newtonsoft.Json;
@@ -99,6 +100,7 @@ namespace RefitSandBox
         public static string modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2;
         public static AccountBalanceByPlanResponse employeeAccountBalance;
         public static int? recordKeeperId;
+        public static Dictionary<string , string> InvestmentNameAndPlanMappingIdDict = new Dictionary<string , string>();
 
         public async Task UserLogin()
         {
@@ -1445,6 +1447,8 @@ namespace RefitSandBox
                 {"/api/v1/Loan/SaveLoanRefinance", () => new LoanRefinanceViewModel() },
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
+                { "/api/Transfer/SaveTransfer",() => new TransferViewModel()},
+                { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
                 {"/api/Source/SaveSource",() => new SourceViewModel() },
                 {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() },
                 {"/api/Sponsor/SaveSponsor",() => new SponsorViewModel() },
@@ -1478,9 +1482,13 @@ namespace RefitSandBox
                     }
                     var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
 
-                    modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
-                    modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
-                    RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
+                    if(InvestmentPlanMappingIds.Count > 0)
+                    {
+                        modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
+                        modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
+                        RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
+                    }
+                    
                 }
                 return viewModelType;
             }
@@ -1496,7 +1504,7 @@ namespace RefitSandBox
             switch (filename)
             {
                 case "CombinedFile.csv":
-                    var sourceNames = await GetSourceNameHeader(planId);
+                    var sourceNames = await GetSourceNameHeader(Hooks.Hooks.planId);
                     FakeDataHelper.WriteHeadersWithConventionalData(filename, sourceNames);
                     await EditFile(filename, dataTable);
                     break;
@@ -1506,7 +1514,7 @@ namespace RefitSandBox
                     break;
 
                 case "LoanRepayment.csv":
-                    var sourceNames1 = await GetSourceNameHeader(planId);
+                    var sourceNames1 = await GetSourceNameHeader(Hooks.Hooks.planId);
                     FakeDataHelper.WriteHeadersWithConventionalData(filename, sourceNames1);
                     await EditFile(filename, dataTable);
                     break;
@@ -1799,7 +1807,7 @@ namespace RefitSandBox
             //string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(_url)
+                BaseAddress = new Uri(Settings.ApplicationURL)
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
@@ -2355,6 +2363,8 @@ namespace RefitSandBox
             else if (value == "<RothSourceID>") return rothSourceId;
             else if (value == "<MatchSourceID>") return matchSourceId;
             else if (value == "<CompanyId>") return Hooks.Hooks.companyId!;
+            else if (value == "<Auto Transfer1>") return InvestmentNameAndPlanMappingIdDict["Auto Transfer1"];
+            else if (value == "<Auto Transfer2>") return InvestmentNameAndPlanMappingIdDict["Auto Transfer2"];
             else if (value == "<RecordKeeperId>") return recordKeeperId.ToString();
             else return null;
         }
@@ -2731,7 +2741,76 @@ namespace RefitSandBox
             }
         }
 
+        public async Task AddInvestmentToPlan(string InvestmentName)
+        {
+            var investmentSearchModel = new MasterInvestmentSearchModel();
+            investmentSearchModel.Search = InvestmentName;
+            investmentSearchModel.To = 20;
 
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
+
+            var settings = new RefitSettings
+            {
+                ContentSerializer = new NewtonsoftJsonContentSerializer()
+            };
+            var apiClient = RestService.For<IInvestment>(httpClient, settings);
+            var investmentResponse = await apiClient.GetMasterInvestmentBySearchCriteria(investmentSearchModel);
+            if (investmentResponse.Count > 0)
+            {
+                var investmentId = investmentResponse[0]["id"].ToString();
+                var investmentPlanMapping = new AddInvestmentsInput
+                {
+                    AddInvestmentInputs = new List<AddInvestmentInput>()
+                };
+
+                var newInvestment = new AddInvestmentInput
+                {
+                    Id = 0,
+                    InvestmentId = Convert.ToInt32(investmentId),
+                    PlanId = Convert.ToInt32(Hooks.Hooks.planId),
+                    Status = 1,
+                    InvestmentType = 2,
+                    SuspendedFromDate = null,
+                    SuspendedToDate = null
+                };
+
+                investmentPlanMapping.AddInvestmentInputs.Add(newInvestment);
+
+                var planApiClient = RestService.For<IPlanDetailsSave>(httpClient);
+                var responseAfterAddingInvestment = await planApiClient.AddInvestmentsToPlan(investmentPlanMapping);
+                if (!(responseAfterAddingInvestment is bool value && value))
+                    throw new Exception($"Investment {InvestmentName} not mapped to Plan");
+
+                var listInvestmentsOfPlan = await planApiClient.GetInvestmentListByPlanId(Hooks.Hooks.planId);
+                var parsedList = JObject.Parse(listInvestmentsOfPlan.ToString());
+
+                var investmentPlanDetails = parsedList["investmentPlanDetails"] as JArray;
+                foreach(var investment in investmentPlanDetails)
+                {
+                    if(investment["name"].ToString() == InvestmentName)
+                    {
+                        InvestmentNameAndPlanMappingIdDict.Add(investment["name"].ToString(), investment["id"].ToString());
+                    }
+                }
+            }
+            else 
+            {
+                await CreateInvestment(InvestmentName);
+                await AddInvestmentToPlan(InvestmentName);
+            }
+           
+
+
+        }
+
+        public async Task CreateInvestment(string investmentName)
+        {
+
+        }
         public async Task UpdateEmployeeInformation(Reqnroll.DataTable dataTable)
         {
             //Will do research later blud!!
@@ -2911,7 +2990,7 @@ namespace RefitSandBox
             await program.Configuration("sourceSubCategory", "4");
             await program.Configuration("sourceSubSubCategory", "1");
             await program.Configuration("effectiveStartDate", "2020-01-01");
-            await program.Configuration("sourceName", "Pretax");
+            await program.Configuration("sourceName", "EEPretax");
             await program.Configuration("contributionType", "1");
             await program.Configuration("limitMinimumDollar", "10");
             await program.Configuration("limitMinimumPercentage", "10");
@@ -3297,6 +3376,6 @@ namespace RefitSandBox
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
             var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
-
+        
     }
 }
