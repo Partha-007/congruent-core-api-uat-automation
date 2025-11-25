@@ -11,7 +11,6 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | minimumLength                |     3 |
            | maximumLengthYears           |     3 |
            | maximumLengthMonths          |     0 |
            | minimumLengthYears           |     1 |

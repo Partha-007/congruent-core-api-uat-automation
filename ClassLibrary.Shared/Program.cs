@@ -385,6 +385,25 @@ namespace RefitSandBox
                     .Select(entry => entry.Value)
                     .ToList();
             }
+            //if (ControlName.Contains(","))
+            //{
+            //    var splitted = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            //    foreach (var arr in splitted)
+            //    {
+            //        Console.WriteLine(arr.Trim());
+            //    }
+            //    for (int i = 0; i <Value.Length; i++)
+            //    {
+            //        char PropertyName = Value[i];
+            //        var convertedValue =Value.ToString();
+            //        //string formattedValue = convertedValue.ToString("i");
+            //    // property.SetValue(targetObject, convertedValue);
+            //    }
+
+
+            //}
+
 
             if (ControlName == "employeeClassificationId")
             {
@@ -1195,6 +1214,20 @@ namespace RefitSandBox
                             Console.Write(response.ToString());
                             return response;
                         }
+                        //******
+                        else if (methodName == "SaveSourceLimitsAsync")
+                        {
+                            var requestBody = JsonConvert.SerializeObject(model);
+                            var requestPayload = JObject.Parse(requestBody);
+                            string Action = "/api/v1/Plan/SaveSourceLimits";
+                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
+                            var contentTask = await task.Content.ReadAsStringAsync();
+                            response = JObject.Parse(contentTask);
+                            Console.Write(response.ToString());
+                            return response;
+                        }
                         else if (methodName == "SaveInprogressLoanRequest")
                         {
                             var requestBody = JsonConvert.SerializeObject(model);
@@ -1420,7 +1453,12 @@ namespace RefitSandBox
                 {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() },
                 {"/api/Sponsor/SaveSponsor",() => new SponsorViewModel() },
                 {"/api/v1/EligibleRule/SavePlanAmendmentEligibleRule",() => new EligibilityRuleViewModel() },
-                {"/api/EntryDate/SaveEntryDate",() => new EntryDateRuleViewModel() }
+                {"/api/EntryDate/SaveEntryDate",() => new EntryDateRuleViewModel() },
+                {"/api/PlanYOS/SavePlanYOS",() => new YearsOfServiceViewModel() },
+                {"/api/Withdrawal/SaveWithdrawal",() => new WithdrawalViewModel() },
+                {"/api/Rollover/SaveRollover",() => new RolloverViewModel() },
+                {"/api/Transfer/SaveTransfer",() => new TransferViewModel() },
+                {"/api/v1/Plan/SaveSourceLimits",() => new SourceLimitsViewModel() }
 
             };
 
@@ -3160,6 +3198,47 @@ namespace RefitSandBox
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
         }
+
+
+
+        //public static async Task<string> SaveRollOverSource(string? bearer,string planId)
+        //{
+        //    var program = new Program();
+        //    var RolloOver = new RolloverViewModel();
+        //    modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(RolloOver);
+        //    modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "planId", modelAfterConvention);
+        //    var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+        //    await program.Configuration("planId", planId);
+        //    await program.Configuration("sourceName", "PretaxRollover");
+        //    await program.Configuration("sourceType","1");
+        //    await program.Configuration("sourceCategory", "4");
+        //    await program.Configuration("sourceSubCategory", "7");
+        //    await program.Configuration("sourceSubSubCategory", null);
+        //    await program.Configuration("sourceCode", "8");
+        //    await program.Configuration("effectiveStartDate", "2025-04-01T00:00:00Z");
+        //    await program.Configuration("effectiveEndDate", null);
+        //    await program.Configuration("isSourceOfferdInthisPlan", "True");
+        //    await program.Configuration("recordKeepingNumber", null);
+        //    await program.Configuration("isNewContributionAllowed", "false");
+        //    await program.Configuration("isDisplayToParticipantWebsite", "false");
+        //    await program.Configuration("isEligibilityRulesUniqueThisSource", "false");
+        //    await program.Configuration("employerSourceExclusion", "");
+        //    await program.Configuration("employeeDeferralSource", null);
+        //    await program.Configuration("employerDiscretionarySource", null);
+        //    await program.Configuration("employerMatchSource", null);
+        //    await program.Configuration("employerOtherSource", null);
+        //    await program.Configuration("contributionType", "1");
+        //    await program.Configuration("employerSourceExcludedEmployeeClassifications", "");
+        //    await program.Configuration("employerSourceExcludedEmploymentStatuses", "");
+        //    await program.Configuration("isValid", null);
+        //    await program.Configuration("validate", null);
+        //    System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+        //    var planResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveRollOverAsync");
+        //    string RollOverSource = planResponse["plan"]["id"].ToString();
+        //    rkPlanNumber = planResponse["plan"]["rkPlanNumber"].ToString();
+        //    planName = planResponse["plan"]["planName"].ToString();
+        //    return RollOverSource;
+        //}
 
         public async Task SaveEnrollmentForModelPortfolioWithDiffernentInvestionElectionToAllSources()
         {

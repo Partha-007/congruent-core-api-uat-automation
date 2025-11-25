@@ -48,8 +48,12 @@
     <Folder Include="Drivers\" />
     <Folder Include="Features\B_Plan\E_Plan EntryDate\" />
     <Folder Include="Features\B_Plan\F_Plan Loan\" />
-    <Folder Include="Features\B_Plan\G_Plan Distribution\" />
     <Folder Include="Features\B_Plan\H_Plan YOS\" />
+    <Folder Include="Features\B_Plan\I_Plan Vesting\" />
+    <Folder Include="Features\B_Plan\J_Plan RollOver\" />
+    <Folder Include="Features\B_Plan\K_Plan Transfers\" />
+    <Folder Include="Features\B_Plan\L_Plan Limits\" />
+    <Folder Include="Features\B_Plan\M_Plan Enrollment\" />
     <Folder Include="Support\" />
   </ItemGroup>
 
