@@ -3297,6 +3297,6 @@ namespace RefitSandBox
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
             var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
-
+        
     }
 }
