@@ -168,7 +168,7 @@ Scenario: Service Computation Equivalency planYOSServiceCreditPeriod is selected
      | PL1111     | Monthly Hours should not exceed 744        | Scenario: Service Computation Equivalency monthlyHoursfrequency is more than 744
      | PL1153     | Quarterly Hours should not exceed 2208     | Scenario: Service Computation Equivalency quarterlyHours frequency is more than 2208
      | PL756      | Semi-Annually Hours should not exceed 4392 | Scenario: Service Computation Equivalency semiAnnuallyHours frequency is more than 4392
-     | PL1152     | Annually Hours should not exceed 8760      | Scenario: Service Computation Equivalency annuallyHours frequency is more than 8760
+     | PL1152     | Annually Hours should not exceed 8760      | Scenario: Service Computation Equivalency annuallyHours frequency is more than 8760       
 
      #ElapsedTime in months
 Scenario: Elapsed time in month is Null 

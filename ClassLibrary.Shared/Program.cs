@@ -385,252 +385,270 @@ namespace RefitSandBox
                     .Select(entry => entry.Value)
                     .ToList();
             }
-            //if (ControlName.Contains(","))
-            //{
-            //    var splitted = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-            //    foreach (var arr in splitted)
-            //    {
-            //        Console.WriteLine(arr.Trim());
-            //    }
-            //    for (int i = 0; i <Value.Length; i++)
-            //    {
-            //        char PropertyName = Value[i];
-            //        var convertedValue =Value.ToString();
-            //        //string formattedValue = convertedValue.ToString("i");
-            //    // property.SetValue(targetObject, convertedValue);
-            //    }
-
-
-            //}
-
-
-            if (ControlName == "employeeClassificationId")
+            if (ControlName.Contains(","))
             {
-                Value = companyClassificationId;
+                var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                var newArray = new JArray();
+
+                foreach (var part in parts)
+                {
+                    var trimmed = part.Trim();
+
+                    // Try to parse into number (int/float), fallback to string
+                    if (int.TryParse(trimmed, out int intVal))
+                    {
+                        newArray.Add(intVal);
+                    }
+                    else if (double.TryParse(trimmed, out double doubleVal))
+                    {
+                        newArray.Add(doubleVal);
+                    }
+                    else
+                    {
+                        newArray.Add(trimmed);
+                    }
+                }
             }
 
-            if (matchingProperties.Any())
-            {
-                foreach (var property in matchingProperties)
-                {
-                    var ModelDeclaredType = modelAfterConvention.GetType().Name;
-                    var PropertyDeclaredType = property.DeclaringType.Name;
-                    var typeToSearch = System.Type.GetType($"MyNamespace.{PropertyDeclaredType}");
+                //for (int i = 0; i < Value.Length; i++)
+                //{
+                //    char PropertyName = Value[i];
+                //    var convertedValue = Value.ToString();
+                //    string formattedValue = convertedValue.ToString("i");
+                //    property.SetValue(targetObject, convertedValue);
+                //}
 
-                    // Check if the ModelDeclaredType is different from PropertyDeclaredType
-                    if (ModelDeclaredType != PropertyDeclaredType)
+
+                
+
+
+                if (ControlName == "employeeClassificationId")
+                {
+                    Value = companyClassificationId;
+                }
+
+                if (matchingProperties.Any())
+                {
+                    foreach (var property in matchingProperties)
                     {
-                        foreach (var item in modelAfterConvention.GetType().GetProperties())
+                        var ModelDeclaredType = modelAfterConvention.GetType().Name;
+                        var PropertyDeclaredType = property.DeclaringType.Name;
+                        var typeToSearch = System.Type.GetType($"MyNamespace.{PropertyDeclaredType}");
+
+                        // Check if the ModelDeclaredType is different from PropertyDeclaredType
+                        if (ModelDeclaredType != PropertyDeclaredType)
                         {
-                            if (item.PropertyType.IsGenericType && item.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>) && item.PropertyType.GetGenericArguments()[0] == typeToSearch)
+                            foreach (var item in modelAfterConvention.GetType().GetProperties())
                             {
-                                Console.WriteLine($"Found matching property: {item.Name}");
-                                var propertiesInModel = modelAfterConvention.GetType().GetProperty(item.Name);
-                                var currentModel = propertiesInModel.GetValue(modelAfterConvention);
-                                var collectionType = typeof(IEnumerable<>).MakeGenericType(typeToSearch);
-                                try
+                                if (item.PropertyType.IsGenericType && item.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>) && item.PropertyType.GetGenericArguments()[0] == typeToSearch)
                                 {
-                                    var collection = (IEnumerable)currentModel;
-                                    foreach (var collectionItem in collection)
+                                    Console.WriteLine($"Found matching property: {item.Name}");
+                                    var propertiesInModel = modelAfterConvention.GetType().GetProperty(item.Name);
+                                    var currentModel = propertiesInModel.GetValue(modelAfterConvention);
+                                    var collectionType = typeof(IEnumerable<>).MakeGenericType(typeToSearch);
+                                    try
                                     {
-                                        // Use reflection to get the property and set the value
-                                        var propertyToUpdate = collectionItem.GetType().GetProperty(property.Name);
-                                        if (Nullable.GetUnderlyingType(property.PropertyType) != null)
+                                        var collection = (IEnumerable)currentModel;
+                                        foreach (var collectionItem in collection)
                                         {
-                                            if (Value == null)
+                                            // Use reflection to get the property and set the value
+                                            var propertyToUpdate = collectionItem.GetType().GetProperty(property.Name);
+                                            if (Nullable.GetUnderlyingType(property.PropertyType) != null)
                                             {
-                                                // Set the property to null if the value is null
-                                                property.SetValue(collectionItem, null);
-                                            }
-                                            else
-                                            {
-                                                if (property.PropertyType == typeof(DateTimeOffset?))
+                                                if (Value == null)
                                                 {
-                                                    var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
-                                                    if (ControlName == "firstRepaymentDate")
-                                                    {
-                                                        string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
-                                                        property.SetValue(collectionItem, convertedValue);
-                                                    }
-                                                    else
-                                                    {
-                                                        property.SetValue(collectionItem, convertedValue);
-                                                    }
-                                                }
-                                                else if (property.PropertyType == typeof(double?))
-                                                {
-                                                    var convertedValue = double.Parse(Value);
-                                                    try
-                                                    {
-                                                        property.SetValue(collectionItem, convertedValue);
-                                                    }
-                                                    catch (Exception ex)
-                                                    {
-                                                        Console.WriteLine(ex.Message);
-                                                    }
+                                                    // Set the property to null if the value is null
+                                                    property.SetValue(collectionItem, null);
                                                 }
                                                 else
                                                 {
-                                                    // Otherwise, convert the value to the underlying type and set it
-                                                    var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
-                                                    var convertedValue = Convert.ChangeType(Value, underlyingType);
-                                                    property.SetValue(collectionItem, convertedValue);
+                                                    if (property.PropertyType == typeof(DateTimeOffset?))
+                                                    {
+                                                        var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
+                                                        if (ControlName == "firstRepaymentDate")
+                                                        {
+                                                            string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
+                                                            property.SetValue(collectionItem, convertedValue);
+                                                        }
+                                                        else
+                                                        {
+                                                            property.SetValue(collectionItem, convertedValue);
+                                                        }
+                                                    }
+                                                    else if (property.PropertyType == typeof(double?))
+                                                    {
+                                                        var convertedValue = double.Parse(Value);
+                                                        try
+                                                        {
+                                                            property.SetValue(collectionItem, convertedValue);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            Console.WriteLine(ex.Message);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        // Otherwise, convert the value to the underlying type and set it
+                                                        var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
+                                                        var convertedValue = Convert.ChangeType(Value, underlyingType);
+                                                        property.SetValue(collectionItem, convertedValue);
+                                                    }
                                                 }
                                             }
+                                            else if (property != null)
+                                            {
+                                                property.SetValue(collectionItem, Convert.ChangeType(Value, property.PropertyType));
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine($"Property {property.Name} not found or is read-only.");
+                                            }
                                         }
-                                        else if (property != null)
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        // Handle any exceptions that occur during collection processing
+                                        Console.WriteLine($"Error processing collection: {ex.Message}");
+                                    }
+                                }
+                                else if (item.PropertyType.Name == PropertyDeclaredType)
+                                {
+                                    var propertiesInModel = modelAfterConvention.GetType().GetProperty(item.Name);
+                                    var currentModel = propertiesInModel.GetValue(modelAfterConvention);
+                                    try
+                                    {
+                                        if (Nullable.GetUnderlyingType(property.PropertyType) != null)
                                         {
-                                            property.SetValue(collectionItem, Convert.ChangeType(Value, property.PropertyType));
+                                            var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
+                                            var convertedValue = Convert.ChangeType(Value, underlyingType);
+                                            property.SetValue(currentModel, convertedValue);
                                         }
                                         else
                                         {
-                                            Console.WriteLine($"Property {property.Name} not found or is read-only.");
+                                            var propertyType = property.PropertyType;
+                                            var convertedValue = Convert.ChangeType(Value, propertyType);
+                                            property.SetValue(currentModel, convertedValue);
                                         }
                                     }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine(ex.Message);
+                                    }
                                 }
-                                catch (Exception ex)
+                                else
                                 {
-                                    // Handle any exceptions that occur during collection processing
-                                    Console.WriteLine($"Error processing collection: {ex.Message}");
+                                    SetPropertyValueRecursive(modelAfterConvention, property.Name, Value);
                                 }
                             }
-                            else if (item.PropertyType.Name == PropertyDeclaredType)
+                        }
+                        // If ModelDeclaredType equals PropertyDeclaredType, handle it directly
+                        else if (Nullable.GetUnderlyingType(property.PropertyType) != null)
+                        {
+                            if (String.IsNullOrEmpty(Value))
                             {
-                                var propertiesInModel = modelAfterConvention.GetType().GetProperty(item.Name);
-                                var currentModel = propertiesInModel.GetValue(modelAfterConvention);
-                                try
-                                {
-                                    if (Nullable.GetUnderlyingType(property.PropertyType) != null)
-                                    {
-                                        var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
-                                        var convertedValue = Convert.ChangeType(Value, underlyingType);
-                                        property.SetValue(currentModel, convertedValue);
-                                    }
-                                    else
-                                    {
-                                        var propertyType = property.PropertyType;
-                                        var convertedValue = Convert.ChangeType(Value, propertyType);
-                                        property.SetValue(currentModel, convertedValue);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine(ex.Message);
-                                }
+                                // Set the property to null if the value is null
+                                property.SetValue(modelAfterConvention, null);
                             }
                             else
                             {
-                                SetPropertyValueRecursive(modelAfterConvention, property.Name, Value);
+                                if (property.PropertyType == typeof(DateTimeOffset?))
+                                {
+                                    var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
+                                    if (ControlName == "firstRepaymentDate")
+                                    {
+                                        var formattedValue = convertedValue.ToUniversalTime().AddDays(1);
+                                        try
+                                        {
+                                            property.SetValue(modelAfterConvention, formattedValue);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine(ex.Message);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        property.SetValue(modelAfterConvention, convertedValue);
+                                    }
+
+                                }
+                                else if (property.PropertyType == typeof(double?))
+                                {
+                                    if (String.IsNullOrEmpty(Value))
+                                    {
+                                        property.SetValue(modelAfterConvention, null);
+                                    }
+                                    else
+                                    {
+                                        var convertedValue = double.Parse(Value);
+                                        try
+                                        {
+                                            property.SetValue(modelAfterConvention, convertedValue);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine(ex.Message);
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    // Otherwise, convert the value to the underlying type and set it
+                                    var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
+                                    var convertedValue = Convert.ChangeType(Value, underlyingType);
+                                    property.SetValue(modelAfterConvention, convertedValue);
+                                }
                             }
                         }
-                    }
-                    // If ModelDeclaredType equals PropertyDeclaredType, handle it directly
-                    else if (Nullable.GetUnderlyingType(property.PropertyType) != null)
-                    {
-                        if (String.IsNullOrEmpty(Value))
+                        else if (property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>))
                         {
-                            // Set the property to null if the value is null
+                            Console.WriteLine($"Found matching property: {property.Name}");
+                            var propertiesInModel = modelAfterConvention.GetType().GetProperty(property.Name);
+                            var currentModel = propertiesInModel.GetValue(modelAfterConvention);
+                            var typeOfCollection = System.Type.GetType($"MyNamespace.{PropertyDeclaredType}");
+                            if (String.IsNullOrEmpty(Value))
+                            {
+                                try
+                                {
+                                    var itemType = property.PropertyType.GetGenericArguments()[0]; // Get the item type T
+                                    var listType = typeof(List<>).MakeGenericType(itemType); // Create List<T> type
+                                    var collectionInstance = Activator.CreateInstance(listType); // Instantiate the List<T>
+                                    property.SetValue(modelAfterConvention, collectionInstance);
+                                }
+                                catch (Exception ex)
+                                {
+
+                                }
+                            }
+                        }
+                        else if (String.IsNullOrEmpty(Value))
+                        {
                             property.SetValue(modelAfterConvention, null);
                         }
                         else
                         {
-                            if (property.PropertyType == typeof(DateTimeOffset?))
-                            {
-                                var convertedValue = DateTimeOffset.Parse(Value); // Parsing the string to DateTimeOffset
-                                if (ControlName == "firstRepaymentDate")
-                                {
-                                    var formattedValue = convertedValue.ToUniversalTime().AddDays(1);
-                                    try
-                                    {
-                                        property.SetValue(modelAfterConvention, formattedValue);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine(ex.Message);
-                                    }
-                                }
-                                else
-                                {
-                                    property.SetValue(modelAfterConvention, convertedValue);
-                                }
-
-                            }
-                            else if (property.PropertyType == typeof(double?))
-                            {
-                                if (String.IsNullOrEmpty(Value))
-                                {
-                                    property.SetValue(modelAfterConvention, null);
-                                }
-                                else
-                                {
-                                    var convertedValue = double.Parse(Value);
-                                    try
-                                    {
-                                        property.SetValue(modelAfterConvention, convertedValue);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine(ex.Message);
-                                    }
-                                }
-
-                            }
-                            else
-                            {
-                                // Otherwise, convert the value to the underlying type and set it
-                                var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
-                                var convertedValue = Convert.ChangeType(Value, underlyingType);
-                                property.SetValue(modelAfterConvention, convertedValue);
-                            }
-                        }
-                    }
-                    else if (property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>))
-                    {
-                        Console.WriteLine($"Found matching property: {property.Name}");
-                        var propertiesInModel = modelAfterConvention.GetType().GetProperty(property.Name);
-                        var currentModel = propertiesInModel.GetValue(modelAfterConvention);
-                        var typeOfCollection = System.Type.GetType($"MyNamespace.{PropertyDeclaredType}");
-                        if (String.IsNullOrEmpty(Value))
-                        {
+                            var propertyType = property.PropertyType;
+                            var convertedValue = Convert.ChangeType(Value, propertyType);
+                            // For non-nullable types, just set the value
                             try
                             {
-                                var itemType = property.PropertyType.GetGenericArguments()[0]; // Get the item type T
-                                var listType = typeof(List<>).MakeGenericType(itemType); // Create List<T> type
-                                var collectionInstance = Activator.CreateInstance(listType); // Instantiate the List<T>
-                                property.SetValue(modelAfterConvention, collectionInstance);
+                                property.SetValue(modelAfterConvention, convertedValue);
                             }
                             catch (Exception ex)
                             {
-
+                                Console.WriteLine(ex.Message);
                             }
                         }
                     }
-                    else if (String.IsNullOrEmpty(Value))
-                    {
-                        property.SetValue(modelAfterConvention, null);
-                    }
-                    else
-                    {
-                        var propertyType = property.PropertyType;
-                        var convertedValue = Convert.ChangeType(Value, propertyType);
-                        // For non-nullable types, just set the value
-                        try
-                        {
-                            property.SetValue(modelAfterConvention, convertedValue);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                    }
+                }
+                else
+                {
+                    Console.WriteLine($"No matching property found for {ControlName}");
                 }
             }
-            else
-            {
-                Console.WriteLine($"No matching property found for {ControlName}");
-            }
-        }
+        
 
         public static async Task SetPropertyValueRecursive(object targetObject, string propertyName, object value)
         {
