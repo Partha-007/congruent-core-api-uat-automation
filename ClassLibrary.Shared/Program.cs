@@ -2462,6 +2462,30 @@ namespace RefitSandBox
                         DateTime startbiweekly = new DateTime(2023, 1, 15);
                         DateTime startsemimonthly = new DateTime(2023, 1, 14);
                     }
+                    //if (value.Contains(","))
+                    //{
+                    //    var parts = value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    //    var newArray = new JArray();
+
+                    //    foreach (var part in parts)
+                    //    {
+                    //        var trimmed = part.Trim();
+
+                    //        // Try to parse into number (int/float), fallback to string
+                    //        if (int.TryParse(trimmed, out int intVal))
+                    //        {
+                    //            newArray.Add(intVal);
+                    //        }
+                    //        else if (double.TryParse(trimmed, out double doubleVal))
+                    //        {
+                    //            newArray.Add(doubleVal);
+                    //        }
+                    //        else
+                    //        {
+                    //            newArray.Add(trimmed);
+                    //        }
+                    //    }
+                    //}
 
                     //******
                     var elementProperty = elementType.GetProperty(elementPropName);
