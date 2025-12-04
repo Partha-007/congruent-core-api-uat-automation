@@ -9,7 +9,7 @@
            | withDrawalType               | 2 |
            | hardshipReason               | 1 |
            | earlyWithdrawalPenalty       |  |
-           | paymentMethod                | 1 |
-           | distributionAllocationMethod | 1 |
+           | paymentMethod                | 1, |
+           | distributionAllocationMethod | 1,|
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
   Then API should give response as "PL1128 : Required"

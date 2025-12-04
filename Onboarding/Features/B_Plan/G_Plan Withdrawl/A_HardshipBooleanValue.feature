@@ -88,7 +88,7 @@ Scenario: Hardship Early Penalty configured with Null
            | paymentMethod                |                     |
            
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-  Then the API response should contain the 2 following errors 
+  Then the API response should contain the 9 following errors 
 	| error_code |   error_message |
     | PL1128      |   Required      |
     | PL350      |   Required      |Scenario: Hardship overnightExpressDeliveryFee field accepts null
@@ -119,11 +119,11 @@ Scenario: Hardship Early Penalty configured with 0
            | paymentMethod                | 1,    |
            
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-  Then the API response should contain the 2 following errors 
-	| error_code |   error_message |
-    | PL1128      |   Required      |
-    | PL350      |   Required      |Scenario: Hardship overnightExpressDeliveryFee field accepts zero
-    | PL444      |   Required      |Scenario: Hardship hardshipWithdrawalFee field accepts null digit with decimal
+  Then the API response should contain the 3 following errors 
+	| error_code | error_message |
+	| PL1128     | Required      |
+	| PL350      | Required      | Scenario: Hardship overnightExpressDeliveryFee field accepts zero
+	| PL444      | Required      | Scenario: Hardship hardshipWithdrawalFee field accepts null digit with decimal
 
 
 Scenario: Hardship hardshipWithdrawalFee field accepts 1 digit
@@ -288,7 +288,7 @@ Scenario: Inservice ageLimitApplicable configured with years as Null
            | paymentMethod                 | 1,                                           |
            
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-Then the API response should contain the 2 following errors 
+Then the API response should contain the 9 following errors 
 	| error_code | error_message                                           |
 	| PL445      | Required                                                |
 	| PL446      | Required                                                | Scenario: Inservice ageLimitApplicable configured with months as Null
@@ -319,7 +319,7 @@ Scenario: Inservice ageLimitApplicable configured with below 18 years
            | paymentMethod                 | 1,    |
            
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-Then the API response should contain the 2 following errors 
+Then the API response should contain the 4 following errors 
 	| error_code | error_message                           |
 	| PL711      | Age should be between limit of 18 to 99 |
 	| PL708      | Required                                |
@@ -344,7 +344,7 @@ Scenario: Inservice ageLimitApplicable configured with above 99 years
            | withdrawalOneTimeOriginateFee |    10 |
            
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-Then the API response should contain the 2 following errors 
+Then the API response should contain the 4 following errors 
 	| error_code | error_message                           |
 	| PL711      | Age should be between limit of 18 to 99 |
 	| PL350      | Required                                | Scenario: Inservice overnightExpressDeliveryFee field accepts zero
@@ -389,7 +389,7 @@ Scenario: Distribution save without Withdrawal type
            | distributionAllocationMethod  | 1,                  |
            | paymentMethod                 |                 1, |
             And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-Then the API response should contain the 2 following errors 
+Then the API response should contain the 1 following errors 
 	| error_code | error_message                           |
 	| PL423      | Required |
 
@@ -469,7 +469,7 @@ Scenario: Permissible description field accepts above 150
          | paymentMethod                | 1,            |
          | distributionAllocationMethod | 1,            |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-Then the API response should contain the 2 following errors 
+Then the API response should contain the 1 following errors 
 	| error_code | error_message                           |
 	| PL434      | Withdrawal Description should not exceed 150 characters |
 
@@ -479,6 +479,7 @@ Then the API response should contain the 2 following errors
 #Scenario: RMD paymentMethod field configure with check
 #Scenario: RMD paymentMethod field configure with eft
 #Scenario: RMD Save configuration
+
 Scenario: RMD allowOptingOutOfFederlWithholdingTax field accepts true
  When Configuration has been made as per following
          | key                                  | value               |
@@ -544,12 +545,12 @@ Scenario: RMD description field accepts above 150
          | calculationMethods            | 1,                                           |
          | distributionAllocationMethod  |                                              |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-Then the API response should contain the 2 following errors 
-	| error_code | error_message                           |
+Then the API response should contain the 4 following errors 
+	| error_code | error_message                                           |
 	| PL434      | Withdrawal Description should not exceed 150 characters |
-	| PL708      | Required |Scenario: RMD distributionAllocationMethod field configure with null
-	| PL350      | Required |Scenario: RMD overnightExpressDeliveryFee field accepts null
-	| PL266      | Required |Scenario: RMD sfsWithdrawalOneTimeOriginateFee field accepts null
+	| PL708      | Required                                                | Scenario: RMD distributionAllocationMethod field configure with null
+	| PL350      | Required                                                | Scenario: RMD overnightExpressDeliveryFee field accepts null
+	| PL266      | Required                                                | Scenario: RMD sfsWithdrawalOneTimeOriginateFee field accepts null
 
 Scenario: RMD distributionAllocationMethod field configure with ProrataofChoice&AllowmetoChoose
  When Configuration has been made as per following
@@ -574,9 +575,175 @@ Scenario: RMD overnightExpressDeliveryFee field accepts zero
          | calculationMethods            | 1,    |
          | distributionAllocationMethod  |       |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-Then the API response should contain the 2 following errors 
+Then the API response should contain the 3 following errors 
 	| error_code | error_message |
 	| PL350      | Required      |
 	| PL266      | Required      |
 	| PL1007     | Required      |Scenario: RMD paymentMethod field configure with null
 
+#SFS
+
+#Scenario: SFS Calculation save configuration
+#Scenario: SFS Calculation is configured with SpecificTenure
+#Scenario: SFS distributionAllocationMethod field configure with ProrataofChoice
+#Scenario: SFS paymentMethod field configure with check
+#Scenario: SFS paymentMethod field configure with eft
+#Scenario: SFS Save configuration
+
+
+
+
+Scenario: SFS processLesserAmountIfMaximumIsNotAvailable field accepts true
+When Configuration has been made as per following
+         | key                                        | value               |
+         | withDrawalType                             |                   4 |
+         | withdrawalDescription                      | random 10 alphabets | Scenario: SFS description field accepts alphabets
+         | processLesserAmountIfMaximumIsNotAvailable | true                |
+         | maximumWithDrawalLimitAmount               |                     | Scenario: SFS maximum limit configured with null
+         | minimumWithDrawalLimitAmount               |                     | Scenario: SFS minimum limit configured with null
+         | WithdrawalOneTimeOriginateFee              |          9999999999 | Scenario: SFS sfsWithdrawalOneTimeOriginateFee field accepts 10 digits
+         | overnightExpressDeliveryFee                |          9999999999 | Scenario: SFS overnightExpressDeliveryFee field accepts 10 digits
+         | maximumNumberOfDirectRolloverPayees        |                   1 | Scenario: SFS DirectRolloverPayees field accepts one
+         | interestRate                               |                   1 | Scenario: SFS interestRate field 1 digit
+         | allowChangingOfStateWithholdingTax         | true                | Scenario: SFS allowChangingOfStateWithholdingTax field accepts true
+         | allowChangingOfFederalWithholdingTax       | true                | Scenario: SFS allowChangingOfFederalWithholdingTax field accepts true
+         | allowOptingOutOfStateWithholdingTax        | true                | Scenario: SFS allowOptingOutOfStateWithholdingTax field accepts true
+         | allowOptingOutOfFederlWithholdingTax       | true                | Scenario: SFS allowOptingOutOfFederlWithholdingTax field accepts true
+         | availableToAlternatePayees                 | true                | Scenario: SFS availableToAlternatePayees field accepts true
+         | availableToBeneficiaries                   | true                | Scenario: SFS availableToBeneficiaries field accepts true
+         | sponsorApprovalRequired                    | true                | Scenario: SFS sponsorApprovalRequired field accepts true
+         | spouseConsentRequired                      | true                | Scenario: SFS spouseConsentRequired field accepts true
+         | withdrawalLimitPerPeriod                   |                   1 | Scenario: SFS limitPerPeriod configured with Annually
+         | paymentMethod                              | 1,                  |
+         | calculationMethods                         | 1,                  |
+         | dateOfAnnuityPayments                      | 1,                  | Scenario: SFS Date of Annuity as Fixed date configuration
+         | distributionAllocationMethod               | 1,                  |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+
+Scenario: SFS processLesserAmountIfMaximumIsNotAvailable field accepts false
+When Configuration has been made as per following
+         | key                                        | value              |
+         | withDrawalType                             |                  4 |
+         | withdrawalDescription                      | random 10 numerics | Scenario: SFS description field accepts numerics
+         | processLesserAmountIfMaximumIsNotAvailable | false              |
+         | minimumWithDrawalLimitAmount | 550.00              |Scenario: SFS minimum limit configured with value as decimal
+         | maximumWithDrawalLimitAmount | 560.00              |Scenario: SFS maximum limit configured with value as decimal
+         | interestRate | 100              |Scenario: SFS interestRate field 100 digit
+         | overnightExpressDeliveryFee | 99999              |Scenario: SFS overnightExpressDeliveryFee field accepts 5 digits
+         | WithdrawalOneTimeOriginateFee | 99999              |Scenario: Scenario: SFS sfsWithdrawalOneTimeOriginateFee field accepts 5 digits
+         | maximumNumberOfDirectRolloverPayees | 0              |Scenario: SFS DirectRolloverPayees field accepts zero
+         | allowChangingOfStateWithholdingTax         | false              | Scenario: SFS allowChangingOfStateWithholdingTax field accepts false
+         | allowChangingOfFederalWithholdingTax       | false              | Scenario: SFS allowChangingOfFederalWithholdingTax field accepts f alse
+         | allowOptingOutOfStateWithholdingTax        | false              | Scenario: SFS allowOptingOutOfStateWithholdingTax field accepts false
+         | allowOptingOutOfFederlWithholdingTax       | false              | Scenario: SFS allowOptingOutOfFederlWithholdingTax field accepts false
+         | availableToAlternatePayees                 | false              | Scenario: SFS availableToAlternatePayees field accepts false
+         | availableToBeneficiaries                   | false              | Scenario: SFS availableToBeneficiaries field accepts false
+         | sponsorApprovalRequired                    | false              | Scenario: SFS sponsorApprovalRequired field accepts false
+         | spouseConsentRequired                      | false              | Scenario: SFS spouseConsentRequired field accepts false
+         | withdrawalLimitPerPeriod                              | 2                |Scenario: SFS limitPerPeriod configured with Quarterly
+         | paymentMethod                              | 1,                 |
+         | calculationMethods                         | 1,                 |
+         | distributionAllocationMethod               | 2,                 |  Scenario: SFS distributionAllocationMethod field configure with AllowmetoChoose
+         | dateOfAnnuityPayments                      | 2,                 | Scenario: SFS Date of Annuity as participant selcted configuration
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+
+
+Scenario: SFS Calculation is configured with Null
+ When Configuration has been made as per following
+         | key                                 | value                                        |
+         | withDrawalType                      |                                            4 |
+         | withdrawalDescription               | random 151 AlphaNumericWithSpecialCharacters | Scenario: SFS description field accepts above 150
+         | periodicPaymentApplicable           | true                                         |
+         | maximumNumberOfDirectRolloverPayees |                                              |
+         | WithdrawalOneTimeOriginateFee       |                                              |
+         | withdrawalLimitPerPeriod            |                                              |
+         | interestRate                        |                                              |
+         | numberOfWithdrawalAllowed           |                                            0 | 
+         | overnightExpressDeliveryFee         |                                              |
+         | paymentMethod                       | 1,                                           |
+         | calculationMethods                  | 0,                                           |
+         | distributionAllocationMethod        |                                              | Scenario: SFS distributionAllocationMethod field configure with null
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 9 following errors 
+	| error_code | error_message                                           |
+	| PL350      | Required                                                |Scenario: SFS overnightExpressDeliveryFee field accepts null
+	| PL426      | Required                                                |
+	| PL266      | Required                                                |Scenario: SFS sfsWithdrawalOneTimeOriginateFee field accepts null
+	| PL257      | Required                                                |Scenario: SFS limitPerPeriod configured with null
+	| PL708      | Required                                                |
+	| PL258      | Required                                                |Scenario: SFS number of withdrawals allowed configured with zero
+	| PL456      | Required                                                |Scenario: SFS interestRate field Null
+	| PL434      | Withdrawal Description should not exceed 150 characters |
+	| PL271      | Withdrawal Description should not exceed 150 characters |Scenario: SFS DirectRolloverPayees field accepts null
+
+
+Scenario: SFS Calculation is configured with SpecificDollar
+ When Configuration has been made as per following
+         | key                          | value         |
+         | withDrawalType               |             4 |
+         | withdrawalLimitPerPeriod     | <period>      |
+         | withdrawalDescription        | <description> |
+         | periodicPaymentApplicable    | true          |
+         | numberOfWithdrawalAllowed    |            12 | Scenario: SFS number of withdrawals allowed configured with twelve
+         | paymentMethod                |           1,2 |
+         | eftFee                       |             1 |Scenario: SFS paymentMethod field configure with checkandEft
+         | calculationMethods           | <methods>     |
+         | distributionAllocationMethod | 1,2,          | Scenario: SFS distributionAllocationMethod field configure with ProrataofChoice&AllowmetoChoose
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+Examples: 
+| period  | description                                  | methods |
+|    3    | random 10 alphaNumerics                      | 2,      |
+|    4    | random 10 specialCharacters                  | 4,      | Scenario: SFS Calculation is configured with AmortizationMethod
+|    1    | random 10 AlphaNumericWithSpecialCharacters  | 5,      | Scenario: SFS Calculation is configured with AnnulizationMethod
+|    1    | random 149 AlphaNumericWithSpecialCharacters | 1,2,4,  | Scenario: SFS Calculation is configured with All
+|    1    | random 150 AlphaNumericWithSpecialCharacters | 1,      | Scenario: SFS description field accepts equal 150
+
+#Scenario: SFS description field accepts alphanumerics
+#Scenario: SFS description field accepts specialCharacters
+#Scenario: SFS description field accepts alphanumericsspecialcharacters
+#Scenario: SFS description field accepts below 150
+#Scenario: SFS limitPerPeriod configured with SemiAnnually
+#Scenario: SFS limitPerPeriod configured with Notapplicable
+
+
+
+Scenario: SFS overnightExpressDeliveryFee field accepts zero
+ When Configuration has been made as per following
+         | key                           | value |
+         | withDrawalType                |     4 |
+         | periodicPaymentApplicable     | true  |
+         | overnightExpressDeliveryFee   |     0 |
+         | WithdrawalOneTimeOriginateFee |     0 |
+         | withdrawalLimitPerPeriod      |     3 |
+         | numberOfWithdrawalAllowed     |       |
+         | paymentMethod                 |       |
+         | calculationMethods            | 1,    |
+         | distributionAllocationMethod  | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 4 following errors 
+	| error_code | error_message |
+	| PL350      | Required      |
+	| PL1007     | Required      | Scenario: SFS paymentMethod field configure with null
+	| PL258      | Required      | Scenario: SFS number of withdrawals allowed configured with null
+	| PL266      | Required      | Scenario: SFS sfsWithdrawalOneTimeOriginateFee field accepts zero
+
+
+Scenario: SFS number of withdrawals allowed configured with more than twelve for annually
+ When Configuration has been made as per following
+         | key                           | value |
+         | withDrawalType                |     4 |
+         | periodicPaymentApplicable     | true  |
+         | withdrawalLimitPerPeriod      |     3 |
+         | numberOfWithdrawalAllowed     |   13    |
+         | paymentMethod                 | 1,    |
+         | calculationMethods            | 1,    |
+         | distributionAllocationMethod  | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 1 following errors 
+	| error_code | error_message                                            |
+	| PL346      | Number of Withdrawals allowed should not be more than 12 |
