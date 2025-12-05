@@ -1,38 +1,19 @@
 ﻿Feature: A_Limits
 [BeforeTestRun]
 
-Scenario:  To validate Combined Limit Name field is length equal as 100 characters
-  Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
- When Configuration has been made as per following
-         | key  | value  |
-         | name | <Name> |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
-Then API should respond with successful message
-Examples: 
-| Name                                        |
-| random 100 alphabets                        |
-| random 10 alphabets                         | Scenario: To validate Combined Limit Name field is length below 100 characters
-| random 101 alphabets                        | Scenario:To validate Combined Limit Name field is length above 100 characters
-| random 10 numerics                          | Scenario: To validate Combined Limit Name field is accept numerics
-| random 10 SpecialCharacters                 | Scenario: To validate Combined Limit Name field is accept special characters
-| random 10 AlphaNumerics                     | Scenario: To validate Combined Limit Name field is accept alphanumerics
-| random 10 AlphaNumericWithSpecialCharacters | Scenario: To validate Combined Limit Name field is accept alpanumeric with special characters
-
-
-
 Scenario:To validate Combined Limit Name field is null
    Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
 When Configuration has been made as per following
-         | key  | value              |
-         | name | random 0 alphabets |
-         | sourceLimitsMappings | 0 |
-         | contributionType |  |
+         | key                  | value              |
+         | name                 | random 0 alphabets |
+         | sourceLimitsMappings |                  0 |
+         | contributionType     |                    |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSourceLimitsAsync"
- Then the API response should contain the 1 following errors 
+ Then the API response should contain the 3 following errors 
 	| error_code | error_message                    |
 	| PL940      | Required                         |
 	| PL941      | Atleast two sources are required | Scenario: To validate Combined sources field as null
-	| PL930      | Required                         | Scenario: To validate Combined sources field as null
+	| PL930      | Required                         | Scenario: To validate contribution type as null
 
 
     
@@ -40,7 +21,7 @@ Scenario: To validate contribution type as percentage when limitMinimumPercentag
    Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
 When Configuration has been made as per following
          | key                    | value               |
-         | name                   | random 10 alphabets |
+         | name                   | random 10 alphabets | Scenario: To validate Combined Limit Name field is length below 100 characters
          | sourceLimitsMappings   |                   1 |
          | contributionType       |                   1 |
          | limitMinimumPercentage |                     |
@@ -55,12 +36,12 @@ When Configuration has been made as per following
 Scenario: To validate contribution type as Dollar when limitMaximum is null
    Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
 When Configuration has been made as per following
-         | key                    | value               |
-         | name                   | random 10 alphabets |
-         | sourceLimitsMappings   |                   1 |
-         | contributionType       |                   2 |
-         | limitMinimum |                     |
-         | limitMaximum |                     |
+         | key                  | value                                       |
+         | name                 | random 10 AlphaNumericWithSpecialCharacters | Scenario: To validate Combined Limit Name field is accept alpanumeric with special characters
+         | sourceLimitsMappings |                                           1 |
+         | contributionType     |                                           2 |
+         | limitMinimum         |                                             |
+         | limitMaximum         |                                             |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSourceLimitsAsync"
  Then the API response should contain the 1 following errors 
 	| error_code | error_message                    |
@@ -93,7 +74,7 @@ Scenario: To validate contribution type as percentage when limitMinimumPercentag
    Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
 When Configuration has been made as per following
          | key                    | value               |
-         | name                   | random 10 alphabets |
+         | name                   | random 100 alphabets |Scenario:  To validate Combined Limit Name field is length equal as 100 characters
          | sourceLimitsMappings   |                   1 |
          | contributionType       |                   1 |
          | limitMinimumPercentage |                 100 |
@@ -107,11 +88,11 @@ When Configuration has been made as per following
 Scenario: To validate contribution type as percentage when limitMaximumPercentage is 100
    Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
 When Configuration has been made as per following
-         | key                    | value               |
-         | name                   | random 10 alphabets |
-         | sourceLimitsMappings   |                   1 |
-         | contributionType       |                   1 |
-         | limitMaximumPercentage |                 100 |
+         | key                    | value              |
+         | name                   | random 10 numerics | Scenario: To validate Combined Limit Name field is accept numerics
+         | sourceLimitsMappings   |                  1 |
+         | contributionType       |                  1 |
+         | limitMaximumPercentage |                100 |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSourceLimitsAsync"
 Then API should respond with successful message
 
@@ -120,12 +101,12 @@ Then API should respond with successful message
 Scenario: To validate contribution type as Dollar when limitMinimum is 11 digits with 2 decimal points
    Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
 When Configuration has been made as per following
-         | key                  | value               |
-         | name                 | random 10 alphabets |
-         | sourceLimitsMappings |                   1 |
-         | contributionType     |                   2 |
-         | limitMinimum         |      82828288288.88 |Scenario: To validate contribution type as Dollar when limitMaximum is 11 digits with 2 decimal points
-         | limitMaximum         |      92828288288.88 |
+         | key                  | value                |
+         | name                 | random 101 alphabets | Scenario:To validate Combined Limit Name field is length above 100 characters
+         | sourceLimitsMappings |                    1 |
+         | contributionType     |                    2 |
+         | limitMinimum         |       82828288288.88 | Scenario: To validate contribution type as Dollar when limitMaximum is 11 digits with 2 decimal points
+         | limitMaximum         |       92828288288.88 |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSourceLimitsAsync"
 Then API should respond with successful message
 
@@ -139,7 +120,7 @@ When Configuration has been made as per following
          | limitMinimumPercentage |                 100 |
          | limitMaximumPercentage |                 100 |
          | limitMinimum           |                1000 |
-         | limitMaximum           |                1000 |
+         | limitMaximum           |                1000 |Scenario: To validate contribution type as both when limitMinimumPercentage is greater than limitMaximumPercentage
  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSourceLimitsAsync"
  Then the API response should contain the 1 following errors 
 	| error_code | error_message                                                         |
@@ -150,13 +131,13 @@ When Configuration has been made as per following
 Scenario: To validate contribution type as both when limitMaximumPercentage is 100
    Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
 When Configuration has been made as per following
-         | key                    | value               |
-         | name                   | random 10 alphabets |
-         | contributionType       |                   3 |
-         | limitMinimumPercentage |                  49 |Scenario: To validate contribution type as both when limitMinimumPercentage is less than 100
-         | limitMaximumPercentage |                 100 |
-         | limitMinimum           |                1000 |
-         | limitMaximum           |                1000 |
+         | key                    | value                       |
+         | name                   | random 10 SpecialCharacters | Scenario: To validate Combined Limit Name field is accept special characters
+         | contributionType       |                           3 |
+         | limitMinimumPercentage |                          49 | Scenario: To validate contribution type as both when limitMinimumPercentage is less than 100
+         | limitMaximumPercentage |                         100 |
+         | limitMinimum           |                        1000 |
+         | limitMaximum           |                        1000 |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSourceLimitsAsync"
 Then API should respond with successful message
 
@@ -348,3 +329,17 @@ When Configuration has been made as per following
  Then the API response should contain the 1 following errors 
 	| error_code | error_message                                                         |
 	| PL939      | Maximum limit amount should not be equal or lesser than minimum limit |
+
+
+Scenario: To validate contribution type as both when limitMinimum is greater than limitMaximum
+   Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
+When Configuration has been made as per following
+         | key                    | value                   |
+         | name                   | random 10 AlphaNumerics | Scenario: To validate Combined Limit Name field is accept alphanumerics
+         | contributionType       |                       3 |
+         | limitMinimumPercentage |                      24 |
+         | limitMaximumPercentage |                      49 |
+         | limitMinimum           |          91717177178.99 |
+         | limitMaximum           |          81717177171.99 |
+ And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSourceLimitsAsync"
+Then API should respond with successful message

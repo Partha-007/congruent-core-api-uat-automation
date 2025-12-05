@@ -81,14 +81,13 @@ And Collection in a model is configured with 1 blocks for the property "Addition
            |           1 | VestingMethod             |     2 |
            |           1 | ElapsedTime               |    11 |
            |           1 | HoursOfService            |       |Scenario: Additional Vesting method hours configure with null
-
            |           2 | VestingName               | abcde |
            |           2 | ImmediateVestingIndicator | false |
            |           2 | VestedAt                  | 1,2   |Scenario: Vesting BIS rule field configure with null of disregardPrior
            |           2 | VestingMethod             |     2 |
            |           2 | ElapsedTime               |    11 |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveVesting"
- 	Then the API response should contain the 2 following errors 
+ 	Then the API response should contain the 5 following errors 
 	| error_code |   error_message |
     | PL616      |   Required      |
     | PL124      |   Required      |
@@ -179,7 +178,7 @@ And Collection in a model is configured with 1 blocks for the property "Addition
            |           1 | ElapsedTime               |         11 |
            |           1 | HoursOfService            |       1001 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveVesting"
- 	Then the API response should contain the 2 following errors 
+ 	Then the API response should contain the 3 following errors 
 	| error_code | error_message                                                |
 	| PL126      | Number of hours of service should not be greater than 1000   |
 	| PL416      | Vesting Description length should not exceed  150 characters | Scenario: Vesting description field configure with more than 150 characters
@@ -256,7 +255,7 @@ And Collection in a model is configured with 1 blocks for the property "Addition
            |           1 | ElapsedTime               |    11 |
            |           1 | HoursOfService            |   500 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveVesting"
-   	Then the API response should contain the 2 following errors 
+   	Then the API response should contain the 3 following errors 
 	| error_code | error_message                                        |
 	| PL1033     | Required                                             |
 	| PL564      | Required                                             |
@@ -404,7 +403,7 @@ And Collection in a model is configured with 1 blocks for the property "Addition
            |           1 | HoursOfService            |   500 |
            
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveVesting"
-  	Then the API response should contain the 2 following errors 
+  	Then the API response should contain the 4 following errors 
 	| error_code | error_message                                                                         |
 	| PL412      | Required                                                                              |
 	| PL129      | Required                                                                              | Scenario: Vesting BIS rule field configure with Null on tables
@@ -583,7 +582,7 @@ When Configuration has been made as per following
            |           1 | ImmediateVestingIndicator | false |
            |           1 | VestedAt                  |   1,2 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveVesting"
-   	Then the API response should contain the 2 following errors 
+   	Then the API response should contain the 11 following errors 
 	| error_code | error_message                                        |
 	| PL635      | Required                                             |
 	| PL637      | Required                                             | Scenario: Vesting method field Equivalency configure with daily as Null
@@ -629,18 +628,18 @@ When Configuration has been made as per following
            |           1 | ImmediateVestingIndicator | false |
            |           1 | VestedAt                  |   1,2 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveVesting"
-   	Then the API response should contain the 2 following errors 
+   	Then the API response should contain the 10 following errors 
 	| error_code | error_message                  |
-	| PL636      | Hours cannot be more than 1000 |Scenario: Vesting method field Equivalency configure more than 1000 for activeEMployees
-	| PL638      | Hours cannot be more than 24   |Scenario: Vesting method field Equivalency configure more than 24 for daily
-	| PL640      | Hours cannot be more than 168  |Scenario: Vesting method field Equivalency configure more than 168 for weekly
-	| PL642      | Hours cannot be more than 336  |Scenario: Vesting method field Equivalency configure more than 336 for biweekly
-	| PL644      | Hours cannot be more than 384  |Scenario: Vesting method field Equivalency configure more than 384 for SemiMonthly
-	| PL646      | Hours cannot be more than 744  |Scenario: Vesting method field Equivalency configure more than 744 for Monthly
-	| PL648      | Hours cannot be more than 2208 |Scenario: Vesting method field Equivalency configure more than 2208 for quaterly
-	| PL650      | Hours cannot be more than 4392 |Scenario: Vesting method field Equivalency configure more than 4392 for semiannually
-	| PL652      | Hours cannot be more than 8760 |Scenario: Vesting method field Equivalency configure more than 8760 for annually
-	| PL563      | Required |Scenario: VestingServiceCreditPeriod is configured with null when set as equivalency
+	| PL636      | Hours cannot be more than 1000 | 
+	| PL638      | Hours cannot be more than 24   | Scenario: Vesting method field Equivalency configure more than 24 for daily
+	| PL640      | Hours cannot be more than 168  | Scenario: Vesting method field Equivalency configure more than 168 for weekly
+	| PL642      | Hours cannot be more than 336  | Scenario: Vesting method field Equivalency configure more than 336 for biweekly
+	| PL644      | Hours cannot be more than 384  | Scenario: Vesting method field Equivalency configure more than 384 for SemiMonthly
+	| PL646      | Hours cannot be more than 744  | Scenario: Vesting method field Equivalency configure more than 744 for Monthly
+	| PL648      | Hours cannot be more than 2208 | Scenario: Vesting method field Equivalency configure more than 2208 for quaterly
+	| PL650      | Hours cannot be more than 4392 | Scenario: Vesting method field Equivalency configure more than 4392 for semiannually
+	| PL652      | Hours cannot be more than 8760 | Scenario: Vesting method field Equivalency configure more than 8760 for annually
+	| PL563      | Required                       | Scenario: VestingServiceCreditPeriod is configured with null when set as equivalency
 
 
 

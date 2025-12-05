@@ -3045,6 +3045,33 @@ namespace RefitSandBox
             sourceId = sourceSave["source"]["id"].ToString();
         }
 
+        public static async Task<string> SavePretaxRollOverSource(string bearer, string planId)
+        {
+            var program = new Program();
+            var sourceModel = new SourceViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            var currentDate = DateTime.UtcNow;
+            await program.Configuration("sourceType", "1");
+            await program.Configuration("sourceCategory", "4");
+            await program.Configuration("sourceSubCategory", "7");
+            await program.Configuration("sourceSubSubCategory", "");
+            await program.Configuration("effectiveStartDate", "2020-01-01");
+            await program.Configuration("sourceName", "Pretax Rollover");
+            //await program.Configuration("isNewContributionAllowed", "false");
+            //await program.Configuration("limitMinimumDollar", "10");
+            //await program.Configuration("limitMinimumPercentage", "10");
+            //await program.Configuration("limitMaximumPercentage", "70");
+            //await program.Configuration("limitMaximumDollar", "70");
+            await program.Configuration("sourceCode", "R");
+            //program.Configuration("EmployeeDeferralSource.contributionType", "7");
+            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
+            sourceId = sourceSave["source"]["id"].ToString();
+            return sourceId;
+        }
+
         public static async Task SaveMatchSource(string bearer, string planId)
         {
             var program = new Program();
