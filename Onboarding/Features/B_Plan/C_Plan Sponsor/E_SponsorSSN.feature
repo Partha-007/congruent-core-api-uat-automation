@@ -14,7 +14,7 @@ Examples:
 | SSN                                        |
 | 123-22-22                                  |
 | random 10 alphabets                        |
-| random 5   alphabets                       |
+| random 5 alphabets                         |
 | random 5 numerics                          |
 | random 5 SpecialCharacters                 |
 | random 5 alphanumerics                     |
@@ -33,14 +33,14 @@ Scenario: SponsorSSN field validate of assigning same values(error message)
   Then API should give response as "PL059 : Social Security Number digits should not be all the same."
   Examples: 
 | SSN                                        |
-| 000-00-0000                                |
-| 111-11-1111                                |
+| 000-00-0000                                | 
+| 111-11-1111                                | 
 | 222-22-2222                                |
 | 333-33-3333                                |
 | 444-44-4444                                |
 | 555-55-5555                                |
 | 666-66-6666                                |
-| 777-77-7777                                |
+| 777-77-7777                                | 
 | 888-88-8888                                |
 | 999-99-9999                                |
 

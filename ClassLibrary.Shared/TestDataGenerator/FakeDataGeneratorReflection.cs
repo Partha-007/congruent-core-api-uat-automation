@@ -86,8 +86,10 @@ namespace RefitSandBox.TestDataGenerator
                 {
                     // Handle other property types as in the original code
                     property.SetValue(obj,
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Id") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "PlanAmendmentId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CompanyId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ExternalId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "EmployerSourceExclusion") ? null :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "tenantid") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CountryId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "StateId") ? 1 :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Id") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "PlanAmendmentId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CompanyId") ? null :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "tenantid") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CountryId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "StateId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "masterLoanTypeId") ? 1 :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "isMaster")? true :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "loanDescription") ? "General Purpose" :
                         propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
                         propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? faker.Name.FirstName() :
                         propertyType == typeof(string) && propertyName.Contains("Name", StringComparison.OrdinalIgnoreCase) ? faker.Company.CompanyName() :

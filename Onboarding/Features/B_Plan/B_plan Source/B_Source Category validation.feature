@@ -471,7 +471,7 @@ Then API should respond with successful message
 
 
 
-Scenario:1 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8351 To verify the Deferral percentage for re-hires? acceptance criteria of values equal 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -487,7 +487,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:2 To Verify the Source Category Mandatory Validation for Employee Source 
+Scenario: 8352 To verify the Deferral percentage for re-hires? acceptance criteria of values below 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -504,7 +504,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:3 To Verify the Source Category Mandatory Validation for Employee Source 
+Scenario: 8436 To verify the Percentage of compensation acceptance criteria of values below 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -518,7 +518,8 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:4 To Verify the Source Category Mandatory Validation for Employee Source 
+
+Scenario: 8454 To verify theEnhanced sh match percentage acceptance criteria of values below 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -537,7 +538,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:5 To Verify the Source Category Mandatory Validation for Employee Source 
+Scenario: 8357 To verify the Limit (minimum) acceptance criteria of values below 10000000000.00 dollar
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -554,7 +555,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:6 To Verify the Source Category Mandatory Validation for Employee Source 
+Scenario: 8356 To verify the Limit (minimum) acceptance criteria of values equal 10000000000.00 dollar
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -571,7 +572,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:7 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8339 To verify the Limit (minimum) acceptance criteria of values below 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -588,7 +589,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:8 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8362 To verify the Limit (maximum) acceptance criteria of values below 10000000000.00 dollar
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -605,7 +606,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:9 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8361 To verify the Limit (maximum) acceptance criteria of values equal 10000000000.00 dollar
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -622,7 +623,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:10 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8366 To verify the Maximum compensation acceptance criteria of values below 10000000000.00 dollar
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -639,7 +640,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:11 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8365 To verify the Maximum compensation acceptance criteria of values equal 10000000000.00 dollar
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -656,7 +657,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:12 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8453 To verify theEnhanced sh match percentage acceptance criteria of values equal 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -673,7 +674,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:13 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8462 To verify the Up to percentage of deferral acceptance criteria of values equal 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -692,7 +693,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:14 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8435 To verify the Percentage of compensation acceptance criteria of values equal 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -712,7 +713,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:15 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8448 To verify the Enhanced sh match percentage data type acceptance of only numeric
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -729,7 +730,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:16 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8430 To verify the Percentage of compensation data type acceptance of only numeric
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -747,7 +748,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:17 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8476 To verify the Match Percent field acceptance criteria of value equal 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -766,7 +767,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:18 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8673 To verify the Match Percent field acceptance criteria of value below 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -783,7 +784,24 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:19 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8478 To verify the Match Percent field acceptance criteria of value below 100
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                      | value |
+           | sourceType               |     2 |
+           | sourceCategory           |     5 |
+           | isSafeHarbourMatch       | false |
+           | employercontributionType |     2 |
+           | percentageOfCalculation  |    76 |
+           | percentageOfCompensation |    100 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message
+
+Scenario: 8479 To verify the Percentage of compensation matched field acceptance criteria of value below 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -802,7 +820,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:20 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8482 To verify the Tier#1 Match Percent field acceptance criteria of value equal 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -823,7 +841,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:21 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8483 To verify the Tier#1 Match Percent field acceptance criteria of value below 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -846,7 +864,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:22 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8485 To verify the Tier#1 Percentage of compensation matched field acceptance criteria of value equal 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -869,28 +887,8 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:23 To Verify the Source Category Mandatory Validation for Employee Source
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                                | value |
-           | sourceType                         |     2 |
-           | sourceCategory                     |     6 |
-           | isSafeHarbourMatch                 | false |
-           | employercontributionType           |     3 |
-           | firstTierMatchPercent              |   101 |
-           | firstTierCompensationMatchPercent  |    78 |
-           | secondTierMatchPercent             |    76 |
-           | secondTierCompensationMatchPercent |    78 |
-           | thirdTierMatchPercent              |    76 |
-           | thirdTierCompensationMatchPercent  |    78 |
 
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should respond with successful message
-
-Scenario:24 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8486 To verify the Tier#1 Percentage of compensation matched field acceptance criteria of value below 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -912,8 +910,9 @@ When Configuration has been made as per following
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
+#Restrict in UI but not restrict in API and its accept the firstTierCompensationMatchPercent as 101 and not throwing the error in back end
 
-Scenario:25 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8488 To verify the Tier#2 Match Percent field acceptance criteria of value equal 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -936,7 +935,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:26 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8491 To verify the Tier#2 Percentage of compensation matched field acceptance criteria of value equal 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -959,7 +958,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:27 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8494 To verify the Tier#3 Match Percent field acceptance criteria of value equal 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -982,7 +981,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:28 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8497 To verify the Tier#3 Percentage of compensation matched field acceptance criteria of value equal 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1006,7 +1005,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:29 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: 8457 To verify theUp to percentage of deferral data type acceptance of only numeric
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1025,7 +1024,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:30 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the Maximum limit applicable field as yes
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1040,7 +1039,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:31 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the Maximum limit applicable as yes when maximum dollar limit  field length as 7 characters with 2 decimal points
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1055,7 +1054,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:32 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the Maximum limit applicable as yes when maximum dollar limit  field length below 7 characters with 2 decimal points
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1070,7 +1069,8 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:33 To Verify the Source Category Mandatory Validation for Employee Source
+#bug
+Scenario: To verify the Maximum limit applicable as yes when maximum dollar limit  field length above 7 characters with 2 decimal points
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1085,7 +1085,8 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:34 To Verify the Source Category Mandatory Validation for Employee Source
+#bug
+Scenario: To verify the Maximum limit applicable as yes when maximum dollar limit  field length  7 characters with 3 decimal points
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1102,7 +1103,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:35 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the Non pay period allocation applicable? field as yes 
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1118,7 +1119,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:36 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the Non pay period allocation applicable? field as yes and isIncludeDefferals as true
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1136,7 +1137,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:37 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the Non pay period allocation applicable? field as yes  and isIncludeDefferals and isIncludePlanCompensation as yes
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1153,7 +1154,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:38 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the Ongoing allocation conditions in Last day rule field as yes  
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1170,7 +1171,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:39 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the Ongoing allocation conditions Hours requirement field as yes and enter the  hours less than 1000 hours
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1189,7 +1190,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:40 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the Ongoing allocation conditions Hours requirement field as yes and enter the  hours equal 1000 hours
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1208,7 +1209,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:41 To Verify the Source Category Mandatory Validation for Employee Source
+Scenario: To verify the waivers normal retirement , early retirement, Death, Disability  field as yes
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1234,7 +1235,7 @@ Then API should respond with successful message
 
 
 
-Scenario:1 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: To Verify the Source Category Mandatory Validation for Employee Source  108910
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1249,7 +1250,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL175 : Required"
 
-Scenario:2 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario:To Verify the Source Category Mandatory Validation for Employer Source  108911
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1265,7 +1266,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL175 :Required"
 
-Scenario:3 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8301 To verify the validation message for Source sub category by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1281,7 +1282,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL176 :Required"
 
-Scenario:4 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8350 To verify the validation message for Deferral percentage for re-hires? acceptance criteria of values more than 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1297,7 +1298,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL191 :Deferral percentage for rehire should not exceed 100 percentage"
 
-Scenario:5 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8455 To verify theEnhanced sh match percentage Field by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1315,8 +1316,32 @@ When Configuration has been made as per following
   | limitMinimumPercentage    |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL251 :Required"
+#Restrict in UI but not restrict in API and its accept the firstTierMatchPercent as 101 and not throwing the error in back end
 
-Scenario:6 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8481 To verify the Tier#1 Match Percent field acceptance criteria of value above 100
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+
+  And Configuration has been made as per following
+  | key                                | value |
+  | sourceType                         |     2 |
+  | sourceCategory                     |     5 |
+  | isSafeHarbourMatch                 | false |
+  | employercontributionType           |     3 |
+  | firstTierMatchPercent              |   101 |
+  | firstTierCompensationMatchPercent  |    78 |
+  | secondTierMatchPercent             |    76 |
+  | secondTierCompensationMatchPercent |    78 |
+  | thirdTierMatchPercent              |    76 |
+  | thirdTierCompensationMatchPercent  |    78 |
+  | limitMaximumPercentage             |   100 |
+  | limitMinimumPercentage             |    20 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as ""
+
+Scenario: 8484 To verify the Tier#1 Percentage of compensation matched field acceptance criteria of value above 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1339,7 +1364,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as ""
 
-Scenario:7 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8487 To verify the Tier#2 Match Percent field acceptance criteria of value above 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1362,7 +1387,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as ""
 
-Scenario:8 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8490 To verify the Tier#2 Percentage of compensation matched field acceptance criteria of value above 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1385,7 +1410,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as ""
 
-Scenario:9 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8493 To verify the Tier#3 Match Percent field acceptance criteria of value above 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1408,7 +1433,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as ""
 
-Scenario:10 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8496 To verify the Tier#3 Percentage of compensation matched field acceptance criteria of value above 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1431,7 +1456,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as ""
 
-Scenario:11 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8434 To verify the validation message for Percentage of compensation acceptance criteria of values more than 100 percentage 
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1447,7 +1472,12 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL244 :When percentage compensation is greater than 100"
 
-Scenario:12 To Verify the Source Category Mandatory Validation for Employee Source with error message
+## Need to write Backend Validation
+
+#Restrict in UI but not restrict in API and its accept the enhancedshMatchPercentage as 101 and not throwing the error in back end
+
+
+Scenario: 8452 To verify the validation message forEnhanced sh match percentage acceptance criteria of values more than 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1464,13 +1494,18 @@ When Configuration has been made as per following
   | limitMaximumPercentage    |   100 |
   | limitMinimumPercentage    |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL396 :Required"
+##ignore Then enhancedshMatchPercentage accept 101
 
-Scenario:13 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Then API should give response as "PL396 :Required"
+#Restrict in UI but not restrict in API and its accept the percentageOfCalculation as 101 and not throwing the error in back end
+
+
+Scenario: 8475 To verify the Match Percent field acceptance criteria of value above 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
+##ignore Then percentageOfCalculation accept 101
 
   And Configuration has been made as per following
   | key                      | value |
@@ -1484,7 +1519,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as ""
 
-Scenario:14 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8674 To verify the Percentage of compensation matched field acceptance criteria of value above 100
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1501,8 +1536,9 @@ When Configuration has been made as per following
   | limitMinimumPercentage   |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL244 :When percentage compensation is greater than 100  "
+#Error code changed
 
-Scenario:15 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8437 To verify the Percentage of compensation Field as empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1517,8 +1553,9 @@ When Configuration has been made as per following
   | limitMinimumPercentage   |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL395 :Required"
+#Restrict in UI but not restrict in API and its accept the uptoPercentageOfDeferral as 101 and not throwing the error in back end
 
-Scenario:16 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8461 To verify the validation message for Up to percentage of deferral acceptance criteria of values more than 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1537,7 +1574,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as ""
 
-Scenario:17 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: 8464 To verify the Up to percentage of deferral percentage Field by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1556,7 +1593,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL255 :Required"
 
-Scenario:18 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: To verify the Maximum limit applicable as yes when maximum dollar limit  field by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1573,7 +1610,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL1118 :Required"
 
-Scenario:19 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: To verify the Ongoing allocation conditions in Last day rule and Hours requirement field as yes  
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1592,7 +1629,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL1190 :Required"
 
-Scenario:20 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: To verify the Ongoing allocation conditions Hours requirement field as yes and enter the  hours more than 1000 hours
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1611,7 +1648,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL1174 :Hours should not be greater than 1000"
 
-Scenario:21 To Verify the Source Category Mandatory Validation for Employee Source with error message
+Scenario: To verify the Last day rule applicable field as yes 
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
@@ -1626,6 +1663,10 @@ When Configuration has been made as per following
   | limitMinimumPercentage  |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL1008 :Required"
+
+
+
+
 
 
 

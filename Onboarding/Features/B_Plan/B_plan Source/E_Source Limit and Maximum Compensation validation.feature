@@ -273,7 +273,7 @@ When Configuration has been made as per following
            | sourceName         | random 10 alphaNumerics |
            | contributionType   |                       2 |
            | limitMinimumDollar |                         |
-           | limitMaximumDollar |                     100 |
+           | limitMaximumDollar |                     800 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL998 : Required"
 
@@ -301,10 +301,9 @@ When Configuration has been made as per following
            | key                    | value                   |
            | sourceName             | random 10 alphaNumerics |
            | contributionType       |                       2 |
-           | limitMinimumDollar     |                     600 |
-           | limitMaximumDollar     |                         |
-           | limitMinimumPercentage |                      60 |
-           | limitMaximumPercentage |                     100 |
+           | limitMinimumPercentage     |                     600 |
+           | limitMaximumPercentage     |                         |
+           
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL1004 : Required"
@@ -887,13 +886,29 @@ When Configuration has been made as per following
            | sourceName           | random 10 alphaNumerics |
            | contributionType     |                       3 |
            | isHCEManatory        | true                    |
+           | hceMinimumAmount |                      20 |
+           | hceMaximumAmount |                      20 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+ Then API should give response as "PL1015 : Maximum limit amount should not be equal or lesser than minimum limit"
+
+Scenario: To verify the HCE Deferral limts field as Yes when hce Minimum Percentage field  equal to hce Maximum Percentage in both
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When Configuration has been made as per following
+           | key                  | value                   |
+           | sourceName           | random 10 alphaNumerics |
+           | contributionType     |                       3 |
+           | isHCEManatory        | true                    |
            | hceMinimumPercentage |                      20 |
            | hceMaximumPercentage |                      20 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
  Then API should give response as "PL1015 : Maximum limit amount should not be equal or lesser than minimum limit"
-
-  Scenario:To verify the HCE Deferral limts field as Yes when hce  Percentage field  as length 3 characters
+ 
+ Scenario:To verify the HCE Deferral limts field as Yes when hce  Percentage field  as length 3 characters
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |

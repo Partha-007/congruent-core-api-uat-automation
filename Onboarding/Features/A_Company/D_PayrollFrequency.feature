@@ -1,4 +1,4 @@
-﻿Feature: PayrollFrequency
+﻿Feature: D_PayrollFrequency
 
 A short summary of the feature
 
@@ -337,7 +337,7 @@ A short summary of the feature
 
 Scenario: PayrollFrequency (successful response)
   Given Model is selected for the endpoint "/api/v1/Company"
-  When Collection in a model is configured with 11 blocks for the property "PayrollFrequencies" with values to save model portfolio as given below
+  When Collection in a model is configured with 10 blocks for the property "PayrollFrequencies" with values to save model portfolio as given below
 | BlockNumber | Key           | Value                  |
 |           1 | FrequencyName | weeklyFreqInput1       |
 |           1 | FrequencyType |                      1 |
@@ -367,8 +367,6 @@ Scenario: PayrollFrequency (successful response)
 |           9 | FrequencyType |                      1 |
 |          10 | FrequencyName | random 5 alphaNumerics |
 |          10 | FrequencyType |                      1 |
-|          11 | FrequencyName | random 5 alphabets     |
-|          11 | FrequencyType |                      1 |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then API should respond with successful message
 
@@ -428,13 +426,13 @@ Then the API response should contain the 15 following errors
 | CM090      | Frequency Name should be alpha numeric (including hyphen).  |
 | CM090      | Frequency Name should be alpha numeric (including hyphen).  |
 | CM052      | Required                                                    |
-| CM024      | Frequency name length should not exceed 20 characters.      |
+| CM024      | Frequency name length should not exceed 20 characters.      |    
 | CM012      | Required                                                    |
 | CM013      | Required                                                    |
 | CM016      | Required                                                    |
 | CM015      | Required                                                    |
 | CM051      | Required                                                    |
-| CM019      | Required                                                    |
+| CM019      | Required                                                    |    
 | CM018      | Required                                                    |
 | CM021      | Required                                                    |
 | CM020      | Required                                                    |

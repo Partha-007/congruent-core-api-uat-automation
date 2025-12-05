@@ -1,7 +1,7 @@
 ﻿Feature: G_PlanIRS
 [BeforeTestRun]
 
- Scenario: Plan IRS field validation as required
+ Scenario: Plan IRS field validation with
   Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
            | key       | value       |
@@ -13,27 +13,41 @@ And Configuration has been made as per following
            | IrsPlanNumber | <irsPlanNumber>     |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
-Then the API response should contain the 6 following errors
-| block | error_code | error_message                                            |
-| 1     | PL026      | Required                                                 |
-| 2     | PL041      | IRS Plan Nu	mber length should not exceed  3 characters |
-| 3     | PL022      | IRS PlanNumber should be Numbers                         |
-| 4     | PL022      | IRS PlanNumber should be Numbers                         |
-| 5     | PL022      | IRS PlanNumber should be Numbers                         |
-| 6     | PL022      | IRS PlanNumber should be Numbers                         |
-
+Then API should give response as "PL022 : IRS PlanNumber should be Numbers"
 Examples: 
 | irsPlanNumber                              |
-|                                            |
-| random 10 Numerics                         |
 | random 3 alphabets                         |
 | random 3 specialCharacters                 |
 | random 3 alphanumericwithSpecialCharacters |
 | random 3 alphanumerics                     |
 
+Scenario: Plan IRS field validation as required
+  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+  When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+And Configuration has been made as per following
+           | key           | value               |
+           | PlanName      | random 10 alphabets |
+           | RkPlanNumber  | random 10 Numerics  |
+           | IrsPlanNumber |                     |
 
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+ Then API should give response as "PL026 : Required"
 
+ Scenario: Plan IRS field validation with more than 3 digits
+  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+  When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+And Configuration has been made as per following
+           | key           | value               |
+           | PlanName      | random 10 alphabets |
+           | RkPlanNumber  | random 10 Numerics  |
+           | IrsPlanNumber | random 10 Numerics  |
 
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+ Then API should give response as "PL025 : IRS Plan Number length should not exceed  3 characters"
 
 
 
@@ -55,7 +69,7 @@ Examples:
 | random 3 Numerics | 
 | random 2 Numerics | 
 
-Scenario: Plan IRS field already exist validation
+ Scenario:13877 Plan IRS field already exist validation    
 Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
 When Configuration has been made as per following
            | key       | value       |

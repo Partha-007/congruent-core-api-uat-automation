@@ -18,8 +18,8 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 Then the API response should contain the 3 following errors
 | block | error_code | error_message                                 |
 | 1     | PL039      | Valid Phone Number (XXX-XXX-XXXX) is required |  
-| 2     | PL039      | Valid Phone Number (XXX-XXX-XXXX) is required |
-| 3     | PL039      | Valid Phone Number (XXX-XXX-XXXX) is required |
+| 2     | PL039      | Valid Phone Number (XXX-XXX-XXXX) is required |  
+| 3     | PL039      | Valid Phone Number (XXX-XXX-XXXX) is required |  
 Examples: 
 | MobilePhoneNumber  |
 | 123-4567-7890      |

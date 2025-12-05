@@ -1,8 +1,7 @@
 ﻿Feature: D_Source Effective Start Date Validation
 [BeforeTestRun]
     
-Scenario: To verify the validation message for Effective start date by leaving empty 
-Given Model is selected for the endpoint "/api/Source/SaveSource"
+Scenario: To verify the Effective start date acceptance criteria of format "mm/dd/yyyy"Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
@@ -13,7 +12,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario: To verify the Effective start date acceptance criteria of format "mm/dd/yyyy"
+Scenario: To verify the validation message for Effective start date by leaving empty 
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |

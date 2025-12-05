@@ -1,6 +1,7 @@
 using ClassLibrary.Shared.TestDataGenerator;
 using CucumberExpressions.Ast;
 using MyNamespace;
+using Newtonsoft.Json.Linq;
 using RefitSandBox;
 using Reqnroll;
 using System;
@@ -108,6 +109,30 @@ namespace SharedStepDefinitions
 
                     Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
                     Value = Regex.Replace(Regex.Replace(GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue), @"[^\w\s]", " "), @"\s+", " ").Trim();
+                }
+                if (Value.Contains(","))
+                {
+                    var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    var newArray = new JArray();
+
+                    foreach (var part in parts)
+                    {
+                        var trimmed = part.Trim();
+
+                        // Try to parse into number (int/float), fallback to string
+                        if (int.TryParse(trimmed, out int intVal))
+                        {
+                            newArray.Add(intVal);
+                        }
+                        else if (double.TryParse(trimmed, out double doubleVal))
+                        {
+                            newArray.Add(doubleVal);
+                        }
+                        else
+                        {
+                            newArray.Add(trimmed);
+                        }
+                    }
                 }
                 //if (property.PropertyType == typeof(DateTimeOffset?))
                 //{

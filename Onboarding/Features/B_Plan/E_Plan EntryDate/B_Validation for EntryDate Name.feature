@@ -1,5 +1,4 @@
 ﻿Feature: B_Validation for EntryDate Name
-
 [BeforeTestRun]
 
 Scenario: Entry date Name field validation
