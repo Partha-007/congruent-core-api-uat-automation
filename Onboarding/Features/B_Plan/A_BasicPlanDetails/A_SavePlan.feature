@@ -248,7 +248,8 @@ Then API should respond with successful message
            | key          | value                   |
            | PlanName     | random 10 alphaNumerics |
            | RkPlanNumber | random 10 alphabets     |
-And the property "taxEIN" is configured with "2" and "7" random generated "Numerics"
+           | taxEIN       |               121234567 |
+#And the property "taxEIN" is configured with "2" and "7" random generated "Numerics"
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
 Then API should respond with successful message
 
@@ -262,7 +263,8 @@ Then API should respond with successful message
            | key          | value                   |
            | PlanName     | random 10 alphaNumerics |
            | RkPlanNumber | random 10 alphabets     |
-And the property "taxEIN" is configured with "<length1>" and "<length2>" random generated "<pattern>"
+           | taxEIN       | <tax>                   |
+#And the property "taxEIN" is configured with "<length1>" and "<length2>" random generated "<pattern>"
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
 Then the API response should contain the 6 following errors
 | block | error_code | error_message                                  |
@@ -275,12 +277,12 @@ Then the API response should contain the 6 following errors
 
 
 Examples:
-| length1 | length2 | pattern                           |
-|       2 |       7 | SpecialCharacters                 |
-|       2 |       7 | AlphaNumerics                     |
-|       2 |       7 | Alphabets                         |
-|       2 |       7 | AlphaNumericWithSpecialCharacters |
-|       2 |       6 | Numerics                          |
-|       2 |       8 | Numerics                          |
+| tax        |
+| 12@#$^&*() |
+| abc123456  |
+| asdfghjkl  |
+| abc123!@#  |
+|     123412 |
+| 1231232345 |
 
 

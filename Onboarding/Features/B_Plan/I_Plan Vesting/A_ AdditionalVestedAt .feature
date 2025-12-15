@@ -20,7 +20,7 @@ Scenario: Additional VestedAt field configure with Death
            | sixthYear                    |                 100 |
  And Collection in a model is configured with 5 blocks for the property "AdditionalVestings" with values to save model portfolio as given below
  | BlockNumber | Key                       | Value                       |
- |           1 | VestedAt                  | 1,                          | Scenario: Additional VestedAt field configure with Death
+ |           1 | VestedAt                  | 1,                          | 
  |           1 | VestingDescription        | random 10 alphabets         | Scenario: Additional Vesting description field configure with alphabets
  |           1 | VestingName               | abcdef                      |
  |           1 | ImmediateVestingIndicator | false                       |
@@ -75,7 +75,7 @@ When Configuration has been made as per following
            | sixthYear                    |   100 |
 And Collection in a model is configured with 1 blocks for the property "AdditionalVestings" with values to save model portfolio as given below
            | BlockNumber | Key                       | Value |
-           |           1 | VestingName               | abcde | Scenario: Additional VestedAt field configure with null
+           |           1 | VestingName               | abcde | 
            |           1 | ImmediateVestingIndicator | false |
            |           1 | VestedAt                  | 1,    |
            |           1 | VestingMethod             |     2 |
@@ -640,7 +640,6 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 	| PL650      | Hours cannot be more than 4392 | Scenario: Vesting method field Equivalency configure more than 4392 for semiannually
 	| PL652      | Hours cannot be more than 8760 | Scenario: Vesting method field Equivalency configure more than 8760 for annually
 	| PL563      | Required                       | Scenario: VestingServiceCreditPeriod is configured with null when set as equivalency
-
 
 
 
