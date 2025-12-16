@@ -117,8 +117,79 @@ Then Available balance for the employee to avail loan should be 38000
 
 
 
-@PlanActivation
+@PlanActivationWithoutInvestmentAndEnrollment
 Scenario: 59905 : To verify the Calculation Avilable Balance for loan valuefiled in Loan request page
+
+Given Investment "SEAS001" has been mapped to the plan
+
+And Investment "SEAS002" has been mapped to the plan
+
+Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
+
+When Configuration has been made as per following
+| key                                     | value |
+| enrollmentId                            |     0 |
+| sameInvestmentElectionToAllParticipants | true  |
+| investmentElectionBasedOn               |       |
+| subjecttoAutoEnrollment                 | true  |
+| usePlanDefaultDeferralElection          | true  |
+| usePlanDefaultInvestmentElection        | true  |
+| numberOfDaysWindowIsOpenNumber          |    10 |
+| numberOfDaysWindowIsOpen                |     3 |
+| numberOfDaysWindowIsOpenForOptoutNumber |    10 |
+| numberOfDaysWindowIsOpenForOptout       |     1 |
+| isAutoReEnroll                          | false |
+| exclusionType                           |     0 |
+| sameInvestmentElectionToAllSources      | true  |
+| sendEnrollmentInvite                    |     1 |
+| deferralContributionRateUponRehire      |     2 |
+
+
+When Collection in a model is configured with 2 blocks for the property "AutoEnrollmentDeferralSources" with values as given below
+| BlockNumber | Key                      | Value            |
+|           1 | SourceId                 | <PretaxSourceID> |
+|           1 | DeferralSourceName       | EEPretax         |
+|           1 | DeferralSourcePercentage |               30 |
+|           2 | SourceId                 | <RothSourceID>   |
+|           2 | DeferralSourceName       | EERoth           |
+|           2 | DeferralSourcePercentage |               30 |
+
+When Collection in a model is configured with 2 blocks for the property "DeferralSourceContribution" with values as given below
+| BlockNumber | Key              | Value            |
+|           1 | SourceId         | <PretaxSourceID> |
+|           1 | SourceName       | EEPretax         |
+|           1 | ContributionRate |            20.00 |
+|           2 | SourceId         | <RothSourceID>   |
+|           2 | SourceName       | EERoth           |
+|           2 | ContributionRate |            30.00 |
+
+When Collection in a model is configured with 2 blocks for the property "PlanInvestment" with values as given below
+| BlockNumber | Key                       | Value     |
+|           1 | InvestmentId              | <SEAS001> |
+|           1 | InvestmentName            | SEAS001   |
+|           1 | InvestmentPercentage      |     70.00 |
+|           1 | DefaultElectionSettingsId |         0 |
+|           2 | InvestmentId              | <SEAS002> |
+|           2 | InvestmentName            | SEAS002   |
+|           2 | InvestmentPercentage      |     30.00 |
+|           2 | DefaultElectionSettingsId |         0 |
+
+When Collection in a model is configured with 2 blocks for the property "InvestmentElectionValuesList" with values as given below
+| BlockNumber | Key                  | Value     |
+|           1 | InvestmentId         | <SEAS001> |
+|           1 | InvestmentName       | SEAS001   |
+|           1 | InvestmentPercentage |     70.00 |
+|           2 | InvestmentId         | <SEAS002> |
+|           2 | InvestmentName       | SEAS002   |
+|           2 | InvestmentPercentage |     30.00 |
+
+When Collection in a model is configured with 1 blocks for the property "InvestmentElectionBasedOnList" with values as given below
+| BlockNumber | Key                  | Value            |
+|           1 | AutoEnrollmentId     |                0 |
+|           1 | InvestmentBasedOn    |                  |
+
+When API request has been sent to the "IPlanDetailsSave" with the method name "SaveEnrollmentSettings"
+
 Given Model is selected for the endpoint "/api/Loan/SaveLoan"
 
 When Configuration has been made as per following
