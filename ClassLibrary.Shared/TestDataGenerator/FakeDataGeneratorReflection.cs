@@ -154,11 +154,13 @@ namespace RefitSandBox.TestDataGenerator
                     {
                         object randomValueFromEnumList = null;
                         var listOfEnumValues = Enum.GetValues(propertyType);
-                        if(propertyType.Name == "FundingCategory")
-                        {
+
+                        if (propertyType.Name == "FundingCategory")
                             randomValueFromEnumList = listOfEnumValues.GetValue(0);
-                        }
-                        randomValueFromEnumList = listOfEnumValues.GetValue(new Random().Next(listOfEnumValues.Length));
+                        
+                        else
+                            randomValueFromEnumList = listOfEnumValues.GetValue(new Random().Next(listOfEnumValues.Length));
+                        
                         property.SetValue(obj, randomValueFromEnumList);
                     }
                     else

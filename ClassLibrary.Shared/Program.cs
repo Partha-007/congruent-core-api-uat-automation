@@ -83,7 +83,7 @@ namespace RefitSandBox
         public static string planId;
         public static string planName;
         public static string rkPlanNumber;
-        public static string sourceId;
+        public static string sourceId, pretaxRolloverSourceId;
         public static string pretaxsourceName;
         public static string matchSourceId;
         public static string matchSourceName;
@@ -817,6 +817,12 @@ namespace RefitSandBox
                         {
                             await SaveFundingDetailsByPlan(planId, fileId);
                             await Task.Delay(5000);
+                            var fundByFile = await payrollClient.FinalSubmit(fileId, fundingType);
+                            var responseAfterFileSubmission = fundByFile.IsSuccessfull;
+                            if (!responseAfterFileSubmission)
+                            {
+                                throw new Exception("Error in submitting the file");
+                            }
                             var getAwaitingFundsForFile = await payrollClient.GetAwaitingFundingDetailsByPlan(fileId, planId);
                             payrollFundingId = getAwaitingFundsForFile.PayrollFundingId.ToString();
                             await ConfirmFunds(planId, fileId, payrollFundingId);
@@ -2398,6 +2404,7 @@ namespace RefitSandBox
             else if (value == "<RInvestmentId>") return RegularInvestmentId;
             else if (value == "<RInvestmentName>") return "SEAS003";
             else if (value == "<PretaxSourceID>") return sourceId;
+            else if (value == "<PretaxRolloverSourceId>") return pretaxRolloverSourceId;
             else if (value == "<RothSourceID>") return rothSourceId;
             else if (value == "<MatchSourceID>") return matchSourceId;
             else if (value == "<CompanyId>") return Hooks.Hooks.companyId!;
@@ -3044,6 +3051,13 @@ namespace RefitSandBox
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             await program.Configuration("ruleName", "Immediate");
             await program.Configuration("sourceId", null);
+            await program.Configuration("eligibilityRuleFor", "1");
+            await program.Configuration("entryDateRuleType", "");
+            await program.Configuration("entryDateSources", null);
+            await program.Configuration("otherEntryDates", null);
+            await program.Configuration("planYearOtherEntryDates", null);
+            await program.Configuration("entryDateRehireOption", "0");
+
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEntryDate");
         }
@@ -3068,6 +3082,13 @@ namespace RefitSandBox
             await program.Configuration("limitMaximumPercentage", "70");
             await program.Configuration("limitMaximumDollar", "70");
             await program.Configuration("sourceCode", "A");
+            await program.Configuration("employerDiscretionarySource", null);
+            await program.Configuration("employerMatchSource", null);
+            await program.Configuration("employerOtherSource", null);
+            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            await program.Configuration("employerSourceExclusion", null);
+
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
@@ -3075,7 +3096,7 @@ namespace RefitSandBox
             pretaxsourceName = sourceSave["source"]["sourceName"].ToString();
         }
 
-        public static async Task<string> SavePretaxRollOverSource(string bearer, string planId)
+        /*public static async Task<string> SavePretaxRollOverSource(string bearer, string planId)
         {
             var program = new Program();
             var sourceModel = new SourceViewModel();
@@ -3098,8 +3119,8 @@ namespace RefitSandBox
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
-            sourceId = sourceSave["source"]["id"].ToString();
-            return sourceId;
+            pretaxRolloverSourceId = sourceSave["source"]["id"].ToString();
+            return pretaxRolloverSourceId;
         }
 
         public static async Task SaveMatchSource(string bearer, string planId)
@@ -3126,7 +3147,7 @@ namespace RefitSandBox
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
             matchSourceId = sourceSave["source"]["id"].ToString();
             matchSourceName = sourceSave["source"]["sourceName"].ToString();
-        }
+        }*/
 
         public static async Task SaveRothSource(string bearer, string planId)
         {
@@ -3148,7 +3169,13 @@ namespace RefitSandBox
             await program.Configuration("limitMaximumPercentage", "70");
             await program.Configuration("limitMaximumDollar", "70");
             await program.Configuration("sourceCode", "Q");
-            await program.Configuration("sourceId", null);
+            await program.Configuration("sourceId", "");
+            await program.Configuration("employerDiscretionarySource", null);
+            await program.Configuration("employerMatchSource", null);
+            await program.Configuration("employerOtherSource", null);
+            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            await program.Configuration("employerSourceExclusion", null);
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
             rothSourceId = sourceSave["source"]["id"].ToString();
@@ -3403,6 +3430,7 @@ namespace RefitSandBox
             await program.Configuration("classificationIds", null);
             await program.Configuration("fundingId", fundingId);
             await program.Configuration("1id", fundingId);
+            await program.Configuration("sponsorFeePaymentMethod", "1");
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var fundingSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveFunding");
             fundingBankId = fundingSave["funding"]["sponsorFundingAccounts"][0]["id"].ToString();
@@ -3475,6 +3503,8 @@ namespace RefitSandBox
             await program.Configuration("planId", planId);
             await program.Configuration("amount", totalAmount.ToString());
             await program.Configuration("payrollFundingId", payrollFundingId);
+            await program.Configuration("nodConfirmationNumber", "");
+            await program.Configuration("payDate", "");
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
             var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
