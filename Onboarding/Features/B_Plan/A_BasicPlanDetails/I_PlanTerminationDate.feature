@@ -14,8 +14,6 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 
 
 
-
-Scenario: PLan short year start date field validate error message  
   Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
            | key       | value       |
