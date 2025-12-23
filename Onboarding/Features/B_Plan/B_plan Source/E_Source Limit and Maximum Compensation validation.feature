@@ -18,7 +18,7 @@ When Configuration has been made as per following
            | limitMaximumPercentage |                             |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 
-Then the API response should contain the 6 following errors
+Then the API response should contain the 4 following errors
  | error_code | error_message                      |
  | PL995      | Required                           |
  | PL182      | Required                           | Scenario: To verify the validation message for Effective start date by leaving empty
@@ -140,11 +140,11 @@ When Configuration has been made as per following
            | companyId | <CompanyId> |
 When Configuration has been made as per following
            | key                    | value              |
-           | sourceName             | random 10 numerics |Scenario: 8307 To verify the Source name data type acceptance of only numeric
+           | sourceName             | random 10 numerics | Scenario: 8307 To verify the Source name data type acceptance of only numeric
            | contributionType       |                  1 |
            | limitMinimumPercentage |                 60 |
            | limitMaximumPercentage |                 80 |
-            | recordKeepingNumber    | random 10 numerics      |Scenario: To verify the Source ID  data type acceptance of only numeric
+           | recordKeepingNumber    | random 10 numerics | Scenario: To verify the Source ID  data type acceptance of only numeric
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
@@ -177,7 +177,7 @@ When Configuration has been made as per following
            | limitMinimumPercentage |                                          50 |
            | limitMaximumPercentage |                                          50 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then the API response should contain the 6 following errors
+Then the API response should contain the 2 following errors
  | error_code | error_message                                                         |
  | PL398      | Maximum limit amount should not be equal or lesser than minimum limit |
  | PL400      | Source name should be alphanumeric                                    |Scenario: 8310 To verify the Source name data type acceptance of only alphanumeric with Special Characters
@@ -246,7 +246,7 @@ When Configuration has been made as per following
            | limitMaximumPercentage        |                      30 |
            | maximumPercentageCompensation |                     101 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then the API response should contain the 6 following errors
+Then the API response should contain the 2 following errors
  | error_code | error_message                                                |
  | PL189      | Maximum limit compensation  should not exceed 100 percentage |
  | PL180      | Source name should not exceed 50 characters                  | Scenario: 8313 To verify the Source name field length acceptance of above 50 characters
@@ -267,7 +267,7 @@ When Configuration has been made as per following
            | limitMaximumDollar        |                       30 |
            | maximumDollarCompensation |                          |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then the API response should contain the 6 following errors
+Then the API response should contain the 4 following errors
  | error_code | error_message                                                  |
  | PL1020     | Required                                                       |
  | PL998      | Required                                                       |
@@ -453,7 +453,7 @@ When Configuration has been made as per following
            | maximumDollarCompensation     |                      80 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 6 following errors 
 	| error_code | error_message |
 	| PL995      | Required      |
 	| PL1001     | Required      | Scenario:  To verify when user leave the limit (maximum) field as Blank in the percentage Both option
@@ -1671,10 +1671,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
-           | sourceType           |                       1 |
-           | sourceCategory       |                       2 |
-           | sourceSubCategory    |                       4 |
-           | sourceSubSubCategory |                       1 |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       3 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                         |
@@ -1692,10 +1692,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
-           | sourceType           |                       1 |
-           | sourceCategory       |                       2 |
-           | sourceSubCategory    |                       4 |
-           | sourceSubSubCategory |                       1 |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       3 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      10 |
@@ -1754,5 +1754,35 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 Then API should give response as "PL1000 : Required"
 
 
+Scenario: To verify the Save of the Roth Conversion Source Type with error message 
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When the property "SourceName" is configured as "RothConversion" 
+And the property "SourceType" is configured as "1" 
+And the property "SourceCategory" is configured as "2" 
+And the property "SourceSubCategory" is configured as "5" 
+And the property "SourceSubSubCategory" is configured as "3" 
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+When the property "SourceName" is configured as "Roth" 
+And the property "SourceType" is configured as "1" 
+And the property "SourceCode" is configured as "Z" 
+And the property "SourceCategory" is configured as "2" 
+And the property "SourceSubCategory" is configured as "5" 
+And the property "SourceSubSubCategory" is configured as "3" 
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL949 : Only one In-Plan Roth Conversion source is allowed per plan"
 
-
+ Scenario: To verify the Save of the Roth Conversion Source Type 
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When the property "SourceName" is configured as "RothConversion" 
+And the property "SourceType" is configured as "1" 
+And the property "SourceCategory" is configured as "2" 
+And the property "SourceSubCategory" is configured as "5" 
+And the property "SourceSubSubCategory" is configured as "3" 
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message

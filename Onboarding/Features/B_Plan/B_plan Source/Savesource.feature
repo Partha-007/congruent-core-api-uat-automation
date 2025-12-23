@@ -851,7 +851,7 @@ When Configuration has been made as per following
   | limitMinimumPercentage |    20 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL175 :Required"
+Then API should give response as "PL176 : Required"
 
 Scenario: 8301 To verify the validation message for Source sub category by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -863,11 +863,11 @@ When Configuration has been made as per following
   | key                    | value |
   | sourceType             |     1 |
   | sourceCategory         |     1 |
-  | SourceSubCategory      |       |
+  | sourceSubCategory      |       |
   | limitMaximumPercentage |   100 |
   | limitMinimumPercentage |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL176 :Required"
+Then API should give response as "PL176 : Required"
 
 Scenario: 8350 To verify the validation message for Deferral percentage for re-hires? acceptance criteria of values more than 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -883,7 +883,7 @@ When Configuration has been made as per following
   | limitMaximumPercentage   |   100 |
   | limitMinimumPercentage   |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL191 :Deferral percentage for rehire should not exceed 100 percentage"
+Then API should give response as "PL191 : Deferral percentage for rehire should not exceed 100 percentage"
 
 Scenario: 8455 To verify theEnhanced sh match percentage Field by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -902,7 +902,7 @@ When Configuration has been made as per following
   | limitMaximumPercentage    |   100 |
   | limitMinimumPercentage    |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL251 :Required"
+Then API should give response as "PL251 : Required"
 #Restrict in UI but not restrict in API and its accept the firstTierMatchPercent as 101 and not throwing the error in back end
 
 Scenario: 8481 To verify the Tier#1 Match Percent field acceptance criteria of value above 100
@@ -1057,7 +1057,7 @@ When Configuration has been made as per following
   | limitMaximumPercentage   |    100 |
   | limitMinimumPercentage   |     20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL244 :When percentage compensation is greater than 100"
+Then API should give response as "PL244 : When percentage compensation is greater than 100"
 
 ## Need to write Backend Validation
 
@@ -1083,7 +1083,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 ##ignore Then enhancedshMatchPercentage accept 101
 
-Then API should give response as "PL396 :Required"
+Then API should give response as "PL396 : Required"
 #Restrict in UI but not restrict in API and its accept the percentageOfCalculation as 101 and not throwing the error in back end
 
 
@@ -1122,7 +1122,7 @@ When Configuration has been made as per following
   | limitMaximumPercentage   |   100 |
   | limitMinimumPercentage   |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL244 :When percentage compensation is greater than 100  "
+Then API should give response as "PL244 : When percentage compensation is greater than 100  "
 #Error code changed
 
 Scenario: 8437 To verify the Percentage of compensation Field as empty
@@ -1139,7 +1139,7 @@ When Configuration has been made as per following
   | limitMaximumPercentage   |   100 |
   | limitMinimumPercentage   |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL395 :Required"
+Then API should give response as "PL395 : Required"
 #Restrict in UI but not restrict in API and its accept the uptoPercentageOfDeferral as 101 and not throwing the error in back end
 
 Scenario: 8461 To verify the validation message for Up to percentage of deferral acceptance criteria of values more than 100 percentage
@@ -1178,7 +1178,7 @@ When Configuration has been made as per following
   | limitMaximumPercentage    |   100 |
   | limitMinimumPercentage    |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL255 :Required"
+Then API should give response as "PL255 : Required"
 
 Scenario: To verify the Maximum limit applicable as yes when maximum dollar limit  field by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -1214,7 +1214,7 @@ When Configuration has been made as per following
   | limitMaximumPercentage   |   100 |
   | limitMinimumPercentage   |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL1190 :Required"
+Then API should give response as "PL1190 : Required"
 
 Scenario: To verify the Ongoing allocation conditions Hours requirement field as yes and enter the  hours more than 1000 hours
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -1249,8 +1249,7 @@ When Configuration has been made as per following
   | limitMaximumPercentage  |   100 |
   | limitMinimumPercentage  |    20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL1008 :Required"
-
+Then API should give response as "PL1008 : Required"
 
 
 
