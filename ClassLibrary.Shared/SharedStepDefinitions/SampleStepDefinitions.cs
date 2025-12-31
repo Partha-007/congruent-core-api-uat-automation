@@ -134,6 +134,8 @@ namespace SharedStepDefinitions
                         }
                     }
                 }
+                if(string.IsNullOrEmpty(Value))
+                    Value = null;
                 //if (property.PropertyType == typeof(DateTimeOffset?))
                 //{
                 //    var convertedValue = DateTimeOffset.Parse(Value.ToString()); // Parsing the string to DateTimeOffset
@@ -224,6 +226,33 @@ namespace SharedStepDefinitions
         public async Task WhenLoanRequestHasBeenApprovedAndTradeForLoanIsExecutedFor(string requestType)
         {
             await _program.LoanApprove(requestType);
+        }
+
+        [When("Loan submission is done for the mentioned applicable sources {string}")]
+        public async Task WhenLoanSubmissionIsDoneForTheMentionedApplicableSources(string sourceNames)
+        {
+            var sourceNamesList = new List<string>();
+            if (sourceNames.Contains(","))
+            {
+                var splitted = sourceNames.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var source in splitted)
+                {
+                    sourceNamesList.Add(source.Trim());
+                }
+            }
+            else
+            {
+                sourceNamesList.Add(sourceNames.Trim());
+            }
+            await _program.SubmitLoanRequest(sourceNamesList);
+
+        }
+
+        [When("Disbursement is done for the transaction {string}")]
+        public async Task WhenDisbursementIsDoneForTheTransaction(string transactionType)
+        {
+            if(transactionType == "Loan")
+                await _program.ProcessLoanDisbursement();
         }
 
 
@@ -355,6 +384,11 @@ namespace SharedStepDefinitions
             await _program.AddInvestmentToPlan(investmentName);
         }
 
+        [Given("Enrollment configuration")]
+        public async Task GivenEnrollmentConfiguration()
+        {
+            await _program.EnrollmentSetup();
+        }
 
 
     }

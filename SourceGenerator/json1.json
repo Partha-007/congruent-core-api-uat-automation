@@ -5,6 +5,78 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/v1/AccountActivation/generate-activation-link": {
+      "post": {
+        "tags": [
+          "AccountActivation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.GenerateActivationLink"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.GenerateActivationLink"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.GenerateActivationLink"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.GenerateActivationLink"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/AccountActivation/resend-activation-link": {
+      "post": {
+        "tags": [
+          "AccountActivation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.GenerateActivationLink"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.GenerateActivationLink"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.GenerateActivationLink"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.GenerateActivationLink"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v1/Accrual": {
       "get": {
         "tags": [
@@ -175,7 +247,7 @@
         }
       }
     },
-    "/api/v1/Accrual/GetAccrualRate/{CUSIP}/{from}/{to}": {
+    "/api/v1/Accrual/GetAccrualRate/{CUSIP}/{from}/{to}/{start}/{offset}": {
       "get": {
         "tags": [
           "Accrual"
@@ -205,6 +277,24 @@
             "schema": {
               "type": "string",
               "format": "date-time"
+            }
+          },
+          {
+            "name": "start",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -3489,6 +3579,18 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/AuthorizeNetWebHook": {
+      "post": {
+        "tags": [
+          "AuthorizeNetWebHook"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -8575,6 +8677,46 @@
         }
       }
     },
+    "/api/Distribution/GetWithdrawalTransactionByWithdrawalTransactionId/{withdrawalTransactionId}": {
+      "get": {
+        "tags": [
+          "Distribution"
+        ],
+        "parameters": [
+          {
+            "name": "withdrawalTransactionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.GetWithdrawalTransactionDetailsByWithdrawalTransactionIdResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.GetWithdrawalTransactionDetailsByWithdrawalTransactionIdResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.GetWithdrawalTransactionDetailsByWithdrawalTransactionIdResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Distribution/GetPeriodicPaymentCalculationDetails/{planId}/{employeeId}/{withdrawalId}": {
       "get": {
         "tags": [
@@ -8707,6 +8849,108 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/Distribution.Controller.ViewModel.ApprovalRejectWithdrawalRequestViewModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Distribution/GetDistributionDisbursementHistory/{Id}": {
+      "get": {
+        "tags": [
+          "Distribution"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.GetDistributionDisbursementHistoryResult"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.GetDistributionDisbursementHistoryResult"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.GetDistributionDisbursementHistoryResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Distribution/ProcessDistributionDisbursement": {
+      "post": {
+        "tags": [
+          "Distribution"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Distribution.Controllers.ViewModel.ProcessDistributionDisbursementViewModel"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Distribution.Controllers.ViewModel.ProcessDistributionDisbursementViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Distribution.Controllers.ViewModel.ProcessDistributionDisbursementViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Distribution.Controllers.ViewModel.ProcessDistributionDisbursementViewModel"
               }
             }
           }
@@ -9449,6 +9693,53 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.GetEmployeeEligiblePlanWithdrawalsByPlanIdResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Distribution/UpdateWithdrawalTransactionStatusById": {
+      "post": {
+        "tags": [
+          "Distribution"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "withdrawalTransactionStatus",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
                 }
               }
             }
@@ -18367,6 +18658,59 @@
         }
       }
     },
+    "/api/v1/InPlanRothConversion/UpdateInplanRothRequestedDate": {
+      "post": {
+        "tags": [
+          "InPlanRothConversion"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InPlanRothConversion.Message.UpdateInplanRothRequestedDateById"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InPlanRothConversion.Message.UpdateInplanRothRequestedDateById"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InPlanRothConversion.Message.UpdateInplanRothRequestedDateById"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InPlanRothConversion.Message.UpdateInplanRothRequestedDateById"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/InPlanRothConversion.Message.UpdateInplanRothRequestedDateResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InPlanRothConversion.Message.UpdateInplanRothRequestedDateResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InPlanRothConversion.Message.UpdateInplanRothRequestedDateResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/Integrations/LFGCompanySave": {
       "post": {
         "tags": [
@@ -20181,6 +20525,45 @@
         }
       }
     },
+    "/api/Invoice/GeneratePaymentLink/{invoiceNumber}": {
+      "get": {
+        "tags": [
+          "Invoice"
+        ],
+        "parameters": [
+          {
+            "name": "invoiceNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.InvoiceManagement.Message.Commands.GeneratePaymentLinkResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.InvoiceManagement.Message.Commands.GeneratePaymentLinkResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.InvoiceManagement.Message.Commands.GeneratePaymentLinkResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/Loan/GetLoanRequestHistoryDetailsById/{transactionReferenceKey}": {
       "get": {
         "tags": [
@@ -21594,6 +21977,108 @@
         }
       }
     },
+    "/api/v1/Loan/GetLoanDisbursementHistory/{Id}": {
+      "get": {
+        "tags": [
+          "Loan"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Loan.Message.GetLoanDisbursementHistoryResult"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Loan.Message.GetLoanDisbursementHistoryResult"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Loan.Message.GetLoanDisbursementHistoryResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Loan/ProcessLoanDisbursement": {
+      "post": {
+        "tags": [
+          "Loan"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Loan.Controller.ViewModel.ProcessLoanDisbursementViewModel"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Loan.Controller.ViewModel.ProcessLoanDisbursementViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Loan.Controller.ViewModel.ProcessLoanDisbursementViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Loan.Controller.ViewModel.ProcessLoanDisbursementViewModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/Loan/ActivateLoan": {
       "post": {
         "tags": [
@@ -22565,6 +23050,52 @@
         }
       }
     },
+    "/api/v1/Loan/UpdateLoanStatusBasedOnTransactionKey": {
+      "post": {
+        "tags": [
+          "Loan"
+        ],
+        "parameters": [
+          {
+            "name": "transactionKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "loanStatus",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/Loan/UpdateRepaymentSchedule": {
       "post": {
         "tags": [
@@ -23272,6 +23803,46 @@
         }
       }
     },
+    "/api/v1/Loan/GetLoanDisbursementSummary/{loanId}": {
+      "get": {
+        "tags": [
+          "Loan"
+        ],
+        "parameters": [
+          {
+            "name": "loanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Loan.Message.GetLoanDisbursementSummaryResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Loan.Message.GetLoanDisbursementSummaryResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Loan.Message.GetLoanDisbursementSummaryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Loan/GetLoanSubType/{planId}": {
       "get": {
         "tags": [
@@ -23393,6 +23964,18 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LobWebhook/webhook": {
+      "post": {
+        "tags": [
+          "LobWebhook"
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -26586,6 +27169,42 @@
         }
       }
     },
+    "/api/PaymentService/CancelPaymentRequest": {
+      "post": {
+        "tags": [
+          "PaymentService"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PaymentService.Message.PaymentRequestCancelCommand"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PaymentService.Message.PaymentRequestCancelCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PaymentService.Message.PaymentRequestCancelCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PaymentService.Message.PaymentRequestCancelCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v1/Payroll/GetUploadedFilesBasedOnSearchCriteria": {
       "post": {
         "tags": [
@@ -29715,6 +30334,53 @@
                   "items": {
                     "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.PayrollSubmissionEvent.LoanRepaymentInformationData"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Payroll/UpdatePayrollFileStatusByFileId": {
+      "post": {
+        "tags": [
+          "Payroll"
+        ],
+        "parameters": [
+          {
+            "name": "FileUploadId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "FileStatus",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
                 }
               }
             }
@@ -34263,17 +34929,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.EmployeeEvent.AddBeneficiaryResult"
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.EmployeeEvent.ValidateBeneficiaryResult"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.EmployeeEvent.AddBeneficiaryResult"
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.EmployeeEvent.ValidateBeneficiaryResult"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.EmployeeEvent.AddBeneficiaryResult"
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.EmployeeEvent.ValidateBeneficiaryResult"
                 }
               }
             }
@@ -35891,6 +36557,99 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Payroll.NachaFileSchedulerResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Payroll/GetFileLockInfo/{fileId}": {
+      "get": {
+        "tags": [
+          "Payroll"
+        ],
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.GetFileLockInformationResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.GetFileLockInformationResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.GetFileLockInformationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Payroll/UpdateFileLockInformation": {
+      "post": {
+        "tags": [
+          "Payroll"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.UpdateFileLockInformationCommand"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.UpdateFileLockInformationCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.UpdateFileLockInformationCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.UpdateFileLockInformationCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.UpdateFileLockInformationResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.UpdateFileLockInformationResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.UpdateFileLockInformationResult"
                 }
               }
             }
@@ -37700,6 +38459,143 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PrintDocument/Print": {
+      "post": {
+        "tags": [
+          "PrintDocument"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Core.Models.PrintDocumentRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Core.Models.PrintDocumentRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Core.Models.PrintDocumentRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Core.Models.PrintDocumentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PrintDocument/Retrieve": {
+      "post": {
+        "tags": [
+          "PrintDocument"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.GetPrintDocumentCommand"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.GetPrintDocumentCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.GetPrintDocumentCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.GetPrintDocumentCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PrintDocument/run-scheduler": {
+      "post": {
+        "tags": [
+          "PrintDocument"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PrintDocument/GetPrintDocumentLog": {
+      "post": {
+        "tags": [
+          "PrintDocument"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -44511,6 +45407,158 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.SubmitQuestionnaireResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/RetirementReadiness/CalculateRetirementProjection/{employeeId}": {
+      "get": {
+        "tags": [
+          "RetirementReadiness"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementProjectionResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementProjectionResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementProjectionResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/RetirementReadiness/GetQuestionnaireResponses/{employeeId}": {
+      "get": {
+        "tags": [
+          "RetirementReadiness"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/RetirementReadiness/GetInvestmentRecommendations/{employeeId}/{planId}": {
+      "get": {
+        "tags": [
+          "RetirementReadiness"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.InvestmentRecommendationsResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.InvestmentRecommendationsResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.InvestmentRecommendationsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/RetirementReadiness/GetRetirementReadinessFormula/{employeeId}": {
+      "get": {
+        "tags": [
+          "RetirementReadiness"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementReadinessFormulaResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementReadinessFormulaResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementReadinessFormulaResponseDto"
                 }
               }
             }
@@ -51563,6 +52611,59 @@
         }
       }
     },
+    "/api/v1/Transaction/GetDisbursementListingDataBySearchCriteria": {
+      "post": {
+        "tags": [
+          "Transaction"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Trade.Message.DisbursementListSearch"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Trade.Message.DisbursementListSearch"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Trade.Message.DisbursementListSearch"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Trade.Message.DisbursementListSearch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Trade.Message.GetDisbursementDataForLoansAndDistributionsResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Trade.Message.GetDisbursementDataForLoansAndDistributionsResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Trade.Message.GetDisbursementDataForLoansAndDistributionsResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/Transaction/DownloadTradeOrderInvestement": {
       "post": {
         "tags": [
@@ -52420,17 +53521,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Congruent.Core.Transfer.Message.RebalanceEvent.SaveRebalanceDetailsResult"
+                  "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Rebalance.SaveRebalanceDetailsResult"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Congruent.Core.Transfer.Message.RebalanceEvent.SaveRebalanceDetailsResult"
+                  "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Rebalance.SaveRebalanceDetailsResult"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Congruent.Core.Transfer.Message.RebalanceEvent.SaveRebalanceDetailsResult"
+                  "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Rebalance.SaveRebalanceDetailsResult"
                 }
               }
             }
@@ -53022,6 +54123,294 @@
         }
       }
     },
+    "/api/v1/UserManagement/IRAParticipantUserRegistration": {
+      "post": {
+        "tags": [
+          "UserManagement"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.IRAParticipantUserRegistrationModel"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.IRAParticipantUserRegistrationModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.IRAParticipantUserRegistrationModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.IRAParticipantUserRegistrationModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/UserManagement/GetUserDetailsAndRole": {
+      "post": {
+        "tags": [
+          "UserManagement"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UserDetailsSearchFilter"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UserDetailsSearchFilter"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UserDetailsSearchFilter"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UserDetailsSearchFilter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/UserManagement/GetUserDetailsById/{UserId}": {
+      "get": {
+        "tags": [
+          "UserManagement"
+        ],
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/UserManagement/UserProfileImageUpload": {
+      "post": {
+        "tags": [
+          "UserManagement"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/UserManagement/UploadUserProfile": {
+      "post": {
+        "tags": [
+          "UserManagement"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UserProfileImageModel"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UserProfileImageModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UserProfileImageModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UserProfileImageModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/UserManagement/GetUserPlanList": {
+      "post": {
+        "tags": [
+          "UserManagement"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.PlanFilterViewModal"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.PlanFilterViewModal"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.PlanFilterViewModal"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.PlanFilterViewModal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.GetPlanListWithAppliedFilterResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.GetPlanListWithAppliedFilterResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.GetPlanListWithAppliedFilterResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/UserManagement/GetAddedPlansForUserManagement": {
+      "post": {
+        "tags": [
+          "UserManagement"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.RecordsToFetch"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.RecordsToFetch"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.RecordsToFetch"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.RecordsToFetch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.GetAddedPlansListResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.GetAddedPlansListResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.GetAddedPlansListResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/UserManagement/UpdateEmailId/{EmailId}": {
+      "get": {
+        "tags": [
+          "UserManagement"
+        ],
+        "parameters": [
+          {
+            "name": "EmailId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/UserRegistration/GetRoles": {
       "get": {
         "tags": [
@@ -53261,6 +54650,261 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/Congruent.Core.Web.Controllers.UserRegistrationController+InputModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/UserRegistration/GetHomePage": {
+      "get": {
+        "tags": [
+          "UserRegistration"
+        ],
+        "parameters": [
+          {
+            "name": "UserRole",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "TenantId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/UserRegistration/RegisterUser": {
+      "post": {
+        "tags": [
+          "UserRegistration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Events.Shared.UserManagement.RegisterUserCommand"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Events.Shared.UserManagement.RegisterUserCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Events.Shared.UserManagement.RegisterUserCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Events.Shared.UserManagement.RegisterUserCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/UserRegistration/UpdateUser": {
+      "post": {
+        "tags": [
+          "UserRegistration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UpdateUserModelCommand"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UpdateUserModelCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UpdateUserModelCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UpdateUserModelCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/UserRegistration/UpdateStatusAspNetUsers": {
+      "post": {
+        "tags": [
+          "UserRegistration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UpdateUserStatusCommand"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UpdateUserStatusCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UpdateUserStatusCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.UpdateUserStatusCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/UserRegistration/MailForRegistrationOfParticipants": {
+      "post": {
+        "tags": [
+          "UserRegistration"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/UserRegistration/forgot-password-link": {
+      "post": {
+        "tags": [
+          "UserRegistration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.ForgotPasswordLink"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.ForgotPasswordLink"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.ForgotPasswordLink"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.UserManagement.Controller.ViewModel.ForgotPasswordLink"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/UserRegistration/update-password": {
+      "post": {
+        "tags": [
+          "UserRegistration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Helpers.UserManagement.UpdatePasswordCommand"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Helpers.UserManagement.UpdatePasswordCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Helpers.UserManagement.UpdatePasswordCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Helpers.UserManagement.UpdatePasswordCommand"
               }
             }
           }
@@ -58060,6 +59704,16 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "fromTime": {
+            "type": "string",
+            "format": "time",
+            "nullable": true
+          },
+          "toTime": {
+            "type": "string",
+            "format": "time",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -58372,6 +60026,13 @@
               "$ref": "#/components/schemas/Congruent.Core.Communication.Message.CommunicationAttachment"
             },
             "nullable": true
+          },
+          "excludedPlans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Communication.Message.ExcludedPlan"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -58652,6 +60313,24 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Communication.Message.ExcludedPlan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "communicationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -59070,6 +60749,45 @@
         "type": "integer",
         "format": "int32"
       },
+      "Congruent.Core.Distribution.Controllers.ViewModel.ProcessDistributionDisbursementViewModel": {
+        "type": "object",
+        "properties": {
+          "withdrawalTransactionStatus": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "withdrawalTransactionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cheque": {
+            "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.ChequeDetailsForDisbursement"
+          },
+          "eft": {
+            "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.EftDetailsForDisbursement"
+          },
+          "paymentMethod": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "isReInitiate": {
+            "type": "boolean"
+          },
+          "isDisbursed": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Distribution.Controllers.ViewModel.TransactionSearchViewModel": {
         "type": "object",
         "properties": {
@@ -59135,13 +60853,11 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32",
-            "readOnly": true
+            "format": "int32"
           },
           "employeeId": {
             "type": "integer",
-            "format": "int32",
-            "readOnly": true
+            "format": "int32"
           },
           "checkPayableTo": {
             "type": "string",
@@ -59149,13 +60865,11 @@
           },
           "address1": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "address2": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "address3": {
             "type": "string",
@@ -59164,85 +60878,69 @@
           },
           "primaryEmailAddress": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "alternativeEmailAddress": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "city": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "country": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "state": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "countryId": {
             "type": "integer",
             "format": "int32",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "stateId": {
             "type": "integer",
             "format": "int32",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "zipCode": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "foreignCountry": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "foreignState": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "foreignZipCode": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "phoneNumber": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "extensionNumber": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "alternativePhoneNumber": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "mobileNumber": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "addressType": {
             "type": "integer",
-            "format": "int32",
-            "readOnly": true
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -59328,38 +61026,31 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32",
-            "readOnly": true
+            "format": "int32"
           },
           "employeeId": {
             "type": "integer",
-            "format": "int32",
-            "readOnly": true
+            "format": "int32"
           },
           "nameOfTheFinancialInstitution": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "accountHolderName": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           },
           "typeOfAccount": {
             "type": "integer",
-            "format": "int32",
-            "readOnly": true
+            "format": "int32"
           },
           "checkingSavingsAccountNumber": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
+            "type": "string",
+            "nullable": true
           },
           "abaRoutingNumberforBankOfCreditUnion": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -59374,6 +61065,226 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.Note"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Distribution.Message.DistributionService.ChequeDetailsForDisbursement": {
+        "type": "object",
+        "properties": {
+          "checkPayableTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "address1": {
+            "type": "string",
+            "nullable": true
+          },
+          "address2": {
+            "type": "string",
+            "nullable": true
+          },
+          "address3": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "countryId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "stateId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zipCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "foreignCountry": {
+            "type": "string",
+            "nullable": true
+          },
+          "foreignState": {
+            "type": "string",
+            "nullable": true
+          },
+          "foreignZipCode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Distribution.Message.DistributionService.DisbursementDistributionsSummaryData": {
+        "type": "object",
+        "properties": {
+          "withdrawalRequestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "withdrawalTransactionStatus": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.WithdrawalTransactionDisbursementStatus"
+          },
+          "disbursementReferenceNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "reasonForDisbursement": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "employeeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "distributionMode": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.DistributionMode"
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.FeesPaymentMethodsApplicable"
+          },
+          "requestedAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "iraAccountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "iraTrusteeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "iraPlanName": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.AddressDetail"
+          },
+          "bankInformation": {
+            "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.BankInformation"
+          },
+          "settlementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Distribution.Message.DistributionService.DistributionDisbursementHistory": {
+        "type": "object",
+        "properties": {
+          "cheque": {
+            "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.ChequeDetailsForDisbursement"
+          },
+          "eft": {
+            "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.EftDetailsForDisbursement"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentMethod": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "userRole": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Distribution.Message.DistributionService.EftDetailsForDisbursement": {
+        "type": "object",
+        "properties": {
+          "bankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountHolderName": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "accountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "routingNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Distribution.Message.DistributionService.GetDistributionDisbursementHistoryResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessful": {
+            "type": "boolean"
+          },
+          "distributionDisbursementHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.DistributionDisbursementHistory"
             },
             "nullable": true
           }
@@ -59424,6 +61335,18 @@
           "withdrawalRequestId": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Distribution.Message.DistributionService.GetWithdrawalTransactionDetailsByWithdrawalTransactionIdResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessfull": {
+            "type": "boolean"
+          },
+          "disbursementDistributionsSummaryData": {
+            "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.DistributionService.DisbursementDistributionsSummaryData"
           }
         },
         "additionalProperties": false
@@ -61246,6 +63169,13 @@
           "distributionMode": {
             "$ref": "#/components/schemas/Congruent.Core.Infrastructure.DistributionMode"
           },
+          "withdrawalTransactionReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "withdrawalTransactionStatus": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.WithdrawalTransactionDisbursementStatus"
+          },
           "paymentMethod": {
             "$ref": "#/components/schemas/Congruent.Core.Infrastructure.FeesPaymentMethodsApplicable"
           },
@@ -62801,6 +64731,9 @@
           "sourceSubCategory": {
             "$ref": "#/components/schemas/Congruent.Core.Infrastructure.SourceSubCategory"
           },
+          "sourceSubSubCategory": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.SourceSubSubCategory"
+          },
           "payDate": {
             "type": "string",
             "format": "date-time",
@@ -62817,6 +64750,10 @@
             "nullable": true
           },
           "isNotTaxable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isLastRothConversionBeyondFiveYears": {
             "type": "boolean",
             "nullable": true
           }
@@ -64529,6 +66466,76 @@
               "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Enrollment.InvestmentDetail"
             },
             "nullable": true
+          },
+          "max_Sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Enrollment.MaxSourceDetail"
+            },
+            "nullable": true
+          },
+          "annualSalary": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "currentAge": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "catchUpEligible": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "catchUpType": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicableCatchUpLimit": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "limit402g": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "limit415c": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalPlanMaximum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalIrsMaximum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "permittedMaximum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalOptimizedAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalOptimizedElectionPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalMonthlyContribution": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -64579,6 +66586,45 @@
           "investmentPercentage": {
             "type": "number",
             "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Events.Shared.Enrollment.MaxSourceDetail": {
+        "type": "object",
+        "properties": {
+          "sourceContributionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sourceName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceSubCategory": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "limitMinimumPercentage": {
+            "type": "number",
+            "format": "double"
+          },
+          "limitMaximumPercentage": {
+            "type": "number",
+            "format": "double"
+          },
+          "contributionRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "isCatchUp": {
+            "type": "boolean"
+          },
+          "contributionFieldType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -64743,6 +66789,11 @@
           },
           "sourceName": {
             "type": "string",
+            "nullable": true
+          },
+          "sourceSubCategory": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "contributionRate": {
@@ -65828,6 +67879,13 @@
             },
             "nullable": true
           },
+          "employmentStatusHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Payroll.EmploymentStatusHistory"
+            },
+            "nullable": true
+          },
           "acceptedErrorIds": {
             "type": "array",
             "items": {
@@ -66184,6 +68242,36 @@
           },
           "updatedBy": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Events.Shared.Payroll.EmploymentStatusHistory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "employmentStatusId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         },
@@ -66860,6 +68948,142 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Events.Shared.Rebalance.RebalanceDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "transactionKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "employeeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isDraft": {
+            "type": "boolean"
+          },
+          "planName": {
+            "type": "string",
+            "nullable": true
+          },
+          "rebalanceAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rebalanceStatus": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isFutureContribution": {
+            "type": "boolean"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isAutoRebalance": {
+            "type": "boolean"
+          },
+          "rebalanceSourceDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Rebalance.RebalanceSourceDetails"
+            },
+            "nullable": true
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Infrastructure.Note"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Events.Shared.Rebalance.RebalanceInvestmentDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "investmentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "investmentName": {
+            "type": "string",
+            "nullable": true
+          },
+          "percentage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Events.Shared.Rebalance.RebalanceSourceDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "sourceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sourceName": {
+            "type": "string",
+            "nullable": true
+          },
+          "rebalanceInvestmentDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Rebalance.RebalanceInvestmentDetails"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Events.Shared.Rebalance.SaveRebalanceDetailsResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessfull": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "rebalanceDetails": {
+            "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Rebalance.RebalanceDetails"
+          },
+          "errorMessages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Infrastructure.IError"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Events.Shared.RolloverIn.EmployeeRolloverTransaction": {
         "type": "object",
         "properties": {
@@ -67158,6 +69382,49 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Events.Shared.UserManagement.RegisterUserCommand": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          },
+          "plans": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "tenantId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "domainRequested": {
+            "type": "string",
+            "nullable": true
+          },
+          "participantId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Events.Shared.Vesting.EmployeeRetirementDetails": {
         "type": "object",
         "properties": {
@@ -67187,8 +69454,8 @@
             "nullable": true
           },
           "vestingYearsOfService": {
-            "type": "integer",
-            "format": "int32",
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
           "yearsOfParticipation": {
@@ -67309,8 +69576,8 @@
             "nullable": true
           },
           "vestingYOS": {
-            "type": "integer",
-            "format": "int32",
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
           "vestingPercentage": {
@@ -67581,6 +69848,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "rkPlanNumber": {
+            "type": "string",
+            "nullable": true
+          },
           "startDate": {
             "type": "string",
             "format": "date-time",
@@ -67597,8 +69868,8 @@
             "nullable": true
           },
           "yearsOfService": {
-            "type": "integer",
-            "format": "int32",
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
           "creditedThisYear": {
@@ -67617,20 +69888,36 @@
             "type": "string",
             "nullable": true
           },
-          "sysStartTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "sysEndTime": {
-            "type": "string",
-            "format": "date-time"
-          },
           "createdOn": {
             "type": "string",
             "format": "date-time",
             "nullable": true
           },
           "responsibleForCalculation": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fileUploadId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rowNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "uplodedThrough": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "asOfDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "bisType": {
             "type": "integer",
             "format": "int32",
             "nullable": true
@@ -68273,6 +70560,15 @@
           "feeRunStatus": {
             "type": "integer",
             "format": "int32",
+            "nullable": true
+          },
+          "feeTransactionTypeCategory": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "feeTransactionCategoryStatus": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -71914,6 +74210,20 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Helpers.UserManagement.UpdatePasswordCommand": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Infrastructure.AccountAggregationLevel": {
         "enum": [
           0,
@@ -72288,7 +74598,9 @@
         "enum": [
           1,
           2,
-          3
+          3,
+          4,
+          5
         ],
         "type": "integer",
         "format": "int32"
@@ -72365,7 +74677,9 @@
           32,
           33,
           34,
-          35
+          35,
+          36,
+          37
         ],
         "type": "integer",
         "format": "int32"
@@ -72509,6 +74823,14 @@
         "format": "int32"
       },
       "Congruent.Core.Infrastructure.OperateAs": {
+        "enum": [
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Congruent.Core.Infrastructure.PaymentMode": {
         "enum": [
           1,
           2
@@ -72889,7 +75211,9 @@
           12,
           13,
           14,
-          15
+          15,
+          16,
+          17
         ],
         "type": "integer",
         "format": "int32"
@@ -72901,6 +75225,16 @@
           3,
           4,
           5
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Congruent.Core.Infrastructure.WithdrawalTransactionDisbursementStatus": {
+        "enum": [
+          1,
+          2,
+          3,
+          4
         ],
         "type": "integer",
         "format": "int32"
@@ -74052,6 +76386,23 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.InvoiceManagement.Message.Commands.GeneratePaymentLinkResponse": {
+        "type": "object",
+        "properties": {
+          "isSuccessfull": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.InvoiceManagement.Message.Commands.GetFeeInvoiceListingDetailsResult": {
         "type": "object",
         "properties": {
@@ -74758,6 +77109,41 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Loan.Controller.ViewModel.ProcessLoanDisbursementViewModel": {
+        "type": "object",
+        "properties": {
+          "isDisbursed": {
+            "type": "boolean"
+          },
+          "loanId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cheque": {
+            "$ref": "#/components/schemas/Loan.Message.ChequeDetailsForDisbursement"
+          },
+          "eft": {
+            "$ref": "#/components/schemas/Loan.Message.EftDetailsForDisbursement"
+          },
+          "paymentMethod": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "isReInitiate": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -78287,6 +80673,30 @@
           },
           "applyToAllStatuses": {
             "type": "boolean"
+          },
+          "breakInServiceAvailable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "breakInServiceHours": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "breakInServiceMonths": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "breakInServiceRules": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "consecutiveYearsForBIS": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           },
           "validate": {
             "type": "boolean",
@@ -82332,6 +84742,19 @@
             "format": "date-time",
             "nullable": true
           },
+          "riskProfile": {
+            "type": "string",
+            "nullable": true
+          },
+          "ageAndRiskProfile": {
+            "type": "string",
+            "nullable": true
+          },
+          "profileId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "defaultElectionBasedOnValues": {
             "type": "array",
             "items": {
@@ -82371,6 +84794,10 @@
           "investmentElectionBasedOn": {
             "type": "integer",
             "format": "int32",
+            "nullable": true
+          },
+          "autoRebalanceApplicable": {
+            "type": "boolean",
             "nullable": true
           },
           "deferralSourceContribution": {
@@ -83096,7 +85523,8 @@
           },
           "allocationEffectiveEndDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "isContributionManatory": {
             "type": "boolean"
@@ -83182,7 +85610,8 @@
           },
           "allocationEffectiveEndDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "allocationFormulaAppliesTo": {
             "type": "integer",
@@ -83293,7 +85722,8 @@
           },
           "allocationEffectiveEndDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "isTrueUpApplicable": {
             "type": "boolean",
@@ -83678,6 +86108,16 @@
             "type": "boolean",
             "nullable": true
           },
+          "minimumThresholdDollar": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maximumThresholdDollar": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
           "isTrueUpApplicable": {
             "type": "boolean",
             "nullable": true
@@ -83878,6 +86318,16 @@
           },
           "isThresholdApplicable": {
             "type": "boolean",
+            "nullable": true
+          },
+          "minimumThresholdDollar": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maximumThresholdDollar": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
           "employerContributionType": {
@@ -87255,7 +89705,8 @@
         "properties": {
           "rule": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "startDate": {
             "type": "string",
@@ -87275,7 +89726,8 @@
         "properties": {
           "participationRule": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "startDate": {
             "type": "string",
@@ -90893,6 +93345,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "autoUpdateInvestmentElection": {
+            "type": "boolean",
+            "nullable": true
+          },
           "sameInvestmentElectionToAllParticipants": {
             "type": "boolean",
             "nullable": true
@@ -90900,6 +93356,10 @@
           "investmentElectionBasedOn": {
             "type": "integer",
             "format": "int32",
+            "nullable": true
+          },
+          "autoRebalanceApplicable": {
+            "type": "boolean",
             "nullable": true
           },
           "applicableClassifications": {
@@ -92311,6 +94771,16 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.PaymentService.Message.PaymentRequestCancelCommand": {
+        "type": "object",
+        "properties": {
+          "mapId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Payroll.Consumer.Mediator.Commands.ProcessDuplicateEmployeeRequest": {
         "type": "object",
         "properties": {
@@ -92950,6 +95420,29 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Payroll.Message.CreatePayrollEvent.PayrollEmployeeYosDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fileUploadId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "yearsOfService": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Payroll.Message.CreatePayrollEvent.PayrollPlan": {
         "type": "object",
         "properties": {
@@ -93187,6 +95680,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.EmployeeEvent.EmployeeCompensationCategoryCreatePayroll"
+            },
+            "nullable": true
+          },
+          "payrollEmployeeYosDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.CreatePayrollEvent.PayrollEmployeeYosDetails"
             },
             "nullable": true
           }
@@ -94442,6 +96942,13 @@
               "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.EmployeeEvent.EmployeeCompensationCategoryCreatePayroll"
             },
             "nullable": true
+          },
+          "employeePayrollYosDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.EmployeeEvent.EmployeePayrollYosDetails"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -94569,6 +97076,29 @@
           "createdOn": {
             "type": "string",
             "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Payroll.Message.EmployeeEvent.EmployeePayrollYosDetails": {
+        "type": "object",
+        "properties": {
+          "yosId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fileUploadId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "yearsOfService": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -96727,6 +99257,26 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Payroll.Message.EmployeeEvent.ValidateBeneficiaryResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessfull": {
+            "type": "boolean"
+          },
+          "beneficiaryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "errorMessages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Infrastructure.IError"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Payroll.Message.ErrorCorrectionEvent.AcceptDataChangeValidationViewModel": {
         "type": "object",
         "properties": {
@@ -97573,6 +100123,14 @@
           "errorType": {
             "type": "integer",
             "format": "int32",
+            "nullable": true
+          },
+          "companyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "rkPlanNumber": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -98514,6 +101072,33 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Payroll.Message.GetFileLockInfo": {
+        "type": "object",
+        "properties": {
+          "lockedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "expireOn": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Payroll.Message.GetFileLockInformationResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessful": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "getFileLockInformation": {
+            "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.GetFileLockInfo"
           }
         },
         "additionalProperties": false
@@ -99682,12 +102267,14 @@
       "Congruent.Core.Payroll.Message.ManagePayrollEvent.EmployeeYOSTest": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "employeeId": {
             "type": "integer",
             "format": "int32"
-          },
-          "employee": {
-            "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.ManagePayrollEvent.Employee"
           },
           "planId": {
             "type": "integer",
@@ -99709,8 +102296,8 @@
             "nullable": true
           },
           "yearsOfService": {
-            "type": "integer",
-            "format": "int32",
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
           "creditedThisYear": {
@@ -99731,13 +102318,26 @@
             "type": "string",
             "nullable": true
           },
-          "sysStartTime": {
+          "rkPlanNumber": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
-          "sysEndTime": {
-            "type": "string",
-            "format": "date-time"
+          "rowNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fileUploadId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "errorMessages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.ManagePayrollEvent.ErrorMessages"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -99974,6 +102574,16 @@
           },
           "isYearEndProcessing": {
             "type": "boolean",
+            "readOnly": true
+          },
+          "lockedBy": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "expireOn": {
+            "type": "string",
+            "nullable": true,
             "readOnly": true
           }
         },
@@ -101602,6 +104212,45 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Payroll.Message.UpdateFileLockInformationCommand": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lockTime": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Payroll.Message.UpdateFileLockInformationResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessful": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "lockedBy": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "expireOn": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Payroll.Message.YearEndProcessingInformation": {
         "type": "object",
         "properties": {
@@ -101948,6 +104597,77 @@
           "grossModeOfCompensationCalculation": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Payroll.ViewModels.EmployeeYOSTestViewModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "employeeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "hours": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "yearsOfService": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "creditedThisYear": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "yosCreditedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "vestingComputationPeriod": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          },
+          "rkPlanNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "rowNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fileUploadId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -102531,6 +105251,13 @@
             },
             "nullable": true
           },
+          "employeeYOSs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Payroll.ViewModels.EmployeeYOSTestViewModel"
+            },
+            "nullable": true
+          },
           "deletedContributionIds": {
             "type": "array",
             "items": {
@@ -102580,6 +105307,29 @@
           },
           "accountHolderName": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Payroll.ViewModels.PayrollEmployeeYosDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fileUploadId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "yearsOfService": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           }
         },
@@ -102687,6 +105437,11 @@
             "items": {
               "$ref": "#/components/schemas/Congruent.Core.Payroll.ViewModels.TempPayrollSource"
             },
+            "nullable": true
+          },
+          "yos": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         },
@@ -102924,6 +105679,13 @@
               "$ref": "#/components/schemas/Congruent.Core.Payroll.ViewModels.CompensationCategoryViewModel"
             },
             "nullable": true
+          },
+          "payrollEmployeeYosDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Payroll.ViewModels.PayrollEmployeeYosDetails"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -102995,6 +105757,309 @@
             "format": "int32"
           },
           "fileName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.PrintingService.Core.Models.MailAddressDetails": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressLine1": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressLine2": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressCity": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressState": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressZip": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressCountry": {
+            "type": "string",
+            "nullable": true
+          },
+          "company": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.PrintingService.Core.Models.PrintDocumentRequest": {
+        "required": [
+          "addressPlacement",
+          "color",
+          "documentType",
+          "file",
+          "from",
+          "isPassword",
+          "mailType",
+          "to",
+          "useType"
+        ],
+        "type": "object",
+        "properties": {
+          "documentForPrintId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentStrategyType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "to": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.PrintingService.Core.Models.MailAddressDetails"
+            },
+            "nullable": true
+          },
+          "from": {
+            "$ref": "#/components/schemas/Congruent.Core.PrintingService.Core.Models.MailAddressDetails"
+          },
+          "doubleSided": {
+            "type": "boolean"
+          },
+          "mailType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sendDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "extraService": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressPlacement": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "file": {
+            "type": "string",
+            "nullable": true
+          },
+          "color": {
+            "type": "boolean"
+          },
+          "useType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "qrCode": {
+            "$ref": "#/components/schemas/Congruent.Core.PrintingService.Core.Models.QRCodeDetails"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "isPassword": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.PrintingService.Core.Models.QRCodeDetails": {
+        "required": [
+          "position",
+          "redirectUrl",
+          "width"
+        ],
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "string",
+            "nullable": true
+          },
+          "redirectUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "top": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "right": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pages": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.PrintingService.Core.Models.TrackDocumentRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.PrintingService.Message.GetPrintDocumentCommand": {
+        "required": [
+          "trackingDocumentRequest"
+        ],
+        "type": "object",
+        "properties": {
+          "correlationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "trackingDocumentRequest": {
+            "$ref": "#/components/schemas/Congruent.Core.PrintingService.Core.Models.TrackDocumentRequest"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsRequest": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fromDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "toDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "statusId": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "isAscending": {
+            "type": "boolean"
+          },
+          "columnName": {
+            "type": "string",
+            "nullable": true
+          },
+          "from": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "to": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsResponse": {
+        "type": "object",
+        "properties": {
+          "employeeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ssn": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "employeeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planId": {
             "type": "string",
             "nullable": true
           }
@@ -108096,6 +111161,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "isPayrollCancelDisabled": {
+            "type": "boolean",
+            "nullable": true
+          },
           "allEmployeeDetails": {
             "type": "array",
             "items": {
@@ -112367,6 +115436,11 @@
           "ytdAmount": {
             "type": "number",
             "format": "double"
+          },
+          "yos": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           },
           "sourceTransactions": {
             "type": "array",
@@ -118705,6 +121779,133 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.RetirementReadiness.Message.DTOs.Controller.InvestmentAllocationDto": {
+        "type": "object",
+        "properties": {
+          "investmentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "investmentName": {
+            "type": "string",
+            "nullable": true
+          },
+          "allocationPercentage": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.RetirementReadiness.Message.DTOs.Controller.InvestmentRecommendationsResponseDto": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "calculatedRiskProfile": {
+            "type": "string",
+            "nullable": true
+          },
+          "recommendedInvestments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.InvestmentAllocationDto"
+            },
+            "nullable": true
+          },
+          "totalAllocation": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementProjectionDto": {
+        "type": "object",
+        "properties": {
+          "expectedExpense": {
+            "type": "string",
+            "nullable": true
+          },
+          "socialSecurity": {
+            "type": "string",
+            "nullable": true
+          },
+          "otherIncome": {
+            "type": "string",
+            "nullable": true
+          },
+          "planIncome": {
+            "type": "string",
+            "nullable": true
+          },
+          "shortfall": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementProjectionResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "projectionData": {
+            "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementProjectionDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementReadinessFormulaDto": {
+        "type": "object",
+        "properties": {
+          "total401kBalanceOnRetirement": {
+            "type": "number",
+            "format": "double"
+          },
+          "outsideSavingsBalanceOnRetirement": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalPositiveEarnings": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalRequiredSpendPostRetirement": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementReadinessFormulaResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "formulaData": {
+            "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.Controller.RetirementReadinessFormulaDto"
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.RetirementReadiness.Message.DTOs.Controller.SubmitQuestionnaireRequestDto": {
         "type": "object",
         "properties": {
@@ -118714,6 +121915,26 @@
               "$ref": "#/components/schemas/Congruent.Core.RetirementReadiness.Message.DTOs.QuestionnaireResponseDto"
             },
             "nullable": true
+          },
+          "retirementLocation": {
+            "type": "string",
+            "nullable": true
+          },
+          "retirementAge": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "monthlySpending": {
+            "type": "number",
+            "format": "double"
+          },
+          "annualSalary": {
+            "type": "number",
+            "format": "double"
+          },
+          "otherSavings": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
@@ -121145,6 +124366,109 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Trade.Message.DisbursementListSearch": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "status": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "from": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "to": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "columnName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAscending": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Trade.Message.DisbursementListingDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "recipientName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ssn": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "disbursementAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "disbursementMethod": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.PaymentMode"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "loanId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "withdrawalTransactionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "businessKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "withdrawalTransactionReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Trade.Message.DownloadEmployeeTransactionViewModel": {
         "type": "object",
         "properties": {
@@ -121899,6 +125223,36 @@
               "$ref": "#/components/schemas/Congruent.Core.Trade.Message.ChartOfAccountResult"
             },
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Trade.Message.GetDisbursementDataForLoansAndDistributionsResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessfull": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "disbursementList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Trade.Message.DisbursementListingDetails"
+            },
+            "nullable": true
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "errorMessages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -125112,7 +128466,7 @@
             "readOnly": true
           },
           "rebalanceDetails": {
-            "$ref": "#/components/schemas/Congruent.Core.Transfer.Message.RebalanceEvent.RebalanceDetails"
+            "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Rebalance.RebalanceDetails"
           },
           "errorMessages": {
             "type": "array",
@@ -125146,95 +128500,6 @@
             },
             "nullable": true,
             "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Congruent.Core.Transfer.Message.RebalanceEvent.RebalanceDetails": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "transactionKey": {
-            "type": "string",
-            "nullable": true
-          },
-          "employeeId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "planId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isDraft": {
-            "type": "boolean"
-          },
-          "planName": {
-            "type": "string",
-            "nullable": true
-          },
-          "rebalanceAmount": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "rebalanceStatus": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "isFutureContribution": {
-            "type": "boolean"
-          },
-          "userId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "isAutoRebalance": {
-            "type": "boolean"
-          },
-          "rebalanceSourceDetails": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Congruent.Core.Transfer.Message.RebalanceEvent.RebalanceSourceDetails"
-            },
-            "nullable": true
-          },
-          "notes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Congruent.Core.Transfer.Message.Note"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Congruent.Core.Transfer.Message.RebalanceEvent.RebalanceInvestmentDetails": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "investmentId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "investmentName": {
-            "type": "string",
-            "nullable": true
-          },
-          "percentage": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -125280,59 +128545,12 @@
         },
         "additionalProperties": false
       },
-      "Congruent.Core.Transfer.Message.RebalanceEvent.RebalanceSourceDetails": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "sourceId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "sourceName": {
-            "type": "string",
-            "nullable": true
-          },
-          "rebalanceInvestmentDetails": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Congruent.Core.Transfer.Message.RebalanceEvent.RebalanceInvestmentDetails"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "Congruent.Core.Transfer.Message.RebalanceEvent.SaveDraftOfRebalanceDetailsResult": {
         "type": "object",
         "properties": {
           "isSuccessfull": {
             "type": "boolean",
             "readOnly": true
-          },
-          "errorMessages": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Congruent.Core.Infrastructure.IError"
-            },
-            "nullable": true,
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Congruent.Core.Transfer.Message.RebalanceEvent.SaveRebalanceDetailsResult": {
-        "type": "object",
-        "properties": {
-          "isSuccessfull": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "rebalanceDetails": {
-            "$ref": "#/components/schemas/Congruent.Core.Transfer.Message.RebalanceEvent.RebalanceDetails"
           },
           "errorMessages": {
             "type": "array",
@@ -126184,6 +129402,292 @@
             "format": "int32"
           },
           "userRole": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Controller.ViewModel.ForgotPasswordLink": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "domainRequested": {
+            "type": "string",
+            "nullable": true
+          },
+          "tenantId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Controller.ViewModel.GenerateActivationLink": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "domainRequested": {
+            "type": "string",
+            "nullable": true
+          },
+          "tenantId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "expirationDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Controller.ViewModel.IRAParticipantUserRegistrationModel": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "isParticipant": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Controller.ViewModel.PlanFilterViewModal": {
+        "type": "object",
+        "properties": {
+          "planType": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "companyIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Message.GetAddedPlansListResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessful": {
+            "type": "boolean"
+          },
+          "planDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.PlansDetails"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Message.GetPlanListWithAppliedFilterResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessful": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "plansList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.UserManagement.Message.PlansList"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Message.PlansDetails": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planName": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planStatus": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rkPlanNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Message.PlansList": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planName": {
+            "type": "string",
+            "nullable": true
+          },
+          "rkPlanNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planStatus": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.PlanStatus"
+          },
+          "planType": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.PlanType"
+          },
+          "companyName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Message.RecordsToFetch": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Message.UpdateUserModelCommand": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "userPlans": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Message.UpdateUserStatusCommand": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Message.UserDetailsSearchFilter": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "searchString": {
+            "type": "string",
+            "nullable": true
+          },
+          "planId": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "status": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "from": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.UserManagement.Message.UserProfileImageModel": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "profileImageName": {
             "type": "string",
             "nullable": true
           }
@@ -130119,12 +133623,12 @@
             "nullable": true
           },
           "checkingSavingsAccountNumber": {
-            "type": "number",
-            "format": "double"
+            "type": "string",
+            "nullable": true
           },
           "abaRoutingNumberforBankOfCreditUnion": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -131852,6 +135356,29 @@
         },
         "additionalProperties": false
       },
+      "InPlanRothConversion.Message.UpdateInplanRothRequestedDateById": {
+        "type": "object",
+        "properties": {
+          "inPlanRothRequestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "requestedDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InPlanRothConversion.Message.UpdateInplanRothRequestedDateResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessful": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "Loan.Controller.ViewModel.EmployeeLoanViewModel": {
         "type": "object",
         "properties": {
@@ -132069,6 +135596,75 @@
         },
         "additionalProperties": false
       },
+      "Loan.Core.DTO.LoanHistoryDTO": {
+        "type": "object",
+        "properties": {
+          "transactionReferenceKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "eventTriggeredBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          },
+          "reasonForRejection": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Loan.Core.DTO.ReAmortizationDTO": {
+        "type": "object",
+        "properties": {
+          "reAmortizationCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Loan.Core.DTO.LoanHistoryDTO"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Loan.Core.DTO.RefinanceDTO": {
+        "type": "object",
+        "properties": {
+          "refinanceCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Loan.Core.DTO.LoanHistoryDTO"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Loan.Message.ActualRepayment": {
         "type": "object",
         "properties": {
@@ -132224,7 +135820,8 @@
           },
           "addressType": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "country": {
             "type": "string",
@@ -132334,13 +135931,77 @@
             "nullable": true
           },
           "routingNumber": {
-            "type": "integer",
-            "format": "int64",
+            "type": "string",
             "nullable": true
           },
           "checkNumber": {
             "type": "integer",
             "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Loan.Message.ChequeDetailsForDisbursement": {
+        "type": "object",
+        "properties": {
+          "checkPayableTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "address1": {
+            "type": "string",
+            "nullable": true
+          },
+          "address2": {
+            "type": "string",
+            "nullable": true
+          },
+          "address3": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "countryId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "stateId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zipCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "foreignCountry": {
+            "type": "string",
+            "nullable": true
+          },
+          "foreignState": {
+            "type": "string",
+            "nullable": true
+          },
+          "foreignZipCode": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -132354,6 +136015,60 @@
             "items": {
               "$ref": "#/components/schemas/Loan.Message.RepaymentDetail"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Loan.Message.DisbursementLoansSummaryData": {
+        "type": "object",
+        "properties": {
+          "transactionReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "disbursementReferenceNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "reasonForDisbursement": {
+            "type": "string",
+            "nullable": true
+          },
+          "loanStatus": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.LoanStatuses"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "employeeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.FeesPaymentMethodsApplicable"
+          },
+          "requestedAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "eft": {
+            "$ref": "#/components/schemas/Loan.Message.EFT"
+          },
+          "cheque": {
+            "$ref": "#/components/schemas/Loan.Message.Cheque"
+          },
+          "settlementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "businessKey": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -132423,19 +136138,44 @@
             "nullable": true
           },
           "routingNumber": {
-            "type": "integer",
-            "format": "int64",
+            "type": "string",
             "nullable": true
           },
           "typeOfAccount": {
             "$ref": "#/components/schemas/Congruent.Core.Infrastructure.TypeOfAccount"
           },
           "accountNumber": {
-            "type": "integer",
-            "format": "int64",
+            "type": "string",
             "nullable": true
           },
           "accountHolderName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Loan.Message.EftDetailsForDisbursement": {
+        "type": "object",
+        "properties": {
+          "bankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountHolderName": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "accountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "routingNumber": {
             "type": "string",
             "nullable": true
           }
@@ -132696,6 +136436,34 @@
         },
         "additionalProperties": false
       },
+      "Loan.Message.GetLoanDisbursementHistoryResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessful": {
+            "type": "boolean"
+          },
+          "loanDisbursementHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Loan.Message.LoanDisbursementHistory"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Loan.Message.GetLoanDisbursementSummaryResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessfull": {
+            "type": "boolean"
+          },
+          "disbursementLoansSummaryData": {
+            "$ref": "#/components/schemas/Loan.Message.DisbursementLoansSummaryData"
+          }
+        },
+        "additionalProperties": false
+      },
       "Loan.Message.GetLoanDocumentByBusinesskeyResult": {
         "type": "object",
         "properties": {
@@ -132823,6 +136591,11 @@
           "offset": {
             "type": "integer",
             "format": "int32"
+          },
+          "loanStatus": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -132936,11 +136709,7 @@
             "readOnly": true
           },
           "loanRequestTransactionHistory": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Loan.Message.LoanRequestTransactionHistory"
-            },
-            "nullable": true
+            "$ref": "#/components/schemas/Loan.Message.LoanHistoryResponse"
           }
         },
         "additionalProperties": false
@@ -133189,6 +136958,49 @@
         },
         "additionalProperties": false
       },
+      "Loan.Message.LoanDisbursementHistory": {
+        "type": "object",
+        "properties": {
+          "cheque": {
+            "$ref": "#/components/schemas/Loan.Message.ChequeDetailsForDisbursement"
+          },
+          "eft": {
+            "$ref": "#/components/schemas/Loan.Message.EftDetailsForDisbursement"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentMethod": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "userRole": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Loan.Message.LoanDocument": {
         "type": "object",
         "properties": {
@@ -133344,6 +137156,25 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Loan.Message.LoanHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "loanHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Loan.Core.DTO.LoanHistoryDTO"
+            },
+            "nullable": true
+          },
+          "refinance": {
+            "$ref": "#/components/schemas/Loan.Core.DTO.RefinanceDTO"
+          },
+          "reAmortization": {
+            "$ref": "#/components/schemas/Loan.Core.DTO.ReAmortizationDTO"
           }
         },
         "additionalProperties": false
@@ -134062,6 +137893,11 @@
           },
           "reasonForRejection": {
             "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         },
@@ -134792,16 +138628,16 @@
             "readOnly": true
           },
           "routingNumber": {
-            "type": "integer",
-            "format": "int32",
+            "type": "string",
+            "nullable": true,
             "readOnly": true
           },
           "typeOfAccount": {
             "$ref": "#/components/schemas/Congruent.Core.Infrastructure.TypeOfAccount"
           },
           "accountNumber": {
-            "type": "integer",
-            "format": "int32",
+            "type": "string",
+            "nullable": true,
             "readOnly": true
           }
         },
@@ -134931,15 +138767,15 @@
             "nullable": true
           },
           "routingNumber": {
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "nullable": true
           },
           "typeOfAccount": {
             "$ref": "#/components/schemas/Congruent.Core.Infrastructure.TypeOfAccount"
           },
           "accountNumber": {
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "nullable": true
           },
           "accountHolderName": {
             "type": "string",
@@ -134956,8 +138792,7 @@
             "nullable": true
           },
           "routingNumber": {
-            "type": "integer",
-            "format": "int64",
+            "type": "string",
             "nullable": true
           },
           "checkNumber": {
@@ -141521,8 +145356,8 @@
         "type": "oauth2",
         "flows": {
           "authorizationCode": {
-            "authorizationUrl": "https://sit.coreretirementsolutions.com/connect/authorize",
-            "tokenUrl": "https://sit.coreretirementsolutions.com/connect/token",
+            "authorizationUrl": "https://test.coreretirementsolutions.com/connect/authorize",
+            "tokenUrl": "https://test.coreretirementsolutions.com/connect/token",
             "scopes": {}
           }
         }

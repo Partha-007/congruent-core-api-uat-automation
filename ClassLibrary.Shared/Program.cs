@@ -9,6 +9,7 @@ using CsvHelper;
 using FizzWare.NBuilder;
 using FizzWare.NBuilder.Extensions;
 using Fluid.Values;
+using Generator.sourceGenerator;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -767,14 +768,12 @@ namespace RefitSandBox
                         form.Add(new StringContent("1"), "inputType");
                         form.Add(new StringContent("1"), "format");
                         form.Add(new StringContent("true"), "isMultiplePlanOrPaydate");
-                        //form.Add(new StringContent(directoryPath), "fileName");
                         form.Add(new StringContent("savePayroll.csv"), "fileName");
                         form.Add(new StringContent("null"), "planId");
                         form.Add(new StringContent("null"), "payDate");
                         form.Add(new StringContent("false"), "isYearEndProcessing");
                         form.Add(new StringContent("0"), "payrollFrequencyId");
 
-                        //string BaseURL = "https://dev.coreretirementsolutions.com";
                         var httpClient = new HttpClient()
                         {
                             BaseAddress = new Uri(_url)
@@ -826,7 +825,7 @@ namespace RefitSandBox
                             var getAwaitingFundsForFile = await payrollClient.GetAwaitingFundingDetailsByPlan(fileId, planId);
                             payrollFundingId = getAwaitingFundsForFile.PayrollFundingId.ToString();
                             await ConfirmFunds(planId, fileId, payrollFundingId);
-                            if (filename == "Combined.csv")
+                            if (filename == "CombinedFile.csv")
                             {
                                 await Task.Delay(3000);
                             }
@@ -835,9 +834,12 @@ namespace RefitSandBox
                                 await Task.Delay(10000);
                             }
 
-                            await payrollClient.GenerateConsolidation();
+                            var generateConsolidationResponse = await payrollClient.GenerateConsolidation();
+                            var parsedResponse = JObject.Parse(generateConsolidationResponse.ToString());
+                            if (!(parsedResponse["isSuccessful"].ToString() == "True"))
+                                throw new Exception("Error in generating consolidation");
 
-                            await Task.Delay(40000);
+                            await Task.Delay(10000);
                         }
                         return responseObject;
 
@@ -912,7 +914,6 @@ namespace RefitSandBox
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
                 form.Add(fileContent, "File", uploadedFileName);
                 form.Add(new StringContent("1"), "FileType");
-                //string BaseURL = "https://dev.coreretirementsolutions.com";
                 var httpClient = new HttpClient()
                 {
                     BaseAddress = new Uri(_url)
@@ -926,21 +927,6 @@ namespace RefitSandBox
 
         public async Task<Dictionary<string, string>> SFTPConnect()
         {
-
-            /*var configuration = new ConfigurationBuilder()
-            .SetBasePath("D:\\NewBackEndAutomation\\Congruent.Core.API.TestAutomation\\ClassLibrary.Shared\\AppSettings")
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .Build();*/
-
-            //string url = configuration["AppSettings:ApplicationURL"];
-            /*string ftp_user = configuration["AppSettings:ftp_user"];
-            string userName = configuration["AppSettings:ftp_userName"];
-            string password = configuration["AppSettings:ftp_password"];
-            string hostName = configuration["AppSettings:ftp_host"];*/
-
-            //string hostName = "10.4.1.5";
-            //string userName = "ftp_dev";
-            //string password = "jack@123";
             var FileContent = new List<string>();
             var connectionInfo = new PasswordConnectionInfo(Settings.ftp_host, Settings.ftp_username, Settings.ftp_password);
             using (var sftp = new SftpClient(connectionInfo))
@@ -1091,10 +1077,15 @@ namespace RefitSandBox
                 recordKeeperId = await GetRecordKeeperId();
 
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
-            var response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
+            JObject? response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
             Console.WriteLine("Response : " + response.ToString());
-            //if (methodName == "SaveRecordKeepersAsync")
-            //    recordKeeperId = await GetRecordKeeperId();
+
+            if (response != null && methodName == "SaveInprogressLoanRequest")
+            {
+                loanId = response["loan"]["id"].ToString();
+                businessKey = response["loan"]["businessKey"].ToString();
+            }
+                
         }
 
 
@@ -1823,7 +1814,6 @@ namespace RefitSandBox
 
         public static async Task<string> GetEmployeeId()
         {
-            //string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(_url)
@@ -1837,7 +1827,6 @@ namespace RefitSandBox
                 Offset = 20
             };
             await Task.Delay(3000);
-            //searchBody.SearchBySSNEmpIdName = "691209015";
             var payrollClient = RestService.For<IPayroll>(httpClient);
             var getEmployee = await payrollClient.GetEmployeesBySearchCriteria(searchBody);
             var employeeId = getEmployee.SearchEmployeeResults.Select(_ => _.Id).FirstOrDefault().ToString();
@@ -1869,7 +1858,6 @@ namespace RefitSandBox
         {
             try
             {
-                //string BaseURL = "https://dev.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
                     BaseAddress = new Uri(_url)
@@ -1881,19 +1869,15 @@ namespace RefitSandBox
                     var loanApproved = await loanClient.ApproveLoan(loanId);
                     if (!loanApproved)
                     {
-                        throw new Exception();
+                        throw new Exception($"Error in approving loan refinance request for the loan id {loanId}");
                     }
                 }
                 else
                 {
                     Console.WriteLine($"Loan approve started on {DateTime.Now}");
-                    /*var check = JsonConvert.DeserializeObject<SaveLoanResult>(response.ToString(), new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    });*/
-                    loanId = response["loan"]["id"].ToString();
-                    businessKey = response["loan"]["businessKey"].ToString();
-
+                    if (loanId == null)
+                        throw new Exception("Loan id is not present");
+                    
                     var loanClient = RestService.For<ILoan>(httpClient);
                     var loanApproved = await loanClient.ApproveLoan(loanId);
                     if (!loanApproved)
@@ -1905,15 +1889,12 @@ namespace RefitSandBox
                         Console.WriteLine($"Loan has been approved on {DateTime.Now}");
                         await Task.Delay(5000);
                         var loanActiveResult = await loanClient.GenerateLoan();
-                        var loanResponse = loanActiveResult.IsSuccessful;
-                        if (!loanResponse)
-                        {
-                            throw new Exception();
-                        }
+                        
+                        if (!loanActiveResult.IsSuccessful)
+                            throw new Exception("Generate Loan API returned false");
                         else
-                        {
                             Console.WriteLine($"Generate Loan API returns success on {DateTime.Now}");
-                        }
+                        
                         await Task.Delay(3000);
                         /*var payrollClient = RestService.For<IPayroll>(httpClient);
                         var consolidationResult = await payrollClient.GenerateConsolidation();*/
@@ -1923,8 +1904,54 @@ namespace RefitSandBox
             }
             catch (Exception ex)
             {
-
+                throw new Exception(ex.Message);
             }
+        }
+
+        public async Task ProcessLoanDisbursement()
+        {
+            var ProcessLoanDisbursementViewModel = new ProcessLoanDisbursementViewModel()
+            {
+                IsDisbursed = false,
+                LoanId = int.Parse(loanId!),
+                PaymentMethod = 1,
+                Reason = null,
+                ReferenceNumber = null,
+                IsReInitiate = false,
+
+            };
+            var ProcessLoanDisbursementViewModel2 = new ProcessLoanDisbursementViewModel()
+            {
+                IsDisbursed = true,
+                LoanId = int.Parse(loanId!),
+                PaymentMethod = 1,
+                Reason = null,
+                ReferenceNumber = null,
+                IsReInitiate = false,
+
+            };
+            try
+            {
+                await DisbursementProcessing(ProcessLoanDisbursementViewModel);
+                await DisbursementProcessing(ProcessLoanDisbursementViewModel2);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task DisbursementProcessing(ProcessLoanDisbursementViewModel _ProcessLoanDisbursementViewModel)
+        {
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(_url)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            var loanClient = RestService.For<ILoan>(httpClient);
+            var loanDisbursementResult = await loanClient.ProcessLoanDisbursement(_ProcessLoanDisbursementViewModel);
+            if (!loanDisbursementResult)
+                throw new Exception("Process Loan Disbursement API returned false");
         }
 
         public async Task<GetEmployeeEligiblePlanLoansResult> GetEmployeePlanLoans()
@@ -2927,6 +2954,38 @@ namespace RefitSandBox
             var employee = (PayrollEmployeeViewModel)employeeResponse;
             var updateEmployee = employeeClient.UpdateExistingEmployee(employee);*/
         }
+
+        public async Task SubmitLoanRequest(List<string> sourceNames)
+        {
+            var applicableSources = new List<ApplicableSourcesViewModel>();
+            var program = new Program();
+            foreach (var source in sourceNames)
+            {
+                applicableSources.Add(new ApplicableSourcesViewModel
+                {
+                    Id = 0,
+                    SourceId = program.IdentifyValue(source).Result != null ? int.Parse(program.IdentifyValue(source).Result) : throw new Exception($"Given source name is not valid {source}"),
+                    IsDeleted = false
+                });
+            }
+
+            var submitLoanRequestModel = new SubmitLoanRequestViewModel
+            {
+                LoanId = int.Parse(loanId),
+                ApplicableSources = applicableSources
+            };
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
+            var loanClient = RestService.For<ILoan>(httpClient);
+            var submitLoanRequestResponse = await loanClient.SubmitLoanRequest(submitLoanRequestModel);
+            if (!submitLoanRequestResponse.IsSuccessfull)
+                throw new Exception("Submit loan request returns false");
+        }
+
         public static async Task<string> GetDate(int n, string pattern)
         {
             DateTime currentDate = DateTime.Now;
@@ -3507,6 +3566,263 @@ namespace RefitSandBox
             await program.Configuration("payDate", "");
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
             var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
+        }
+
+        public async Task EnrollmentSetup()
+        {
+            try
+            {
+                await EnrollmentConfiguration(planId, sourceId, rothSourceId, "<SEAS001>", "<SEAS002>");
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public static async Task EnrollmentConfiguration(string planId, string pretaxSourceId, string rothSourceId, string investment1Name, string investment2Name)
+        {
+            var program = new Program();
+            var investment1PlanMappingId = await program.IdentifyValue(investment1Name);
+            var investment2PlanMappingId = await program.IdentifyValue(investment2Name);
+
+            var enrollmentModel = new EnrollmentViewModel
+            {
+                Id = 0,
+                PlanId = int.Parse(planId),
+                DefaultElectionSetting = new DefaultElectionSettingViewModel
+                {
+                    EnrollmentId = 0,
+                    Id = 0,
+                    AutoUpdateInvestmentElection = null,
+                    SameInvestmentElectionToAllParticipants = true,
+                    InvestmentElectionBasedOn = null,
+                    DeferralSourceContribution = new List<DeferralSourceContributionViewModel>
+        {
+            new DeferralSourceContributionViewModel
+            {
+                DefaultElectionSettingsId = 0,
+                Id = 0,
+                SourceId = int.Parse(pretaxSourceId),
+                SourceName = "EEPretax",
+                SourceType = 0,
+                SourceCategory = 0,
+                SourceSubCategory = 0,
+                ContributionType = 1,
+                ContributionRate = 30.0, // double
+                MinimumRate = null,
+                MaximumRate = null,
+                PercentageMinimumRate = null,
+                PercentageMaximumRate = null,
+                IsDeleted = false,
+                ContributionFieldType = 1,
+                HceContributionFieldType = null,
+                HceRate = null
+            },
+            new DeferralSourceContributionViewModel
+            {
+                DefaultElectionSettingsId = 0,
+                Id = 0,
+                SourceId = int.Parse(rothSourceId),
+                SourceName = "Roth",
+                SourceType = 0,
+                SourceCategory = 0,
+                SourceSubCategory = 0,
+                ContributionType = 1,
+                ContributionRate = 30.0,
+                MinimumRate = null,
+                MaximumRate = null,
+                PercentageMinimumRate = null,
+                PercentageMaximumRate = null,
+                IsDeleted = false,
+                ContributionFieldType = 1,
+                HceContributionFieldType = null,
+                HceRate = null
+            }
+        },
+                    DefaultElectionBasedOnList = new List<DefaultElectionBasedOnViewModel>(),
+                    PlanInvestment = new List<PlanInvestmentViewModel>
+        {
+            new PlanInvestmentViewModel
+            {
+                DefaultElectionSettingsId = 0,
+                InvestmentElectionBasedOnId = null,
+                Id = 0,
+                InvestmentId = int.Parse(investment1PlanMappingId),
+                InvestmentName = "SEAS001",
+                InvestmentPercentage = 70.0, // double
+                IsDeleted = false
+            },
+            new PlanInvestmentViewModel
+            {
+                DefaultElectionSettingsId = 0,
+                InvestmentElectionBasedOnId = null,
+                Id = 0,
+                InvestmentId = int.Parse(investment2PlanMappingId),
+                InvestmentName = "SEAS002",
+                InvestmentPercentage = 30.0,
+                IsDeleted = false
+            }
+        },
+                    AdditionalDefaultElectionSetting = new List<AdditionalDefaultElectionSettingViewModel>()
+                },
+                AutoDeferralncreaseApplicable = new ADIApplicableConfigurationViewModel2
+                {
+                    EnrollmentId = 0,
+                    Id = 0,
+                    AutoDeferralIncreaseProgram = false,
+                    AdiApplicableTo = null,
+                    AutoDeferralIncrease = null,
+                    PeriodOfIncrease = null,
+                    ApplyADITo = null,
+                    IncreaseAllowanceDays = null,
+                    ExcludeHCE = null,
+                    SeparateAdiRatesForHce = null,
+                    AdiLiveDate = null,
+                    IsSetAutoIncreaseLimitAcrossAllDeferrals = null,
+                    AutoIncreaseAcrossAllDeferralsStopsAt = null,
+                    AdiContributionType = null,
+                    Adi = new List<ADIViewModel2>(),
+                    AdditionalADIRules = new List<AdditionalADIRuleViewModel>()
+                },
+                AutoEnrollment = new AutoEnrollmentDataViewModel2
+                {
+                    EnrollmentId = 0,
+                    Id = 0,
+                    PlanId = int.Parse(planId),
+                    SubjecttoAutoEnrollment = true,
+                    MinimumWithdrawallimit = null,
+                    IsAutoReEnroll = false,
+                    FrequencyOptoutIndicator = null,
+                    IsWindowPeriod = null,
+                    NumberOfDaysWindowIsOpenNumber = 10,
+                    NumberOfDaysWindowIsOpen = 1,
+                    NumberOfDaysWindowIsOpenForOptoutNumber = 10,
+                    NumberOfDaysWindowIsOpenForOptout = 1,
+                    NumberOfDaysWindowIsOpenReEnrollmentNumber = null,
+                    NumberOfDaysWindowIsOpenReEnrollment = null,
+                    ExclusionType = 0,
+                    UsePlanDefaultDeferralElection = true,
+                    UsePlanDefaultInvestmentElection = true,
+                    InvestmentBasedOn = null,
+                    SameInvestmentBasedOn = null,
+                    SameInvestmentElectionToAllSources = null,
+                    SameInvestmentElectionToAllParticipants = true,
+                    EffectiveDate = DateTimeOffset.Now.AddDays(1), // DateTimeOffset
+                    LiveDate = null,
+                    InvestmentElectionBasedOnList = new List<InvestmentElectionBasedOnViewModel2>
+                    {
+                        new InvestmentElectionBasedOnViewModel2()
+                        {
+                            Id = 0,
+                            AgeFrom = null,
+                            AgeTo = null,
+                            AutoEnrollmentId = 0,
+                            From = null,
+                            InvestmentBasedOn = null,
+                            To = null,
+                            IsDefaultCategory = null,
+                            IsDeleted = false,
+                            InvestmentElectionValuesList = new List<InvestmentElectionValuesViewModel2>
+                            {
+                                new InvestmentElectionValuesViewModel2
+                                {
+                                    InvestmentElectionBasedOnId = 0,
+                                    Id = 0,
+                                    InvestmentId = int.Parse(investment1PlanMappingId),
+                                    InvestmentName = "SEAS001",
+                                    InvestmentPercentage = 70.0,
+                                    IsDeleted = false
+                                },
+                                new InvestmentElectionValuesViewModel2
+                                {
+                                    InvestmentElectionBasedOnId = 0,
+                                    Id = 0,
+                                    InvestmentId = int.Parse(investment2PlanMappingId),
+                                    InvestmentName = "SEAS002",
+                                    InvestmentPercentage = 30.0,
+                                    IsDeleted = false
+                                }
+                            },
+                        }
+                    },
+                    ExcludedEmployeeClassifications = new List<ExcludedEmployeeClassficationViewModel2>(),
+                    ExcludedEmploymentStatuses = new List<ExcludedEmployeeStatusViewModel2>(),
+                    DateOfHire = null,
+                    HiredOnOrAfterDateEnrollment = null,
+                    HiredOnOrBeforeDateEnrollment = null,
+                    HiredBetweenFrom = null,
+                    HiredBetweenTo = null,
+                    AutoEnrollmentDeferralSources = new List<AutoEnrollmentDeferralSourcesViewModel2>
+        {
+            new AutoEnrollmentDeferralSourcesViewModel2
+            {
+                AutoEnrollmentId = 0,
+                Id = 0,
+                SourceId = int.Parse(pretaxSourceId),
+                DeferralSourceName = "EEPretax",
+                DeferralSourcePercentage = 30.0,
+                ExcludeFromEnrollment = false,
+                LimitMinimum = 10.0,
+                LimitMaximum = 70.0,
+                IsDeleted = false
+            },
+            new AutoEnrollmentDeferralSourcesViewModel2
+            {
+                AutoEnrollmentId = 0,
+                Id = 0,
+                SourceId = int.Parse(rothSourceId),
+                DeferralSourceName = "Roth",
+                DeferralSourcePercentage = 30.0,
+                ExcludeFromEnrollment = false,
+                LimitMinimum = 10.0,
+                LimitMaximum = 70.0,
+                IsDeleted = false
+            }
+        },
+                    AdditionalAutoEnrollment = new List<AdditionalAutoEnrollmentDataViewModel2>()
+                },
+                OtherInformation = new OtherInformationViewModel
+                {
+                    EnrollmentId = 0,
+                    Id = 0,
+                    AllowReallocation = false,
+                    ReallocationPeriod = null,
+                    NumberOfReallocationsAllowed = null,
+                    SendEnrollmentInvite = 1,
+                    NumberOfDaysBeforeEntryDate = null,
+                    NumberOfDaysBeforeForecastDate = null,
+                    DeferralContributionRateUponRehire = 2,
+                    SendNoticeBeforeEachPlanYear = false,
+                    NumberOfDaysBeforePlanYearStart = null,
+                    IsRecurringCommunication = false,
+                    Frequency = null,
+                    NumberOfOccurrences = null
+                }
+            };
+
+
+
+
+            var settings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Include
+            };
+            
+            var json = JsonConvert.SerializeObject(enrollmentModel, settings);
+            var requestPayload = JObject.Parse(json);
+            Console.WriteLine("Enrollment request :" + requestPayload.ToString());
+            string Action = "api/Enrollment/SaveEnrollmentSetting";
+            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+            string token = _hooks != null && !string.IsNullOrEmpty(Hooks.Hooks.bearer!) ? Hooks.Hooks.bearer! : bearer;
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(_url)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var task = await httpClient.PostAsync($"{_url}/{Action}/", data);
+            var contentTask = await task.Content.ReadAsStringAsync();
+            response = JObject.Parse(contentTask);
+            Console.Write(response.ToString());
         }
 
     }
