@@ -1105,7 +1105,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(Settings.ApplicationURL)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var apiClient = RestService.For<ICompanyDetails>(httpClient);
             var recordKeepers = await apiClient.GetRecordKeepers();
             recordKeeperId = recordKeepers.Count;

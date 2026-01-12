@@ -15,24 +15,24 @@ Scenario:7557 creating a plan with one step
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key                 | value               | Scenario:7616 PLan name field acceptance below 250 characters
-| planName            | random 10 alphabets | Scenario:7611 Plan name field acceptance alphabets
-| rkPlanNumber        | random 10 alphabets |
-| name                | random 0 alphabets  | Scenario:13888 Plan administrator name field validation as required
-| pensionBenefitCode  | random 2 alphabets  | Scenario:166355 To verify the  Pension Benefit Code field accepting the alphabets in the Plan details page-Plan
-| welfareBenefitCode  | random 2 alphabets  | Scenario:166366 To verify the  Welfare Benefit Code field accepting the numbers in the Plan details page-Plan
-| taxEIN              |           121234567 | Scenario: Plan Administrator taxEIN Creation with Numerics equal to 9 characters
-| city                | random 25 alphabets | Scenario: New city Creation with Alphabets
-| address1            | random 50 alphabets | Scenario: New address1 details with Alphabets with below 100 characters
-| address2            | random 50 alphabets | Scenario: New address2 details with Alphabets with below 100 characters
-| state               | NM                  | Scenario: Validating State field selected as New Mexico
-| zipCode             | 75647-3478          | Scenario: New Zipcode Creation with numerics of 9 characters
-| country             | USA                 | Scenario: Validating Country field default value USA saved
-| postalCode          | 12345-62345         | Scenario: Validating the Postal Code field with length 10 characters
-| mobilePhoneNumber   | random 0 numerics   | Scenario:13896 Contact Phone number mandatory validation
-| trsContractId       | random 5 numerics   | Scenario:13920 Plan Contract number field acceptance of equal 5 characters
-
-
+| key                | value                  | Scenario:7616 PLan name field acceptance below 250 characters
+| planName           | random 10 alphabets    | Scenario:7611 Plan name field acceptance alphabets
+| rkPlanNumber       | random 10 alphabets    |
+| name               | random 0 alphabets     | Scenario:13888 Plan administrator name field validation as required
+| pensionBenefitCode | random 2 alphabets     | Scenario:166355 To verify the  Pension Benefit Code field accepting the alphabets in the Plan details page-Plan
+| welfareBenefitCode | random 2 alphabets     | Scenario:166366 To verify the  Welfare Benefit Code field accepting the numbers in the Plan details page-Plan
+| taxEIN             | 73-5730135             | Scenario: Plan Administrator taxEIN Creation with Numerics equal to 9 characters
+| city               | random 25 alphabets    | Scenario: New city Creation with Alphabets
+| address1           | random 50 alphabets    | Scenario: New address1 details with Alphabets with below 100 characters
+| address2           | random 50 alphabets    | Scenario: New address2 details with Alphabets with below 100 characters
+| state              | NM                     | Scenario: Validating State field selected as New Mexico
+| zipCode            | 75647-3478             | Scenario: New Zipcode Creation with numerics of 9 characters
+| country            | USA                    | Scenario: Validating Country field default value USA saved
+| postalCode         | 12345-62345            | Scenario: Validating the Postal Code field with length 10 characters
+| mobilePhoneNumber  | random 0 numerics      | Scenario:13896 Contact Phone number mandatory validation
+| trsContractId      | random 5 numerics      | Scenario:13920 Plan Contract number field acceptance of equal 5 characters
+| shortYearStartDate | "2025-03-02T00:00:00Z" |
+| shortYearEndDate   | null                   |
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should respond with successful message
@@ -44,24 +44,25 @@ Scenario:7608 PLan name field validate error message as required
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key               | value                                                                                                     |
-| planName          | random 0 alphabets                                                                                        |
-| name              | random 55 alphabets                                                                                       |
-| rkPlanNumber      | random 0 alphabets                                                                                       |
-| effectiveDate     |                                                                                                           |
-| taxEIN            | asdfghjkl                                                                                                 |
-| address1          | random 101 alphabets                                                                                      |
-| address2          | random 101 alphabets                                                                                      |
-| zipCode           | random 5 alphabets                                                                                        |
-| mobilePhoneNumber | 123-4567-7890                                                                                             |
-| trsContractId     | random 6 numerics                                                                                         |
-| email             | abcgfwehjdgjgfkfgydgvgvfgvgvghfvgvsamvfyfhvdvgvtfvjsyvhgavghcfudkgkfgsnezyertcnvdsyrxkeuhdvnrehu@gmai.com |
-| irsPlanNumber     |                                                                                                           |
-
+| key                | value                                                                                                     |
+| planName           | random 0 alphabets                                                                                        |
+| name               | random 55 alphabets                                                                                       |
+| rkPlanNumber       | random 0 alphabets                                                                                        |
+| effectiveDate      |                                                                                                           |
+| taxEIN             | asdfghjkl                                                                                                 |
+| address1           | random 101 alphabets                                                                                      |
+| address2           | random 101 alphabets                                                                                      |
+| zipCode            | random 5 alphabets                                                                                        |
+| mobilePhoneNumber  | 123-4567-7890                                                                                             |
+| trsContractId      | random 6 numerics                                                                                         |
+| email              | abcgfwehjdgjgfkfgydgvgvfgvgvghfvgvsamvfyfhvdvgvtfvjsyvhgavghcfudkgkfgsnezyertcnvdsyrxkeuhdvnrehu@gmai.com |
+| irsPlanNumber      |                                                                                                           |
+| shortYearStartDate | "2025-03-02T00:00:00Z"                                                                                    |
+| shortYearEndDate   | null                                                                                                      |
 
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 12 following errors 
 	| error_code | error_message                                                   |
 	| PL001      | Required                                                        |
 	| PL018      | Required                                                        | Scenario:13862 PLan effective date field validate error message as required
@@ -95,7 +96,7 @@ When Configuration has been made as per following
 | rkPlanNumber  | ABC      |
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
-Then the API response should contain the 2 following errors 
+Then the API response should contain the 3 following errors 
 	| error_code | error_message                   |
 	| PL975      | Plan name already exists.       |
 	| PL044      | Contract number already exists. | Scenario: 13922 Plan contract number field already exist validation
@@ -107,25 +108,22 @@ Scenario:7610 PLan name field acceptance special characters
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key                 | value                       |
-| planName            | random 10 specialCharacters |
-| name                | random 5 specialCharacters  |
-| rkPlanNumber        | random 20 alphabets         |
-| pensionBenefitCode  | random 2 specialCharacters  |
-| welfareBenefitCode  | random 2 specialCharacters  |
-| taxEIN              | 12@#$^&*()                  |
-| zipCode             | ab-12345                    |
-| mobilePhoneNumber   | random 12 numerics          |
-| irsPlanNumber       | random 10 numerics          |
-| effectiveDate       | 01/01/2023                  |
-| planTerminationDate | 06/01/2020                  | Scenario:13863 PLan termination date field validate error message
-
+| key                 | value                      |
+| planName            | %$#@!^%$#@                 |
+| name                | random 5 specialCharacters |
+| rkPlanNumber        | random 20 alphabets        |
+| taxEIN              | 12@#$^&*()                 |
+| zipCode             | ab-12345                   |
+| mobilePhoneNumber   | random 12 numerics         |
+| irsPlanNumber       | random 10 numerics         |
+| effectiveDate       | 01/01/2023                 |
+| planTerminationDate | 06/01/2024                 | Scenario:13863 PLan termination date field validate error message
+| shortYearStartDate  | "2025-03-02T00:00:00Z"     |
+| shortYearEndDate    | "2026-03-02T00:00:00Z"     |
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 8 following errors 
 	| error_code | error_message                                                        |
 	| PL011      | Plan Name should be alpha numeric                                    |
-	|            |                                                                      | Scenario:166357 To verify the  Pension Benefit Code accepting the specialcharacters in the Plan details page-Plan
-	|            |                                                                      | Scenario:166368 To verify the  Welfare Benefit Code field accepting the specialcharacters  in the Plan details page-Plan
 	| PL901      | Tax EIN should be of valid format (xx-xxxxxxx)                       | Scenario:Plan Administrator the taxEIN field with special characters
 	| PL030      | ZIP Code should be either 5 or 9 characters.                         | Scenario: New Zipcode Creation with alphaNumerics
 	| PL029      | Plan Administartor Name should be alphanumeric                       | Scenario:13892 Plan administrator name field acceptance as special characters
@@ -135,7 +133,22 @@ Then the API response should contain the 1 following errors
 	| PL009      | Recording Keeping Plan Number length should not exceed 15 characters |Scenario:13879 RK Plan number field validate above 15 characters
 
 
+#UI Restricted
+#Scenario:166357 To verify the  Pension Benefit Code accepting the specialcharacters in the Plan details page-Plan
+#Scenario:166368 To verify the  Welfare Benefit Code field accepting the specialcharacters  in the Plan details page-Plan  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+#  When Configuration has been made as per following
+#| key       | value       |
+#| companyId | <CompanyId> |
+#When Configuration has been made as per following
+#| key                 | value                       |
+#| pensionBenefitCode  | random 2 specialCharacters  |
+#| welfareBenefitCode  | random 2 specialCharacters  |
 
+#When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
+#Then the API response should contain the 2 following errors 
+#	| error_code | error_message                                                        |
+#	|            |                                                                      |
+#	|            |                                                                      | 
 
 
 Scenario:7612 Plan name field acceptance numerics
@@ -149,7 +162,7 @@ When Configuration has been made as per following
 | name               | random 50 alphabets | Scenario:13890 Plan administrator name field acceptance equal to 50 characters
 | pensionBenefitCode | random 2 numerics   | Scenario:166354 To verify the  Pension Benefit Code field accepting the numerics in the Plan details page-Plan
 | welfareBenefitCode | random 2 numerics   | Scenario:166365 To verify the  Welfare Benefit Code field accepting the numbers in the Plan details page-Plan
-| rkPlanNumber       | random 15 alphabets  |Scenario:13880 RK Plan number field acceptance equal to 15 characters
+| rkPlanNumber       | random 15 alphabets | Scenario:13880 RK Plan number field acceptance equal to 15 characters
 | name               | random 5 numerics   | Scenario:13894 Plan administrator name field acceptance of numerics
 | city               | random 25 numerics  | Scenario:New city Creation with Numerics
 | address1           | random 50 numerics  | Scenario: New address1 details with numerics
@@ -158,7 +171,7 @@ When Configuration has been made as per following
 | country            |                     | Scenario:  Validating Country field selected as null
 | postalCode         |                     | Scenario: Validating the Postal Code field with null
 | trsContractId      | random 0 alphabets  | Scenario:108841 Plan Contract number field mandatory validation
-| email              | random 0 alphabets  | Scenario:13914 Plan Email Address mandatory validation 
+| email              | random 0 alphabets  | Scenario:13914 Plan Email Address mandatory validation
 
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
@@ -170,20 +183,20 @@ Scenario:7614 PLan name field above 250 characters
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key               | value                                      |
-| planName          | random 251 alphabets                       |
-| name              | random 5 alphanumericwithspecialCharacters |
-| rkPlanNumber      | random 10 numerics                        |Scenario:13883 RK Plan number field acceptance numerics
-| taxEIN            | abc123456                                  |
-| city              | random 36 alphabets                        |
-| zipCode           | abc12-3#@#                                 |
-| mobilePhoneNumber | random 5 numerics                          |
-| trsContractId     | random 4 numerics                          |
-| email             | random 5 numerics                          |
-| irsPlanNumber             | random 3 alphabets                          |
+| key               | value                |
+| planName          | random 251 alphabets |
+| name              | ah&8*                |
+| rkPlanNumber      | random 10 numerics   | Scenario:13883 RK Plan number field acceptance numerics
+| taxEIN            | abc123456            |
+| city              | random 36 alphabets  |
+| zipCode           | abc12-3#@#           |
+| mobilePhoneNumber | random 5 numerics    |
+| trsContractId     | random 4 numerics    |
+| email             | random 5 numerics    |
+| irsPlanNumber     | random 3 alphabets   |
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 9 following errors 
 	| error_code | error_message                                              |
 	| PL012      | Plan Name length should not exceed 250 characters          |
 	| PL901      | Tax EIN should be of valid format (xx-xxxxxxx)             | Scenario: Plan Administrator the taxEIN field with alpha numerics
@@ -206,15 +219,15 @@ When Configuration has been made as per following
 | key                | value                                                                  |
 | planName           | random 250 alphabets                                                   |
 | name               | random 45 alphabets                                                    | Scenario:13891 Plan administrator name field acceptance as below 50 characters
-| rkPlanNumber       | random 13 alphabets                                                    |Scenario:13881 RK Plan number field acceptance below 15 characters
+| rkPlanNumber       | random 13 alphabets                                                    | Scenario:13881 RK Plan number field acceptance below 15 characters
 | pensionBenefitCode | random 1 alphabets                                                     | Scenario:166351 To verify the Pension Benefit Code field length acceptance  of below 2  characters in the Plan details page -Plan details
 | welfareBenefitCode | random 1 alphabets                                                     | Scenario:166362 To verify the  Welfare Benefit Code field length acceptance  of below 2  characters in the Plan details page -Plan details
 | city               | random 30 alphabets                                                    | Scenario: New city Creation with equal of 30 characters
 | address1           | random 0 alphabets                                                     | Scenario: New address1 details with null
 | address2           | random 0 alphabets                                                     | Scenario: New address2 details with null
 | country            | other                                                                  | Scenario:  Validating Country field selected as other
-| email              | abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh@gmail.com | Scenario:13917 Plan Email Address acceptance criteria of equal 80 characters 
-| irsPlanNumber      | random 10 numerics          |Scenario:13871 Plan IRS field acceptance 3 digits
+| email              | abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh@gmail.com | Scenario:13917 Plan Email Address acceptance criteria of equal 80 characters
+| irsPlanNumber      | random 3 numerics                                                      | Scenario:13871 Plan IRS field acceptance 3 digits
 
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
@@ -252,11 +265,12 @@ Scenario:166353 To verify the Pension Benefit Code field length acceptance  of a
 When Configuration has been made as per following
 | key                | value                   |
 | planName           | random 10 alphabets     |
+| name               | abc123                  |
 | rkPlanNumber       | random 10 alphabets     |
 | pensionBenefitCode | random 3 alphabets      |
 | welfareBenefitCode | random 3 alphabets      | Scenario:166364 To verify the  Welfare Benefit Code field length acceptance  of above 2  characters in the Plan details page -Plan details
 | city               | random 25 alphanumerics | Scenario:  New city Creation with AlphaNumerics characters
-| irsPlanNumber      | random 3 numerics          |Scenario:13874 Plan IRS field validation with numerics
+| irsPlanNumber      | random 3 numerics       | Scenario:13874 Plan IRS field validation with numerics
 
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
@@ -288,11 +302,12 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | companyId | <CompanyId> |
  When Configuration has been made as per following
            | key          | value                   |
-           | PlanName     | random 10 alphaNumerics |
-           | RkPlanNumber | random 10 alphabets     |
+           | planName     | random 10 alphaNumerics |
+           | pkPlanNumber | random 10 alphabets     |
            | taxEIN       | <tax>                   |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
-Then the API response should contain the 6 following errors
+           | name         | random 10 alphabets     |
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
+Then the API response should contain the 1 following errors
  | error_code | error_message                                  |
  | PL901      | Tax EIN should be of valid format (xx-xxxxxxx) |Scenario: Plan Administrator the taxEIN field with alpha numerics with special characters
  #Scenario: Plan Administrator the taxEIN field with numerics below 9 characters
@@ -305,16 +320,19 @@ Examples:
 |     123412 |
 | 1231232345 |
 
+#Scenario:13885 RK Plan number field acceptance alphanumerics
 Scenario: New city details with null
   Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key                | value               |
-| planName           | random 10 alphabets |
-| rkPlanNumber       | random 10 alphabets |
-| city               | random 0 alphabets  |
+| key          | value                   |
+| planName     | random 10 alphabets     |
+| rkPlanNumber | random 10 alphaNumerics |
+| city         | random 0 alphabets      |
+| name               | random 10 alphabets     |
+       
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should respond with successful message
 
@@ -342,14 +360,16 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | key       | value       |
            | companyId | <CompanyId> |
  When Configuration has been made as per following
-           | key           | value                       |
-           | PlanName      | random 10 alphaNumerics     |
-           | RkPlanNumber  | random 10 specialCharacters |
-           | zipCode       | <ZipCode>                   |
-           | irsPlanNumber | <IrsPlanNumber>             |
-
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
-Then the API response should contain the 6 following errors
+           | key                | value                   |
+           | planName           | random 10 alphaNumerics |
+           | rkPlanNumber       | $%#@#$%$#@              |
+           | zipCode            | <ZipCode>               |
+           | irsPlanNumber      | <IrsPlanNumber>         |
+           | name               | random 10 alphabets     |
+           | shortYearStartDate | "2025-03-02T00:00:00Z"  |
+           | shortYearEndDate   | "2026-03-02T00:00:00Z"  |
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
+Then the API response should contain the 3 following errors
  | error_code | error_message                                                      |
  | PL030      | ZIP Code should be either 5 or 9 characters.                       |
  | PL022      | IRS PlanNumber should be Numbers                                   |
@@ -367,20 +387,21 @@ Examples:
 #Scenario:13884 RK Plan number field acceptance special characters
 
 
-#Scenario:13885 RK Plan number field acceptance alphanumerics
 Scenario:13877 Plan IRS field already exist validation 
   Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key           | value               |
+| key           | value                   |
 | planName      | random 10 alphaNumerics |
-| irsPlanNumber |                 123 |
+| name          | abc123                  |
+| irsPlanNumber |                     123 |
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 When Configuration has been made as per following
 | key           | value                   |
 | planName      | random 10 alphaNumerics |
+| name          | abc123                  |
 | irsPlanNumber |                     123 |
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should respond with successful message
@@ -397,7 +418,7 @@ Then API should respond with successful message
   
 When The date property "shortYearStartDate" is configured as "months" and should add "13" days to the current date
 When The date property "shortYearEndDate" is configured as "months" and should add "14" days to the current date
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
  Then API should give response as "PL031 : Start Year Begin Date cannot be greater than Current date + 1 Year."
 
 
@@ -411,8 +432,9 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | ShortYearIndicator | true                 |
            | ShortYearStartDate | 2023-06-01T00:00:00Z |
            | ShortYearEndDate   | 2023-05-01T00:00:00Z |
+           | name               | random 10 alphabets  |
 
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
  Then API should give response as "PL023 : Short Year End Date should exceed Short Year Begin Date"
     
 
@@ -425,9 +447,9 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | key                | value                |
            | ShortYearIndicator | true                 |
            | ShortYearStartDate | 2023-06-01T00:00:00Z |
-           | ShortYearEndDate   | null                 |
-
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+           | ShortYearEndDate   |                      |
+           | name               | random 10 alphabets  |
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
  Then API should give response as "PL024 : Required"
 
 
@@ -441,7 +463,7 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | key                | value |
            | shortYearIndicator | true  |
            | shortYearStartDate | null  |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
  Then API should give response as "PL371 : Required"
 
 Scenario: PLan short year start and end date difference field validate error message 
@@ -453,7 +475,7 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | key                | value                |
            | shortYearStartDate | 2020-01-01T00:00:00Z |
            | shortYearEndDate   | 2021-05-03T00:00:00Z |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveBasicPlanDetailsAsync"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
  Then API should give response as "PL032 : Difference between Short year begin date and Short year end should be less than one year."
 
 
