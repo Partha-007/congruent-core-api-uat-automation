@@ -54,7 +54,7 @@ When Configuration has been made as per following
 | address2           | random 101 alphabets                                                                                      |
 | zipCode            | random 5 alphabets                                                                                        |
 | mobilePhoneNumber  | 123-4567-7890                                                                                             |
-| trsContractId      | random 6 numerics                                                                                         |
+| trsContractId      | random 6 numerics                                                                                                    |  
 | email              | abcgfwehjdgjgfkfgydgvgvfgvgvghfvgvsamvfyfhvdvgvtfvjsyvhgavghcfudkgkfgsnezyertcnvdsyrxkeuhdvnrehu@gmai.com |
 | irsPlanNumber      |                                                                                                           |
 | shortYearStartDate | "2025-03-02T00:00:00Z"                                                                                    |
@@ -394,6 +394,7 @@ Scenario:13877 Plan IRS field already exist validation
 | companyId | <CompanyId> |
 When Configuration has been made as per following
 | key           | value                   |
+| rkPlanNumber  | random 10 numerics      |
 | planName      | random 10 alphaNumerics |
 | name          | abc123                  |
 | irsPlanNumber |                     123 |
@@ -401,6 +402,7 @@ When API request has been sent to the "IPlanDetailsSave" with the method name "C
 When Configuration has been made as per following
 | key           | value                   |
 | planName      | random 10 alphaNumerics |
+| rkPlanNumber  | random 10 numerics      |
 | name          | abc123                  |
 | irsPlanNumber |                     123 |
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
@@ -429,9 +431,9 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | companyId | <CompanyId> |
  When Configuration has been made as per following
            | key                | value                |
-           | ShortYearIndicator | true                 |
-           | ShortYearStartDate | 2023-06-01T00:00:00Z |
-           | ShortYearEndDate   | 2023-05-01T00:00:00Z |
+           | shortYearIndicator | true                 |
+           | shortYearStartDate | 2023-06-01T00:00:00Z |
+           | shortYearEndDate   | 2023-05-01T00:00:00Z |
            | name               | random 10 alphabets  |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
@@ -445,9 +447,9 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | companyId | <CompanyId> |
  When Configuration has been made as per following
            | key                | value                |
-           | ShortYearIndicator | true                 |
-           | ShortYearStartDate | 2023-06-01T00:00:00Z |
-           | ShortYearEndDate   |                      |
+           | shortYearIndicator | true                 |
+           | shortYearStartDate | 2023-06-01T00:00:00Z |
+           | shortYearEndDate   |                      |
            | name               | random 10 alphabets  |
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
  Then API should give response as "PL024 : Required"
@@ -487,9 +489,9 @@ Scenario:Select a plan level field validate error message as required
            | companyId | <CompanyId> |
  When Configuration has been made as per following
  | propertyName | value               |
- | PlanName     | random 10 alphabets |
- | Level        |                     |
- | RkPlanNumber | random 10 alphabets |
+ | planName     | random 10 alphabets |
+ | level        |                     |
+ | rkPlanNumber | random 10 alphabets |
  
 And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
 Then API should give response as "PL002 : Required"
@@ -500,10 +502,9 @@ Scenario: Select a plan type field validate error message as required
            | key       | value       |
            | companyId | <CompanyId> |
  When Configuration has been made as per following
- | PlanName     | random 10 alphabets |
- | PlanType     |                     |
- | RkPlanNumber | random 10 alphabets |
- | PlanName     | random 10 alphabets |
+ | planType     |                     |
+ | rkPlanNumber | random 10 alphabets |
+ | rlanName     | random 10 alphabets |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
 Then API should give response as "PL003 : Required"
 
@@ -514,10 +515,10 @@ Scenario: Select a company name field validate error message as required
            | key       | value       |
            | companyId | <CompanyId> |
  When Configuration has been made as per following
- | Category     | 0                   |
- | Level        |                     |
- | CompanyId    |                     |
- | RkPlanNumber | random 10 alphabets |
+ | category     | 0                   |
+ | level        |                     |
+ | companyId    |                     |
+ | rkPlanNumber | random 10 alphabets |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
 Then API should give response as "PL954 : Required"
 
@@ -527,11 +528,11 @@ Then API should give response as "PL954 : Required"
            | key       | value       |
            | companyId | <CompanyId> |
  When Configuration has been made as per following
- | PlanName     | random 10 alphabets |
- | Category     | 1                   |
- | Level        | 1                   |
- | CompanyId    |                     |
- | RkPlanNumber | random 10 alphabets |
+ | planName     | random 10 alphabets |
+ | category     | 1                   |
+ | level        | 1                   |
+ | companyId    |                     |
+ | rkPlanNumber | random 10 alphabets |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
 Then API should give response as "PL013 : Required"
 

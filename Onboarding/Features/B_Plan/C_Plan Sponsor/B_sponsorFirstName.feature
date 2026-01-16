@@ -71,12 +71,15 @@ Scenario: Sponsor first name field required validation
 
 Scenario: Sponsor first name field( succcessfull response)
   Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
-  When the property "firstName" is configured as "<Name>"
+  When Configuration has been made as per following
+           | key       | value  |
+           | firstName | <Name> |
+ # When the property "firstName" is configured as "<Name>"
   And the property "lastName" is configured with "alphabets" with 5 characters
   And the property "ssn" is configured as "123-45-7891"
   And the property "isSponsor" is configured as "false"
   And the property "email" is configured as "test123@test.com" 
-  And the property "mobilePhoneNumber" is configured with "Phone" with 10 characters
+  And the property "mobilePhoneNumber" is configured as "998-322-3214"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
  Then API should respond with successful message
 Examples: 

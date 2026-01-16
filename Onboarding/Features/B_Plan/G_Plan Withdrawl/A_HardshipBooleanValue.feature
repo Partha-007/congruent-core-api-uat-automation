@@ -390,8 +390,8 @@ Scenario: Distribution save without Withdrawal type
            | paymentMethod                 |                 1, |
             And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
 Then the API response should contain the 1 following errors 
-	| error_code | error_message                           |
-	| PL423      | Required |
+	| error_code | error_message |
+	| PL423      | Required      |
 
 #PermissableWithdrawal
 

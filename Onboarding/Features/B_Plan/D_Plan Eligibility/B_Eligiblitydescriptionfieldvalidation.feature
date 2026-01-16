@@ -14,6 +14,9 @@ Scenario: Eligiblitydescription field validat( succcessfull response)
   When the property "name" is configured as "<Name>"
   And the property "description" is configured as "<Description>"
   And the property "ltptHours" is configured as "500"
+  And the property "ltptAgeInYears" is configured as "17"
+  And the property "shortYearStartDate" is configured as "2023-06-01T00:00:00Z"
+  And the property "shortYearEndDate" is configured as "2026-05-01T00:00:00Z"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then API should respond with successful message
 Examples: 

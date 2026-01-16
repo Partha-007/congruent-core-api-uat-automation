@@ -170,7 +170,7 @@ namespace RefitSandBox.TestDataGenerator
                     }
                     else
                     {
-                        //Console.WriteLine($"No generator for type {propertyName}");
+                        Console.WriteLine($"No generator for type {propertyName}");
                     }
                 }
             }

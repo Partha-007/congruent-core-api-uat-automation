@@ -1427,7 +1427,10 @@ When Configuration has been made as per following
            | catchupMinimumPercentage |                    1020 |
            | catchupMaximumPercentage |                     100 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
- Then API should give response as "PL987 : Minimum limit should not exceed 100 percentage"
+	Then the API response should contain the 2 following errors 
+	| error_code | error_message                                                         |
+	| PL987      | Minimum limit should not exceed 100 percentage                        |
+	| PL1016     | Maximum limit amount should not be equal or lesser than minimum limit |
 
  Scenario:To verify the CatchUpManatory field as Yes when catchupMinimumPercentage field is greater than catchupMaximumPercentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -1437,10 +1440,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
-           | sourceType           |                       1 |
-           | sourceCategory       |                       2 |
-           | sourceSubCategory    |                       4 |
-           | sourceSubSubCategory |                       1 |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                     100 |
@@ -1457,10 +1460,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
-           | sourceType           |                       1 |
-           | sourceCategory       |                       2 |
-           | sourceSubCategory    |                       4 |
-           | sourceSubSubCategory |                       1 |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      40 |
@@ -1715,10 +1718,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
-           | sourceType           |                       1 |
-           | sourceCategory       |                       2 |
-           | sourceSubCategory    |                       4 |
-           | sourceSubSubCategory |                       1 |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       3 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      10 |
@@ -1738,10 +1741,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
-           | sourceType           |                       1 |
-           | sourceCategory       |                       2 |
-           | sourceSubCategory    |                       4 |
-           | sourceSubSubCategory |                       1 |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       3 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      10 |
