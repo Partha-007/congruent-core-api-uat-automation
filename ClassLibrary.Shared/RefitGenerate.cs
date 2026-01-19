@@ -191,6 +191,9 @@ namespace RefitSandBox
 
         [Post("/api/v1/Payroll/UpdateExistingEmployee")]
         Task<AddEmployeeResult> UpdateExistingEmployee([Body] PayrollEmployeeViewModel employee);
+
+        [Post("/api/v1/Payroll/SaveEmployee")]
+        Task<object> SaveEmployeeAsync([Body] PayrollEmployeeViewModel employee);
     }
     public interface ILoan
     {
