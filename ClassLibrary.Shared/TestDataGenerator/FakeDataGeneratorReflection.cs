@@ -87,9 +87,11 @@ namespace RefitSandBox.TestDataGenerator
                     // Handle other property types as in the original code
                     property.SetValue(obj,
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Id") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "PlanAmendmentId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CompanyId") ? null :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "tenantid") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CountryId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "StateId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "masterLoanTypeId") ? 1 :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "isMaster")? true :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "loanDescription") ? "General Purpose" :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Tenantid") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CountryId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "StateId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "masterLoanTypeId") ? 1 :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "IsMaster")? true :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "LoanDescription") ? "General Purpose" :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate") ? "2025-03-02T00:00:00Z" :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? "2026-03-02T00:00:00Z" :
                         propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
                         propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? faker.Name.FirstName() :
                         propertyType == typeof(string) && propertyName.Contains("Name", StringComparison.OrdinalIgnoreCase) ? faker.Company.CompanyName() :
@@ -98,6 +100,8 @@ namespace RefitSandBox.TestDataGenerator
                         propertyType == typeof(string) && propertyName.Contains("Zipcode", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("PostalCode", StringComparison.OrdinalIgnoreCase) ? faker.Address.ZipCode("#####") :
                         propertyName == "SicCode" ? faker.Random.Number(1000, 9999).ToString() :
                         propertyName == "BusinessCode" ? faker.Random.Number(100000, 999999).ToString() :
+                        (propertyName == "LimitMaximumPercentage") || (propertyName == "LimitMaximumDollar") || (propertyName == "MaximumDollarCompensation") || (propertyName == "||(propertyName == ") || (propertyName == "MaximumPercentageCompensation") || (propertyName == "HceMaximumAmount") || (propertyName == "HceMaximumPercentage") || (propertyName == "CatchupMaximumAmount") || (propertyName == "CatchupMaximumPercentage") ? faker.Random.Number(50, 100).ToString() :
+                        (propertyName == "LimitMinimumPercentage") || (propertyName == "LimitMinimumDollar") || (propertyName == "HceMinimumAmount") || (propertyName == "HceMinimumPercentage") || (propertyName == "CatchupMinimumAmount") || (propertyName == "CatchupMinimumPercentage") ? faker.Random.Number(1, 50).ToString() :
                         propertyName == "TaxEIN" ? faker.Phone.PhoneNumber("##-#######") :
                         propertyName == "BusinessType" ? 1 :
                         propertyName.Contains("Address", StringComparison.OrdinalIgnoreCase) && !propertyType.IsClass && !propertyName.Equals("AddressType") ? faker.Address.StreetAddress() :
@@ -106,6 +110,7 @@ namespace RefitSandBox.TestDataGenerator
                         propertyName.Contains("Country", StringComparison.OrdinalIgnoreCase) && !propertyName.Equals("CountryId") ? "USA" :
                         propertyName.Equals("Website", StringComparison.OrdinalIgnoreCase) ? faker.Internet.DomainName() :
                         propertyName.Equals("day", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 28) :
+                        propertyName.Equals("SourceName", StringComparison.OrdinalIgnoreCase) ? faker.Random.AlphaNumeric(10) :
                         propertyName.Equals("month", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("agemonth", StringComparison.OrdinalIgnoreCase)? faker.Random.Number(1, 12) :
                         propertyName == "TrsContractId" || propertyName == "RkPlanNumber" ? faker.Random.AlphaNumeric(5).ToUpper() :
                         propertyName == "IrsPlanNumber" ? faker.Random.Number(3, 3).ToString() :
@@ -154,16 +159,18 @@ namespace RefitSandBox.TestDataGenerator
                     {
                         object randomValueFromEnumList = null;
                         var listOfEnumValues = Enum.GetValues(propertyType);
-                        if(propertyType.Name == "FundingCategory")
-                        {
+
+                        if (propertyType.Name == "FundingCategory")
                             randomValueFromEnumList = listOfEnumValues.GetValue(0);
-                        }
-                        randomValueFromEnumList = listOfEnumValues.GetValue(new Random().Next(listOfEnumValues.Length));
+                        
+                        else
+                            randomValueFromEnumList = listOfEnumValues.GetValue(new Random().Next(listOfEnumValues.Length));
+                        
                         property.SetValue(obj, randomValueFromEnumList);
                     }
                     else
                     {
-                        //Console.WriteLine($"No generator for type {propertyName}");
+                        Console.WriteLine($"No generator for type {propertyName}");
                     }
                 }
             }

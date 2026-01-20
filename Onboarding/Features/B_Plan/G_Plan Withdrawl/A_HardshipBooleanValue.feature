@@ -390,8 +390,8 @@ Scenario: Distribution save without Withdrawal type
            | paymentMethod                 |                 1, |
             And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
 Then the API response should contain the 1 following errors 
-	| error_code | error_message                           |
-	| PL423      | Required |
+	| error_code | error_message |
+	| PL423      | Required      |
 
 #PermissableWithdrawal
 
@@ -423,7 +423,7 @@ Scenario: Permissible spouseConsentRequired field accepts false
    When Configuration has been made as per following
            | key                                  | value              |
            | withDrawalType                       |                  5 |
-           | maximumWithDrawalLimitAmount                       |                   |Scenario: Permissible maximum limit configured with null
+           | maximumWithDrawalLimitAmount         |                    | Scenario: Permissible maximum limit configured with null
            | withdrawalDescription                | random 10 numerics | Scenario: Permissible description field accepts numerics
            | spouseConsentRequired                | false              |
            | allowChangingOfStateWithholdingTax   | false              | Scenario: Permissible allowChangingOfStateWithholdingTax field accepts false
@@ -446,6 +446,7 @@ Scenario: Permissible description field accepts alphanumerics
          | withDrawalType               |             5 |
          | maximumWithDrawalLimitAmount |        560.00 | Scenario: Permissible maximum limit configured with value as decimal
          | withdrawalDescription        | <description> |
+         | periodicPaymentApplicable    | true          |
          | paymentMethod                | 1,            |
          | distributionAllocationMethod | 1,            |
          | calculationMethods           | 1,            |
@@ -557,8 +558,8 @@ Scenario: RMD distributionAllocationMethod field configure with ProrataofChoice&
          | key                          | value                                       |
          | withDrawalType               |                                           3 |
          | withdrawalDescription        | random 10 AlphaNumericWithSpecialCharacters | Scenario: RMD description field accepts equal 150
-         | paymentMethod                | 1,2                                          |
-         | eftFee                | 1                                   |Scenario: RMD paymentMethod field configure with checkandEft
+         | paymentMethod                |                                         1,2 |
+         | eftFee                       |                                           1 | Scenario: RMD paymentMethod field configure with checkandEft
          | calculationMethods           | 1,                                          |
          | distributionAllocationMethod | 1,2,                                        |
 
@@ -597,6 +598,7 @@ Scenario: SFS processLesserAmountIfMaximumIsNotAvailable field accepts true
 When Configuration has been made as per following
          | key                                        | value               |
          | withDrawalType                             |                   4 |
+         | periodicPaymentApplicable                  | true                |
          | withdrawalDescription                      | random 10 alphabets | Scenario: SFS description field accepts alphabets
          | processLesserAmountIfMaximumIsNotAvailable | true                |
          | maximumWithDrawalLimitAmount               |                     | Scenario: SFS maximum limit configured with null
@@ -626,14 +628,15 @@ Scenario: SFS processLesserAmountIfMaximumIsNotAvailable field accepts false
 When Configuration has been made as per following
          | key                                        | value              |
          | withDrawalType                             |                  4 |
+         | periodicPaymentApplicable                  | true               | 
          | withdrawalDescription                      | random 10 numerics | Scenario: SFS description field accepts numerics
          | processLesserAmountIfMaximumIsNotAvailable | false              |
-         | minimumWithDrawalLimitAmount | 550.00              |Scenario: SFS minimum limit configured with value as decimal
-         | maximumWithDrawalLimitAmount | 560.00              |Scenario: SFS maximum limit configured with value as decimal
-         | interestRate | 100              |Scenario: SFS interestRate field 100 digit
-         | overnightExpressDeliveryFee | 99999              |Scenario: SFS overnightExpressDeliveryFee field accepts 5 digits
-         | WithdrawalOneTimeOriginateFee | 99999              |Scenario: Scenario: SFS sfsWithdrawalOneTimeOriginateFee field accepts 5 digits
-         | maximumNumberOfDirectRolloverPayees | 0              |Scenario: SFS DirectRolloverPayees field accepts zero
+         | minimumWithDrawalLimitAmount               |             550.00 | Scenario: SFS minimum limit configured with value as decimal
+         | maximumWithDrawalLimitAmount               |             560.00 | Scenario: SFS maximum limit configured with value as decimal
+         | interestRate                               |                100 | Scenario: SFS interestRate field 100 digit
+         | overnightExpressDeliveryFee                |              99999 | Scenario: SFS overnightExpressDeliveryFee field accepts 5 digits
+         | WithdrawalOneTimeOriginateFee              |              99999 | Scenario: Scenario: SFS sfsWithdrawalOneTimeOriginateFee field accepts 5 digits
+         | maximumNumberOfDirectRolloverPayees        |                  0 | Scenario: SFS DirectRolloverPayees field accepts zero
          | allowChangingOfStateWithholdingTax         | false              | Scenario: SFS allowChangingOfStateWithholdingTax field accepts false
          | allowChangingOfFederalWithholdingTax       | false              | Scenario: SFS allowChangingOfFederalWithholdingTax field accepts f alse
          | allowOptingOutOfStateWithholdingTax        | false              | Scenario: SFS allowOptingOutOfStateWithholdingTax field accepts false
@@ -642,10 +645,10 @@ When Configuration has been made as per following
          | availableToBeneficiaries                   | false              | Scenario: SFS availableToBeneficiaries field accepts false
          | sponsorApprovalRequired                    | false              | Scenario: SFS sponsorApprovalRequired field accepts false
          | spouseConsentRequired                      | false              | Scenario: SFS spouseConsentRequired field accepts false
-         | withdrawalLimitPerPeriod                              | 2                |Scenario: SFS limitPerPeriod configured with Quarterly
+         | withdrawalLimitPerPeriod                   |                  2 | Scenario: SFS limitPerPeriod configured with Quarterly
          | paymentMethod                              | 1,                 |
          | calculationMethods                         | 1,                 |
-         | distributionAllocationMethod               | 2,                 |  Scenario: SFS distributionAllocationMethod field configure with AllowmetoChoose
+         | distributionAllocationMethod               | 2,                 | Scenario: SFS distributionAllocationMethod field configure with AllowmetoChoose
          | dateOfAnnuityPayments                      | 2,                 | Scenario: SFS Date of Annuity as participant selcted configuration
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
@@ -735,15 +738,250 @@ Then the API response should contain the 4 following errors
 
 Scenario: SFS number of withdrawals allowed configured with more than twelve for annually
  When Configuration has been made as per following
-         | key                           | value |
-         | withDrawalType                |     4 |
-         | periodicPaymentApplicable     | true  |
-         | withdrawalLimitPerPeriod      |     3 |
-         | numberOfWithdrawalAllowed     |   13    |
-         | paymentMethod                 | 1,    |
-         | calculationMethods            | 1,    |
-         | distributionAllocationMethod  | 1,    |
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | periodicPaymentApplicable    | true  |
+         | withdrawalLimitPerPeriod     |     3 |
+         | numberOfWithdrawalAllowed    |    13 |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
 Then the API response should contain the 1 following errors 
 	| error_code | error_message                                            |
 	| PL346      | Number of Withdrawals allowed should not be more than 12 |
+
+
+# SFSPaymentFrequencyApplicable
+
+#Scenario: SFS Payment Frequency Applicable is configured with Weekly and startday is Monday
+Scenario: SFS Payment Frequency Applicable is configured with Weekly
+ When Configuration has been made as per following
+         | key                          | value    |
+         | withDrawalType               |        4 |
+         | paymentFrequencyApplicable   |        2 |
+         | periodicPaymentApplicable    | true     |
+         | paymentMethod                | 1,       |
+         | startDay                     | startday |
+         | calculationMethods           | 1,       |
+         | distributionAllocationMethod | 1,       |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+Examples: 
+| startday |
+|        1 |
+|        0 | Scenario: SFS Payment Frequency Applicable is configured with Weekly and startday is Sunday
+|        2 | Scenario: SFS Payment Frequency Applicable is configured with Weekly and startday is Tuesday
+|        3 | Scenario: SFS Payment Frequency Applicable is configured with Weekly and startday is Wednesday
+|        4 | Scenario: SFS Payment Frequency Applicable is configured with Weekly and startday is Thursday
+|        5 | Scenario: SFS Payment Frequency Applicable is configured with Weekly and startday is Friday
+|        6 |Scenario: SFS Payment Frequency Applicable is configured with Weekly and startday is Saturday
+
+
+Scenario: SFS Payment Frequency Applicable is configured with SemiMonthly
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |     3 |
+         | startMonthFirstQuarter       |     1 |Scenario: SFS Payment Frequency Applicable is configured with Quarterly as Starting month for first quarter  is Jan
+         | startMonth                   |       | Scenario: SFS Payment Frequency Applicable is configured with Monthly as starting day of every month is 1
+         | firstBeginDay                |     1 | Scenario: SFS Payment Frequency Applicable is configured with Semimonthly as First begin date is 1
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+
+Scenario: SFS Payment Frequency Applicable is configured with Monthly
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |     4 |
+         | startDay                     |     1 |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+
+Scenario: SFS Payment Frequency Applicable is configured with Quarterly
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |     5 |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+
+Scenario: SFS Payment Frequency Applicable is configured with SemiAnnually
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |     6 |
+         | dateOfAnnuityPayments        | 1,    | Scenario: SFS Payment Frequency Applicable is configured with SemiAnnually as Starting month for the half-year  is Jan
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+
+Scenario: SFS Payment Frequency Applicable is configured with Annually
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |     7 |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+
+Scenario: SFS Payment Frequency Applicable is configured with Null
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |       |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 1 following errors 
+	| error_code | error_message |
+	| PL451      | Required      |
+
+Scenario: SFS Payment Frequency Applicable is configured with Weekly and startday is Null
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | startDay                     |       |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 1 following errors 
+	| error_code | error_message |
+	| PL452      | Required      |
+
+Scenario: SFS Payment Frequency Applicable is configured with Semimonthly as First begin date is Null
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | firstBeginDay                |       |
+         | secondBeginDay               |       |
+         | paymentFrequencyApplicable   |     3 |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 2 following errors 
+	| error_code | error_message |
+	| PL453      | Required      |
+	| PL454      | Required      |Scenario: SFS Payment Frequency Applicable is configured with Semimonthly as Second begin date is Null
+
+
+
+Scenario: SFS Payment Frequency Applicable is configured with Semimonthly as First begin date same as Second begin date
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | firstBeginDay                |     1 |
+         | secondBeginDay               |     1 |
+         | paymentFrequencyApplicable   |     3 |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 1 following errors 
+	| error_code | error_message                                               |
+	| PL713      | Second Begin Day should not be equal to the First Begin Day |
+
+Scenario: SFS Payment Frequency Applicable is configured with Monthly as starting day of every month is Null
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | withDrawalType               |     4 |
+         | dateOfAnnuityPayments        | 1,    |
+         | startDay                     |       |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 1 following errors 
+	| error_code | error_message |
+	| PL455      | Required      |
+
+Scenario: SFS Payment Frequency Applicable is configured with Quarterly as starting month for first quarter is Null
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |     5 |
+         | dateOfAnnuityPayments        | 1,    |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | startMonthFirstQuarter       |       |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 1 following errors 
+	| error_code | error_message |
+	| PL457      | Required      |
+
+
+Scenario: SFS Payment Frequency Applicable is configured with SemiAnnually as Starting month for the half-year  is Null
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |     6 |
+         | dateOfAnnuityPayments        | 1,    |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | startMonthFirstHalfYear      |       |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 1 following errors 
+	| error_code | error_message |
+	| PL458      | Required      |
+
+Scenario: SFS Payment Frequency Applicable is configured with Annually as starting date is Jan 1st
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |     3 |
+         | startMonth                   |     1 |
+         | startDay                     |     1 |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then API should respond with successful message
+
+Scenario: SFS Payment Frequency Applicable is configured with Annually as starting Month is Null
+ When Configuration has been made as per following
+         | key                          | value |
+         | withDrawalType               |     4 |
+         | paymentFrequencyApplicable   |     7 |
+         | startMonth                   |       |
+         | startDay                     |       |
+         | dateOfAnnuityPayments        |     1 |
+         | periodicPaymentApplicable    | true  |
+         | paymentMethod                | 1,    |
+         | calculationMethods           | 1,    |
+         | distributionAllocationMethod | 1,    |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+Then the API response should contain the 2 following errors 
+	| error_code | error_message |
+	| PL460      | Required      |
+	| PL452      | Required      |Scenario: SFS Payment Frequency Applicable is configured with Annually as starting day is Null
+

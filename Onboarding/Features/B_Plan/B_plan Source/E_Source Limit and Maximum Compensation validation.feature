@@ -2,19 +2,29 @@
 [BeforeTestRun]
 
 
+#Scenario: verify the Add Custom Source name data type acceptance of only Special Characters
+
 Scenario:To verify when user leave the limit (minimum) field as Blank in the percentage option
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                    | value                   |
-           | sourceName             | random 10 alphaNumerics |
-           | contributionType       |                       1 |
-           | limitMinimumPercentage |                         |
-           | limitMaximumPercentage |                      80 |
+           | key                    | value                       |
+           | sourceName             | random 10 specialCharacters |Scenario: 8308 To verify the Source name data type acceptance of only Special Characters
+           | effectiveStartDate     |                             |
+           | contributionType       |                           1 |
+           | limitMinimumPercentage |                             |
+           | limitMaximumPercentage |                             |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL995 : Required"
+
+Then the API response should contain the 4 following errors
+ | error_code | error_message                      |
+ | PL995      | Required                           |
+ | PL182      | Required                           | Scenario: To verify the validation message for Effective start date by leaving empty
+ | PL1001     | Required                           | Scenario:To verify the validation message for Limit (maximum) field by leaving empty
+ | PL400      | Source name should be alphanumeric | Scenario: 8308 To verify the Source name data type acceptance of only Special Characters
+
 
 Scenario:To veriy data Acceptance -Number in the percentage limit(minimum) field
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -73,19 +83,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL398 : Maximum limit amount should not be equal or lesser than minimum limit"
 
-Scenario:To verify the validation message for Limit (maximum) field by leaving empty
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                    | value                   |
-           | sourceName             | random 10 alphaNumerics |
-           | contributionType       |                       1 |
-           | limitMinimumPercentage |                      60 |
-           | limitMaximumPercentage |                         |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL1001 : Required"
+
 
 Scenario:To verify the validation message for Limit (maximum) acceptance criteria of values more than 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -121,27 +119,33 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                    | value                   |
-           | sourceName             | random 10 alphaNumerics |
-           | contributionType       |                       1 |
-           | limitMinimumPercentage |                      60 |
-           | limitMaximumPercentage |                     100 |
+           | key                    | value                    |
+           | sourceName             | random 10 alphabets      | Scenario: 8306 To verify the Source name data type acceptance of only alphabets
+           | effectiveStartDate     | 2023-04-01T10:02:00.490Z | Scenario: To verify the Effective start date acceptance criteria of format "mm/dd/yyyy"Given Model is selected for the endpoint "/api/Source/SaveSource"
+           | contributionType       |                        1 |
+           | limitMinimumPercentage |                       60 |
+           | limitMaximumPercentage |                      100 |
+           | recordKeepingNumber    | random 30 alphabets      |Scenario: To verify the Source ID data type acceptance of only alphabets and equals with 30 characters
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
 
 Scenario:To verify the  Limit (maximum) acceptance criteria of values below 100 percentage
 
+#Scenario:To verify the Add Custom Source name data type acceptance of only numeric
+
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                    | value                   |
-           | sourceName             | random 10 alphaNumerics |
-           | contributionType       |                       1 |
-           | limitMinimumPercentage |                      60 |
-           | limitMaximumPercentage |                      80 |
+           | key                    | value              |
+           | sourceName             | random 10 numerics | Scenario: 8307 To verify the Source name data type acceptance of only numeric
+           | contributionType       |                  1 |
+           | limitMinimumPercentage |                 60 |
+           | limitMaximumPercentage |                 80 |
+           | recordKeepingNumber    | random 10 numerics | Scenario: To verify the Source ID  data type acceptance of only numeric
+
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
@@ -159,20 +163,26 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL1017 : Maximum limit amount should not be equal or lesser than minimum limit"
 
+#Scenario:To verify the Add Custom Source name data type acceptance of only alphanumeric with Special Characters
+#Scenario: To verify the Add Custom Source name field length acceptance of below 30 characters
 Scenario:Source Limit Maximum Field validatation when Limit Maximum field  equal to  Limit Minimum field when contribution type is percentage 
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                    | value                   |
-           | sourceName             | random 10 alphaNumerics |
-           | contributionType       |                       1 |
-           | limitMinimumPercentage |                      50 |
-           | limitMaximumPercentage |                      50 |
+           | key                    | value                                       |
+           | sourceName             | random 10 alphaNumericWithSpecialCharacters |
+           | contributionType       |                                           1 |
+           | limitMinimumPercentage |                                          50 |
+           | limitMaximumPercentage |                                          50 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL398 : Maximum limit amount should not be equal or lesser than minimum limit"
+Then the API response should contain the 2 following errors
+ | error_code | error_message                                                         |
+ | PL398      | Maximum limit amount should not be equal or lesser than minimum limit |
+ | PL400      | Source name should be alphanumeric                                    |Scenario: 8310 To verify the Source name data type acceptance of only alphanumeric with Special Characters
 
+ #Scenario:  To verify the Add Custom Source name data type acceptance of only alphanumeric
 Scenario:Source maximumDollarCompensation acceptance when contribution type is percentage 
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
@@ -180,10 +190,11 @@ When Configuration has been made as per following
            | companyId | <CompanyId> |
 When Configuration has been made as per following
            | key                       | value                   |
-           | sourceName                | random 10 alphaNumerics |
+           | sourceName                | random 10 alphaNumerics |Scenario: 8309 To verify the Source name data type acceptance of only alphanumeric
            | contributionType          |                       1 |
            | maximumDollarCompensation |                      80 |
-          
+           | recordKeepingNumber    | random 10 specialCharacters      |Scenario: To verify the Source ID   data type acceptance of only Special Characters
+
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
@@ -193,14 +204,18 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                           | value                   |
-           | sourceName                    | random 10 alphaNumerics |
-           | contributionType              |                       1 |
-           | limitMinimumPercentage        |                      10 |
-           | limitMaximumPercentage        |                      30 |
-           | maximumPercentageCompensation |                      90 |          
+           | key                           | value               |
+           | sourceName                    | random 40 alphabets | Scenario: 8311 To verify the Source name field length acceptance of below 50 characters
+           | contributionType              |                   1 |
+           | limitMinimumPercentage        |                  10 |
+           | limitMaximumPercentage        |                  30 |
+           | maximumPercentageCompensation |                  90 |
+           | recordKeepingNumber           | random 10 alphaNumerics | Scenario: To verify the Source ID   data type acceptance of only alphanumeric
+
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
+
+#Scenario: To verify the Add Custom Source name field length acceptance of above 30 characters
 
 Scenario: To verify the Maximum compensation acceptance criteria of values equal 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -208,11 +223,13 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                       | value                   |
-           | sourceName                | random 10 alphaNumerics |
-           | contributionType          |                       1 |
-           | maximumDollarCompensation |                     100 |
-          
+           | key                       | value                                       |
+           | sourceName                | random 50 alphabets                         | Scenario: 8312 To verify the Source name field length acceptance of equals of 50 characters
+           | contributionType          |                                           1 |
+           | maximumDollarCompensation |                                         100 |
+           | recordKeepingNumber       | random 10 alphaNumericWithSpecialCharacters | Scenario: To verify the Source ID   data type acceptance of only alphanumeric with Special Characters
+
+
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
@@ -223,29 +240,41 @@ When Configuration has been made as per following
            | companyId | <CompanyId> |
 When Configuration has been made as per following
            | key                           | value                   |
-           | sourceName                    | random 10 alphaNumerics |
+           | sourceName                    | random 60 alphabets |
            | contributionType              |                       1 |
            | limitMinimumPercentage        |                      10 |
            | limitMaximumPercentage        |                      30 |
            | maximumPercentageCompensation |                     101 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL189 : Maximum limit compensation  should not exceed 100 percentage"
+Then the API response should contain the 2 following errors
+ | error_code | error_message                                                |
+ | PL189      | Maximum limit compensation  should not exceed 100 percentage |
+ | PL180      | Source name should not exceed 50 characters                  | Scenario: 8313 To verify the Source name field length acceptance of above 50 characters
 
-
+#Scenario: To Verify the validation message for Add Custom Source name by leaving empty
 Scenario: To verify the validation message for Maximum compensation field by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                       | value                   |
-           | sourceName                | random 10 alphaNumerics |
-           | contributionType          |                       2 |
-           | limitMinimumDollar        |                      10 |
-           | limitMaximumDollar        |                      30 |
-           | maximumDollarCompensation |                         |
+           | key                       | value                    |
+           | sourceName                | random 0 alphabets  |
+           | effectiveStartDate        | 2023-01-01T10:02:00.490Z |
+           | effectiveEndDate          | 2022-01-01T10:02:00.490Z |
+           | contributionType          |                        2 |
+           | limitMinimumDollar        |                          | Scenario: To verify the validation message for Limit (minimum) field by leaving empty
+           | limitMaximumDollar        |                       30 |
+           | maximumDollarCompensation |                          |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL1020 : Required"
+Then the API response should contain the 4 following errors
+ | error_code | error_message                                                  |
+ | PL1020     | Required                                                       |
+ | PL998      | Required                                                       |
+ | PL183      | Effective Start Date should be prior to the Effective End Date | Scenario: To verify the Effective end date acceptance criteria of format "mm/dd/yyyy"
+ | PL1141     | Required                                                       | Scenario: 109219 To Verify the validation message for Source name by leaving empty
+
+
 
 
 Scenario:Source Limit Minimum Field acceptance when contribution type is dollar
@@ -254,28 +283,20 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                       | value                   |
-           | sourceName                | random 10 alphaNumerics |
-           | contributionType          |                       2 |
-           | limitMinimumDollar        |                     600 |
-           | limitMaximumDollar        |                     800 |
-           | maximumDollarCompensation |                     800 |
+           | key                       | value                    |
+           | sourceName                | random 10 alphaNumerics  |
+           | effectiveStartDate        | 2023-04-01T10:02:00.490Z |
+           | effectiveEndDate          | 2023-04-02T10:02:00.490Z |Scenario: 8327 To verify the Effective end date acceptance criteria of format "mm/dd/yyyy" 
+           | contributionType          |                        2 |
+           | limitMinimumDollar        |                      600 |
+           | limitMaximumDollar        |                      800 |
+           | maximumDollarCompensation |                      800 |
+           | recordKeepingNumber    | random 25 alphabets      |Scenario: To verify the Source ID   field length acceptance of below 30 characters
+
+
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario: To verify the validation message for Limit (minimum) field by leaving empty
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                | value                   |
-           | sourceName         | random 10 alphaNumerics |
-           | contributionType   |                       2 |
-           | limitMinimumDollar |                         |
-           | limitMaximumDollar |                     800 |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL998 : Required"
 
 Scenario:Source Limit Maximum Field acceptance when contribution type is dollar
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -283,12 +304,17 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                       | value                   |
-           | sourceName                | random 10 alphaNumerics |
-           | contributionType          |                       2 |
-           | limitMinimumDollar        |                     600 |
-           | limitMaximumDollar        |                     800 |
-           | maximumDollarCompensation |                     100 |
+           | key                       | value                    |
+           | sourceName                | random 10 alphaNumerics  |
+           | effectiveStartDate        | 2023-04-01T10:02:00.490Z |
+           | effectiveEndDate          |                          | Scenario: Source Effective End Date Field Accceptance when  its null
+           | contributionType          |                        2 |
+           | limitMinimumDollar        |                      600 |
+           | limitMaximumDollar        |                      800 |
+           | maximumDollarCompensation |                      100 |
+           | recordKeepingNumber       | random 35 alphabets      | Scenario:To verify the Source ID   field length acceptance of above 30 characters
+
+
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
@@ -334,9 +360,7 @@ When Configuration has been made as per following
            | contributionType          |                       2 |
            | limitMinimumDollar        |                     500 |
            | limitMaximumDollar        |                     600 |
-When Collection in a model is configured with 1 blocks for the property "AdditionalDeferralSource" with values to save model portfolio as given below
-| BlockNumber | Key                       | Value |
-|           1 | MaximumDollarCompensation |       |
+           | MaximumDollarCompensation |                         |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then the API response should contain the 1 following errors
 | error_code | error_message |
@@ -368,6 +392,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                     120 |
            | limitMaximumPercentage        |                      80 |
@@ -391,6 +418,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                     100 |
            | limitMaximumPercentage        |                      80 |
@@ -411,18 +441,26 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                         |
-           | limitMaximumPercentage        |                      80 |
-           | maximumPercentageCompensation |                      90 |
-           | limitMinimumDollar            |                      10 |
+           | limitMaximumPercentage        |                         |
+           | maximumPercentageCompensation |                         |
+           | limitMinimumDollar            |                         |
            | limitMaximumDollar            |                      40 |
            | maximumDollarCompensation     |                      80 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL995 : Required"
-
-
+Then the API response should contain the 6 following errors 
+	| error_code | error_message |
+	| PL995      | Required      |
+	| PL1001     | Required      | Scenario:  To verify when user leave the limit (maximum) field as Blank in the percentage Both option
+	| PL998      | Required      | Scenario: To verify when user leave the limit (minimum) field as Blank in the dollar option
+	| PL1004     | Required      | Scenario:To verify when user leave the limit (maximum) field as Blank in the dollar Both option
+	| PL399      | Required      | Scenario:To verify when user leave the maximum compensation field as Blank in the percentage Both option
+	| PL1020     | Required      |Scenario:To verify when user leave the maximum compensation field as Blank in the dollar Both option
 
 Scenario: TC 1 Source Limit Minimum Field acceptance when contribution type is percentage - positive flow
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -430,38 +468,26 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                           | value                   |
-           | sourceName                    | random 10 alphaNumerics |
-           | contributionType              |                       3 |
-           | limitMinimumPercentage        |                      10 |
-           | limitMaximumPercentage        |                      80 |
-           | maximumPercentageCompensation |                      80 |
-           | limitMinimumDollar            |                      10 |
-           | limitMaximumDollar            |                      40 |
-           | maximumDollarCompensation     |                      80 |
+           | key                           | value               |
+           | sourceName                    | random 30 alphabets | Scenario: To verify the Add Custom Source name data type acceptance of only alphabets and equal 30 characters
+           | sourceType                    |                   1 |
+           | sourceCategory                |                   2 |
+           | sourceSubCategory             |                   4 |
+           | contributionType              |                   3 |
+           | limitMinimumPercentage        |                  10 |
+           | limitMaximumPercentage        |                  80 |
+           | maximumPercentageCompensation |                  80 |
+           | limitMinimumDollar            |                  10 |
+           | limitMaximumDollar            |                  40 |
+           | maximumDollarCompensation     |                  80 |
+           | recordKeepingNumber           | random 0 alphabets  | Scenario:  To Verify the validation message for Source ID  by leaving empty
+
+
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
 
-Scenario:  To verify when user leave the limit (maximum) field as Blank in the percentage Both option
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                           | value                   |
-           | sourceName                    | random 10 alphaNumerics |
-           | contributionType              |                       3 |
-           | limitMinimumPercentage        |                      10 |
-           | limitMaximumPercentage        |                         |
-           | maximumPercentageCompensation |                      80 |
-           | limitMinimumDollar            |                      10 |
-           | limitMaximumDollar            |                      40 |
-           | maximumDollarCompensation     |                      80 |
-
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL1001 : Required"
 
 
 Scenario:  To verify when user enter a value greater than 100 in the percentage Both limit(maximum) field
@@ -473,6 +499,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                      10 |
            | limitMaximumPercentage        |                      120|
@@ -494,6 +523,9 @@ When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
            | contributionType              |                       3 |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | limitMinimumPercentage        |                      10 |
            | limitMaximumPercentage        |                 1234.77 |
            | maximumPercentageCompensation |                      80 |
@@ -504,24 +536,6 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL187 : Maximum limit should not exceed 100 percentage"
 
-Scenario: To verify when user leave the limit (minimum) field as Blank in the dollar option
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                           | value                   |
-           | sourceName                    | random 10 alphaNumerics |
-           | contributionType              |                       3 |
-           | limitMinimumPercentage        |                      20 |
-           | limitMaximumPercentage        |                      80 |
-           | maximumPercentageCompensation |                      90 |
-           | limitMinimumDollar            |                         |
-           | limitMaximumDollar            |                      40 |
-           | maximumDollarCompensation     |                      80 |
-
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL998 : Required"
 
 Scenario: To verify when user enter a value greater than 11 digits with 2 deciamal points in the limit(minimum) Dollar field-Both option
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -531,6 +545,12 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
+           | contributionType              |                       3 |
+           | sourceSubSubCategory          |                       1 |
+           | isHCEManatory                 | true                    |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                      20 |
            | limitMaximumPercentage        |                      80 |
@@ -552,6 +572,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                      10 |
            | limitMaximumPercentage        |                      70 |
@@ -563,26 +586,6 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
  
- Scenario:To verify when user leave the limit (maximum) field as Blank in the dollar Both option
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                           | value                   |
-           | sourceName                    | random 10 alphaNumerics |
-           | contributionType              |                       3 |
-           | limitMinimumPercentage        |                      10 |
-           | limitMaximumPercentage        |                      80 |
-           | maximumPercentageCompensation |                      80 |
-           | limitMinimumDollar            |                      10 |
-           | limitMaximumDollar            |                         |
-           | maximumDollarCompensation     |                      80 |
-
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL1004 : Required"
-
-
  Scenario:To verify when user enter a value greater than 11 didigits with 2 decimal points in the dollar limit(maximum) field
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
@@ -591,6 +594,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                      20 |
            | limitMaximumPercentage        |                      80 |
@@ -610,6 +616,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                      10 |
            | limitMaximumPercentage        |                      70 |
@@ -621,43 +630,6 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
-Scenario:To verify when user leave the maximum compensation field as Blank in the percentage Both option
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                           | value                   |
-           | sourceName                    | random 10 alphaNumerics |
-           | contributionType              |                       3 |
-           | limitMinimumPercentage        |                      10 |
-           | limitMaximumPercentage        |                      80 |
-           | maximumPercentageCompensation |                         |
-           | limitMinimumDollar            |                      10 |
-           | limitMaximumDollar            |                      40 |
-           | maximumDollarCompensation     |                      80 |
-
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL399 : Required"
-
-Scenario:To verify when user leave the maximum compensation field as Blank in the dollar Both option
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                           | value                   |
-           | sourceName                    | random 10 alphaNumerics |
-           | contributionType              |                       3 |
-           | limitMinimumPercentage        |                      10 |
-           | limitMaximumPercentage        |                      80 |
-           | maximumPercentageCompensation |                      90 |
-           | limitMinimumDollar            |                      10 |
-           | limitMaximumDollar            |                      40 |
-           | maximumDollarCompensation     |                         |
-
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL1020 : Required"
 
 Scenario:To verify when user enter a value greater than 100 in the maximum compensation field-percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -667,6 +639,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                      20 |
            | limitMaximumPercentage        |                      80 |
@@ -686,6 +661,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                      10 |
            | limitMaximumPercentage        |                      80 |
@@ -705,6 +683,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                      10 |
            | limitMaximumPercentage        |                      70 |
@@ -724,6 +705,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                           | value                   |
            | sourceName                    | random 10 alphaNumerics |
+           | sourceType                    |                       1 |
+           | sourceCategory                |                       2 |
+           | sourceSubCategory             |                       4 |
            | contributionType              |                       3 |
            | limitMinimumPercentage        |                      10 |
            | limitMaximumPercentage        |                      70 |
@@ -744,6 +728,9 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                       | value                   |
            | sourceName                | random 10 alphaNumerics |
+           | sourceType                |                       1 |
+           | sourceCategory            |                       2 |
+           | sourceSubCategory         |                       4 |
            | contributionType          |                       3 |
            | maximumDollarCompensation |                     100 |
            | limitMaximumDollar        |          12345678901.34 |
@@ -900,7 +887,11 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
            | contributionType     |                       3 |
+           | sourceSubSubCategory |                       1 |
            | isHCEManatory        | true                    |
            | hceMinimumPercentage |                      20 |
            | hceMaximumPercentage |                      20 |
@@ -1150,8 +1141,12 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
-           | contributionType     |                       3 |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | isHCEManatory        | true                    |
+           | contributionType     |                       3 |
            | hceMinimumPercentage |                         |
            | hceMaximumPercentage |                      25 |
            | hceMinimumAmount     |            209090909.99 |
@@ -1169,8 +1164,12 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
-           | contributionType     |                       3 |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | isHCEManatory        | true                    |
+           | contributionType     |                       3 |
            | hceMinimumPercentage |                      25 |
            | hceMaximumPercentage |                         |
            | hceMinimumAmount     |            209090909.99 |
@@ -1187,8 +1186,12 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
-           | contributionType     |                       3 |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | isHCEManatory        | true                    |
+           | contributionType     |                       3 |
            | hceMinimumPercentage |                      25 |
            | hceMaximumPercentage |                      35 |
            | hceMinimumAmount     |            209090909.99 |
@@ -1206,8 +1209,12 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
-           | contributionType     |                       3 |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | isHCEManatory        | true                    |
+           | contributionType     |                       3 |
            | hceMinimumPercentage |                      25 |
            | hceMaximumPercentage |                      35 |
            | hceMinimumAmount     |                         |
@@ -1225,6 +1232,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | isCatchUpManatory        | true                    |
            | catchUpType              |                       1 |
            | catchupMinimumPercentage |                         |
@@ -1240,6 +1251,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMaximumPercentage |                         |
@@ -1256,6 +1271,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |                         |
@@ -1271,6 +1290,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMaximumAmount |                         |   
@@ -1287,6 +1310,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      20 |
@@ -1304,6 +1331,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |                      20 |
@@ -1322,6 +1353,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       3 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |                      20 |
@@ -1340,6 +1375,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       3 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      20 |
@@ -1359,6 +1398,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                     100 |
@@ -1375,12 +1418,19 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                    1020 |
            | catchupMaximumPercentage |                     100 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
- Then API should give response as "PL987 : Minimum limit should not exceed 100 percentage"
+	Then the API response should contain the 2 following errors 
+	| error_code | error_message                                                         |
+	| PL987      | Minimum limit should not exceed 100 percentage                        |
+	| PL1016     | Maximum limit amount should not be equal or lesser than minimum limit |
 
  Scenario:To verify the CatchUpManatory field as Yes when catchupMinimumPercentage field is greater than catchupMaximumPercentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -1390,6 +1440,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                     100 |
@@ -1406,6 +1460,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      40 |
@@ -1422,6 +1480,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                     101 |
@@ -1438,6 +1500,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType              |                       1 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                     100 |
@@ -1453,6 +1519,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                    | value                   |
            | sourceName             | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType            |                       2 |
            | isCatchUpManatory      | true                    |
            | catchupMinimumAmount   |          20909090909.99 |
@@ -1470,6 +1540,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |           2090909099.99 |
@@ -1485,6 +1559,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |         209090229099.99 |
@@ -1500,6 +1578,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |       2090902229099.992 |
@@ -1515,6 +1597,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |          20909022299.99 |
@@ -1530,6 +1616,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |               209090.99 |
@@ -1545,6 +1635,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |            209090222.99 |
@@ -1561,6 +1655,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                  | value                   |
            | sourceName           | random 10 alphaNumerics |
+           | sourceType           |                       1 |
+           | sourceCategory       |                       2 |
+           | sourceSubCategory    |                       4 |
+           | sourceSubSubCategory |                       1 |
            | catchUpType          |                       2 |
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |         20909022288.998 |
@@ -1576,6 +1674,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       3 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                         |
@@ -1593,6 +1695,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       3 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      10 |
@@ -1612,6 +1718,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       3 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      10 |
@@ -1631,6 +1741,10 @@ When Configuration has been made as per following
 When Configuration has been made as per following
            | key                      | value                   |
            | sourceName               | random 10 alphaNumerics |
+           | sourceType               |                       1 |
+           | sourceCategory           |                       2 |
+           | sourceSubCategory        |                       4 |
+           | sourceSubSubCategory     |                       1 |
            | catchUpType              |                       3 |
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      10 |
@@ -1643,5 +1757,35 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 Then API should give response as "PL1000 : Required"
 
 
+Scenario: To verify the Save of the Roth Conversion Source Type with error message 
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When the property "SourceName" is configured as "RothConversion" 
+And the property "SourceType" is configured as "1" 
+And the property "SourceCategory" is configured as "2" 
+And the property "SourceSubCategory" is configured as "5" 
+And the property "SourceSubSubCategory" is configured as "3" 
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+When the property "SourceName" is configured as "Roth" 
+And the property "SourceType" is configured as "1" 
+And the property "SourceCode" is configured as "Z" 
+And the property "SourceCategory" is configured as "2" 
+And the property "SourceSubCategory" is configured as "5" 
+And the property "SourceSubSubCategory" is configured as "3" 
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should give response as "PL949 : Only one In-Plan Roth Conversion source is allowed per plan"
 
-
+ Scenario: To verify the Save of the Roth Conversion Source Type 
+Given Model is selected for the endpoint "/api/Source/SaveSource"
+When Configuration has been made as per following
+           | key       | value       |
+           | companyId | <CompanyId> |
+When the property "SourceName" is configured as "RothConversion" 
+And the property "SourceType" is configured as "1" 
+And the property "SourceCategory" is configured as "2" 
+And the property "SourceSubCategory" is configured as "5" 
+And the property "SourceSubSubCategory" is configured as "3" 
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+Then API should respond with successful message

@@ -647,15 +647,15 @@ And Model portfolio investment added to plan and enrollment configured with 3 bl
 Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
 
 When Collection in a model is configured with 2 blocks for the property "PlanInvestment" with values as given below
-| BlockNumber | Key                       | Value              |
-| 1           | InvestmentId              | <MPInvestmentId>   |
-| 1           | InvestmentName            | <MPInvestmentName> |
-| 1           | InvestmentPercentage      | 50.00              |
-| 1           | DefaultElectionSettingsId | 0                  |
-| 2           | InvestmentId              | <MPInvestmentId2>    |
-| 2           | InvestmentName            | <MPInvestmentName2>  |  
-| 2           | InvestmentPercentage      | 50.00              |
-| 2           | DefaultElectionSettingsId | 0                  |
+| BlockNumber | Key                       | Value               |
+|           1 | InvestmentId              | <MPInvestmentId>    |
+|           1 | InvestmentName            | <MPInvestmentName>  |
+|           1 | InvestmentPercentage      |               50.00 |
+|           1 | DefaultElectionSettingsId |                   0 |
+|           2 | InvestmentId              | <MPInvestmentId2>   |
+|           2 | InvestmentName            | <MPInvestmentName2> |
+|           2 | InvestmentPercentage      |               50.00 |
+|           2 | DefaultElectionSettingsId |                   0 |
 
 When Collection in a model is configured with 2 blocks for the property "InvestmentElectionValuesList" with values to save model portfolio as given below
 | BlockNumber | Key                  | Value              |

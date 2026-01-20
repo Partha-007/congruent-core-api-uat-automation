@@ -3,11 +3,11 @@
 A short summary of the feature
  Scenario: Employee classification (successful response)
   Given Model is selected for the endpoint "/api/v1/Company"
-  When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
+  When Collection in a model is configured with 1 blocks for the property "Classifications" with values as given below
 | BlockNumber | Key                        | Value              |
 |           1 | ClassificationName         | random 5 alphabets |
 |           1 | EmployeeClassificationType |                  1 |
- And Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
+  When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values as given below
  | BlockNumber | Key  | Value |
  | 1           | Code | 2     |
  
@@ -117,9 +117,9 @@ Then API should respond with successful message
 | BlockNumber | Key                        | Value               |
 |           1 | ClassificationName         | random 51 alphabets |
 |           1 | EmployeeClassificationType | random 1 numerics   |
-  When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
-| BlockNumber | Key  | Value             |
 |           1 | Code | random 1 numerics |
+ # When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
+#| BlockNumber | Key  | Value             |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then the API response should contain the 1 following errors
 | error_code | error_message                                               |
@@ -137,12 +137,10 @@ Then the API response should contain the 1 following errors
 | 1           | ClassificationName         | random 5 alphabets  |
 | 1           | EmployeeClassificationType | random 45 alphabets |
 | 1           | Code                       | random 5 numerics   |
-#When addMasterClassificationType is executed
-
-#And saveCompany is executed
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then API should respond with successful message
-
+#When addMasterClassificationType is executed
+#And saveCompany is executed
 
 
 
