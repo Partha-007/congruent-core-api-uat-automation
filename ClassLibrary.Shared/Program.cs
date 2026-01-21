@@ -2494,7 +2494,12 @@ namespace RefitSandBox
                             }
                         }
                     }
-
+                    //****
+                    if (value.Contains("_"))
+                    {
+                        value = await GetDate(Convert.ToInt32(value.Split("_")[1]),value.Split("_")[0]);
+                       
+                    }
                     // Date and time *****
                     if (property.PropertyType == typeof(DateTimeOffset?))
                     {
