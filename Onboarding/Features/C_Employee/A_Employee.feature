@@ -46,6 +46,7 @@ When Configuration has been made as per following
 | maritalStatus                |                            |
 | middleName                   |                        222 |
 | routingNumber                |                            |
+| zipCode                |                            |
 When The date property "hireDate" is configured as "days" and should add "31" days to the current date
 When The date property "terminationDate" is configured as "days" and should add "31" days to the current date
 When The date property "reHireDate" is configured as "days" and should add "31" days to the current date
@@ -83,7 +84,8 @@ Then the API response should contain the 13 following errors
 	| EM014      | Required                                                                                        | Scenario: 20261 Employee last Name field null validation
 	| EM248      | Required.                                                                                       | Scenario:(Tc0119) To verify the Marital status  with null value  in Create Mode of Employee Information Page
 	| EM028      | Middle Initial should have letter only.                                                         | Scenario: 20280 Employee middle Name field validation numerics
-	| EM211      | Required.                                                                                       |Scenario:To verify the routingNumber field  value name with Null  in Create Mode of Employee Information Page
+	| EM211      | Required.                                                                                       | Scenario:To verify the routingNumber field  value name with Null  in Create Mode of Employee Information Page
+	| EM019      | Required                                                                                        |Scenario: 20474 To verify the ZipCode field  value name with Null  in Create Mode of Employee Information Page
 
 #Scenario: 20444 To verify the Foreign Country field  value name with Null when Country as Other in Create Mode of Employee Information Page
 Scenario: To verify the Additional ZipCode field  value length validation in Create Mode of Employee Information Page
@@ -113,7 +115,7 @@ When Configuration has been made as per following
 | maritalStatus                | Y                                          |
 | middleName                   | random 1 specialCharacters                 |
 | routingNumber                | random 9 alphabets                         |
-
+| zipCode                      | abc                                        |
 When The date property "birthDate" is configured as "days" and should add "0" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 3 following errors 
@@ -136,7 +138,8 @@ Then the API response should contain the 3 following errors
 	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                           | Scenario: 20265 Employee last Name field  validation numerics
 	| EM033      | Invalid Marital Status.                                                                         | Scenario:(Tc0128) To verify the Marital status value with invalid data in Create Mode of Employee Information Page
 	| EM028      | Middle Initial should have letter only.                                                         | Scenario: 20281 Employee middle Name field validation special charecters
-	| EM259      | Routing number must contain only numeric digits (0–9).                                          |Scenario:To verify Routing number field in data type acceptance of only alphabets - Create mode
+	| EM259      | Routing number must contain only numeric digits (0–9).                                          | Scenario:To verify Routing number field in data type acceptance of only alphabets - Create mode
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number              |Scenario: 20475 To verify the ZipCode field  value with lower case in Create Mode of Employee Information Page
 
 
 
@@ -167,7 +170,7 @@ When Configuration has been made as per following
 | uniquePersonalIdentification | random 9 alphabets          |
 | middleName                   | a1                          |
 | routingNumber                | random 9 specialCharacters  |
-
+| zipCode                     | ABC                         |
 When The date property "birthDate" is configured as "days" and should add "1" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 4 following errors 
@@ -189,7 +192,8 @@ Then the API response should contain the 4 following errors
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20372 To verify the  Phone Number  value with Combination of Upper case and lower case in Create Mode of Employee Information Page
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.                | Scenario: To verify the SSN  value with alphabets in Create Mode of Employee Information Page
 	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20282 Employee middle Name field validation alphanumerics
-	| EM259      | Routing number must contain only numeric digits (0–9).                                        |Scenario:To verify Routing number field in data type acceptance of only special characters - Create mode
+	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only special characters - Create mode
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            |Scenario: 20476 To verify the ZipCode field  value with Upper case in Create Mode of Employee Information Page
 
 #Scenario: 20377 To verify the  Phone Number  value with below 10 characters in Create Mode of Employee Information Page
 Scenario: 110174 To verify the bankAccountHolderName field with alphaNumerics of below 10  in Create Mode of Employee Information Page
@@ -209,9 +213,8 @@ When Configuration has been made as per following
 | firstName                    | random 10 alphabets         |
 | uniquePersonalIdentification | random 9 specialCharacters  |
 | middleName                   | a1#                         |
-| routingNumber                | random 9 alphaNumerics  |
-
-
+| routingNumber                | random 9 alphaNumerics      |
+| zipCode                      | ABc                         |
 When The date property "birthDate" is configured as "days" and should add "-1" days to the current date
 When The date property "hireDate" is configured as "days" and should add "1" days to the current date
 When The date property "terminationDate" is configured as "days" and should add "10" days to the current date
@@ -229,6 +232,7 @@ Then the API response should contain the 4 following errors
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.                | Scenario: To verify the SSN  value with special characters in Create Mode of Employee Information Page
 	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20283 Employee middle Name field validation alphanumerics and special charecters
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only alphanuerics - Create mode
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            |Scenario: 20477 To verify the ZipCode field  value with Combination of Upper case and lower case in Create Mode of Employee Information Page
 
 
 
@@ -248,11 +252,11 @@ When Configuration has been made as per following
 | employmentStatusId           |                                             |
 | city                         | random 10 alphaNumericWithSpecialCharacters |
 | mobilePhoneNumber            | !@#                                         |
-| firstName                    | random 10 specialCharacters                         |
-| lastName                    | random 10 specialCharacters                         |
+| firstName                    | random 10 specialCharacters                 |
+| lastName                     | random 10 specialCharacters                 |
 | uniquePersonalIdentification | 444-44-4444                                 |
 | routingNumber                | random 9 alphaNumericWithSpecialCharacters  |
-
+| zipCode                      | random 10 numerics                          |
 When The date property "birthDate" is configured as "years" and should add "-15" days to the current date
 
 
@@ -269,7 +273,8 @@ Then the API response should contain the 4 following errors
 	| EM061      | Social Security Number digits all should not be same                                          | Scenario: 20290 Employee SSN field all same validation
 	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20255 Employee first Name field  validation special charecters
 	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20270 Employee last Name field  validation special charecters
-	| EM259      | Routing number must contain only numeric digits (0–9).                                        |Scenario:To verify Routing number field in data type acceptance of only alphanuerics with special characters - Create mode
+	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only alphanuerics with special characters - Create mode
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            |Scenario: 20478 To verify the ZipCode field  value with only Numerics in Create Mode of Employee Information Page
 
 Scenario:To verify the bankAccountHolderName field with alphabets of above 150 characters  in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
@@ -277,18 +282,19 @@ Scenario:To verify the bankAccountHolderName field with alphabets of above 150 c
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key                          | value                   |
-| accountHolderName            | random 151 alphabets    |
-| bankAccountName              | random 10 alphaNumerics |
-| bankAccountNumber            | random 10 alphaNumerics |
-| employmentStatus             | active                  |
-| hireDate                     |                         |
-| mobilePhoneNumber            | !@#123                  |
-| employeeNumber               | random 22 alphabets     |
-| firstName                    | random 160 alphabets    |
-| lastName                     | random 160 alphabets    |
-| uniquePersonalIdentification | 444-00-4444             |
-| routingNumber                | random 10 numerics      |
+| key                          | value                       |
+| accountHolderName            | random 151 alphabets        |
+| bankAccountName              | random 10 alphaNumerics     |
+| bankAccountNumber            | random 10 alphaNumerics     |
+| employmentStatus             | active                      |
+| hireDate                     |                             |
+| mobilePhoneNumber            | !@#123                      |
+| employeeNumber               | random 22 alphabets         |
+| firstName                    | random 160 alphabets        |
+| lastName                     | random 160 alphabets        |
+| uniquePersonalIdentification | 444-00-4444                 |
+| routingNumber                | random 10 numerics          |
+| zipCode                      | random 10 specialCharacters |
 
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 4 following errors 
@@ -303,6 +309,7 @@ Then the API response should contain the 4 following errors
 	| EM027      | First Name should not exceed 150 characters.                                                  | Scenario: 20260 Employee first Name field greater than 150 charecters validation
 	| EM031      | Last Name should not exceed 150 characters.                                                   | Scenario: 20275 Employee last Name field greater than 150 charecters validation
 	| EM212      | Routing number should be 9 characters.                                                        | Scenario:To verify the routingNumber field with numerics of above 9  in Create Mode of Employee Information Page
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            | Scenario: 20479 To verify the ZipCode field  value with only Special Characters in Create Mode of Employee Information Page
 
 
 
@@ -496,11 +503,13 @@ Examples:
 #Scenario: 20349 To verify the Marital Status Dropdown values "Divorced" selected in Create Mode of Employee Information Page
 #Scenario: 20350 To verify the Marital Status Dropdown values "Widower" selected in Create Mode of Employee Information Page
 
-Scenario:To verify Routing number field in data type acceptance of only numerics - Create mode
-Scenario:To verify the routingNumber field with numerics of below 9  in Create Mode of Employee Information Page
-Scenario:To verify the routingNumber field with numerics of equal 9  in Create Mode of Employee Information Page
+#Scenario:To verify Routing number field in data type acceptance of only numerics - Create mode
+#Scenario:To verify the routingNumber field with numerics of below 9  in Create Mode of Employee Information Page
+#Scenario:To verify the routingNumber field with numerics of equal 9  in Create Mode of Employee Information Page
 
 
+
+#Scenario: 20483 To verify the zipCode field  value with equal 5 characters in Create Mode of Employee Information Page
 #Scenario: 20369 To verify the  Phone Number  value name with Null  in Create Mode of Employee Information Page
 Scenario: 20621 To verify the Birth Date  value with valid date format of  MM/DD/YYYY in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
@@ -508,13 +517,14 @@ Scenario: 20621 To verify the Birth Date  value with valid date format of  MM/DD
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key               | value      |
-| birthDate         | 01-04-1988 |
-| mobilePhoneNumber |            |
+| key               | value             |
+| birthDate         | 01-04-1988        |
+| mobilePhoneNumber |                   |
+| zipCode           | random 5 numerics |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
 
-
+#Scenario: 20487 To verify the Zipcode  value with equal 9 characters in Create Mode of Employee Information Page
 Scenario: 20629 To verify the Hire Date  value with valid date format of Current date MM/DD/YYYY in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
@@ -524,8 +534,9 @@ When The date property "hireDate" is configured as "<type>" and should add "<hi>
 When The date property "terminationDate" is configured as "days" and should add "<te>" days to the current date
 When The date property "reHireDate" is configured as "days" and should add "<re>" days to the current date
 When Configuration has been made as per following
-| key              | value          |
-| employmentStatus | Military Leave |
+| key              | value             |
+| employmentStatus | Military Leave    |
+| zipCode          | random 9 numerics |
 When The date property "leaveStartDate" is configured as "days" and should add "<le>" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
@@ -561,6 +572,8 @@ When Configuration has been made as per following
 | firstName                    | random 10 alphaNumerics                                                                                                              |
 | lastName                     | 123abc                                                                                                                               |
 | uniquePersonalIdentification | 000-00-0000                                                                                                                          |
+| zipCode                      | random 10 alphaNumerics                          |
+
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 1 following errors 
 	| error_code | error_message                                                                                 |
@@ -570,7 +583,8 @@ Then the API response should contain the 1 following errors
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20376 To verify the  Phone Number  value with Alphanumerics & Special characters in Create Mode of Employee Information Page
 	| EM062      | Social Security Number fourth and fifth digits should not be zero.                            | Scenario: 20295 Employee SSN field with all digits zero validation
 	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20256 Employee first Name field  validation alphaNumerics
-	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         |Scenario: 20271 Employee last Name field  validation alphaNumerics
+	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20271 Employee last Name field  validation alphaNumerics
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            | Scenario: 20480 To verify the ZipCode field  value with Alphanumerics in Create Mode of Employee Information Page
 
 Scenario: 20646 To verify the Leave start Date  value as Null Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
@@ -586,6 +600,7 @@ When Configuration has been made as per following
 | firstName                    | random 10 alphaNumericWithSpecialCharacters |
 | lastName                    | random 10 alphaNumericWithSpecialCharacters |
 | uniquePersonalIdentification | 666-66-6666         | 
+| zipCode                      | random 10 alphaNumericWithSpecialCharacters                          |
 
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 1 following errors 
@@ -595,7 +610,8 @@ Then the API response should contain the 1 following errors
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20379 To verify the  Phone Number  value with above 10 characters in Create Mode of Employee Information Page
 	| EM061      | Social Security Number digits all should not be same                                          | Scenario: 20297 Employee SSN field with all digits as 6  validation
 	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20257 Employee first Name field  validation alphaNumerics with special charecters
-	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         |Scenario: 20272 Employee last Name field  validation alphaNumerics with special charecters
+	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20272 Employee last Name field  validation alphaNumerics with special charecters
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            |Scenario: 20481 To verify the ZipCode field  value with Alphanumerics & Special characters in Create Mode of Employee Information Page
 
 
 Scenario: 20650 To verify the Leave Start Date  value with valid date format of Current date + 30 date MM/DD/YYYY in Create Mode of Employee Information Page
@@ -611,16 +627,18 @@ When Configuration has been made as per following
 | workPhoneNumber              |          0678437328 |
 | firstName                    | random 10 alphabets |
 | uniquePersonalIdentification | 000-00-9999         |
+| zipCode                      | random 3 numerics   |
 
 When The date property "leaveStartDate" is configured as "days" and should add "31" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 1 following errors 
-	| error_code | error_message                                                      |
-	| EM127      | Leave Start Date cannot be more than 30 days in future.            |
-	| EM040      | Email ID is invalid.                                               | Scenario: 20366 To verify the Email field  value added Special Characters in Create Mode of Employee Information Page
-	| EM037      | Primary Phone number should not start with zero.                   | Scenario: 20380 To verify the  Phone Number  value in Create Mode of Employee Information Page starts with Zero
-	| EM039      | Secondary Phone number should not start with zero.                 | Scenario: 150471 Verify whether validation is triggered if "Secondary Phone Number" field is started with "zero(0)" --> "Employee Information Page"--> New Employee --> Employee Tab
-	| EM062      | Social Security Number fourth and fifth digits should not be zero. | Scenario: 20300 Employee SSN field with  Combination of first three digits are 000  with Fourt and Fifth digits are Zero validation
+	| error_code | error_message                                                                      |
+	| EM127      | Leave Start Date cannot be more than 30 days in future.                            |
+	| EM040      | Email ID is invalid.                                                               | Scenario: 20366 To verify the Email field  value added Special Characters in Create Mode of Employee Information Page
+	| EM037      | Primary Phone number should not start with zero.                                   | Scenario: 20380 To verify the  Phone Number  value in Create Mode of Employee Information Page starts with Zero
+	| EM039      | Secondary Phone number should not start with zero.                                 | Scenario: 150471 Verify whether validation is triggered if "Secondary Phone Number" field is started with "zero(0)" --> "Employee Information Page"--> New Employee --> Employee Tab
+	| EM062      | Social Security Number fourth and fifth digits should not be zero.                 | Scenario: 20300 Employee SSN field with  Combination of first three digits are 000  with Fourt and Fifth digits are Zero validation
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number | Scenario: 20482 To verify the ZipCode field  value with below 5 characters in Create Mode of Employee Information Page
 
 
 Scenario:(Tc419)To verify the validation message forLeave End Date  value as Null when changing employment status change to other from Leave inCreate Mode of Employee Information Page
@@ -658,17 +676,19 @@ When Configuration has been made as per following
 | primaryEmailAddress | ABC123!@#@test.com |
 | firstName                    | random 10 alphabets |
 | uniquePersonalIdentification |666-00-1234        | 
+| zipCode           | random 6 numerics |
 
 When The date property "leaveStartDate" is configured as "days" and should add "30" days to the current date
 When The date property "leaveEndDate" is configured as "days" and should add "29" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 1 following errors 
-	| error_code | error_message                                                      |
-	| EM080      | Leave End Date cannot be prior to the Leave Start Date.            |
-	| EM040      | Email ID is invalid.                                               | Scenario: 20368 To verify the Email field  value added Alphanumerics & Special characters in Create Mode of Employee Information Page
-	| EM062      | Social Security Number fourth and fifth digits should not be zero. |Scenario: 20301 Employee SSN field with  Combination of first three digits are 666  with Fourt and Fifth digits are zero validation
+	| error_code | error_message                                                                      |
+	| EM080      | Leave End Date cannot be prior to the Leave Start Date.                            |
+	| EM040      | Email ID is invalid.                                                               | Scenario: 20368 To verify the Email field  value added Alphanumerics & Special characters in Create Mode of Employee Information Page
+	| EM062      | Social Security Number fourth and fifth digits should not be zero.                 | Scenario: 20301 Employee SSN field with  Combination of first three digits are 666  with Fourt and Fifth digits are zero validation
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number |Scenario: 20484 To verify the zipCode field  value with above 5 characters in Create Mode of Employee Information Page
 
-
+#Scenario: 20486 To verify the Zipcode  value with below 9 characters in Create Mode of Employee Information Page
 Scenario: 150479 Verify whether validation is triggered if "Secondary Phone Number" field is started with "zero(0)" --> "Employee Information Page"--> Existing Employee --> Employee Tab
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
@@ -686,11 +706,14 @@ When Configuration has been made as per following
 | workPhoneNumber              |          0678437328 |
 | firstName                    | random 10 alphabets |
 | uniquePersonalIdentification | 123-45-6789         |  
+| zipCode           | random 7 numerics |
+
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 2 following errors 
 	| error_code | error_message                                                                                                                                                    |
 	| EM039      | Secondary Phone number should not start with zero.                                                                                                               |
-	| EM110      | This employee Social Security Number already exists in the company.Please review Existing Employees Social Security Number and correct or delete this new entry. |Scenario: To verify the Employee have same SSN of another employee with in the System in Create Mode of Employee Information Page
+	| EM110      | This employee Social Security Number already exists in the company.Please review Existing Employees Social Security Number and correct or delete this new entry. | Scenario: To verify the Employee have same SSN of another employee with in the System in Create Mode of Employee Information Page
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number                                                                               |Scenario: 20485 To verify the Zipcode  value with above 5 and below 9 characters in Create Mode of Employee Information Page
 
 
 
@@ -703,12 +726,14 @@ When Configuration has been made as per following
 | key                          | value               |
 | firstName                    | random 10 alphabets |
 | uniquePersonalIdentification | 999-00-1234         |
+| zipCode                      | random 11 numerics  |
 When The date property "leaveStartDate" is configured as "days" and should add "30" days to the current date
 When The date property "leaveEndDate" is configured as "days" and should add "29" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 1 following errors 
-	| error_code | error_message                                                      |
-	| EM062      | Social Security Number fourth and fifth digits should not be zero. |
+	| error_code | error_message                                                                      |
+	| EM062      | Social Security Number fourth and fifth digits should not be zero.                 |
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number |Scenario: 20488 To verify the Zipcode  value with above 9 characters in Create Mode of Employee Information Page
 
 Scenario: To verify the SSN  value with above 9 characters in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
