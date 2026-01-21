@@ -745,8 +745,7 @@ namespace RefitSandBox
 
 
 
-        public const string BASE_URL = "https://localhost:3200";
-        public string APIEndpoint = "api/v1/Payroll/PayrollAndCensusFileUpload";
+        
         public static string uploadedFileName;
         public async Task<JObject> SendAPIRequestForFileUpload(string filename, string fundingType)
         {
@@ -899,6 +898,77 @@ namespace RefitSandBox
 
             //var formData = HandlingFileUpload(filename);
 
+        }
+
+        public async Task SendAPIRequestForFileUploadToTestEndpoint(string filename)
+        {
+            MultipartFormDataContent form;
+            string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+            uploadedFileName = Path.Combine(projectDirectory, "Templates", filename);
+            if (filename == "CombinedFile.csv")
+            {
+                using (form = new MultipartFormDataContent())
+                {
+                    StreamContent streamContent;
+                    using (var fileStream = new FileStream(uploadedFileName, FileMode.Open))
+                    {
+                        streamContent = new StreamContent(fileStream);
+                        form.Add(streamContent, "file", uploadedFileName);
+                        form.Add(new StringContent("1"), "fileType");
+                        form.Add(new StringContent("testing stuff"), "description");
+                        form.Add(new StringContent("false"), "isSFTP");
+                        form.Add(new StringContent("1"), "inputType");
+                        form.Add(new StringContent("1"), "format");
+                        form.Add(new StringContent("true"), "isMultiplePlanOrPaydate");
+                        form.Add(new StringContent("savePayroll.csv"), "fileName");
+                        form.Add(new StringContent("null"), "planId");
+                        form.Add(new StringContent("null"), "payDate");
+                        form.Add(new StringContent("false"), "isYearEndProcessing");
+                        form.Add(new StringContent("0"), "payrollFrequencyId");
+
+                        var httpClient = new HttpClient()
+                        {
+                            BaseAddress = new Uri(_url)
+                        };
+
+                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
+
+                        var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
+                        var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileToTestEndpoint(form);
+
+                        if (responseAfterFileUpload.IsSuccessfull)
+                            ResponseFromTestEndpoint = responseAfterFileUpload;
+                        else
+                            throw new Exception("Error in uploading file to test endpoint");
+                    }
+                }
+            }
+
+        }
+
+        PayrollAndCensusFileUploadTestResult ResponseFromTestEndpoint;
+        public async Task ValidateResponseFromTestEndpoint(string controlName, string errorReportMessage, string ecrMessage)
+        {
+            bool errorTriggered = false;
+            if(ResponseFromTestEndpoint == null)
+                throw new Exception("No response from test endpoint to validate");
+
+            var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages);
+
+            foreach(var error in errorMessages)
+            {
+                if(controlName == error.ControlName)
+                {
+                    errorTriggered = true;
+                    var actualErrorReportMessage = error.MessageCode;
+                    var actualECRReportMessage = error.MessageDescCode;
+                    ClassicAssert.AreEqual(errorReportMessage, actualErrorReportMessage);
+                    ClassicAssert.AreEqual(ecrMessage, actualECRReportMessage);
+                }
+            }
+
+            if (!errorTriggered)
+                throw new Exception($"Error not triggered for the given control name {controlName}");
         }
 
         public async Task TradeOrderFileUpload(string filename)
