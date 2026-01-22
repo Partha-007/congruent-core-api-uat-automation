@@ -1483,6 +1483,7 @@ namespace RefitSandBox
                 { "/api/BasicPlanDetails/SaveBasicPlanDetails", () => new PlanDetailsViewModel() },
                 { "/api/v1/Company", () => new CompanyViewModel() },
                 { "/api/v1/Payroll/SaveEmployee",() => new PayrollEmployeeViewModel() },
+                { "/api/v1/Payroll/AddBeneficary",() => new PayrollEmployeeViewModel() },
                 { "/api/Loan/SaveLoan", () => new LoanSettingViewModel() },
                 { "/api/v1/Loan/SaveInprogressLoanRequest", () => new EmployeeLoanViewModel()},
                 {"/api/Vesting/SaveVesting", () => new VestingViewModel() },
@@ -2498,7 +2499,10 @@ namespace RefitSandBox
                     if (value.Contains("_"))
                     {
                         value = await GetDate(Convert.ToInt32(value.Split("_")[1]),value.Split("_")[0]);
-                       
+                        //var splitted = value.Split("_");
+
+                        //Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[0], ignoreCase: true);
+                        //value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
                     }
                     // Date and time *****
                     if (property.PropertyType == typeof(DateTimeOffset?))

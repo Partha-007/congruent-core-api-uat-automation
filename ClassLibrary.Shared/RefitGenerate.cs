@@ -194,8 +194,12 @@ namespace RefitSandBox
 
         [Post("/api/v1/Payroll/SaveEmployee")]
         Task<object> SaveEmployeeAsync([Body] PayrollEmployeeViewModel employee);
+
+        [Post("/api/v1/Payroll/AddBeneficary")]
+        Task<object> AddBeneficaryAsync([Body] PayrollEmployeeViewModel employee);
+
     }
-    public interface ILoan
+public interface ILoan
     {
         [Post("/api/v1/Loan/SaveInprogressLoanRequest")]
         Task<dynamic> SaveInprogressLoanRequest(EmployeeLoanViewModel loanViewModel);
