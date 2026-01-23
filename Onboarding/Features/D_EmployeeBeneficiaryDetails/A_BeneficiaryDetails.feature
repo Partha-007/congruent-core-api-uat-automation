@@ -127,7 +127,7 @@ When Configuration has been made as per following
 | email             |       |
 | phoneNumber       |       |
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 11 following errors 
 	| error_code | error_message |
 	| EM192      | Required.     |
 	| EM189      | Required.     | Scenario:To verify the BeneficiaryBankaAccountNumber field  value name with Null  in Create Mode of Employee Information Page
@@ -166,7 +166,7 @@ When Configuration has been made as per following
 | phoneNumber       | random 10 alphabets  |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 14 following errors 
 	| error_code | error_message                                                 |
 	| EM225      | Address 1 should not exceed 150 characters.                   |
 	| EM226      | Address 2 should not exceed 35 characters.                    | Scenario:To verify the address2 field  value with above 35 alphaebts  in Create Mode of Employee Information Page
@@ -205,7 +205,7 @@ When Configuration has been made as per following
 | phoneNumber       | random 10 specialCharacters  |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 11 following errors 
 	| error_code | error_message                                                      |
 	| EM260      | Bank account number must contain only numeric digits (0–9)         |
 	| EM219      | Account Holder Name contains hyphen ,spaces and letters only.      | Scenario:To verify the BeneficiaryBankAccountHolderName field with special characrets  in Create Mode of Employee Information Page
@@ -240,7 +240,7 @@ When Configuration has been made as per following
 | zipCode           |                             |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 10 following errors 
 	| error_code | error_message                                                      |
 	| EM260      | Bank account number must contain only numeric digits (0–9)         |
 	| EM219      | Account Holder Name contains hyphen ,spaces and letters only.      | Scenario:To verify the BeneficiaryBankAccountHolderName field with alphaNumerics  in Create Mode of Employee Information Page
@@ -273,7 +273,7 @@ When Configuration has been made as per following
 | phoneNumber       | random 10 alphaNumericWithSpecialCharacters |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 9 following errors 
 	| error_code | error_message                                                      |
 	| EM260      | Bank account number must contain only numeric digits (0–9)         |
 	| EM219      | Account Holder Name contains hyphen ,spaces and letters only.      | Scenario:To verify the BeneficiaryBankAccountHolderName field with alphaNumericWithSpecialCharacters  in Create Mode of Employee Information Page
@@ -310,7 +310,7 @@ When Configuration has been made as per following
 
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 10 following errors 
 	| error_code | error_message                                                      |
 	| EM190      | Bank account Number should not exceed 18 characters.               |
 	| EM219      | Account Holder Name contains hyphen ,spaces and letters only.      | Scenario:To verify the BeneficiaryBankAccountHolderName field with numerics of below 15  in Create Mode of Employee Information Page
@@ -338,7 +338,7 @@ When Configuration has been made as per following
 | phoneNumber       | random 11 numerics |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 5 following errors 
 	| error_code | error_message                                          |
 	| EM218      | Account Holder Name should not exceed 150 characters.  |
 	| EM230      | Zipcode contains Alphanumeric only.                    | Scenario: To Verify the data acceptance Foreign Zipcode when user enters alpha numerics with special characters  - create mode
@@ -382,7 +382,7 @@ When Configuration has been made as per following
 | email             | testbeneficiarytestbeneficiarytestbeneficiarytestbeneficiarytestbeneficiarytestbeneficiary@test.com |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 3 following errors 
 	| error_code | error_message                                      |
 	| EM210      | ZIP Code should not be greater than 36 characters. |
 	| EM229      | Date of Birth must be prior to the current date.   | Scenario: To verify the Date of Birth field value with valid date format of Current date MM/DD/YYYY- create mode

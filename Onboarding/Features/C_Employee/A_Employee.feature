@@ -50,7 +50,7 @@ When The date property "hireDate" is configured as "days" and should add "31" da
 When The date property "terminationDate" is configured as "days" and should add "31" days to the current date
 When The date property "reHireDate" is configured as "days" and should add "31" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 13 following errors 
+Then the API response should contain the 32 following errors 
 	| error_code | error_message                                                                                   |
 	| EM017      | Required                                                                                        |
 	| EM140      | Required                                                                                        | Scenario: To verify the Additional Address City field Mandatory validation in Create Mode of Employee Information Page
@@ -118,7 +118,7 @@ When Configuration has been made as per following
 When The date property "birthDate" is configured as "days" and should add "0" days to the current date
 When The date property "hireDate" is configured as "null" and should add "0" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 3 following errors 
+Then the API response should contain the 21 following errors 
 	| error_code | error_message                                                                                   |
 	| EM152      | ZIP Code should not exceed 36 characters.                                                       |
 	| EM021      | Required                                                                                        | Scenario: To verify the Foreign Country field value length validation in Create Mode of Employee Information Page
@@ -176,7 +176,7 @@ When Configuration has been made as per following
 When The date property "hireDate" is configured as "days" and should add "31" days to the current date
 When The date property "birthDate" is configured as "days" and should add "1" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 4 following errors 
+Then the API response should contain the 19 following errors 
 	| error_code | error_message                                                                                 |
 	| EM153      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            |
 	| EM143      | City name should have spaces, dot, hyphen, (‘) and letters only.                              | Scenario: To verify the Additional City field  value Character acceptance in Create Mode of Employee Information Page
@@ -225,7 +225,7 @@ When The date property "hireDate" is configured as "days" and should add "1" day
 When The date property "terminationDate" is configured as "days" and should add "10" days to the current date
 When The date property "reHireDate" is configured as "days" and should add "20" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 4 following errors 
+Then the API response should contain the 11 following errors 
 	| error_code | error_message                                                                                 |
 	| EM219      | Account Holder Name contains hyphen ,spaces and letters only                                  |
 	| EM187      | Bank Name contains hyphen ,spaces and letters only.                                           | Scenario:To verify the bankAccountName field with specialCharacters of  10  in Create Mode of Employee Information Page
@@ -237,7 +237,7 @@ Then the API response should contain the 4 following errors
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.                | Scenario: To verify the SSN  value with special characters in Create Mode of Employee Information Page
 	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20283 Employee middle Name field validation alphanumerics and special charecters
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only alphanuerics - Create mode
-	| EM019      | Required                                                                                        |Scenario: 20474 To verify the ZipCode field  value name with Null  in Create Mode of Employee Information Page
+	| EM019      | Required                                                                                      | Scenario: 20474 To verify the ZipCode field  value name with Null  in Create Mode of Employee Information Page
 
 
 
@@ -266,7 +266,7 @@ When Configuration has been made as per following
 
 When The date property "birthDate" is configured as "years" and should add "-15" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 4 following errors 
+Then the API response should contain the 12 following errors 
 	| error_code | error_message                                                                                 |
 	| EM219      | Account Holder Name contains hyphen ,spaces and letters only                                  |
 	| EM187      | Bank Name contains hyphen ,spaces and letters only.                                           | Scenario:To verify the bankAccountName field with alphaNumericWithSpecialCharacters of  10  in Create Mode of Employee Information Page
@@ -279,7 +279,7 @@ Then the API response should contain the 4 following errors
 	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20255 Employee first Name field  validation special charecters
 	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20270 Employee last Name field  validation special charecters
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only alphanuerics with special characters - Create mode
-	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number              |Scenario: 20475 To verify the ZipCode field  value with lower case in Create Mode of Employee Information Page
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            | Scenario: 20475 To verify the ZipCode field  value with lower case in Create Mode of Employee Information Page
 
 
 Scenario:To verify the bankAccountHolderName field with alphabets of above 150 characters  in Create Mode of Employee Information Page
@@ -303,7 +303,7 @@ When Configuration has been made as per following
 | zipCode                     | ABC                         |
 
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 4 following errors 
+Then the API response should contain the 11 following errors 
 	| error_code | error_message                                                                                 |
 	| EM218      | Account Holder Name should not exceed 150 characters.                                         |
 	| EM187      | Bank Name contains hyphen ,spaces and letters only.                                           | Scenario:To verify the bankAccountName field with alphaNumerics of  10  in Create Mode of Employee Information Page
@@ -594,7 +594,7 @@ When Configuration has been made as per following
 | zipCode                      | ABc                                                                                                                                  |
 
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 8 following errors 
 	| error_code | error_message                                                                                 |
 	| EM055      | Hire Date cannot be prior or equal to the Date of Birth.                                      |
 	| EM034      | City name should not exceed 35 characters.                                                    | Scenario: 20435 To verify the City field  value with above 30 characters in Create Mode of Employee Information Page
@@ -624,7 +624,7 @@ When Configuration has been made as per following
 
 
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 7 following errors 
 	| error_code | error_message                                                                                 |
 	| EM079      | Leave Start Date is required.                                                                 |
 	| EM040      | Email ID is invalid                                                                           | Scenario: 20364 To verify the Email field  value in Create Mode of Employee Information Page other than format (abc@test.com)
@@ -650,11 +650,9 @@ When Configuration has been made as per following
 | firstName                    | random 10 alphabets |
 | uniquePersonalIdentification | 000-00-9999         |
 | zipCode                      | random 10 specialCharacters |
-
-
 When The date property "leaveStartDate" is configured as "days" and should add "31" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 6 following errors 
 	| error_code | error_message                                                                      |
 	| EM127      | Leave Start Date cannot be more than 30 days in future.                            |
 	| EM040      | Email ID is invalid.                                                               | Scenario: 20366 To verify the Email field  value added Special Characters in Create Mode of Employee Information Page
@@ -721,7 +719,7 @@ When Configuration has been made as per following
 When The date property "leaveStartDate" is configured as "days" and should add "30" days to the current date
 When The date property "leaveEndDate" is configured as "days" and should add "29" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 4 following errors 
 	| error_code | error_message                                                                      |
 	| EM080      | Leave End Date cannot be prior to the Leave Start Date.                            |
 	| EM040      | Email ID is invalid.                                                               | Scenario: 20368 To verify the Email field  value added Alphanumerics & Special characters in Create Mode of Employee Information Page
@@ -767,7 +765,7 @@ When Configuration has been made as per following
 | hireDate                     | 01/01/1988          |
 | birthDate                    | 01/01/1991          |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 3 following errors 
 	| error_code | error_message                                                                      |
 	| EM062      | Social Security Number fourth and fifth digits should not be zero.                 |
 	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number | Scenario: 20485 To verify the Zipcode  value with above 5 and below 9 characters in Create Mode of Employee Information Page
@@ -786,7 +784,7 @@ When Configuration has been made as per following
 | employmentStatus             | Terminated          |
 | terminationDate              |                     |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 4 following errors 
 	| error_code | error_message                                                                      |
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.     |
 	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number | Scenario: 20488 To verify the Zipcode  value with above 9 characters in Create Mode of Employee Information Page
@@ -853,8 +851,8 @@ Scenario: To verify the Most recent Term date value with valid date format of Cu
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key                          | value               |
-| employmentStatus                    | Terminated|
+| key              | value      |
+| employmentStatus | Terminated |
 When The date property "terminationDate" is configured as "days" and should add "0" days to the current date
  When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
 | BlockNumber | Key             | Value  |
@@ -916,8 +914,8 @@ Scenario: To verify the Most recent Term Date  value with valid date format of C
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key                          | value               |
-| employmentStatus                    | Terminated|
+| key              | value      |
+| employmentStatus | Terminated |
 When The date property "terminationDate" is configured as "days" and should add "29" days to the current date
  When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
 | BlockNumber | Key             | Value  |
@@ -931,16 +929,21 @@ Scenario: To verify the validation message for Most Recent term Date  value as b
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key                          | value               |
-| employmentStatus                    | Terminated|
-| terminationDate                    | 2022-04-04T06:56:11.258Z|
+| key              | value                    |
+| employmentStatus | Terminated               |
+| terminationDate  | 2022-04-04T06:56:11.258Z |
+| zipCode          | random 10 alphaNumericWithSpecialCharacters  |
+
  When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
-| BlockNumber | Key             | Value  |
+| BlockNumber | Key             | Value                    |
 |           1 | terminationDate | 2022-04-04T06:56:11.258Z |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 1 following errors 
-	| error_code | error_message                                     |
-	| EM088      | Most recent term should not be prior to Hire date |
+Then the API response should contain the 2 following errors 
+	| error_code | error_message                                                                      |
+	| EM088      | Most recent term should not be prior to Hire date                                  |
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number | Scenario: 20481 To verify the ZipCode field  value with Alphanumerics & Special characters in Create Mode of Employee Information Page
+
+
 
 Scenario: To verify the validation message for Most Recent term Date is admitted for New hire employee in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
@@ -948,16 +951,19 @@ Scenario: To verify the validation message for Most Recent term Date is admitted
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key                          | value               |
-| employmentStatus                    | Terminated|
-| acceptWarning                    | false|
-| hireDate                    | 2022-12-27T06:56:11.258Z|
-| terminationDate                    | 2023-12-26T06:56:11.258Z|
+| key              | value                    |
+| employmentStatus | Terminated               |
+| acceptWarning    | false                    |
+| hireDate         | 2022-12-27T06:56:11.258Z |
+| terminationDate  | 2023-12-26T06:56:11.258Z |
+| zipCode          | random 10 alphaNumerics  |
  When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
 | BlockNumber | Key             | Value                    |
 |           1 | terminationDate | 2023-12-26T06:56:11.258Z |
 |           1 | rehireDate      |                          |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 1 following errors 
-	| error_code | error_message                                                |
-	| EM069      | New employee added with Date of Termination. Please confirm. |
+Then the API response should contain the 2 following errors 
+	| error_code | error_message                                                                      |
+	| EM069      | New employee added with Date of Termination. Please confirm.                       |
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number |Scenario: 20480 To verify the ZipCode field  value with Alphanumerics in Create Mode of Employee Information Page
+
