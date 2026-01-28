@@ -176,7 +176,7 @@ When Configuration has been made as per following
 When The date property "hireDate" is configured as "days" and should add "31" days to the current date
 When The date property "birthDate" is configured as "days" and should add "1" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 19 following errors 
+Then the API response should contain the 20 following errors 
 	| error_code | error_message                                                                                 |
 	| EM153      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            |
 	| EM143      | City name should have spaces, dot, hyphen, (‘) and letters only.                              | Scenario: To verify the Additional City field  value Character acceptance in Create Mode of Employee Information Page
@@ -197,6 +197,7 @@ Then the API response should contain the 19 following errors
 	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20282 Employee middle Name field validation alphanumerics
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only special characters - Create mode
 	| EM047      | ZIP Code should not exceed 36 characters.                                                     | Scenario: 20499 To verify the Foreign Zipcode  value with above 36 characters  when Country as Other in Create Mode of Employee Information Page
+	| EM054      | Hire Date cannot be more than 30 days in future.                                              | Scenario:(Tc401)To verify the HIre Date  value with valid date format of Current date + 30 date MM/DD/YYYY in Create Mode of Employee Information Page
 
 
 
@@ -966,4 +967,17 @@ Then the API response should contain the 2 following errors
 	| error_code | error_message                                                                      |
 	| EM069      | New employee added with Date of Termination. Please confirm.                       |
 	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number |Scenario: 20480 To verify the ZipCode field  value with Alphanumerics in Create Mode of Employee Information Page
+
+
+#**********************
+Scenario: positive case
+  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
+  When Configuration has been made as per following
+| key       | value       |
+| companyId | <CompanyId> |
+When Configuration has been made as per following
+| key       | value |
+| firstName | Rock  |
+When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
+Then API should respond with successful message
 

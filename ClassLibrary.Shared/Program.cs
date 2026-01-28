@@ -1283,6 +1283,19 @@ namespace RefitSandBox
                             Console.Write(response.ToString());
                             return response;
                         }
+                        else if (methodName == "SaveEmployeeAsync")
+                        {
+                            var requestBody = JsonConvert.SerializeObject(model);
+                            var requestPayload = JObject.Parse(requestBody);
+                            string Action = "/api/v1/Payroll/SaveEmployee";
+                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
+                            var contentTask = await task.Content.ReadAsStringAsync();
+                            response = JObject.Parse(contentTask);
+                            Console.Write(response.ToString());
+                            return response;
+                        }
                         else
                         {
                             try
@@ -3015,7 +3028,7 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(planModel);
             modelAfterConvention = FakeDataHelper.AssignId(companyId.ToString(), "CompanyId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("effectiveDate", "2019-01-01");
+            await program.Configuration("effectiveDate", "2019-01-02");
             await program.Configuration("name", "ABC123");
             await program.Configuration("1month", "1");
             await program.Configuration("1day", "1");
