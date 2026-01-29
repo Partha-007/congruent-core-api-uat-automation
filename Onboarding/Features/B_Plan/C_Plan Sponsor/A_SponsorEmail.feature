@@ -108,8 +108,10 @@ Examples:
 
 Scenario: Sponsor Email field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
-  When the property "firstName" is configured as "<firstName>"
-  And the property "lastName" is configured as "<lastName>"
+  When Configuration has been made as per following
+           | key       | value       |
+           | firstName | <firstName> |
+           | lastName  | <lastName>  |
   And the property "ssn" is configured as "123-45-7891"
   And the property "isSponsor" is configured as "false"
   And the property "email" is configured as "<Email>"
@@ -209,5 +211,6 @@ Scenario: SponsorSSN field validate existing ssn
   And the property "email" is configured as "test223@test.com"
   And the property "mobilePhoneNumber" is configured as "133-456-7899"
    And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
-  Then API should give response as "PL060 : This Social Security Number already belongs to Sponsor" 
- 
+  Then API should give response as "PL060 : This Social Security Number already belongs to Sponsor with same Plan" 
+#Error message got changed
+ #This Social Security Number already belongs to Sponsor 
