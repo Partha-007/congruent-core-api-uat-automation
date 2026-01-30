@@ -113,7 +113,8 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
            | feesPaymentMethodsApplicable                  | 0,    |
            | refinancingAllowed                            | true  |
            | firstRepaymentDateFallsAfter                  |       |
-           | firstRepaymentDateFallsWithin                  |       |
+           | firstRepaymentDateFallsWithin                 |       |
+           | loanFeeAmount                                 |       |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -134,7 +135,8 @@ Then the API response should contain the 1 following errors
 	| PL307      | Required      | Scenario: Default method is configured with Null
 	| PL865      | Required      | Scenario: To Save feesPaymentMethodsApplicable field as empty
 	| PL302      | Required      | Scenario: To Validate First repayment date falls after field  is empty
-	| PL303      | Required      |Scenario: To Validate First repayment date falls within field  is empty
+	| PL303      | Required      | Scenario: To Validate First repayment date falls within field  is empty
+	| PL337      | Required      | Scenario: To Save loanFeeAmount  field as null
 
 
 
@@ -146,8 +148,10 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
            | waitingPeriodBetweenLoansPayoffAndLoanRequest |  1000 |
            | curePeriod                                    |     2 |
            | curePeriodFixedNumberOfDays                   |       |
-           | feesPaymentMethodsApplicable                   |    1,  |
-           | checkFee                   |       |
+           | feesPaymentMethodsApplicable                  | 1,    |
+           | checkFee                                      |       |
+           | refinancingAllowed                            | true  |
+           | firstRepaymentDateFallsWithin                 |    91 |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -158,10 +162,11 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
            | minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
 Then the API response should contain the 1 following errors 
-	| error_code | error_message |
-	| PL316      | Required      |
-	| PL276      | Required      | Scenario: Cure Period with Fixed number of days as Null
-	| PL866      | Required      |Scenario: To Save feesPaymentMethodsApplicable field when  check fee as empty
+	| error_code | error_message                                                          |
+	| PL316      | Required                                                               |
+	| PL276      | Required                                                               | Scenario: Cure Period with Fixed number of days as Null
+	| PL866      | Required                                                               | Scenario: To Save feesPaymentMethodsApplicable field when  check fee as empty
+	| PL304      | First repayment date falls after date should be between 0 and 30 days. | Scenario: To Validate First repayment date falls after field  is above 30
 
 
 
@@ -172,25 +177,31 @@ Then the API response should contain the 1 following errors
 #Scenario: To Verify select direct payment and payroll deduction in Applicable repayment method field as both 
 #Scenario: Cure Period for employee termination with Fixed number of days as 1
 #Scenario: To Save feesPaymentMethodsApplicable field to select both check fee and  EFT length as 3 digits with 2 decimal points
+#Scenario: To Validate First repayment date falls after field  is equal as 30
+#Scenario: To Save loanFeeAmount  field as length of 3 digits with 2 decimal points
 
 Scenario: To Validate Allow multiple active loans? field  as No and waitingPeriodBetweenLoansPayoffAndLoanRequest as length as 2 digits
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
-           | key                                               | value |
-           | allowMultipleActiveLoans                          | false |
-           | waitingPeriodBetweenLoansPayoffAndLoanRequest     |    20 |
-           | allowParticipantsToChooseLoanFeeType              | false |
-           | loanFeeTypeDeductedFrom                           |     2 |
-           | allowParticipantsToChooseInterestRate             | true  |
-           | interestRateMinimum                               |   100 |
-           | interestRateMaximum                               |   100 |
-           | applicablePaymentMethods                          |   1,2 |
-           | sourceHierarchies                                 |   1,2 |
-           | curePeriodForEmployeeTermination                  |     2 |
-           | curePeriodFixedNumberOfDaysForEmployeeTermination |     1 |
-           | feesPaymentMethodsApplicable                      | 1,2     |
-           | checkFee                                           | 999.99 |
+           | key                                               | value  |
+           | allowMultipleActiveLoans                          | false  |
+           | waitingPeriodBetweenLoansPayoffAndLoanRequest     |     20 |
+           | allowParticipantsToChooseLoanFeeType              | false  |
+           | loanFeeTypeDeductedFrom                           |      2 |
+           | allowParticipantsToChooseInterestRate             | true   |
+           | interestRateMinimum                               |    100 |
+           | interestRateMaximum                               |    100 |
+           | applicablePaymentMethods                          |    1,2 |
+           | sourceHierarchies                                 |    1,2 |
+           | curePeriodForEmployeeTermination                  |      2 |
+           | curePeriodFixedNumberOfDaysForEmployeeTermination |      1 |
+           | feesPaymentMethodsApplicable                      |    1,2 |
+           | checkFee                                          | 999.99 |
            | eftFees                                           | 999.99 |
+           | refinancingAllowed                                | true   |
+           | firstRepaymentDateFallsAfter                      |     30 |
+           | firstRepaymentDateFallsWithin                     |     31 |
+            | loanFeeAmount                              |   999.99      |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -207,22 +218,27 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
   #Scenario: Cure Period with Fixed number of days as zero
 #Scenario: Cure Period for employee termination with Fixed number of days as 99
 #Scenario: To Save feesPaymentMethodsApplicable field when check fee  length is less than 3 digits with 2 decimal points
+#Scenario: To Validate First repayment date falls within field  is equal as 90
+#Scenario: To Save loanFeeAmount  field as length is less than 3 digits with 2 decimal points
 
 Scenario: Loan fee type deducted from loan amount
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
-           | key                                   | value |
-           | allowParticipantsToChooseLoanFeeType  | true  |
-           | loanFeeTypeDeductedFrom               |     2 |
-           | allowParticipantsToChooseInterestRate | true  |
-           | interestRateMaximum                   |     7 |
-           | interestRateMinimum                   |     2 |
-           | curePeriod                            |     2 |
-           | curePeriodFixedNumberOfDays           |     0 |
+           | key                                               | value |
+           | allowParticipantsToChooseLoanFeeType              | true  |
+           | loanFeeTypeDeductedFrom                           |     2 |
+           | allowParticipantsToChooseInterestRate             | true  |
+           | interestRateMaximum                               |     7 |
+           | interestRateMinimum                               |     2 |
+           | curePeriod                                        |     2 |
+           | curePeriodFixedNumberOfDays                       |     0 |
            | curePeriodForEmployeeTermination                  |     2 |
-           | curePeriodFixedNumberOfDaysForEmployeeTermination |     99 |
+           | curePeriodFixedNumberOfDaysForEmployeeTermination |    99 |
            | feesPaymentMethodsApplicable                      | 1,    |
-           | checkFee                                           | 99.99 |
+           | checkFee                                          | 99.99 |
+           | refinancingAllowed                                | true  |
+           | firstRepaymentDateFallsWithin                     |    90 |
+           | loanFeeAmount                              |   99.99      |    
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -243,8 +259,11 @@ Scenario: To Verify the allowParticipantsToChooseLoanFeeType  as yes when Loan f
            | loanFeeTypeDeductedFrom                           |       |
            | curePeriodForEmployeeTermination                  |     2 |
            | curePeriodFixedNumberOfDaysForEmployeeTermination |       |
-           | feesPaymentMethodsApplicable                   |    2, |
-           | eftFees                   |       |
+           | feesPaymentMethodsApplicable                      | 2,    |
+           | eftFees                                           |       |
+           | refinancingAllowed                                | true  |
+           | firstRepaymentDateFallsAfter                      |    22 |
+           | firstRepaymentDateFallsWithin                     |    22 |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -255,10 +274,11 @@ Scenario: To Verify the allowParticipantsToChooseLoanFeeType  as yes when Loan f
            | minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then the API response should contain the 1 following errors 
-	| error_code | error_message |
-	| PL290      | Required      |
-	| PL281      | Required      | Scenario: Cure Period for employee termination with Fixed number of days as Null
-	| PL868      | Required      | Scenario: To Save feesPaymentMethodsApplicable field when  EFT as empty
+	| error_code | error_message                                                                                              |
+	| PL290      | Required                                                                                                   |
+	| PL281      | Required                                                                                                   | Scenario: Cure Period for employee termination with Fixed number of days as Null
+	| PL868      | Required                                                                                                   | Scenario: To Save feesPaymentMethodsApplicable field when  EFT as empty
+	| PL305      | First repayment date falls within (days) cannot be lesser than the First repayment date falls after (days) |Scenario: To Validate First repayment date falls after  and First repayment date falls within field  is same
 
 
 
@@ -285,20 +305,26 @@ Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when 
 #Scenario: Cure Period with Fixed number of days as 1
 #Scenario: Cure Period for employee termination with Fixed number of days as 100
 #Scenario: To Save feesPaymentMethodsApplicable field when EFT  length is less than 3 digits with 2 decimal points
+#Scenario: To Validate First repayment date falls after field  is below 30
+#Scenario: To Save loanFeeAmount  field as length is  3 digits with 3 decimal points
 
 Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when interestRateMinimum and  interestRateMaximum as 0 
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
-           | key                                   | value |
-           | allowParticipantsToChooseInterestRate | true  |
-           | interestRateMinimum                   |     0 |
-           | interestRateMinimum                   |     0 |
-           | curePeriod                            |     2 |
-           | curePeriodFixedNumberOfDays           |     1 |
-           | curePeriodForEmployeeTermination                  |     2 |
-           | curePeriodFixedNumberOfDaysForEmployeeTermination |     100 |
-           | feesPaymentMethodsApplicable                      | 2,    |
-           | eftFees                                           | 99.99 |
+           | key                                               | value  |
+           | allowParticipantsToChooseInterestRate             | true   |
+           | interestRateMinimum                               |      0 |
+           | interestRateMinimum                               |      0 |
+           | curePeriod                                        |      2 |
+           | curePeriodFixedNumberOfDays                       |      1 |
+           | curePeriodForEmployeeTermination                  |      2 |
+           | curePeriodFixedNumberOfDaysForEmployeeTermination |    100 |
+           | feesPaymentMethodsApplicable                      | 2,     |
+           | eftFees                                           |  99.99 |
+           | refinancingAllowed                                | true   |
+           | firstRepaymentDateFallsAfter                      |     22 |
+           | firstRepaymentDateFallsWithin                     |     33 |
+           | loanFeeAmount                                     | 999.99 |
            And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -316,9 +342,9 @@ Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when 
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
            | key                                   | value |
-            | allowParticipantsToChooseInterestRate | true        |
-            | interestRateMinimum | 80        |
-            | interestRateMinimum | 30        |
+           | allowParticipantsToChooseInterestRate | true  |
+           | interestRateMinimum                   |    80 |
+           | interestRateMinimum                   |    30 |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -362,14 +388,18 @@ Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when 
     Then API should respond with successful message
 
 #Scenario: To Save feesPaymentMethodsApplicable field when check fee is 0
+#Scenario: To Validate First repayment date falls within field  is below  90
+
 Scenario: Cure Period with Fixed number of days as 100
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
-           | key                          | value |
-           | curePeriod                   |     2 |
-           | curePeriodFixedNumberOfDays  |   100 |
-           | feesPaymentMethodsApplicable | 1,    |
-           | checkFee                     |     0 |
+           | key                           | value |
+           | curePeriod                    |     2 |
+           | curePeriodFixedNumberOfDays   |   100 |
+           | feesPaymentMethodsApplicable  | 1,    |
+           | checkFee                      |     0 |
+           | refinancingAllowed            | true  |
+           | firstRepaymentDateFallsWithin |    33 |
 
            And Configuration has been made as per following
            | key                          | value |
@@ -505,3 +535,21 @@ Scenario: To Save feesPaymentMethodsApplicable field to select both check fee an
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
 Then API should respond with successful message
 
+
+Scenario: To Validate First repayment date falls after field value is greater than First repayment date falls within field
+  Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+   When Configuration has been made as per following
+           | key                                               | value |
+           | allowParticipantsToChooseLoanFeeType              | true  |
+   And Configuration has been made as per following
+           | key                          | value |
+           | loanPerPlanYear              |     1 |
+           | firstRepaymentDateFallsAfter |     1 |
+           | maximumLengthYears           |     3 |
+           | maximumLengthMonths          |     0 |
+           | minimumLengthYears           |     1 |
+           | minimumLengthMonths          |     0 |
+  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
+  Then the API response should contain the 1 following errors 
+	| error_code | error_message                                                                                              |
+	| PL305      | First repayment date falls within (days) cannot be lesser than the First repayment date falls after (days) |

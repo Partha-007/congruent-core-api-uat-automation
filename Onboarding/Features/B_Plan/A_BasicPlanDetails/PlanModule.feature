@@ -54,13 +54,11 @@ When Configuration has been made as per following
 | address2           | random 101 alphabets                                                                                      |
 | zipCode            | random 5 alphabets                                                                                        |
 | mobilePhoneNumber  | 123-4567-7890                                                                                             |
-| trsContractId      | random 6 numerics                                                                                                    |  
+| trsContractId      | 123456                                                                                         |
 | email              | abcgfwehjdgjgfkfgydgvgvfgvgvghfvgvsamvfyfhvdvgvtfvjsyvhgavghcfudkgkfgsnezyertcnvdsyrxkeuhdvnrehu@gmai.com |
 | irsPlanNumber      |                                                                                                           |
 | shortYearStartDate | "2025-03-02T00:00:00Z"                                                                                    |
 | shortYearEndDate   | null                                                                                                      |
-
-
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then the API response should contain the 12 following errors 
 	| error_code | error_message                                                   |
@@ -517,6 +515,7 @@ Scenario: Select a company name field validate error message as required
            | companyId | <CompanyId> |
  When Configuration has been made as per following
  | category     | 0                   |
+ | name     | abc123                  |
  | level        |                     |
  | companyId    |                     |
  | rkPlanNumber | random 10 alphabets |
