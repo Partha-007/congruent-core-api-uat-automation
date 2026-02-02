@@ -128,54 +128,25 @@ Scenario:To verify the Actual hours (Textbox) acceptance criteria of length
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
  And Configuration has been made as per following
-           | key                      | value |
-           | immediateEligibility     | false |
-           | eligibilityType          |     2 |
-           | yearsOfServiceDefinition |     1 |
-           | hours                    |       |
-           And the property "ltptHours" is configured as "500"
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL196 : Required"
-
- Scenario: To verify the validation message for Eligibility calculation period without selecting any option
-  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured with "alphabets" with 10 characters
- And Configuration has been made as per following
            | key                          | value |
            | immediateEligibility         | false |
            | eligibilityType              |     2 |
            | yearsOfServiceDefinition     |     1 |
+           | hours                        |       |
            | eligibilityCalculationPeriod |       |
+           | yearsOfServiceRequirement    |       |
+           | serviceCreditPeriod          |       |
            And the property "ltptHours" is configured as "500"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL198 : Required"
+ Then API should give response as "PL196 : Required"
+ Then the API response should contain the 4 following errors 
+| error_code | error_message |
+| PL196      | Required      |
+| PL198      | Required      | Scenario: To verify the validation message for Eligibility calculation period without selecting any option
+| PL199      | Required      | Scenario:  To verify the validation message for Year of service requirement without selecting any option
+| PL200      | Required      | Scenario:  To verify the validation message for Service credit period without selecting any option
 
- Scenario:  To verify the validation message for Year of service requirement without selecting any option
-  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured with "alphabets" with 10 characters
- And Configuration has been made as per following
-           | key                       | value |
-           | immediateEligibility      | false |
-           | eligibilityType           |     2 |
-           | yearsOfServiceDefinition  |     1 |
-           | yearsOfServiceRequirement |       |
-           And the property "ltptHours" is configured as "500"
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL199 : Required"
-
-  Scenario:  To verify the validation message for Service credit period without selecting any option
-  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured with "alphabets" with 10 characters
- And Configuration has been made as per following
-           | key                      | value |
-           | immediateEligibility     | false |
-           | eligibilityType          |     2 |
-           | yearsOfServiceDefinition |     1 |
-           | serviceCreditPeriod      |       |
-           And the property "ltptHours" is configured as "500"
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL200 : Required"    
-
+ 
  Scenario:To verify the Length of service requirement (Textbox) by selecting Daily dropdown acceptance criteria of length
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters

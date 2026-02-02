@@ -7,7 +7,6 @@ Scenario: Employee status (successful response) double execution
 | BlockNumber | Key                  | Value              |
 | 1           | EmploymentStatusName | random 5 alphabets |
 | 1           | EmploymentStatusCode | A                  |
-
 | 1           | EmploymentStatusName | random 5 alphabets |
 #When addMasterEmploymentStatus is executed
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
@@ -71,6 +70,16 @@ Then API should respond with successful message
   |           4 | EmploymentStatusCode | random 11 alphabets        |
   |           5 | EmploymentStatusName | random 0 alphabets         | 
   |           5 | EmploymentStatusCode | A                          |
+  And Configuration has been done as mentioned below
+| key                        | value    |
+| frequencyName              | Daily    |
+| frequencyType              | 1        |
+| modeOfHours                | 1        |
+| modeOfCompensation         | 1        |
+| modeOfContribution         | 1        |
+| employeeClassificationType | 1        |
+| code                       | L1       |
+| classificationName         | Location |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then the API response should contain the 5 following errors
 | error_code | error_message                                                  |

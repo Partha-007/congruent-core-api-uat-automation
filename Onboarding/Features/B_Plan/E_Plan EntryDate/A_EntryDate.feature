@@ -118,7 +118,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   Then API should give response as "PL1166 : Required"
 
   
-          Scenario:To verify the validation message for Other Entry date day field when Switch to plan year is "yes"
+  Scenario:To verify the validation message for Other Entry date day field when Switch to plan year is "yes"
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "ruleName" is configured as "abc123"
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
@@ -134,8 +134,10 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   When the property "additionalEntryDateRule" is configured as "7"
   When the property "month" is configured as "2"
    When the property "day" is configured as "0"
+   When the property "addDay0" is configured as "1"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   When the property "month" is configured as "2"
    When the property "day" is configured as "0"
+   When the property "addDay0" is configured as "2"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1044 : The entered day and month already exists for the plan"
