@@ -211,7 +211,7 @@ namespace RefitSandBox.Hooks
 
         [BeforeScenario("@PlanActivationWithoutInvestmentAndEnrollment")]
         public async Task PlanActivationWithoutInvestment()
-        {
+         {
             string companyId = await Program.SaveCompany(bearer); // Static method call
             planId = await Program.SavePlan(bearer, companyId);
        

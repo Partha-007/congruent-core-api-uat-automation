@@ -130,6 +130,9 @@ namespace RefitSandBox
     {
         [Post("/api/v1/Payroll/PayrollAndCensusFileUpload")]
         Task<object> UploadCombinedFileAsync([Body] MultipartFormDataContent form);
+
+        [Post("/api/v1/Payroll/PayrollAndCensusFileUploadTest")]
+        Task<PayrollAndCensusFileUploadTestResult> UploadCombinedFileToTestEndpoint([Body] MultipartFormDataContent form);
     }
 
     public interface ITradeOrderFileUpload
@@ -203,6 +206,12 @@ public interface ILoan
     {
         [Post("/api/v1/Loan/SaveInprogressLoanRequest")]
         Task<dynamic> SaveInprogressLoanRequest(EmployeeLoanViewModel loanViewModel);
+
+        [Post("/api/v1/Loan/SubmitLoanRequest")]
+        Task<SubmitLoanRequestResult> SubmitLoanRequest(SubmitLoanRequestViewModel submitLoanRequestViewModel);
+
+        [Post("/api/v1/Loan/ProcessLoanDisbursement")]
+        Task<bool> ProcessLoanDisbursement([Body] ProcessLoanDisbursementViewModel processLoanDisbursementViewModel);
 
         [Post("/api/v1/Loan/ApproveLoan/{id}")]
         Task<bool> ApproveLoan(string id);

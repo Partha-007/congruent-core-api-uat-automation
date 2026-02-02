@@ -124,71 +124,73 @@ Given Investment "SEAS001" has been mapped to the plan
 
 And Investment "SEAS002" has been mapped to the plan
 
-Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
+And Enrollment configuration
 
-When Configuration has been made as per following
-| key                                     | value |
-| enrollmentId                            |     0 |
-| sameInvestmentElectionToAllParticipants | true  |
-| investmentElectionBasedOn               |       |
-| subjecttoAutoEnrollment                 | true  |
-| usePlanDefaultDeferralElection          | true  |
-| usePlanDefaultInvestmentElection        | true  |
-| numberOfDaysWindowIsOpenNumber          |    10 |
-| numberOfDaysWindowIsOpen                |     3 |
-| numberOfDaysWindowIsOpenForOptoutNumber |    10 |
-| numberOfDaysWindowIsOpenForOptout       |     1 |
-| isAutoReEnroll                          | false |
-| exclusionType                           |     0 |
-| sameInvestmentElectionToAllSources      | true  |
-| sendEnrollmentInvite                    |     1 |
-| deferralContributionRateUponRehire      |     2 |
-
-
-When Collection in a model is configured with 2 blocks for the property "AutoEnrollmentDeferralSources" with values as given below
-| BlockNumber | Key                      | Value            |
-|           1 | SourceId                 | <PretaxSourceID> |
-|           1 | DeferralSourceName       | EEPretax         |
-|           1 | DeferralSourcePercentage |               30 |
-|           2 | SourceId                 | <RothSourceID>   |
-|           2 | DeferralSourceName       | EERoth           |
-|           2 | DeferralSourcePercentage |               30 |
-
-When Collection in a model is configured with 2 blocks for the property "DeferralSourceContribution" with values as given below
-| BlockNumber | Key              | Value            |
-|           1 | SourceId         | <PretaxSourceID> |
-|           1 | SourceName       | EEPretax         |
-|           1 | ContributionRate |            20.00 |
-|           2 | SourceId         | <RothSourceID>   |
-|           2 | SourceName       | EERoth           |
-|           2 | ContributionRate |            30.00 |
-
-When Collection in a model is configured with 2 blocks for the property "PlanInvestment" with values as given below
-| BlockNumber | Key                       | Value     |
-|           1 | InvestmentId              | <SEAS001> |
-|           1 | InvestmentName            | SEAS001   |
-|           1 | InvestmentPercentage      |     70.00 |
-|           1 | DefaultElectionSettingsId |         0 |
-|           2 | InvestmentId              | <SEAS002> |
-|           2 | InvestmentName            | SEAS002   |
-|           2 | InvestmentPercentage      |     30.00 |
-|           2 | DefaultElectionSettingsId |         0 |
-
-When Collection in a model is configured with 2 blocks for the property "InvestmentElectionValuesList" with values as given below
-| BlockNumber | Key                  | Value     |
-|           1 | InvestmentId         | <SEAS001> |
-|           1 | InvestmentName       | SEAS001   |
-|           1 | InvestmentPercentage |     70.00 |
-|           2 | InvestmentId         | <SEAS002> |
-|           2 | InvestmentName       | SEAS002   |
-|           2 | InvestmentPercentage |     30.00 |
-
-When Collection in a model is configured with 1 blocks for the property "InvestmentElectionBasedOnList" with values as given below
-| BlockNumber | Key                  | Value            |
-|           1 | AutoEnrollmentId     |                0 |
-|           1 | InvestmentBasedOn    |                  |
-
-When API request has been sent to the "IPlanDetailsSave" with the method name "SaveEnrollmentSettings"
+#Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
+#
+#When Configuration has been made as per following
+#| key                                     | value |
+#| enrollmentId                            |     0 |
+#| sameInvestmentElectionToAllParticipants | true  |
+#| investmentElectionBasedOn               |       |
+#| subjecttoAutoEnrollment                 | true  |
+#| usePlanDefaultDeferralElection          | true  |
+#| usePlanDefaultInvestmentElection        | true  |
+#| numberOfDaysWindowIsOpenNumber          |    10 |
+#| numberOfDaysWindowIsOpen                |     3 |
+#| numberOfDaysWindowIsOpenForOptoutNumber |    10 |
+#| numberOfDaysWindowIsOpenForOptout       |     1 |
+#| isAutoReEnroll                          | false |
+#| exclusionType                           |     0 |
+#| sameInvestmentElectionToAllSources      | true  |
+#| sendEnrollmentInvite                    |     1 |
+#| deferralContributionRateUponRehire      |     2 |
+#
+#
+#When Collection in a model is configured with 2 blocks for the property "AutoEnrollmentDeferralSources" with values as given below
+#| BlockNumber | Key                      | Value            |
+#|           1 | SourceId                 | <PretaxSourceID> |
+#|           1 | DeferralSourceName       | EEPretax         |
+#|           1 | DeferralSourcePercentage |               30 |
+#|           2 | SourceId                 | <RothSourceID>   |
+#|           2 | DeferralSourceName       | EERoth           |
+#|           2 | DeferralSourcePercentage |               30 |
+#
+#When Collection in a model is configured with 2 blocks for the property "DeferralSourceContribution" with values as given below
+#| BlockNumber | Key              | Value            |
+#|           1 | SourceId         | <PretaxSourceID> |
+#|           1 | SourceName       | EEPretax         |
+#|           1 | ContributionRate |            20.00 |
+#|           2 | SourceId         | <RothSourceID>   |
+#|           2 | SourceName       | EERoth           |
+#|           2 | ContributionRate |            30.00 |
+#
+#When Collection in a model is configured with 2 blocks for the property "PlanInvestment" with values as given below
+#| BlockNumber | Key                       | Value     |
+#|           1 | InvestmentId              | <SEAS001> |
+#|           1 | InvestmentName            | SEAS001   |
+#|           1 | InvestmentPercentage      |     70.00 |
+#|           1 | DefaultElectionSettingsId |         0 |
+#|           2 | InvestmentId              | <SEAS002> |
+#|           2 | InvestmentName            | SEAS002   |
+#|           2 | InvestmentPercentage      |     30.00 |
+#|           2 | DefaultElectionSettingsId |         0 |
+#
+#When Collection in a model is configured with 2 blocks for the property "InvestmentElectionValuesList" with values as given below
+#| BlockNumber | Key                  | Value     |
+#|           1 | InvestmentId         | <SEAS001> |
+#|           1 | InvestmentName       | SEAS001   |
+#|           1 | InvestmentPercentage |     70.00 |
+#|           2 | InvestmentId         | <SEAS002> |
+#|           2 | InvestmentName       | SEAS002   |
+#|           2 | InvestmentPercentage |     30.00 |
+#
+#When Collection in a model is configured with 1 blocks for the property "InvestmentElectionBasedOnList" with values as given below
+#| BlockNumber | Key                  | Value            |
+#|           1 | AutoEnrollmentId     |                0 |
+#|           1 | InvestmentBasedOn    |                  |
+#
+#When API request has been sent to the "IPlanDetailsSave" with the method name "SaveEnrollmentSettings"
 
 Given Model is selected for the endpoint "/api/Loan/SaveLoan"
 
@@ -474,8 +476,15 @@ When File upload is executed for the file "TradeOrder.csv" and funding is done b
 
 
 
-@PlanActivation
+@PlanActivationWithoutInvestmentAndEnrollment
 Scenario: 59908 : To verify the Calculation Avilable Balance for loan valuefiled in Loan request page when participant have already 1 loan
+
+Given Investment "SEAS001" has been mapped to the plan
+
+And Investment "SEAS002" has been mapped to the plan
+
+And Enrollment configuration
+
 Given Model is selected for the endpoint "/api/Loan/SaveLoan"
 
 When Configuration has been made as per following
@@ -509,6 +518,14 @@ When Configuration has been made as per following
 | isMaster                                      | true            |
 | loanDescription                               | General Purpose |
 
+And Collection in a model is configured with 1 blocks for the property "LoanApprovalHierarchy" with values as given below
+| BlockNumber | Key       | Value |
+|           1 | Id        |     0 |
+|           1 | Order     |     1 |
+|           1 | UserRole  |     1 |
+|           1 | Approval  | true  |
+|           1 | IsDeleted | true  |
+
 And Save Loan details in Plan
 
 Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
@@ -528,28 +545,33 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by " "
 
 Given Model is selected for the endpoint "/api/v1/Loan/SaveInprogressLoanRequest"
 
 When Configuration has been made as per following
 | propertyName          | value                  |
 | loanType              | General Purpose        |
-| interestRate          | 6                      |
-| requestedAmount       | 12000                  |
-| periodicPaymentAmount | 1032.80                |
-| paymentMethod         | 1                      |
-| repaymentMethod       | 1                      |
+| interestRate          |                      6 |
+| requestedAmount       |                  12000 |
+| periodicPaymentAmount |                1032.80 |
+| paymentMethod         |                      1 |
+| repaymentMethod       |                      1 |
 | firstRepaymentDate    | 3/31/2025, 12:00:00 AM |
-| repaymentFrequency    | 4                      |
-| tenureYears           | 1                      |
-| tenureMonths          | 0                      |
-| loanStatus            | 3                      |
-| loanFeeAmount         | 1                      |
-| chequeFees            | 1                      |
-| eftFees               | 1                      |
+| repaymentFrequency    |                      4 |
+| tenureYears           |                      1 |
+| tenureMonths          |                      0 |
+| loanStatus            |                      1 |
+| loanFeeAmount         |                      1 |
+| chequeFees            |                      1 |
+| eftFees               |                      1 |
+| loanFeeType           |                        |
+| loanActivationDate    |                        |
+| routingNumber         |                        |
 
 And API request has been sent to the "ILoan" with the method name "SaveInprogressLoanRequest"
+
+And Loan submission is done for the mentioned applicable sources "<PretaxSourceID>"
 
 And Loan request has been approved and trade for loan is executed for "New Loan"
 
@@ -557,7 +579,9 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by " "
+
+And Disbursement is done for the transaction "Loan"
 
 Given Payroll file "LoanRepayment.csv" is selected and Edit payroll file as mentioned below
 | Key               | Value      |
@@ -581,7 +605,7 @@ Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mention
 | Key          | Value |
 | Order Number |       |
 
-When File upload is executed for the file "TradeOrder.csv" and funding is done by "Plan"
+When File upload is executed for the file "TradeOrder.csv" and funding is done by " "
 
 Then Available balance for the employee to avail loan should be 15000
 

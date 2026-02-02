@@ -3,17 +3,18 @@ using NSwag.CodeGeneration.CSharp;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Generator.sourceGenerator
 {
     public class Programs
     {
-        
-            public static async Task GenerateApiClientAsync() {
+        [Fact]
+            public async Task GenerateApiClientAsync() {
             try
             {
                 // Load the OpenAPI document (adjust the file path as needed)
-                var document = await OpenApiDocument.FromFileAsync("D:\\NewBackEndAutomation\\Congruent.Core.API.TestAutomation\\SourceGenerator\\json1.json");
+                var document = await OpenApiDocument.FromFileAsync("D:\\API_AutomationSuite\\Congruent.Core.API.TestAutomation\\SourceGenerator\\json1.json");
 
                 // Create settings for the CSharpClientGenerator
                 var settings = new CSharpClientGeneratorSettings
