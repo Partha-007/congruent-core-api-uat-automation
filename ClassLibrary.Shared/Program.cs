@@ -1090,6 +1090,12 @@ namespace RefitSandBox
             if (methodName == "SaveRecordKeepersAsync")
                 recordKeeperId = await GetRecordKeeperId();
 
+            //if (interfaceName == "IEmployee" && methodName == "AddBeneficaryAsync")
+            //{
+            //    await Configuration("planId", planId);
+
+            //}
+
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
             var response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
             Console.WriteLine("Response : " + response.ToString());
@@ -2454,7 +2460,7 @@ namespace RefitSandBox
             // Get the collection instance
             var collection = property.GetValue(targetObject) as IList;
             if (collection == null)
-                throw new Exception("The property is not a collection type.");
+                throw new Exception($"The property is not a collection type : '{propertyName}'");
 
             collection.Clear();
 
@@ -2465,6 +2471,17 @@ namespace RefitSandBox
             for (int i = 0; i < noOfBlocks; i++)
             {
                 var newElement = Activator.CreateInstance(elementType);
+                // Initialize collection properties to avoid null reference issues during property search
+                foreach (var prop in elementType.GetProperties())
+                {
+                    if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
+                    {
+                        var itemType = prop.PropertyType.GetGenericArguments()[0];
+                        var listType = typeof(List<>).MakeGenericType(itemType);
+                        var collectionInstance = Activator.CreateInstance(listType);
+                        prop.SetValue(newElement, collectionInstance);
+                    }
+                }
 
                 foreach (var row in dataTable.Rows)
                 {

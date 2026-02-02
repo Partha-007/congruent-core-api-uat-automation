@@ -10,10 +10,8 @@ A short summary of the feature
   When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values as given below
  | BlockNumber | Key  | Value |
  | 1           | Code | 2     |
- 
  #And Collection in a model is configured with 1 blocks for the property "Classifications" and "EmployeeClassificationCodes" with values to save model portfolio as given below
 
- 
 #| 1           | EmployeeClassificationCodes             | 2                                           |
 #| 2           | ClassificationName                      | random 5 numerics                           |
 #| 2           | EmployeeClassificationType              | 2                                           |
@@ -117,9 +115,9 @@ Then API should respond with successful message
 | BlockNumber | Key                        | Value               |
 |           1 | ClassificationName         | random 51 alphabets |
 |           1 | EmployeeClassificationType | random 1 numerics   |
+ When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
+| BlockNumber | Key  | Value             |
 |           1 | Code | random 1 numerics |
- # When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
-#| BlockNumber | Key  | Value             |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then the API response should contain the 1 following errors
 | error_code | error_message                                               |
@@ -130,13 +128,15 @@ Then the API response should contain the 1 following errors
 
 
 
- Scenario: Employee classification(error validation) with double excecution
+Scenario: Employee classification(error validation) with double excecution
   Given Model is selected for the endpoint "/api/v1/Company"
   When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
 | BlockNumber | Key                        | Value               |
 | 1           | ClassificationName         | random 5 alphabets  |
 | 1           | EmployeeClassificationType | random 45 alphabets |
-| 1           | Code                       | random 5 numerics   |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
+| BlockNumber | Key  | Value             |
+|           1 | Code | random 5 numerics |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then API should respond with successful message
 #When addMasterClassificationType is executed
@@ -148,9 +148,9 @@ Scenario: Employee classification1
 Given Model is selected for the endpoint "/api/v1/Company"
 When Configuration has been made as per following
            | key                        | value               |
-           | ClassificationName         | random 51 alphabets |
-           | EmployeeClassificationType | 2random 1 numerics  |
-           | Code                       | random 1 numerics   |
+           | classificationName         | random 51 alphabets |
+           | employeeClassificationType | 2random 1 numerics  |
+           | code                       | random 1 numerics   |
            | frequencyName              | abc123              |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then API should respond with successful message
