@@ -134,6 +134,8 @@ namespace SharedStepDefinitions
                         }
                     }
                 }
+                if(string.IsNullOrEmpty(Value))
+                    Value = null;
                 //if (property.PropertyType == typeof(DateTimeOffset?))
                 //{
                 //    var convertedValue = DateTimeOffset.Parse(Value.ToString()); // Parsing the string to DateTimeOffset
@@ -212,6 +214,19 @@ namespace SharedStepDefinitions
             await _program.SendAPIRequestForFileUpload(filename, fundingType);
         }
 
+        [When("File upload is executed for the file {string} to the test endpoint")]
+        public async Task WhenFileUploadIsExecutedForTheFileToTheTestEndpoint(string filename)
+        {
+            await _program.SendAPIRequestForFileUploadToTestEndpoint(filename);
+        }
+
+        [Then("Payroll API should respond for {string} with Error report message as {string} and ECR page message as {string}")]
+        public async Task ThenPayrollAPIShouldRespondForWithErrorReportMessageAsAndECRPageMessageAs_(string controlName, string expectedErrorReportMessage, string expectedECRMessage)
+        {
+            await _program.ValidateResponseFromTestEndpoint(controlName, expectedErrorReportMessage, expectedECRMessage);
+        }
+
+
         [When("Generate consolidation API is triggered for {string} and Trade order number extracted from trade response file")]
         public async Task WhenGenerateConsolidationAPIIsTriggeredForAndTradeOrderNumberExtractedFromTradeResponseFile(string fileName)
         {
@@ -224,6 +239,33 @@ namespace SharedStepDefinitions
         public async Task WhenLoanRequestHasBeenApprovedAndTradeForLoanIsExecutedFor(string requestType)
         {
             await _program.LoanApprove(requestType);
+        }
+
+        [When("Loan submission is done for the mentioned applicable sources {string}")]
+        public async Task WhenLoanSubmissionIsDoneForTheMentionedApplicableSources(string sourceNames)
+        {
+            var sourceNamesList = new List<string>();
+            if (sourceNames.Contains(","))
+            {
+                var splitted = sourceNames.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var source in splitted)
+                {
+                    sourceNamesList.Add(source.Trim());
+                }
+            }
+            else
+            {
+                sourceNamesList.Add(sourceNames.Trim());
+            }
+            await _program.SubmitLoanRequest(sourceNamesList);
+
+        }
+
+        [When("Disbursement is done for the transaction {string}")]
+        public async Task WhenDisbursementIsDoneForTheTransaction(string transactionType)
+        {
+            if(transactionType == "Loan")
+                await _program.ProcessLoanDisbursement();
         }
 
 
@@ -353,6 +395,12 @@ namespace SharedStepDefinitions
         public async Task GivenInvestmentHasBeenMappedToThePlan(string investmentName)
         {
             await _program.AddInvestmentToPlan(investmentName);
+        }
+
+        [Given("Enrollment configuration")]
+        public async Task GivenEnrollmentConfiguration()
+        {
+            await _program.EnrollmentSetup();
         }
 
 
