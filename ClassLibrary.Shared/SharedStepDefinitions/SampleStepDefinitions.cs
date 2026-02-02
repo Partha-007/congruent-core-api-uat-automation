@@ -220,7 +220,7 @@ namespace SharedStepDefinitions
             await _program.SendAPIRequestForFileUploadToTestEndpoint(filename);
         }
 
-        [Then("Payroll API should respond for {string} with Error report message as {string} and ECR page message as {string}.")]
+        [Then("Payroll API should respond for {string} with Error report message as {string} and ECR page message as {string}")]
         public async Task ThenPayrollAPIShouldRespondForWithErrorReportMessageAsAndECRPageMessageAs_(string controlName, string expectedErrorReportMessage, string expectedECRMessage)
         {
             await _program.ValidateResponseFromTestEndpoint(controlName, expectedErrorReportMessage, expectedECRMessage);

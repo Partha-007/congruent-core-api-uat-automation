@@ -953,11 +953,16 @@ namespace RefitSandBox
             if(ResponseFromTestEndpoint == null)
                 throw new Exception("No response from test endpoint to validate");
 
-            var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages);
+            Console.WriteLine("Full Response from Test Endpoint (JSON):");
+            Console.WriteLine(JsonConvert.SerializeObject(ResponseFromTestEndpoint, Formatting.Indented));
+
+            var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages).ToList();
+            Console.WriteLine("Error messages (JSON):");
+            Console.WriteLine(JsonConvert.SerializeObject(errorMessages, Formatting.Indented));
 
             foreach(var error in errorMessages)
             {
-                if(controlName == error.ControlName)
+                if (controlName == error.ControlName)
                 {
                     errorTriggered = true;
                     var actualErrorReportMessage = error.MessageCode;
