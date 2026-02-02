@@ -1146,6 +1146,12 @@ namespace RefitSandBox
             if (methodName == "SaveRecordKeepersAsync")
                 recordKeeperId = await GetRecordKeeperId();
 
+            //if (interfaceName == "IEmployee" && methodName == "AddBeneficaryAsync")
+            //{
+            //    await Configuration("planId", planId);
+
+            //}
+
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
             JObject? response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
             Console.WriteLine("Response : " + response.ToString());
@@ -1336,6 +1342,19 @@ namespace RefitSandBox
                             var requestBody = JsonConvert.SerializeObject(model);
                             var requestPayload = JObject.Parse(requestBody);
                             string Action = "api/v1/Loan/SubmitLoanRequest";
+                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
+                            var contentTask = await task.Content.ReadAsStringAsync();
+                            response = JObject.Parse(contentTask);
+                            Console.Write(response.ToString());
+                            return response;
+                        }
+                        else if (methodName == "SaveEmployeeAsync")
+                        {
+                            var requestBody = JsonConvert.SerializeObject(model);
+                            var requestPayload = JObject.Parse(requestBody);
+                            string Action = "/api/v1/Payroll/SaveEmployee";
                             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
                             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
                             var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
@@ -1544,6 +1563,7 @@ namespace RefitSandBox
                 { "/api/BasicPlanDetails/SaveBasicPlanDetails", () => new PlanDetailsViewModel() },
                 { "/api/v1/Company", () => new CompanyViewModel() },
                 { "/api/v1/Payroll/SaveEmployee",() => new PayrollEmployeeViewModel() },
+                { "/api/v1/Payroll/AddBeneficary",() => new PayrollEmployeeViewModel() },
                 { "/api/Loan/SaveLoan", () => new LoanSettingViewModel() },
                 { "/api/v1/Loan/SaveInprogressLoanRequest", () => new EmployeeLoanViewModel()},
                 {"/api/Vesting/SaveVesting", () => new VestingViewModel() },
@@ -2537,7 +2557,7 @@ namespace RefitSandBox
             // Get the collection instance
             var collection = property.GetValue(targetObject) as IList;
             if (collection == null)
-                throw new Exception("The property is not a collection type.");
+                throw new Exception($"The property is not a collection type : '{propertyName}'");
 
             collection.Clear();
 
@@ -2548,6 +2568,17 @@ namespace RefitSandBox
             for (int i = 0; i < noOfBlocks; i++)
             {
                 var newElement = Activator.CreateInstance(elementType);
+                // Initialize collection properties to avoid null reference issues during property search
+                foreach (var prop in elementType.GetProperties())
+                {
+                    if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
+                    {
+                        var itemType = prop.PropertyType.GetGenericArguments()[0];
+                        var listType = typeof(List<>).MakeGenericType(itemType);
+                        var collectionInstance = Activator.CreateInstance(listType);
+                        prop.SetValue(newElement, collectionInstance);
+                    }
+                }
 
                 foreach (var row in dataTable.Rows)
                 {
@@ -2591,7 +2622,15 @@ namespace RefitSandBox
                             }
                         }
                     }
+                    //****
+                    if (value.Contains("_"))
+                    {
+                        value = await GetDate(Convert.ToInt32(value.Split("_")[1]),value.Split("_")[0]);
+                        //var splitted = value.Split("_");
 
+                        //Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[0], ignoreCase: true);
+                        //value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                    }
                     // Date and time *****
                     if (property.PropertyType == typeof(DateTimeOffset?))
                     {
@@ -3135,7 +3174,7 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(planModel);
             modelAfterConvention = FakeDataHelper.AssignId(companyId.ToString(), "CompanyId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("effectiveDate", "2019-01-01");
+            await program.Configuration("effectiveDate", "2019-01-02");
             await program.Configuration("name", "ABC123");
             await program.Configuration("1month", "1");
             await program.Configuration("1day", "1");

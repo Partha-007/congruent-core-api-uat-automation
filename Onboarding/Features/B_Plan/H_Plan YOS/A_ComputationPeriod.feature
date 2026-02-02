@@ -1,12 +1,15 @@
 ﻿Feature: A_ComputationPeriod
 [BeforeTestRun]
 
-Scenario: Computation Period is Null
-  Given Model is selected for the endpoint "/api/PlanYOS/SavePlanYOS"
-When the property "computationPeriod" is configured as ""
-And the property "responsibleForCalculation" is configured as "1"
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanYOSAsync"
-  Then API should give response as "PL1092 : Required"
+#Required field changed to optional feild
+#Scenario: Computation Period is Null
+#  Given Model is selected for the endpoint "/api/PlanYOS/SavePlanYOS"
+#  When Configuration has been made as per following
+#           | key                       | value |
+#           | computationPeriod         |       |
+#           | responsibleForCalculation |     1 |
+#  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanYOSAsync"
+#  Then API should give response as "PL1092 : Required"
 
 Scenario: Computation Period is configured with Plan year 
   Given Model is selected for the endpoint "/api/PlanYOS/SavePlanYOS"
@@ -19,33 +22,40 @@ And the property "responsibleForCalculation" is configured as "1"
 Scenario:Service Computation feilds is given  Null when apply all status as true
   Given Model is selected for the endpoint "/api/PlanYOS/SavePlanYOS"
    When Configuration has been made as per following
-           | key                  | value |
-           | serviceComputation   |     3 |
-           | activeEmployeesHours |       |
-           | applyToAllStatuses   | true  |
-           | dailyHours           |       |
-           | weeklyHours          |       |
-           | biWeeklyHours        |       |
-           | semiMonthlyHours     |       |
-           | monthlyHours         |       |
-           | quarterlyHours       |       |
-           | semiAnnuallyHours    |       |
-           | annuallyHours        |       |
-           | computationPeriod    |       |
+           | key                     | value |
+           | serviceComputation      |     3 |
+           | activeEmployeesHours    |       |
+           | applyToAllStatuses      | true  |
+           | dailyHours              |       |
+           | weeklyHours             |       |
+           | biWeeklyHours           |       |
+           | semiMonthlyHours        |       |
+           | monthlyHours            |       |
+           | quarterlyHours          |       |
+           | semiAnnuallyHours       |       |
+           | annuallyHours           |       |
+           | computationPeriod       |       |
+           | breakInServiceAvailable | true  |
+           | breakInServiceHours     |   400 |
+           | breakInServiceRules     |       |
+           | consecutiveYearsForBIS  |       |
            And the property "responsibleForCalculation" is configured as "2"
  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanYOSAsync"
- Then the API response should contain the 9 following errors 
-	| error_code | error_message |
-	| PL1095     | Required      | Scenario: Service Computation Equivalency hours of service is Null when apply all status as true
-	| PL1097     | Required      | Scenario: Service Computation Equivalency daily hours frequency is null
-	| PL1100     | Required      | Scenario: Service Computation Equivalency weekly hours frequency is null
-	| PL1103     | Required      | Scenario: Service Computation Equivalency Biweekly hours frequency is null
-	| PL1106     | Required      | Scenario: Service Computation Equivalency Semimonthly  hours frequency is null
-	| PL1109     | Required      | Scenario: Service Computation Equivalency monthlyHoursfrequency is null
-	| PL751      | Required      | Scenario: Service Computation Equivalency quarterlyHours frequency is null
-	| PL1126     | Required      | Scenario: Service Computation Equivalency semiAnnuallyHours frequency is null
-	| PL1151     | Required      | Scenario: Service Computation Equivalency annuallyHours frequency is null                                  
-
+ Then the API response should contain the 13 following errors 
+	| error_code | error_message                    |
+	| PL1092     | Required                         |
+	| PL1095     | Required                         | Scenario: Service Computation Equivalency hours of service is Null when apply all status as true
+	| PL1097     | Required                         | Scenario: Service Computation Equivalency daily hours frequency is null
+	| PL1100     | Required                         | Scenario: Service Computation Equivalency weekly hours frequency is null
+	| PL1103     | Required                         | Scenario: Service Computation Equivalency Biweekly hours frequency is null
+	| PL1106     | Required                         | Scenario: Service Computation Equivalency Semimonthly  hours frequency is null
+	| PL1109     | Required                         | Scenario: Service Computation Equivalency monthlyHoursfrequency is null
+	| PL751      | Required                         | Scenario: Service Computation Equivalency quarterlyHours frequency is null
+	| PL1126     | Required                         | Scenario: Service Computation Equivalency semiAnnuallyHours frequency is null
+	| PL1151     | Required                         | Scenario: Service Computation Equivalency annuallyHours frequency is null
+	| PL2029     | Minimum allowed BIS hour is 500. |
+	| PL2031     | Required                         |
+	| PL2032     | Required                         |
     Scenario:Service Computation feilds is given zero when apply all status as true
   Given Model is selected for the endpoint "/api/PlanYOS/SavePlanYOS"
    When Configuration has been made as per following
@@ -142,42 +152,45 @@ Scenario: Service Computation Equivalency planYOSServiceCreditPeriod is selected
     And the property "responsibleForCalculation" is configured as "2"
     Then API should respond with successful message
 
-     Scenario: Service Computation Equivalency's values are assigned more than the limits
-  Given Model is selected for the endpoint "/api/PlanYOS/SavePlanYOS"
-   When Configuration has been made as per following
-           | key                  | value |
-           | serviceComputation   |     3 |
-           | activeEmployeesHours |  2000 |
-           | applyToAllStatuses   | true  |
-           | dailyHours           |    25 |
-           | weeklyHours          |   200 |
-           | biWeeklyHours        |   500 |
-           | semiMonthlyHours     |   500 |
-           | monthlyHours         |   900 |
-           | quarterlyHours       |  2500 |
-           | semiAnnuallyHours    |  5000 |
-           | annuallyHours        | 10000 |
-     And the property "responsibleForCalculation" is configured as "2"
-     Then the API response should contain the 9 following errors 
-     | error_code | error_message                              |
-     | PL1096     | Hours cannot be more than 1000             | Scenario: Service Computation Equivalency hours of service is more than 1000
-     | PL1099     | Daily Hours should not exceed 24           | Scenario: Service Computation Equivalency daily hours frequency is more than 24
-     | PL1102     | Weekly Hours should not exceed 168         | Scenario: Service Computation Equivalency weekly hours frequency is more than 168
-     | PL1105     | BiWeekly Hours should not exceed 336       | Scenario: Service Computation Equivalency Biweekly hours frequency is more than 336
-     | PL1108     | Semi-monthly Hours should not exceed 384   | Scenario: Service Computation Equivalency Semimonthly  hours frequency is more than 384
-     | PL1111     | Monthly Hours should not exceed 744        | Scenario: Service Computation Equivalency monthlyHoursfrequency is more than 744
-     | PL1153     | Quarterly Hours should not exceed 2208     | Scenario: Service Computation Equivalency quarterlyHours frequency is more than 2208
-     | PL756      | Semi-Annually Hours should not exceed 4392 | Scenario: Service Computation Equivalency semiAnnuallyHours frequency is more than 4392
-     | PL1152     | Annually Hours should not exceed 8760      | Scenario: Service Computation Equivalency annuallyHours frequency is more than 8760       
+#UI RESTRICTED 
+
+  #   Scenario: Service Computation Equivalency's values are assigned more than the limits
+  #Given Model is selected for the endpoint "/api/PlanYOS/SavePlanYOS"
+  # When Configuration has been made as per following
+  #         | key                  | value |
+  #         | serviceComputation   |     3 |
+  #         | activeEmployeesHours |  2000 |
+  #         | applyToAllStatuses   | true  |
+  #         | dailyHours           |    25 |
+  #         | weeklyHours          |   200 |
+  #         | biWeeklyHours        |   500 |
+  #         | semiMonthlyHours     |   500 |
+  #         | monthlyHours         |   900 |
+  #         | quarterlyHours       |  2500 |
+  #         | semiAnnuallyHours    |  5000 |
+  #         | annuallyHours        | 10000 |
+  #   And the property "responsibleForCalculation" is configured as "2"
+  #   Then the API response should contain the 9 following errors 
+  #   | error_code | error_message                              |
+  #   | PL1096     | Hours cannot be more than 1000             | Scenario: Service Computation Equivalency hours of service is more than 1000
+  #   | PL1099     | Daily Hours should not exceed 24           | Scenario: Service Computation Equivalency daily hours frequency is more than 24
+  #   | PL1102     | Weekly Hours should not exceed 168         | Scenario: Service Computation Equivalency weekly hours frequency is more than 168
+  #   | PL1105     | BiWeekly Hours should not exceed 336       | Scenario: Service Computation Equivalency Biweekly hours frequency is more than 336
+  #   | PL1108     | Semi-monthly Hours should not exceed 384   | Scenario: Service Computation Equivalency Semimonthly  hours frequency is more than 384
+  #   | PL1111     | Monthly Hours should not exceed 744        | Scenario: Service Computation Equivalency monthlyHoursfrequency is more than 744
+  #   | PL1153     | Quarterly Hours should not exceed 2208     | Scenario: Service Computation Equivalency quarterlyHours frequency is more than 2208
+  #   | PL756      | Semi-Annually Hours should not exceed 4392 | Scenario: Service Computation Equivalency semiAnnuallyHours frequency is more than 4392
+  #   | PL1152     | Annually Hours should not exceed 8760      | Scenario: Service Computation Equivalency annuallyHours frequency is more than 8760       
 
      #ElapsedTime in months
-Scenario: Elapsed time in month is Null 
-  Given Model is selected for the endpoint "/api/PlanYOS/SavePlanYOS"
-When the property "serviceComputation" is configured as "2"
-And the property "responsibleForCalculation" is configured as "1"
-And the property "elapsedTimeInMonths" is configured as ""
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanYOSAsync"
-Then API should give response as "PL1088 : Required"
+     #Required field changed to optional feild
+#Scenario: Elapsed time in month is Null 
+#  Given Model is selected for the endpoint "/api/PlanYOS/SavePlanYOS"
+#When the property "serviceComputation" is configured as "2"
+#And the property "responsibleForCalculation" is configured as "1"
+#And the property "elapsedTimeInMonths" is configured as ""
+#  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanYOSAsync"
+#Then API should give response as "PL1088 : Required"
 
 
 Scenario: Elapsed time in month is 11 ,#ServiceRequirement Scenario: SService Computation is Elapsed Time

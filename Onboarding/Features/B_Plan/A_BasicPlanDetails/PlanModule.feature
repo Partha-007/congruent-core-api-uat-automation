@@ -54,13 +54,11 @@ When Configuration has been made as per following
 | address2           | random 101 alphabets                                                                                      |
 | zipCode            | random 5 alphabets                                                                                        |
 | mobilePhoneNumber  | 123-4567-7890                                                                                             |
-| trsContractId      | random 6 numerics                                                                                                    |  
+| trsContractId      | 123456                                                                                         |
 | email              | abcgfwehjdgjgfkfgydgvgvfgvgvghfvgvsamvfyfhvdvgvtfvjsyvhgavghcfudkgkfgsnezyertcnvdsyrxkeuhdvnrehu@gmai.com |
 | irsPlanNumber      |                                                                                                           |
 | shortYearStartDate | "2025-03-02T00:00:00Z"                                                                                    |
 | shortYearEndDate   | null                                                                                                      |
-
-
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then the API response should contain the 12 following errors 
 	| error_code | error_message                                                   |
@@ -483,7 +481,7 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Cr
 
 
 Scenario:Select a plan level field validate error message as required
-  Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
+  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
@@ -492,12 +490,13 @@ Scenario:Select a plan level field validate error message as required
  | planName     | random 10 alphabets |
  | level        |                     |
  | rkPlanNumber | random 10 alphabets |
+ | name         | abc123              |
  
-And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should give response as "PL002 : Required"
 
 Scenario: Select a plan type field validate error message as required
-  Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
+  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
@@ -505,25 +504,26 @@ Scenario: Select a plan type field validate error message as required
  | planType     |                     |
  | rkPlanNumber | random 10 alphabets |
  | rlanName     | random 10 alphabets |
- And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should give response as "PL003 : Required"
 
 
 Scenario: Select a company name field validate error message as required
-  Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
+  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
  When Configuration has been made as per following
  | category     | 0                   |
+ | name     | abc123                  |
  | level        |                     |
  | companyId    |                     |
  | rkPlanNumber | random 10 alphabets |
- And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should give response as "PL954 : Required"
 
  Scenario:Select a sponsoring organization field validate error message as required
-  Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
+  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
@@ -533,7 +533,7 @@ Then API should give response as "PL954 : Required"
  | level        | 1                   |
  | companyId    |                     |
  | rkPlanNumber | random 10 alphabets |
- And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
+And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should give response as "PL013 : Required"
 
 

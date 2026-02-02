@@ -10,7 +10,7 @@ Scenario: Sponsor Email field validate with null value(error message)
   And the property "email" is configured as ""
   And the property "mobilePhoneNumber" is configured as "123-456-7899"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
-   Then the API response should contain the 9 following errors 
+   Then the API response should contain the 3 following errors 
      | error_code | error_message |
      | PL054      | Required      |
      | PL049      | Required      | Scenario: Sponsor first name field required validation
@@ -26,7 +26,7 @@ Scenario: Sponsor Email field validate with null value(error message)
   And the property "email" is configured as "(*&^@test.com"
   And the property "mobilePhoneNumber" is configured as "123-456-7899"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
-     Then the API response should contain the 9 following errors 
+     Then the API response should contain the 2 following errors 
      | error_code | error_message                                   |
      | PL055      | Email is in invalid format                      |
      | PL051      | First Name is not valid                         | Scenario: Sponsor first name field required validation (numerics)
@@ -34,7 +34,7 @@ Scenario: Sponsor Email field validate with null value(error message)
 
 
 #Scenario: Sponsor Last name field(error message)
-
+#Scenario: Sponsor first name field required validation(specialCharacters)
   Scenario: Sponsor Email field validate more than 80 characters(error message)
   Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
   When the property "firstName" is configured with "specialCharacters" with 5 characters
@@ -42,13 +42,12 @@ Scenario: Sponsor Email field validate with null value(error message)
   And the property "ssn" is configured as "<SSN>"
   And the property "isSponsor" is configured as "false"
   And the property "email" is configured as "aabcderbcderbcderbcderbcderbcderbcderbcderbcderbcderbcderbcderbcderbcder@test.com"
-  And the property "mobilePhoneNumber" is configured as "123-456-7899"
+  And the property "mobilePhoneNumber" is configured as "<Phone>"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
-  Then API should give response as "PL056 : Email Id should not exceed 80 characters"
-     Then the API response should contain the 9 following errors 
+     Then the API response should contain the 5 following errors 
      | error_code | error_message                                                |
      | PL056      | Email Id should not exceed 80 characters                     |
-     | PL051      | First Name is not valid                                      | Scenario: Sponsor first name field required validation(specialCharacters)
+     | PL051      | First Name is not valid                                      | 
      | PL047      | Last Name is not valid                                       |
      | PL053      | Phone Number is Required in the format XXX-XXX-XXXX          |
      | PL052      | Social Security Number is required in the format XXX-XX-XXXX |
@@ -75,7 +74,7 @@ Examples:
   And the property "email" is configured as "testtest.com"
   And the property "mobilePhoneNumber" is configured as "123-456-7899"
    And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
-     Then the API response should contain the 9 following errors 
+     Then the API response should contain the 2 following errors 
      | error_code | error_message              |
      | PL055      | Email is in invalid format |
      | PL051      | First Name is not valid    |   Scenario: Sponsor first name field required validation(alphaNumericWithSpecialCharacters)
@@ -88,7 +87,7 @@ Examples:
   And the property "lastName" is configured with "alphabets" with 5 characters
   And the property "ssn" is configured as "123-45-7891"
   And the property "isSponsor" is configured as "false"
-  And the property "email" is configured as "test123@test.com" 
+  And the property "email" is configured as "test4123@test.com" 
   And the property "mobilePhoneNumber" is configured as "123-456-7899"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
   Then API should give response as "PL051 : First Name is not valid"
@@ -109,8 +108,10 @@ Examples:
 
 Scenario: Sponsor Email field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
-  When the property "firstName" is configured as "<firstName>"
-  And the property "lastName" is configured as "<lastName>"
+  When Configuration has been made as per following
+           | key       | value       |
+           | firstName | <firstName> |
+           | lastName  | <lastName>  |
   And the property "ssn" is configured as "123-45-7891"
   And the property "isSponsor" is configured as "false"
   And the property "email" is configured as "<Email>"
@@ -210,5 +211,6 @@ Scenario: SponsorSSN field validate existing ssn
   And the property "email" is configured as "test223@test.com"
   And the property "mobilePhoneNumber" is configured as "133-456-7899"
    And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
-  Then API should give response as "PL060 : This Social Security Number already belongs to Sponsor" 
- 
+  Then API should give response as "PL060 : This Social Security Number already belongs to Sponsor with same Plan" 
+#Error message got changed
+ #This Social Security Number already belongs to Sponsor 
