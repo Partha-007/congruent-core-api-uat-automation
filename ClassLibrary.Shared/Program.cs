@@ -357,6 +357,7 @@ namespace RefitSandBox
         {
             int increment = int.Parse(incrementValue);
             var Value = await GetDate(increment, pattern);
+
             if (ControlName == "firstRepaymentDate")
             {
                 firstRepaymentDate = Value;

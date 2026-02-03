@@ -1,3 +1,4 @@
+using Bogus.Bson;
 using ClassLibrary.Shared.TestDataGenerator;
 using CucumberExpressions.Ast;
 using MyNamespace;
@@ -110,7 +111,11 @@ namespace SharedStepDefinitions
                     Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
                     Value = Regex.Replace(Regex.Replace(GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue), @"[^\w\s]", " "), @"\s+", " ").Trim();
                 }
-                if (Value.Contains(","))
+                //if (Value.Contains("/"))
+                //{
+                //    Value = await GetDate(Convert.ToInt32(Value.Split("/")[1]), Value.Split("/")[0]);
+                //}
+                    if (Value.Contains(","))
                 {
                     var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     var newArray = new JArray();

@@ -1,5 +1,6 @@
 ﻿Feature: A_Employee
 [BeforeTestRun]
+[PlanActivation]
 
 #Scenario: 20346 To verify the Marital Status Dropdown is not selected in Create Mode of Employee Information Page
 #Scenario: 20252 Employee first Name field space validation 
@@ -970,6 +971,7 @@ Then the API response should contain the 2 following errors
 
 
 #**********************
+@PlanActivation
 Scenario: positive case
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following

@@ -821,7 +821,7 @@ Then API should respond with successful message
 
 
 
-
+#Scenario:To Verify the Source Category Mandatory Validation for Employer Source  108911
 Scenario: To Verify the Source Category Mandatory Validation for Employee Source  108910
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
@@ -837,21 +837,6 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL175 : Required"
 
-Scenario:To Verify the Source Category Mandatory Validation for Employer Source  108911
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-
-  And Configuration has been made as per following
-  | key                    | value |
-  | sourceType             |     2 |
-  | sourceCategory         |       |
-  | limitMaximumPercentage |   100 |
-  | limitMinimumPercentage |    20 |
-
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL176 : Required"
 
 Scenario: 8301 To verify the validation message for Source sub category by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -874,7 +859,6 @@ Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
-
   And Configuration has been made as per following
   | key                      | value |
   | sourceType               |     1 |

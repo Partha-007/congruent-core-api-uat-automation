@@ -1265,8 +1265,6 @@ When Configuration has been made as per following
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |                      20 |
            | catchupMaximumAmount |                      20 |
-
-
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
  Then API should give response as "PL1019 : Maximum limit amount should not be equal or lesser than minimum limit"
 
@@ -1287,8 +1285,6 @@ When Configuration has been made as per following
            | isCatchUpManatory    | true                    |
            | catchupMinimumAmount |                      20 |
            | catchupMaximumAmount |                      20 |
-
-
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
  Then API should give response as "PL1016 : Maximum limit amount should not be equal or lesser than minimum limit"
 
@@ -1309,8 +1305,6 @@ When Configuration has been made as per following
            | isCatchUpManatory        | true                    |
            | catchupMinimumPercentage |                      20 |
            | catchupMaximumPercentage |                      20 |
-
-
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
  Then API should give response as "PL1016 : Maximum limit amount should not be equal or lesser than minimum limit"
 
@@ -1523,24 +1517,25 @@ Then API should respond with successful message
 #And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 #Then API should give response as "PL989 : Minimum limit dollar amount should not exceed format of 100000000000.00" 
 
- Scenario:To verify the CatchUpManatory field field as Yes when catchupMaximumAmount field is above 11 characters with 2 decimal points
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                  | value                   |
-           | sourceName           | random 10 alphaNumerics |
-           | sourceType           |                       1 |
-           | sourceCategory       |                       2 |
-           | sourceSubCategory    |                       4 |
-           | sourceSubSubCategory |                       1 |
-           | catchUpType          |                       2 |
-           | isCatchUpManatory    | true                    |
-           | catchupMinimumAmount |          20909022299.99 |
-           | catchupMaximumAmount |         898989898982.98 |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL993 : Maximum limit dollar amount should not exceed format of 100000000000.00" 
+#REstricted in UI
+# Scenario:To verify the CatchUpManatory field field as Yes when catchupMaximumAmount field is above 11 characters with 2 decimal points
+#Given Model is selected for the endpoint "/api/Source/SaveSource"
+#When Configuration has been made as per following
+#           | key       | value       |
+#           | companyId | <CompanyId> |
+#When Configuration has been made as per following
+#           | key                  | value                   |
+#           | sourceName           | random 10 alphaNumerics |
+#           | sourceType           |                       1 |
+#           | sourceCategory       |                       2 |
+#           | sourceSubCategory    |                       4 |
+#           | sourceSubSubCategory |                       1 |
+#           | catchUpType          |                       2 |
+#           | isCatchUpManatory    | true                    |
+#           | catchupMinimumAmount |          20909022299.99 |
+#           | catchupMaximumAmount |         898989898982.98 |
+#And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+#Then API should give response as "PL993 : Maximum limit dollar amount should not exceed format of 100000000000.00" 
 
  Scenario:To verify the CatchUpManatory field field as Yes when catchupMaximumAmount field is below 11 characters with 2 decimal points
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -1583,25 +1578,25 @@ Then API should respond with successful message
 
 
 #bug
-
- Scenario:To verify the CatchUpManatory field field as Yes when catchupMaximumAmount field is equal 11 characters with 3 decimal points
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-When Configuration has been made as per following
-           | key                  | value                   |
-           | sourceName           | random 10 alphaNumerics |
-           | sourceType           |                       1 |
-           | sourceCategory       |                       2 |
-           | sourceSubCategory    |                       4 |
-           | sourceSubSubCategory |                       1 |
-           | catchUpType          |                       2 |
-           | isCatchUpManatory    | true                    |
-           | catchupMinimumAmount |         20909022288.998 |
-           | catchupMaximumAmount |          20909090901.99 |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL188 : Maximum limit dollar amount should not exceed format of 100000000000.00" 
+#Restricted in UI
+# Scenario:To verify the CatchUpManatory field field as Yes when catchupMaximumAmount field is equal 11 characters with 3 decimal points
+#Given Model is selected for the endpoint "/api/Source/SaveSource"
+#When Configuration has been made as per following
+#           | key       | value       |
+#           | companyId | <CompanyId> |
+#When Configuration has been made as per following
+#           | key                  | value                   |
+#           | sourceName           | random 10 alphaNumerics |
+#           | sourceType           |                       1 |
+#           | sourceCategory       |                       2 |
+#           | sourceSubCategory    |                       4 |
+#           | sourceSubSubCategory |                       1 |
+#           | catchUpType          |                       2 |
+#           | isCatchUpManatory    | true                    |
+#           | catchupMinimumAmount |         20909022288.998 |
+#           | catchupMaximumAmount |          20909090901.99 |
+#And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+#Then API should give response as "PL188 : Maximum limit dollar amount should not exceed format of 100000000000.00" 
 
  
  #Scenario:To verify the CatchUpManatory field as Yes when catchupMinimumPercentage field is blank in both
