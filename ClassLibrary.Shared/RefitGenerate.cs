@@ -132,7 +132,8 @@ namespace RefitSandBox
         Task<object> UploadCombinedFileAsync([Body] MultipartFormDataContent form);
 
         [Post("/api/v1/Payroll/PayrollAndCensusFileUploadTest")]
-        Task<PayrollAndCensusFileUploadTestResult> UploadCombinedFileToTestEndpoint([Body] MultipartFormDataContent form);
+        Task<PayrollAndCensusFileUploadTestResult> UploadCombinedFileTestAsync([Body] MultipartFormDataContent form);
+
     }
 
     public interface ITradeOrderFileUpload

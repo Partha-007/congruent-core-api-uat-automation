@@ -37,9 +37,9 @@ namespace SharedStepDefinitions
         }
 
         [When("the property {string} is configured with {string} with {int} characters")]
-        public async Task WhenThePropertyIsConfiguredWithWithCharacters(string ControlName, Pattern patternType, int length)
+        public void WhenThePropertyIsConfiguredWithWithCharacters(string ControlName, Pattern patternType, int length)
         {
-            await _program.ConfigureWithTestDate(ControlName, length, patternType);
+            _program.ConfigureWithTestDate(ControlName, length, patternType);
         }
 
 
@@ -84,7 +84,7 @@ namespace SharedStepDefinitions
         [Then("the API response should contain the {int} following errors")]
         public async Task ThenTheAPIResponseShouldContainTheFollowingErrors(int noOfErrors, DataTable dataTable)
         {
-              await _program.VerifyMultipleErrors(noOfErrors, dataTable);
+            await _program.VerifyMultipleErrors(noOfErrors, dataTable);
         }
 
 
@@ -218,6 +218,19 @@ namespace SharedStepDefinitions
         public async Task WhenFileUploadIsExecutedForTheFileToTheTestEndpoint(string filename)
         {
             await _program.SendAPIRequestForFileUploadToTestEndpoint(filename);
+        }
+
+
+        [When("File upload is executed for the file {string}")]
+        public async Task WhenFileUploadIsExecutedForTheFileAndFundingIsDoneBy(string filename)
+        {
+            await _program.SendAPIRequestForFileUploadTest(filename);
+        }
+
+        [Then("API should respond Match Calculated values as")]
+        public void ThenAPIShouldRespondWithMatchValue(Table table)
+        {
+            _program.VerifyMatchvalue(table);
         }
 
         [Then("Payroll API should respond for {string} with Error report message as {string} and ECR page message as {string}")]

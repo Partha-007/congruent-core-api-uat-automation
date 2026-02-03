@@ -1,23 +1,22 @@
-﻿using ClassLibrary.Shared.AppSettings;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Playwright;
-using Microsoft.Playwright;
+﻿using Microsoft.Playwright;
 using Newtonsoft.Json.Linq;
-using NSwag;
-using NSwag.CodeGeneration.CSharp;
-using Refit;
-using Renci.SshNet;
 using Reqnroll;
+using Microsoft.Playwright;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NSwag.CodeGeneration.CSharp;
+using NSwag;
+using Renci.SshNet;
+using Refit;
 using System.Net;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using Bogus;
+using Bogus.Extensions.UnitedStates;
 
 namespace RefitSandBox.Hooks
 {
@@ -25,56 +24,44 @@ namespace RefitSandBox.Hooks
     public class Hooks : TestBase
     {
         public Program program;
-        
-        
-        public static string? bearer;
-        //public string planId;
-        public static string? companyId, planId, RollOverSource;
-        private static AppSettings? _appSettings;
-        public static string? url, name, password;
+        public static Bogus.Faker? faker = new Faker();
 
-        public static string GetAppsettingsPath()
+        public string? bearer;
+        public static string? planId, SSN;
+        [BeforeScenario]
+
+        //private static string? _bearerToken;
+
+        //public static string BearerToken => _bearerToken!;
+
+        public async Task UserLogin()
         {
-            var currentDir = AppDomain.CurrentDomain.BaseDirectory;
 
-            while (!string.IsNullOrEmpty(currentDir))
-            {
-                var potentialPath = Path.Combine(currentDir, "ClassLibrary.Shared","AppSettings");
+            bearer = await GetToken(
+                baseUrl: Settings.ApplicationURL,
+                clientId: "COREII",
+                clientSecret: "postman-secret",
+                redirectUri: $"{Settings.ApplicationURL}/authentication/login-callback",
+                username: Settings.UserName!,
+                password: Settings.Password!,
+                enableDebug: true
+            );
 
-                if (Directory.Exists(potentialPath))
-                    return potentialPath;
-
-                currentDir = Directory.GetParent(currentDir)?.FullName;
-            }
-
-            throw new DirectoryNotFoundException($"Helpers folder not found starting from {AppDomain.CurrentDomain.BaseDirectory}");
         }
 
-        public static IConfiguration BuildConfig(string sharedConfigPath)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(sharedConfigPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-            return builder.Build();
-        }
-
-        public static async Task getAppSettings()
-        {
-            string sharedConfigPath = GetAppsettingsPath();
-            var config = BuildConfig(sharedConfigPath);
-            _appSettings = config.GetSection(AppSettings.Name).Get<AppSettings>();
-
-            url = _appSettings?.ApplicationURL;
-            name = _appSettings?.UserName; password = _appSettings?.Password;
-        }
-
-        private static async Task<string> GetToken(string baseUrl, string clientId, string clientSecret, string redirectUri, string username, string password, bool enableDebug = false)
+        private static async Task<string> GetToken(
+    string baseUrl,
+    string clientId,
+    string clientSecret,
+    string redirectUri,
+    string username,
+    string password,
+    bool enableDebug = false)
         {
             void Log(string msg)
             {
                 if (!enableDebug) return;
-                string log = $"[{DateTime.Now:HH:mm:ss}] {msg}";
+                var log = $"[{DateTime.Now:HH:mm:ss}] {msg}";
                 Console.WriteLine(log);
                 File.AppendAllText("oauth_debug.log", log + Environment.NewLine);
             }
@@ -91,69 +78,69 @@ namespace RefitSandBox.Hooks
                 using var client = new HttpClient(handler);
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
 
-                // PKCE: generate verifier and challenge
-                string codeVerifier = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
+                // Generate PKCE challenge
+                var codeVerifier = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
                     .TrimEnd('=').Replace('+', '-').Replace('/', '_');
-                string codeChallenge = Convert.ToBase64String(
+
+                var codeChallenge = Convert.ToBase64String(
                     SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier)))
                     .TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
-                string state = Guid.NewGuid().ToString("N");
-                string authorizeUrl = $"{baseUrl}/connect/authorize" +
-                    $"?client_id={clientId}" +
-                    $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
-                    $"&response_type=code" +
-                    $"&scope=api openid profile roles offline_access" +
-                    $"&state={state}" +
-                    $"&code_challenge={codeChallenge}" +
-                    $"&code_challenge_method=S256" +
-                    $"&response_mode=query";
+                var state = Guid.NewGuid().ToString("N");
+
+                var authorizeUrl = $"{baseUrl}/connect/authorize?" +
+                    $"client_id={clientId}&" +
+                    $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
+                    $"response_type=code&" +
+                    $"scope=api openid profile roles offline_access&" +
+                    $"state={state}&" +
+                    $"code_challenge={codeChallenge}&" +
+                    $"code_challenge_method=S256&" +
+                    $"response_mode=query";
 
                 Log("Fetching authorization page...");
                 var authResp = await client.GetAsync(authorizeUrl);
                 var authHtml = await authResp.Content.ReadAsStringAsync();
 
                 var tokenMatch = Regex.Match(authHtml, @"__RequestVerificationToken.*?value=""([^""]+)""");
-                if (!tokenMatch.Success) throw new Exception("Verification token not found in login page.");
-
-                string verificationToken = tokenMatch.Groups[1].Value;
+                if (!tokenMatch.Success) throw new Exception("Verification token not found.");
 
                 // Submit login form
-                var loginForm = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    { "Input.Email", username },
-                    { "Input.Password", password },
-                    { "__RequestVerificationToken", verificationToken }
-                });
-
                 Log("Submitting login form...");
-                var loginResp = await client.PostAsync(authResp.RequestMessage.RequestUri.ToString(), loginForm);
+                var loginForm = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            { "Input.Email", username },
+            { "Input.Password", password },
+            { "__RequestVerificationToken", tokenMatch.Groups[1].Value }
+        });
 
-                string redirectedUrl = loginResp.RequestMessage.RequestUri?.ToString() ?? "";
-                var codeMatch = Regex.Match(redirectedUrl, @"code=([^&]+)");
+                var loginResp = await client.PostAsync(authResp.RequestMessage?.RequestUri?.ToString()!, loginForm);
+
+                var redirectUrl = loginResp.RequestMessage?.RequestUri?.ToString() ?? "";
+                var codeMatch = Regex.Match(redirectUrl, @"code=([^&]+)");
                 if (!codeMatch.Success) throw new Exception("Authorization code not found in redirect URL.");
 
-                string authCode = codeMatch.Groups[1].Value;
-                Log($"Received auth code: {authCode.Substring(0, 8)}...");
+                var authCode = codeMatch.Groups[1].Value;
+                Log($"Received auth code: {authCode[..8]}...");
 
                 // Exchange code for token
-                var tokenForm = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    { "client_id", clientId },
-                    { "client_secret", clientSecret },
-                    { "grant_type", "authorization_code" },
-                    { "redirect_uri", redirectUri },
-                    { "code_verifier", codeVerifier },
-                    { "code", authCode }
-                });
-
                 Log("Exchanging code for token...");
+                var tokenForm = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            { "client_id", clientId },
+            { "client_secret", clientSecret },
+            { "grant_type", "authorization_code" },
+            { "redirect_uri", redirectUri },
+            { "code_verifier", codeVerifier },
+            { "code", authCode }
+        });
+
                 var tokenResp = await client.PostAsync($"{baseUrl}/connect/token", tokenForm);
-                string tokenJson = await tokenResp.Content.ReadAsStringAsync();
+                var tokenJson = await tokenResp.Content.ReadAsStringAsync();
 
                 if (!tokenResp.IsSuccessStatusCode)
                 {
-                    Log($"Token error response: {tokenJson}");
+                    Log($"Token error: {tokenJson}");
                     throw new Exception($"Token request failed: {tokenResp.StatusCode}");
                 }
 
@@ -166,39 +153,119 @@ namespace RefitSandBox.Hooks
                 throw;
             }
         }
-        
-        public static async Task UserLogin()
+
+        //public async Task UserLogin()
+        //{
+        //    var playwright = await Playwright.CreateAsync();
+        //    string chromePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
+
+        //    var browserType = playwright.Chromium;
+        //    var browser = await browserType.LaunchAsync(new BrowserTypeLaunchOptions
+        //    {
+        //        ExecutablePath = chromePath,  // My visual studio is not identifying Chrome path so giving manually
+        //        Headless = false  //For checking Im using Headless false
+        //    });
+
+        //    var page = await browser.NewPageAsync();
+
+
+        //    await page.GotoAsync($"{Settings.ApplicationURL}/");
+        //    var UserNameField = page.Locator("//input[@name = 'Input.Email']");
+        //    var PasswordField = page.Locator("//input[@name = 'Input.Password']");
+        //    var LoginButton = page.Locator("//button[text()='Log in']");
+        //    var PlanConfig = page.Locator("//span[text()='Plan Config']");
+        //    await UserNameField.FillAsync($"{Settings.UserName}");
+        //    await PasswordField.FillAsync($"{Settings.Password}");
+        //    await LoginButton.ClickAsync();
+        //    //await PlanConfig.ClickAsync();
+        //    await Task.Delay(3000);
+        //    await page.WaitForLoadStateAsync();
+
+        //    var isLocalStorageAvailable = await page.EvaluateAsync<bool>("typeof window.localStorage !== 'undefined'");
+        //    Console.WriteLine("localStorage available: " + isLocalStorageAvailable);
+        //    var localStorage = page.EvaluateAsync<string>("window.localStorage");
+        //    var length = await page.EvaluateAsync<string>("window.localStorage.length");
+        //    var key = await page.EvaluateAsync<string>("window.localStorage.key(0)");
+        //    var bearerToken = await page.EvaluateAsync<string>($"window.localStorage.getItem('COREIIuser:{Settings.ApplicationURL}:COREII')");
+        //    JObject jwt = JObject.Parse(bearerToken.ToString());
+        //    bearer = jwt["access_token"].ToString();
+        //    if (bearer != null)
+        //    {
+        //        await browser.CloseAsync();
+        //    }
+        //    //bearer = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkMyN0E0MEI4ODkyOTU2Q0YzOTkxNkQ5MDgzRDY1NEYzRjZDNzlBNzQiLCJ4NXQiOiJ3bnBBdUlrcFZzODVrVzJRZzlaVThfYkhtblEiLCJ0eXAiOiJhdCtqd3QifQ.eyJvaV9wcnN0IjoiQ09SRUlJIiwiaXNzIjoiaHR0cHM6Ly90ZXN0LmNvcmVyZXRpcmVtZW50c29sdXRpb25zLmNvbS8iLCJvaV9hdV9pZCI6Ijk4ZDM1ZWQyLWZkZGQtNDFjNy04ZmQ4LWFlZGEyMGNhNWIzNiIsIlVzZXJJZCI6IjE1Iiwic3ViIjoiMTUiLCJlbWFpbCI6InZpZ25lc2h3YXJhbi5uQGNzcGwuY29tIiwibmFtZSI6InZpZ25lc2h3YXJhbi5uQGNzcGwuY29tIiwidXNlcm5hbWUiOiJ2aWduZXNod2FyYW4ubkBjc3BsLmNvbSIsInJvbGUiOiJTUFUiLCJjbGllbnRfaWQiOiJDT1JFSUkiLCJvaV90a25faWQiOiI3MTg4YjYyNS05YTk5LTRmOWEtODU5NC1mODI1YTVkYmRkMTYiLCJzY29wZSI6ImFwaSBvcGVuaWQgcHJvZmlsZSByb2xlcyBvZmZsaW5lX2FjY2VzcyIsImp0aSI6IjlmOTg4MTg0LTgyZDItNGMwNi1iOGVjLTVmODFkZTQ3ZGI4MyIsImV4cCI6MTc0MDk4NDc5MywiaWF0IjoxNzQwOTgxMTkzfQ.iDFesBukZlnQQ1IWE5bFcTXZNYrK3AoVT52gKO4L8E88V8yRNE5ATjtxKDG7etF2sCgDfcSZsuiQcmr0M2iE0acFkdrxXX3ZjsoEYtgCGEGBWr6pcRhyA16jfqrD3ok-sfhugtkVZzytJL-dpQTFuyTrWR4vOKofL7T6iBIHyIg0EkkxtccRlnPPZIzLbpXMY6-42MPfL6gPqrUFXDB43tkCreTHnxFaNEAHYRDryCMNnf9wKmnwpR5Y6BIiJExul4UQH_Ts0-zDQfD3AWEOBP380zVSjZKCcMkq3uWFxTc6NfPxnD-604UkPCKaDhVjkfL5HoleQpIbQVYOaRKunw";
+        //}
+
+
+        [BeforeFeature("@MatchPlanActivation")]
+        public static async Task<string> MatchPlanActivation()
         {
-            string sharedConfigPath = GetAppsettingsPath();
-            var config = BuildConfig(sharedConfigPath);
-            _appSettings = config.GetSection(AppSettings.Name).Get<AppSettings>();
+            var hook = new Hooks();
+            await hook.UserLogin();
+            string companyId = await Program.SaveCompany(hook.bearer); // Static method call
+            planId = await Program.SavePlan(hook.bearer, companyId);
+            await Program.SaveSponsor(hook.bearer, planId);
+            await Program.ClearingPartnerPlanMapping(hook.bearer, planId);
+            await Program.EligibilityConfiguration(hook.bearer, planId);
+            await Program.SaveEntryDate(hook.bearer, planId);
+            await Program.SavePretaxSource(hook.bearer, planId);
+            await Program.SaveRothSource(hook.bearer, planId);
+            await Program.SaveCompensation(hook.bearer, planId);
+            await Program.UpdatePlanStatus(hook.bearer, planId, "2");
+            await Program.UpdatePlanStatus(hook.bearer, planId, "3");
+            await Program.AddInvestmentsToPlan(hook.bearer, planId);
+            await Program.SaveEnrollmentSettings(hook.bearer, planId);
+            await Program.SaveFunding(hook.bearer, planId);
 
-            url = _appSettings?.ApplicationURL;
-            name = _appSettings?.UserName; password = _appSettings?.Password;
 
-            bearer = await GetToken(
-              url!,
-              "COREII",
-              "postman-secret",
-              $"{url!}/authentication/login-callback",
-              name!,
-              password!,
-              enableDebug: true
-          );
+
+
+
+            // Load the OpenAPI document (adjust the file path as needed)
+            var document = await OpenApiDocument.FromFileAsync("D:\\01MODULES\\Congruent.Core.API.TestAutomation\\SourceGenerator\\json1.json");
+
+            // Create settings for the CSharpClientGenerator
+            var settings = new CSharpClientGeneratorSettings
+            {
+                ClassName = "MyApiClient",
+                //Namespace = "MyNamespace"       
+            };
+
+
+            var generator = new CSharpClientGenerator(document, settings);
+
+            // Generate the client code as a string
+            var code = generator.GenerateFile();
+
+            // Optionally, save the generated code to a .cs file
+            File.WriteAllText("GeneratedApiClient.cs", code);
+
+            //await Program.GetUploadedFilesBasedOnSearchCriteria(bearer, companyName, planName, rkPlanNumber);
+            return planId;
+
+
+
         }
+
+        [BeforeScenario("@SSNGenerate")]
+        public static string SSNGenerate()
+        {
+            SSN = faker!.Person.Ssn();
+            return SSN;
+        }
+
 
         [BeforeScenario("@PlanActivation")]
         public async Task<string> PlanActivation()
         {
-            string companyId = await Program.SaveCompany(Hooks.bearer); // Static method call
+            string companyId = await Program.SaveCompany(bearer); // Static method call
             planId = await Program.SavePlan(bearer, companyId);
-            await Program.SaveSponsor(bearer!, planId);
+            await Program.SaveSponsor(bearer, planId);
             await Program.ClearingPartnerPlanMapping(bearer, planId);
             await Program.EligibilityConfiguration(bearer, planId);
             await Program.SaveEntryDate(bearer, planId);
             await Program.SavePretaxSource(bearer, planId);
-            //await Program.SavePretaxRollOverSource(bearer, planId);
-            //await Program.SaveMatchSource(bearer, planId);
+            await Program.SaveMatchSource(bearer, planId);
             await Program.SaveCompensation(bearer, planId);
             await Program.UpdatePlanStatus(bearer, planId, "2");
             await Program.UpdatePlanStatus(bearer, planId, "3");
@@ -211,17 +278,16 @@ namespace RefitSandBox.Hooks
 
         [BeforeScenario("@PlanActivationWithoutInvestmentAndEnrollment")]
         public async Task PlanActivationWithoutInvestment()
-         {
+        {
             string companyId = await Program.SaveCompany(bearer); // Static method call
             planId = await Program.SavePlan(bearer, companyId);
-       
+
             await Program.SaveSponsor(bearer, planId);
             await Program.ClearingPartnerPlanMapping(bearer, planId);
             await Program.EligibilityConfiguration(bearer, planId);
             await Program.SaveEntryDate(bearer, planId);
             await Program.SavePretaxSource(bearer, planId);
-            //await Program.SavePretaxRollOverSource(bearer, planId);
-            //await Program.SaveMatchSource(bearer, planId);
+            await Program.SaveMatchSource(bearer, planId);
             await Program.SaveRothSource(bearer, planId);
             await Program.SaveCompensation(bearer, planId);
             await Program.UpdatePlanStatus(bearer, planId, "2");
@@ -229,14 +295,7 @@ namespace RefitSandBox.Hooks
             await Program.SaveFunding(bearer, planId);
         }
 
-        [BeforeTestRun]
-        public static async Task CompanyCreation()
-        {
-            await UserLogin();
-            companyId = await Program.SaveCompany(bearer); // Static method call
-            planId = await Program.SavePlan(bearer, companyId);
-            //RollOverSource = await Program.SavePretaxRollOverSource(bearer, planId);
-        }
+
 
     }
 }
