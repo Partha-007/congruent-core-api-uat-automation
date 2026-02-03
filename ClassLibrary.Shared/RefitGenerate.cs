@@ -186,6 +186,9 @@ namespace RefitSandBox
 
         [Post("/api/v1/Payroll/GetEmployeesBySearchCriteria")]
         Task<GetEmployeesBySearchCriteriaResult> GetEmployeesBySearchCriteria(SearchCriterias search);
+
+        [Post("/api/v1/Payroll/SaveFundingDetailsByFile")]
+        Task<bool> SaveFundingDetailsByFileAsync([Body] int body);
     }
 
     public interface IEmployee

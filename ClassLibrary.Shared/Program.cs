@@ -102,6 +102,7 @@ namespace RefitSandBox
         public static string modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2;
         public static AccountBalanceByPlanResponse employeeAccountBalance;
         public static SourceViewModel? sourceobjModel;
+        public static Dictionary<string, string> InvestmentNameAndPlanMappingIdDict = new Dictionary<string, string>();
 
         public async Task UserLogin()
         {
@@ -956,7 +957,7 @@ namespace RefitSandBox
                             BaseAddress = new Uri(_url)
                         };
 
-                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
+                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
 
                         var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
                         var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileTestAsync(form);
@@ -1004,13 +1005,84 @@ namespace RefitSandBox
             }
         }
 
+        public async Task AddInvestmentToPlan(string InvestmentName)
+        {
+            var investmentSearchModel = new MasterInvestmentSearchModel();
+            investmentSearchModel.Search = InvestmentName;
+            investmentSearchModel.To = 20;
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+
+            var settings = new RefitSettings
+            {
+                ContentSerializer = new NewtonsoftJsonContentSerializer()
+            };
+            var apiClient = RestService.For<IInvestment>(httpClient, settings);
+            var investmentResponse = await apiClient.GetMasterInvestmentBySearchCriteria(investmentSearchModel);
+            if (investmentResponse.Count > 0)
+            {
+                var investmentId = investmentResponse[0]["id"].ToString();
+                var investmentPlanMapping = new AddInvestmentsInput
+                {
+                    AddInvestmentInputs = new List<AddInvestmentInput>()
+                };
+
+                var newInvestment = new AddInvestmentInput
+                {
+                    Id = 0,
+                    InvestmentId = Convert.ToInt32(investmentId),
+                    PlanId = Convert.ToInt32(Hooks.Hooks.planId),
+                    Status = 1,
+                    InvestmentType = 2,
+                    SuspendedFromDate = null,
+                    SuspendedToDate = null
+                };
+
+                investmentPlanMapping.AddInvestmentInputs.Add(newInvestment);
+
+                var planApiClient = RestService.For<IPlanDetailsSave>(httpClient);
+                var responseAfterAddingInvestment = await planApiClient.AddInvestmentsToPlan(investmentPlanMapping);
+                if (!(responseAfterAddingInvestment is bool value && value))
+                    throw new Exception($"Investment {InvestmentName} not mapped to Plan");
+
+                var listInvestmentsOfPlan = await planApiClient.GetInvestmentListByPlanId(Hooks.Hooks.planId);
+                var parsedList = JObject.Parse(listInvestmentsOfPlan.ToString());
+
+                var investmentPlanDetails = parsedList["investmentPlanDetails"] as JArray;
+                foreach (var investment in investmentPlanDetails)
+                {
+                    if (investment["name"].ToString() == InvestmentName)
+                    {
+                        InvestmentNameAndPlanMappingIdDict.Add(investment["name"].ToString(), investment["id"].ToString());
+                    }
+                }
+            }
+            else
+            {
+                await CreateInvestment(InvestmentName);
+                await AddInvestmentToPlan(InvestmentName);
+            }
+
+
+
+        }
+
+        public async Task CreateInvestment(string investmentName)
+        {
+
+        }
+
         public async Task DisbursementProcessing(ProcessLoanDisbursementViewModel _ProcessLoanDisbursementViewModel)
         {
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(_url)
             };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
             var loanClient = RestService.For<ILoan>(httpClient);
             var loanDisbursementResult = await loanClient.ProcessLoanDisbursement(_ProcessLoanDisbursementViewModel);
             if (!loanDisbursementResult)
@@ -2227,7 +2299,7 @@ namespace RefitSandBox
             {
                 BaseAddress = new Uri(Settings.ApplicationURL)
             };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
             var loanClient = RestService.For<ILoan>(httpClient);
             var submitLoanRequestResponse = await loanClient.SubmitLoanRequest(submitLoanRequestModel);
             if (!submitLoanRequestResponse.IsSuccessfull)
@@ -3489,5 +3561,252 @@ namespace RefitSandBox
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
             var confirmFundsResponse = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
+
+        public static async Task EnrollmentConfiguration(string planId, string pretaxSourceId, string rothSourceId, string investment1Name, string investment2Name)
+        {
+            var program = new Program();
+            var investment1PlanMappingId = await program.IdentifyValue(investment1Name);
+            var investment2PlanMappingId = await program.IdentifyValue(investment2Name);
+
+            var enrollmentModel = new EnrollmentViewModel
+            {
+                Id = 0,
+                PlanId = int.Parse(planId),
+                DefaultElectionSetting = new DefaultElectionSettingViewModel
+                {
+                    EnrollmentId = 0,
+                    Id = 0,
+                    AutoUpdateInvestmentElection = null,
+                    SameInvestmentElectionToAllParticipants = true,
+                    InvestmentElectionBasedOn = null,
+                    DeferralSourceContribution = new List<DeferralSourceContributionViewModel>
+        {
+            new DeferralSourceContributionViewModel
+            {
+                DefaultElectionSettingsId = 0,
+                Id = 0,
+                SourceId = int.Parse(pretaxSourceId),
+                SourceName = "EEPretax",
+                SourceType = 0,
+                SourceCategory = 0,
+                SourceSubCategory = 0,
+                ContributionType = 1,
+                ContributionRate = 30.0, // double
+                MinimumRate = null,
+                MaximumRate = null,
+                PercentageMinimumRate = null,
+                PercentageMaximumRate = null,
+                IsDeleted = false,
+                ContributionFieldType = 1,
+                HceContributionFieldType = null,
+                HceRate = null
+            },
+            new DeferralSourceContributionViewModel
+            {
+                DefaultElectionSettingsId = 0,
+                Id = 0,
+                SourceId = int.Parse(rothSourceId),
+                SourceName = "Roth",
+                SourceType = 0,
+                SourceCategory = 0,
+                SourceSubCategory = 0,
+                ContributionType = 1,
+                ContributionRate = 30.0,
+                MinimumRate = null,
+                MaximumRate = null,
+                PercentageMinimumRate = null,
+                PercentageMaximumRate = null,
+                IsDeleted = false,
+                ContributionFieldType = 1,
+                HceContributionFieldType = null,
+                HceRate = null
+            }
+        },
+                    DefaultElectionBasedOnList = new List<DefaultElectionBasedOnViewModel>(),
+                    PlanInvestment = new List<PlanInvestmentViewModel>
+        {
+            new PlanInvestmentViewModel
+            {
+                DefaultElectionSettingsId = 0,
+                InvestmentElectionBasedOnId = null,
+                Id = 0,
+                InvestmentId = int.Parse(investment1PlanMappingId),
+                InvestmentName = "SEAS001",
+                InvestmentPercentage = 70.0, // double
+                IsDeleted = false
+            },
+            new PlanInvestmentViewModel
+            {
+                DefaultElectionSettingsId = 0,
+                InvestmentElectionBasedOnId = null,
+                Id = 0,
+                InvestmentId = int.Parse(investment2PlanMappingId),
+                InvestmentName = "SEAS002",
+                InvestmentPercentage = 30.0,
+                IsDeleted = false
+            }
+        },
+                    AdditionalDefaultElectionSetting = new List<AdditionalDefaultElectionSettingViewModel>()
+                },
+                AutoDeferralncreaseApplicable = new ADIApplicableConfigurationViewModel2
+                {
+                    EnrollmentId = 0,
+                    Id = 0,
+                    AutoDeferralIncreaseProgram = false,
+                    AdiApplicableTo = null,
+                    AutoDeferralIncrease = null,
+                    PeriodOfIncrease = null,
+                    ApplyADITo = null,
+                    IncreaseAllowanceDays = null,
+                    ExcludeHCE = null,
+                    SeparateAdiRatesForHce = null,
+                    AdiLiveDate = null,
+                    IsSetAutoIncreaseLimitAcrossAllDeferrals = null,
+                    AutoIncreaseAcrossAllDeferralsStopsAt = null,
+                    AdiContributionType = null,
+                    Adi = new List<ADIViewModel2>(),
+                    AdditionalADIRules = new List<AdditionalADIRuleViewModel>()
+                },
+                AutoEnrollment = new AutoEnrollmentDataViewModel2
+                {
+                    EnrollmentId = 0,
+                    Id = 0,
+                    PlanId = int.Parse(planId),
+                    SubjecttoAutoEnrollment = true,
+                    MinimumWithdrawallimit = null,
+                    IsAutoReEnroll = false,
+                    FrequencyOptoutIndicator = null,
+                    IsWindowPeriod = null,
+                    NumberOfDaysWindowIsOpenNumber = 10,
+                    NumberOfDaysWindowIsOpen = 1,
+                    NumberOfDaysWindowIsOpenForOptoutNumber = 10,
+                    NumberOfDaysWindowIsOpenForOptout = 1,
+                    NumberOfDaysWindowIsOpenReEnrollmentNumber = null,
+                    NumberOfDaysWindowIsOpenReEnrollment = null,
+                    ExclusionType = 0,
+                    UsePlanDefaultDeferralElection = true,
+                    UsePlanDefaultInvestmentElection = true,
+                    InvestmentBasedOn = null,
+                    SameInvestmentBasedOn = null,
+                    SameInvestmentElectionToAllSources = null,
+                    SameInvestmentElectionToAllParticipants = true,
+                    EffectiveDate = DateTimeOffset.Now.AddDays(1), // DateTimeOffset
+                    LiveDate = null,
+                    InvestmentElectionBasedOnList = new List<InvestmentElectionBasedOnViewModel2>
+                    {
+                        new InvestmentElectionBasedOnViewModel2()
+                        {
+                            Id = 0,
+                            AgeFrom = null,
+                            AgeTo = null,
+                            AutoEnrollmentId = 0,
+                            From = null,
+                            InvestmentBasedOn = null,
+                            To = null,
+                            IsDefaultCategory = null,
+                            IsDeleted = false,
+                            InvestmentElectionValuesList = new List<InvestmentElectionValuesViewModel2>
+                            {
+                                new InvestmentElectionValuesViewModel2
+                                {
+                                    InvestmentElectionBasedOnId = 0,
+                                    Id = 0,
+                                    InvestmentId = int.Parse(investment1PlanMappingId),
+                                    InvestmentName = "SEAS001",
+                                    InvestmentPercentage = 70.0,
+                                    IsDeleted = false
+                                },
+                                new InvestmentElectionValuesViewModel2
+                                {
+                                    InvestmentElectionBasedOnId = 0,
+                                    Id = 0,
+                                    InvestmentId = int.Parse(investment2PlanMappingId),
+                                    InvestmentName = "SEAS002",
+                                    InvestmentPercentage = 30.0,
+                                    IsDeleted = false
+                                }
+                            },
+                        }
+                    },
+                    ExcludedEmployeeClassifications = new List<ExcludedEmployeeClassficationViewModel2>(),
+                    ExcludedEmploymentStatuses = new List<ExcludedEmployeeStatusViewModel2>(),
+                    DateOfHire = null,
+                    HiredOnOrAfterDateEnrollment = null,
+                    HiredOnOrBeforeDateEnrollment = null,
+                    HiredBetweenFrom = null,
+                    HiredBetweenTo = null,
+                    AutoEnrollmentDeferralSources = new List<AutoEnrollmentDeferralSourcesViewModel2>
+        {
+            new AutoEnrollmentDeferralSourcesViewModel2
+            {
+                AutoEnrollmentId = 0,
+                Id = 0,
+                SourceId = int.Parse(pretaxSourceId),
+                DeferralSourceName = "EEPretax",
+                DeferralSourcePercentage = 30.0,
+                ExcludeFromEnrollment = false,
+                LimitMinimum = 10.0,
+                LimitMaximum = 70.0,
+                IsDeleted = false
+            },
+            new AutoEnrollmentDeferralSourcesViewModel2
+            {
+                AutoEnrollmentId = 0,
+                Id = 0,
+                SourceId = int.Parse(rothSourceId),
+                DeferralSourceName = "Roth",
+                DeferralSourcePercentage = 30.0,
+                ExcludeFromEnrollment = false,
+                LimitMinimum = 10.0,
+                LimitMaximum = 70.0,
+                IsDeleted = false
+            }
+        },
+                    AdditionalAutoEnrollment = new List<AdditionalAutoEnrollmentDataViewModel2>()
+                },
+                OtherInformation = new OtherInformationViewModel
+                {
+                    EnrollmentId = 0,
+                    Id = 0,
+                    AllowReallocation = false,
+                    ReallocationPeriod = null,
+                    NumberOfReallocationsAllowed = null,
+                    SendEnrollmentInvite = 1,
+                    NumberOfDaysBeforeEntryDate = null,
+                    NumberOfDaysBeforeForecastDate = null,
+                    DeferralContributionRateUponRehire = 2,
+                    SendNoticeBeforeEachPlanYear = false,
+                    NumberOfDaysBeforePlanYearStart = null,
+                    IsRecurringCommunication = false,
+                    Frequency = null,
+                    NumberOfOccurrences = null
+                }
+            };
+
+
+
+
+            var settings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Include
+            };
+
+            var json = JsonConvert.SerializeObject(enrollmentModel, settings);
+            var requestPayload = JObject.Parse(json);
+            Console.WriteLine("Enrollment request :" + requestPayload.ToString());
+            string Action = "api/Enrollment/SaveEnrollmentSetting";
+            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+            string token = _hooks != null && !string.IsNullOrEmpty(_hooks.bearer) ? _hooks.bearer! : bearer;
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(_url)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var task = await httpClient.PostAsync($"{_url}/{Action}/", data);
+            var contentTask = await task.Content.ReadAsStringAsync();
+            response = JObject.Parse(contentTask);
+            Console.Write(response.ToString());
+        }
+
     }
 }
