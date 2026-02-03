@@ -21,9 +21,20 @@ Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as menti
 | HOURS     | 900        |
 | PAY DATE  | 03/01/2023 |
 
-When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
+When File upload is executed for the file "CombinedFile.csv" and funding is done by "File"
 
 	Then the API response should contain the 2 following errors 
 	| error_code |   error_message |
     | CM001      |   Required      |
     | CM057      |   Required      |
+
+
+
+
+
+
+
+
+
+
+
