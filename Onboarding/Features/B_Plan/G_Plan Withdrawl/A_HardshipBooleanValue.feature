@@ -262,12 +262,12 @@ Scenario: Inservice ageLimitApplicable configured with false
 Then API should respond with successful message
 
 Examples: 
-| description        |
-| random 10 alphaNumerics |Scenario: Inservice description field accepts alphanumerics
-| random 10 specialCharacters |Scenario: Inservice description field accepts specialCharacters
-| random 10 AlphaNumericWithSpecialCharacters |Scenario: Inservice description field accepts alphanumericsspecialcharacters
-| random 149 AlphaNumericWithSpecialCharacters |Scenario: Inservice description field accepts below 150
-| random 150 AlphaNumericWithSpecialCharacters |Scenario: Inservice description field accepts equal 150
+| description                                  |
+| random 10 alphaNumerics                      | Scenario: Inservice description field accepts alphanumerics
+| random 10 SpecialCharacters                  | Scenario: Inservice description field accepts specialCharacters
+| random 10 AlphaNumericWithSpecialCharacters  | Scenario: Inservice description field accepts alphanumericsspecialcharacters
+| random 149 AlphaNumericWithSpecialCharacters | Scenario: Inservice description field accepts below 150
+| random 150 AlphaNumericWithSpecialCharacters | Scenario: Inservice description field accepts equal 150
 
 Scenario: Inservice ageLimitApplicable configured with years as Null
   Given Model is selected for the endpoint "/api/Withdrawal/SaveWithdrawal"

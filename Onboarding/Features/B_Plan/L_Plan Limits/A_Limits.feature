@@ -1,7 +1,7 @@
 ﻿Feature: A_Limits
 [BeforeTestRun]
 Scenario:To validate Combined Limit Name field is null
-   Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
+Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
 When Configuration has been made as per following
          | key                  | value              |
          | name                 | random 0 alphabets |

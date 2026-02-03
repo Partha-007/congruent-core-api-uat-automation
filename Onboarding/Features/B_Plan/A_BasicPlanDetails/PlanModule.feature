@@ -45,19 +45,19 @@ Scenario:7608 PLan name field validate error message as required
 | companyId | <CompanyId> |
 When Configuration has been made as per following
 | key                | value                                                                                                     |
-| planName           | random 0 alphabets                                                                                        |
-| name               | random 55 alphabets                                                                                       |
-| rkPlanNumber       | random 0 alphabets                                                                                        |
+| planName           | random 0 Alphabets                                                                                        |
+| name               | random 55 Alphabets                                                                                       |
+| rkPlanNumber       | random 0 Alphabets                                                                                        |
 | effectiveDate      |                                                                                                           |
 | taxEIN             | asdfghjkl                                                                                                 |
-| address1           | random 101 alphabets                                                                                      |
-| address2           | random 101 alphabets                                                                                      |
-| zipCode            | random 5 alphabets                                                                                        |
-| mobilePhoneNumber  | 123-4567-7890                                                                                             |
-| trsContractId      | 123456                                                                                         |
+| address1           | random 101 Alphabets                                                                                      |
+| address2           | random 101 Alphabets                                                                                      |
+| zipCode            | random 5 Alphabets                                                                                        |
+| mobilePhoneNumber  | 123-4567-7890                                                                                             |  
+| trsContractId      | random 6 Numerics                                                                                         |
 | email              | abcgfwehjdgjgfkfgydgvgvfgvgvghfvgvsamvfyfhvdvgvtfvjsyvhgavghcfudkgkfgsnezyertcnvdsyrxkeuhdvnrehu@gmai.com |
 | irsPlanNumber      |                                                                                                           |
-| shortYearStartDate | "2025-03-02T00:00:00Z"                                                                                    |
+| shortYearStartDate | 2025-03-02T00:00:00Z                                                                                    |
 | shortYearEndDate   | null                                                                                                      |
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then the API response should contain the 12 following errors 

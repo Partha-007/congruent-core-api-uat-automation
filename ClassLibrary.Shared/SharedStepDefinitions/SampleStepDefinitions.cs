@@ -115,7 +115,7 @@ namespace SharedStepDefinitions
                 //{
                 //    Value = await GetDate(Convert.ToInt32(Value.Split("/")[1]), Value.Split("/")[0]);
                 //}
-                    if (Value.Contains(","))
+                     if (Value.Contains(","))
                 {
                     var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     var newArray = new JArray();

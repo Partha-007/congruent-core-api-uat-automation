@@ -3,104 +3,117 @@
 A short summary of the feature
  Scenario: Employee classification (successful response)
   Given Model is selected for the endpoint "/api/v1/Company"
-  When Collection in a model is configured with 1 blocks for the property "Classifications" with values as given below
-| BlockNumber | Key                        | Value              |
-|           1 | ClassificationName         | random 5 alphabets |
-|           1 | EmployeeClassificationType |                  1 |
-  When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values as given below
- | BlockNumber | Key  | Value |
- | 1           | Code | 2     |
- #And Collection in a model is configured with 1 blocks for the property "Classifications" and "EmployeeClassificationCodes" with values to save model portfolio as given below
+  When Collection in a model is configured with 13 blocks for the property "Classifications" with values as given below
+| BlockNumber | Key                                     | Value                                      |
+|           1 | ClassificationName                      | random 5 Alphabets                         |
+|           1 | EmployeeClassificationType              |                                          1 |
+|           2 | ClassificationName                      | random 5 Numerics                          |
+|           2 | EmployeeClassificationType              |                                          2 |
+|           3 | ClassificationName                      | random 5 Numerics                          |
+|           3 | EmployeeClassificationType              |                                          3 |
+|           3 | ClassificationTypeRequired              | false                                      |
+|           3 | AllowCreatingClassificationViaCodesFile | false                                      |
+|           4 | ClassificationName                      | random 5 SpecialCharacters                 |
+|           4 | EmployeeClassificationType              | random 1 Numerics                          |
+|           5 | ClassificationName                      | random 5 AlphaNumericWithSpecialCharacters |
+|           5 | EmployeeClassificationType              | random 1 Numerics                          |
+|           6 | ClassificationName                      | random 45 Alphabets                        |
+|           6 | EmployeeClassificationType              | random 1 Numerics                          |
+|           7 | ClassificationName                      | random 50 Alphabets                        |
+|           7 | EmployeeClassificationType              | random 1 Numerics                          |
+|           8 | ClassificationName                      | random 5 Alphabets                         |
+|           8 | EmployeeClassificationType              |                                          1 |
+|           9 | ClassificationName                      | random 5 Alphabets                         |
+|           9 | EmployeeClassificationType              |                                          1 |
+|          10 | ClassificationName                      | random 5 Alphabets                         |
+|          10 | EmployeeClassificationType              |                                          1 |
+|          11 | ClassificationName                      | random 5 Alphabets                         |
+|          11 | EmployeeClassificationType              |                                          1 |
+|          12 | ClassificationName                      | random 5 Alphabets                         |
+|          12 | EmployeeClassificationType              |                                          1 |
+|          13 | ClassificationName                      | random 5 Alphabets                         |
+|          13 | EmployeeClassificationType              |                                          1 |
 
-#| 1           | EmployeeClassificationCodes             | 2                                           |
-#| 2           | ClassificationName                      | random 5 numerics                           |
-#| 2           | EmployeeClassificationType              | 2                                           |
-#| 2           | EmployeeClassificationCodes             | random 1 numerics                           |
-#| 3           | ClassificationName                      | random 5 numerics                           |
-#| 3           | EmployeeClassificationType              | 3                                           |
-#| 3           | ClassificationTypeRequired              | false                                       |
-#| 3           | AllowCreatingClassificationViaCodesFile | false                                       |
-#| 3           | EmployeeClassificationCodes             | random 1 numerics                           |
-#| 4           | ClassificationName                      | random 5 specialCharacters                  |
-#| 4           | EmployeeClassificationType              | random 1 numerics                           |
-#| 4           | EmployeeClassificationCodes             | random 1 numerics                           |
-#| 5           | ClassificationName                      | random 5 alphaNumericWithSpecialCharacters  |
-#| 5           | EmployeeClassificationType              | random 1 numerics                           |
-#| 5           | EmployeeClassificationCodes             | random 1 numerics                           |
-#| 6           | ClassificationName                      | random 45 alphabets                         |
-#| 6           | EmployeeClassificationType              | random 1 numerics                           |
-#| 6           | EmployeeClassificationCodes             | random 1 numerics                           |
-#| 7           | ClassificationName                      | random 50 alphabets                         |
-#| 7           | EmployeeClassificationType              | random 1 numerics                           |
-#| 7           | EmployeeClassificationCodes             | random 1 numerics                           |
-#| 8           | ClassificationName                      | random 5 alphabets                          |
-#| 8           | EmployeeClassificationType              | 1                                           |
-#| 8           | EmployeeClassificationCodes             | random 5 alphabets                          |
-#| 9           | ClassificationName                      | random 5 alphabets                          |
-#| 9           | EmployeeClassificationType              | 1                                           |
-#| 9           | EmployeeClassificationCodes             | random 5 numerics                           |
-#| 10          | ClassificationName                      | random 5 alphabets                          |
-#| 10          | EmployeeClassificationType              | 1                                           |
-#| 10          | EmployeeClassificationCodes             | random 5 specialCharacters                  |
-#| 11          | ClassificationName                      | random 5 alphabets                          |
-#| 11          | EmployeeClassificationType              | 1                                           |
-#| 11          | EmployeeClassificationCodes             | random 5 alphaNumericWithSpecialCharacters  |
-#| 12          | ClassificationName                      | random 5 alphabets                          |
-#| 12          | EmployeeClassificationType              | 1                                           |
-#| 12          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 13          | ClassificationName                      | random 5 alphabets                          |
-#| 13          | EmployeeClassificationType              | 1                                           |
-#| 13          | EmployeeClassificationCodes             | random 250 numerics                         |
-#| 14          | ClassificationName                      | random 5 alphabets                          |
-#| 14          | EmployeeClassificationType              | 1                                           |
-#| 14          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 14          | Name                                    | random 10 alphabets                         |
-#| 14          | Value                                   | random 9 alphabets                          |
-#| 15          | ClassificationName                      | random 5 alphabets                          |
-#| 15          | EmployeeClassificationType              | 1                                           |
-#| 15          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 15          | Name                                    | random 10 alphabets                         |
-#| 15          | Value                                   | random 10 alphabets                         |
-#| 16          | ClassificationName                      | random 5 alphabets                          |
-#| 16          | EmployeeClassificationType              | 1                                           |
-#| 16          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 16          | Name                                    | random 10 alphabets                         |
-#| 16          | Value                                   | random 10 numerics                          |
-#| 17          | ClassificationName                      | random 5 alphabets                          |
-#| 17          | EmployeeClassificationType              | 1                                           |
-#| 17          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 17          | Name                                    | random 10 alphabets                         |
-#| 17          | Value                                   | random 10 specialCharacters                 |
-#| 18          | ClassificationName                      | random 5 alphabets                          |
-#| 18          | EmployeeClassificationType              | 1                                           |
-#| 18          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 18          | Name                                    | random 10 alphabets                         |
-#| 18          | Value                                   | random 10 alphaNumericWithSpecialCharacters |
-#| 19          | ClassificationName                      | random 5 alphabets                          |
-#| 19          | EmployeeClassificationType              | 1                                           |
-#| 19          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 19          | Name                                    | random 10 numerics                          |
-#| 19          | Value                                   | random 9 alphabets                          |
-#| 20          | ClassificationName                      | random 5 alphabets                          |
-#| 20          | EmployeeClassificationType              | 1                                           |
-#| 20          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 20          | Name                                    | random 10 specialCharacters                 |
-#| 20          | Value                                   | random 9 alphabets                          |
-#| 21          | ClassificationName                      | random 5 alphabets                          |
-#| 21          | EmployeeClassificationType              | 1                                           |
-#| 21          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 21          | Name                                    | random 10 alphaNumericWithSpecialCharacters |
-#| 21          | Value                                   | random 9 alphabets                          |
-#| 22          | ClassificationName                      | random 5 alphabets                          |
-#| 22          | EmployeeClassificationType              | 1                                           |
-#| 22          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 22          | Name                                    | random 49 alphabets                         |
-#| 22          | Value                                   | random 9 alphabets                          |
-#| 23          | ClassificationName                      | random 5 alphabets                          |
-#| 23          | EmployeeClassificationType              | 1                                           |
-#| 23          | EmployeeClassificationCodes             | random 100 numerics                         |
-#| 23          | Name                                    | random 50 alphabets                         |
-#| 23          | Value                                   | random 9 alphabets                          |
+  When Collection in a model is configured with 13 blocks for the property "EmployeeClassificationCodes" with values as given below
+ | BlockNumber | Key  | Value                                      |
+ |           1 | Code |                                          2 |
+ |           2 | Code | random 1 Numerics                          |
+ |           3 | Code | random 1 Numerics                          |
+ |           4 | Code | random 1 Numerics                          |
+ |           5 | Code | random 1 Numerics                          |
+ |           6 | Code | random 1 Numerics                          |
+ |           7 | Code | random 1 Numerics                          |
+ |           8 | Code | random 5 Alphabets                         |
+ |           9 | Code | random 5 Numerics                          |
+ |          10 | Code | random 5 SpecialCharacters                 |
+ |          11 | Code | random 5 AlphaNumericWithSpecialCharacters |
+ |          12 | Code | random 100 Numerics                        |
+ |          13 | Code | random 250 Numerics                        |
+
+ And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
+Then API should respond with successful message
+
+ 
+ 
+
+ Scenario: Employee classification (successful response 2)
+  Given Model is selected for the endpoint "/api/v1/Company"
+  When Collection in a model is configured with 10 blocks for the property "Classifications" with values as given below 
+|  1 | ClassificationName         | random 5 Alphabets |
+|  1 | EmployeeClassificationType |                  1 |
+|  2 | ClassificationName         | random 5 Alphabets |
+|  2 | EmployeeClassificationType |                  1 |
+|  3 | ClassificationName         | random 5 Alphabets |
+|  3 | EmployeeClassificationType |                  1 |
+|  4 | ClassificationName         | random 5 Alphabets |
+|  4 | EmployeeClassificationType |                  1 |
+|  5 | ClassificationName         | random 5 Alphabets |
+|  5 | EmployeeClassificationType |                  1 |
+|  6 | ClassificationName         | random 5 Alphabets |
+|  6 | EmployeeClassificationType |                  1 |
+|  7 | ClassificationName         | random 5 Alphabets |
+|  7 | EmployeeClassificationType |                  1 |
+|  8 | ClassificationName         | random 5 Alphabets |
+|  8 | EmployeeClassificationType |                  1 |
+|  9 | ClassificationName         | random 5 Alphabets |
+|  9 | EmployeeClassificationType |                  1 |
+| 10 | ClassificationName         | random 5 Alphabets |
+| 10 | EmployeeClassificationType |                  1 |
+ When Collection in a model is configured with 10 blocks for the property "EmployeeClassificationCodes" with values as given below
+
+ |  1 | Code | random 100 Numerics |
+ |  2 | Code | random 100 Numerics |
+ |  3 | Code | random 100 Numerics |
+ |  4 | Code | random 100 Numerics |
+ |  5 | Code | random 100 Numerics |
+ |  6 | Code | random 100 Numerics |
+ |  7 | Code | random 100 Numerics |
+ |  8 | Code | random 100 Numerics |
+ |  9 | Code | random 100 Numerics |
+ | 10 | Code | random 100 Numerics |
+ 
+  When Collection in a model is configured with 10 blocks for the property "Attributes" with values as given below
+  |  1 | Name                        | random 10 Alphabets                         |
+ |  1 | Value                       | random 9 Alphabets                          |
+  |  2 | Name                        | random 10 Alphabets                         |
+ |  2 | Value                       | random 10 Alphabets                         |
+ |  3 | Name                        | random 10 Alphabets                         |
+ |  3 | Value                       | random 10 Numerics                          |
+ |  4 | Name                        | random 10 Alphabets                         |
+ |  4 | Value                       | random 10 SpecialCharacters                 |
+ |  5 | Name                        | random 10 Alphabets                         |
+ |  5 | Value                       | random 10 AlphaNumericWithSpecialCharacters |
+ |  6 | Name                        | random 10 Numerics                          |
+ |  6 | Value                       | random 9 Alphabets                          |
+ |  7 | Name                        | random 10 SpecialCharacters                 |
+ |  7 | Value                       | random 9 Alphabets                          |
+ |  8 | Name                        | random 10 AlphaNumericWithSpecialCharacters |
+ |  8 | Value                       | random 9 Alphabets                          |
+ |  9 | Name                        | random 49 Alphabets                         |
+ |  9 | Value                       | random 9 Alphabets                          |
+ | 10 | Name                        | random 50 Alphabets                         |
+ | 10 | Value                       | random 9 Alphabets                          |
+
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then API should respond with successful message
 
@@ -113,11 +126,11 @@ Then API should respond with successful message
  Given Model is selected for the endpoint "/api/v1/Company"
  When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
 | BlockNumber | Key                        | Value               |
-|           1 | ClassificationName         | random 51 alphabets |
-|           1 | EmployeeClassificationType | random 1 numerics   |
+|           1 | ClassificationName         | random 51 Alphabets |
+|           1 | EmployeeClassificationType | random 1 Numerics   |
  When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
 | BlockNumber | Key  | Value             |
-|           1 | Code | random 1 numerics |
+|           1 | Code | random 1 Numerics |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then the API response should contain the 1 following errors
 | error_code | error_message                                               |
@@ -130,13 +143,13 @@ Then the API response should contain the 1 following errors
 
 Scenario: Employee classification(error validation) with double excecution
   Given Model is selected for the endpoint "/api/v1/Company"
-  When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
+  When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
 | BlockNumber | Key                        | Value               |
-| 1           | ClassificationName         | random 5 alphabets  |
-| 1           | EmployeeClassificationType | random 45 alphabets |
+| 1           | ClassificationName         | random 5 Alphabets  |
+| 1           | EmployeeClassificationType | random 45 Alphabets |
 When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
 | BlockNumber | Key  | Value             |
-|           1 | Code | random 5 numerics |
+|           1 | Code | random 5 Numerics |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then API should respond with successful message
 #When addMasterClassificationType is executed
@@ -148,9 +161,9 @@ Scenario: Employee classification1
 Given Model is selected for the endpoint "/api/v1/Company"
 When Configuration has been made as per following
            | key                        | value               |
-           | classificationName         | random 51 alphabets |
-           | employeeClassificationType | 2random 1 numerics  |
-           | code                       | random 1 numerics   |
+           | classificationName         | random 51 Alphabets |
+           | employeeClassificationType | 2random 1 Numerics  |
+           | code                       | random 1 Numerics   |
            | frequencyName              | abc123              |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then API should respond with successful message

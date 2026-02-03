@@ -47,6 +47,8 @@ namespace RefitSandBox
         [Headers("Content-Type: application/json")]
         Task<object> CreateNewPlanAsync([Body] PlanDetailsViewModel planModel);
 
+        //[Post("api/v1/Plan/SaveForfeitureSetting")]
+        //Task<object> SaveForfeitureAsync([Body] SaveForfeitureSettingViewModel saveForfeitureSettingViewModel);
 
         [Post("/api/Sponsor/SaveSponsor")]
         Task<object> SavePlanSponsor([Body] SponsorViewModel sponsor);
