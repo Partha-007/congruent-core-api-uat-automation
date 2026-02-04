@@ -1,9 +1,9 @@
 ﻿Feature: A_Actual Hours - Combined File
-
+@PlanActivation
 
 Scenario: 144335 To verify the plan Actual Hour Eligibility rule for Anniversary-1yr Immediately satisfied with the Hours less than Actual hours (Ineligible)- Same day
 	Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-	When Configuration has been done as mentioned below
+	When Configuration has been made as per following
 | Key                          | Value |
 | exclusionType                |     0 |
 | immediateEligibility         | false |
@@ -18,10 +18,12 @@ Scenario: 144335 To verify the plan Actual Hour Eligibility rule for Anniversary
 Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
 | Key       | Value      |
 | HIRE DATE | 01/01/2023 |
-| HOURS     | 900        |
+| HOURS     |        900 |
 | PAY DATE  | 03/01/2023 |
+| PRETAX    |            |
 
-When File upload is executed for the file "CombinedFile.csv" and funding is done by "File"
+When File upload is executed for the file "CombinedFile.csv"
+
 
 	Then the API response should contain the 2 following errors 
 	| error_code |   error_message |

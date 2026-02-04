@@ -891,6 +891,7 @@ namespace RefitSandBox
                     var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
                     var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileTestAsync(form);
                     employee = responseAfterFileUpload.ParseToObjectTestReponse;
+                    Console.WriteLine("EMPLOYEE: ", employee);
                     return responseAfterFileUpload;
 
                 }
@@ -3147,7 +3148,7 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId("1", "CountryId", modelAfterConvention);
             modelAfterConvention = FakeDataHelper.AssignId("1", "StateId", modelAfterConvention);
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var sponsorSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SavePlanSponsor");
+            var sponsorSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType!, "SavePlanSponsor");
         }
 
         public static async Task ClearingPartnerPlanMapping(string bearer, string planId)
