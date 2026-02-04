@@ -205,8 +205,16 @@ Then the API response should contain the 20 following errors
 Scenario: 110174 To verify the bankAccountHolderName field with alphaNumerics of below 10  in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
-| key       | value       |
-| companyId | <CompanyId> |
+| key                  | value                |
+| companyId            | <CompanyId>          |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                       |
 | accountHolderName            | random 10 alphanumerics     |
@@ -732,12 +740,32 @@ Scenario: 150479 Verify whether validation is triggered if "Secondary Phone Numb
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | workPhoneNumber              | 978-456-735         |
 | firstName                    | random 10 alphabets |
 | uniquePersonalIdentification | 123-45-6789         |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
+Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
+When Configuration has been made as per following
+| key       | value       |
+| companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | workPhoneNumber              |          0678437328 |

@@ -233,8 +233,24 @@ namespace RefitSandBox.Hooks
         public static async Task CompanyCreation()
         {
             await UserLogin();
+            var program = new Program();
             companyId = await Program.SaveCompany(bearer); // Static method call
             planId = await Program.SavePlan(bearer, companyId);
+            await Program.SaveSponsor(bearer, planId);
+            await Program.ClearingPartnerPlanMapping(bearer, planId);
+            await Program.EligibilityConfiguration(bearer, planId);
+            await Program.SaveEntryDate(bearer, planId);
+            await Program.SavePretaxSource(bearer, planId);
+            //await Program.SavePretaxRollOverSource(bearer, planId);
+            //await Program.SaveMatchSource(bearer, planId);
+            await Program.SaveRothSource(bearer, planId);
+            await Program.SaveCompensation(bearer, planId);
+            await program.AddInvestmentToPlan("SEAS001");
+            await program.AddInvestmentToPlan("SEAS002");
+            await Program.EnrollmentSetup();
+            await Program.UpdatePlanStatus(bearer, planId, "2");
+            await Program.UpdatePlanStatus(bearer, planId, "3");
+            await Program.SaveFunding(bearer, planId);
             //RollOverSource = await Program.SavePretaxRollOverSource(bearer, planId);
         }
 
