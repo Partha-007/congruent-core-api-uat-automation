@@ -413,7 +413,7 @@ namespace SharedStepDefinitions
         [Given("Enrollment configuration")]
         public async Task GivenEnrollmentConfiguration()
         {
-            await Program.EnrollmentSetup();
+            await _program.EnrollmentSetup();
         }
 
 

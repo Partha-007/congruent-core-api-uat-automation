@@ -84,9 +84,13 @@ namespace RefitSandBox
         public static string planId;
         public static string planName;
         public static string rkPlanNumber;
-        public static string sourceId, MatcheditId;
+        public static string sourceId, pretaxRolloverSourceId;
+        public static string pretaxsourceName;
         public static string matchSourceId;
+        public static string matchSourceName;
         public static string rothSourceId;
+        public static string MatcheditId;
+        public static string rothSourceName;
         public static string uploadedFileId;
         public static string fundingBankId;
         public static string payrollFundingId;
@@ -101,8 +105,12 @@ namespace RefitSandBox
         public static string modelPortfolioName;
         public static string modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2;
         public static AccountBalanceByPlanResponse employeeAccountBalance;
-        public static SourceViewModel? sourceobjModel;
+        public static int? recordKeeperId;
         public static Dictionary<string, string> InvestmentNameAndPlanMappingIdDict = new Dictionary<string, string>();
+        public static SourceViewModel? sourceobjModel;
+
+
+
 
         public async Task UserLogin()
         {
@@ -740,7 +748,7 @@ namespace RefitSandBox
                             BaseAddress = new Uri(_url)
                         };
 
-                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
 
                         var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
                         var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileAsync(form);
@@ -749,7 +757,7 @@ namespace RefitSandBox
                         JObject responseObject = JObject.Parse(responseAfterFileUpload.ToString());
                         Console.Write(responseObject.ToString());
                         await Task.Delay(10000);
-                        var fileId = await GetUploadedFilesBasedOnSearchCriteria(_hooks.bearer, companyName, planName, rkPlanNumber);
+                        var fileId = await GetUploadedFilesBasedOnSearchCriteria(Hooks.Hooks.bearer!, companyName, planName, rkPlanNumber);
                         var payrollClient = RestService.For<IPayroll>(httpClient);
                         var fileDetails = await payrollClient.GetFileInformation(fileId);
                         if (fileDetails.FileStatus == "ErrorCorrectionRequired")
@@ -815,7 +823,7 @@ namespace RefitSandBox
                         BaseAddress = new Uri(_url)
                     };
 
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
                     var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
                     var tradeOrderFileResponse = await tradeOrderClient.UploadFile(form);
                     Console.WriteLine("Trade order file uploaded");
@@ -886,7 +894,7 @@ namespace RefitSandBox
                         BaseAddress = new Uri(_url)
                     };
 
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
 
                     var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
                     var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileTestAsync(form);
@@ -921,7 +929,7 @@ namespace RefitSandBox
                     BaseAddress = new Uri(_url)
                 };
 
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
                 var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
                 var tradeOrderFileUploadResult = await tradeOrderClient.UploadFile(form);
             }
@@ -958,7 +966,7 @@ namespace RefitSandBox
                             BaseAddress = new Uri(_url)
                         };
 
-                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
 
                         var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
                         var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileTestAsync(form);
@@ -1016,7 +1024,7 @@ namespace RefitSandBox
             {
                 BaseAddress = new Uri(Settings.ApplicationURL)
             };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
 
             var settings = new RefitSettings
             {
@@ -1083,7 +1091,7 @@ namespace RefitSandBox
             {
                 BaseAddress = new Uri(_url)
             };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var loanClient = RestService.For<ILoan>(httpClient);
             var loanDisbursementResult = await loanClient.ProcessLoanDisbursement(_ProcessLoanDisbursementViewModel);
             if (!loanDisbursementResult)
@@ -1294,7 +1302,7 @@ namespace RefitSandBox
             }
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
             Console.WriteLine($"Data001: {JsonConvert.SerializeObject(sourceobjModel, Formatting.Indented)}");
-            var response = await SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, methodName);
+            var response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
             MatcheditId = response["source"]?["sourceName"]?.ToString() == "ERMatch" ? response["source"]?["id"]?.ToString() : null;
             var sourceName = response["source"]?["sourceName"]?.ToString();
             sourceobjModel = (sourceName == "ERMatch" || sourceName == "ERNonMatch") && response["source"] is JObject matchSource ? MapJObjectToModel<SourceViewModel>(matchSource) : null;
@@ -1455,8 +1463,8 @@ namespace RefitSandBox
 
                             //    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
 
-                            // Use _hooks.bearer if available, otherwise fallback to the provided bearer
-                            string token = _hooks != null && !string.IsNullOrEmpty(_hooks.bearer) ? _hooks.bearer : bearer;
+                            // Use Hooks.Hooks.bearer! if available, otherwise fallback to the provided bearer
+                            string token = _hooks != null && !string.IsNullOrEmpty(Hooks.Hooks.bearer!) ? Hooks.Hooks.bearer! : bearer;
                             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                             Task.Delay(10000);
@@ -1736,7 +1744,7 @@ namespace RefitSandBox
                 {
                     var program = new Program();
                     var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-                    var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+                    var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
                     if (listOfPlanInvestments == null)
                     {
                         throw new Exception("Investments not mapped to this plan");
@@ -1834,7 +1842,7 @@ namespace RefitSandBox
                     var Columnname = row[0];
                     var Value = row[1];
                     Value = Value.Contains("_") ? await GetDate(Convert.ToInt32(Value.Split('_')[0]), Value.Split('_')[1]) : Value;
-                    Value = Columnname == "SSN" ? Hooks.Hooks.SSN : Value;
+                    Value = Columnname == "SSN" ? employeeSSN : Value;
                     UpdateFile(FileToEdit, Columnname, Value!, directoryPath);
                 }
             }
@@ -2022,7 +2030,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             /*var task = await httpClient.GetAsync($"{BaseURL}{Action}/{planId}");
             var contentTask = await task.Content.ReadAsStringAsync();
             var response = JObject.Parse(contentTask);*/
@@ -2045,7 +2053,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var searchBody = new SearchCriterias()
             {
                 SearchBySSNEmpIdName = employeeSSN.Replace("-", ""),
@@ -2069,7 +2077,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var planClient = RestService.For<IPlanDetailsSave>(httpClient);
             var loanSettings = new LoanSettingViewModel();
             loanSettings = (LoanSettingViewModel)modelAfterConvention;
@@ -2089,7 +2097,7 @@ namespace RefitSandBox
                 {
                     BaseAddress = new Uri(_url)
                 };
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
                 if (loanType == "Loan Refinancing")
                 {
                     var loanClient = RestService.For<ILoan>(httpClient);
@@ -2152,7 +2160,7 @@ namespace RefitSandBox
                     BaseAddress = new Uri(Settings.ApplicationURL)
                 };
 
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
                 var loanClient = RestService.For<ILoan>(httpClient);
                 await Task.Delay(5000);
                 var employeeLoansResponse = await loanClient.GetEmployeePlanLoans(employeeId);
@@ -2273,7 +2281,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var loanClient = RestService.For<ILoan>(httpClient);
             var updatedLoanId = int.Parse(loanId);
             updatedLoanId = updatedLoanId + 1;
@@ -2326,7 +2334,7 @@ namespace RefitSandBox
             {
                 BaseAddress = new Uri(Settings.ApplicationURL)
             };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var loanClient = RestService.For<ILoan>(httpClient);
             var submitLoanRequestResponse = await loanClient.SubmitLoanRequest(submitLoanRequestModel);
             if (!submitLoanRequestResponse.IsSuccessfull)
@@ -2395,7 +2403,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var loanClient = RestService.For<ILoan>(httpClient);
             var checkAndUpdateLoanStatus = await loanClient.CheckAndUpdateLoanStatus(loanId);
             if (!checkAndUpdateLoanStatus)
@@ -3064,7 +3072,7 @@ namespace RefitSandBox
 
         public async Task UpdateEmployeeInformation(Reqnroll.DataTable dataTable)
         {
-            //Will do research later blud!!
+            //Will do research later blud!
             /*var employeeId = await GetEmployeeId();
             string BaseURL = "https://test.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
@@ -3072,7 +3080,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(BaseURL)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             var employeeClient = RestService.For<IEmployee>(httpClient);
             var employeeResponse = await employeeClient.GetEmployee(employeeId);
 
@@ -3383,12 +3391,12 @@ namespace RefitSandBox
             await program.Configuration("planId", planId);
             await program.EditCollection(noOfBlocks, propertyName, dataTable);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var planStatus = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+            var planStatus = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
             await program.Configuration("investmentId", investmentId2);
             await program.Configuration("status", "1");
             await program.Configuration("investmentType", "2");
             await program.Configuration("planId", planId);
-            var addedToPlan = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+            var addedToPlan = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
         }
 
         public static async Task SaveEnrollmentSettings(string bearer, string planId)
@@ -3432,7 +3440,7 @@ namespace RefitSandBox
         {
             var program = new Program();
             var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
             var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
             modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
             modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
@@ -3472,7 +3480,7 @@ namespace RefitSandBox
         {
             var program = new Program();
             var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var listOfPlanInvestments = await program.SendAPIRequest(_hooks.bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
             var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
             modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
             modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
@@ -3555,7 +3563,7 @@ namespace RefitSandBox
                 BaseAddress = new Uri(_url)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _hooks.bearer);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
 
             var apiClient = RestService.For<IPayroll>(httpClient);
             var response = await apiClient.GetUploadedFilesBasedOnSearchCriteria(payrollSearch);
@@ -3585,7 +3593,7 @@ namespace RefitSandBox
             await program.Configuration("totalEmployerContribution", "0");
             await program.Configuration("bankFundings", null);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var fundByPlan = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
+            var fundByPlan = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
         }
 
 
@@ -3602,21 +3610,10 @@ namespace RefitSandBox
             await program.Configuration("amount", totalAmount.ToString());
             await program.Configuration("payrollFundingId", payrollFundingId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var confirmFundsResponse = await program.SendAPIRequest(_hooks.bearer, modelAfterConvention, interfaceType, "ConfirmFunds");
+            var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
 
-        public static async Task EnrollmentSetup()
-        {
-            try
-            {
-                var program = new Program();
-                await program.EnrollmentConfiguration(planId, sourceId, rothSourceId, "<SEAS001>", "<SEAS002>");
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-        }
+    
         public async Task EnrollmentConfiguration(string planId, string pretaxSourceId, string rothSourceId, string investment1Name, string investment2Name)
         {
             var program = new Program();
