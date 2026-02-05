@@ -49,27 +49,28 @@ Scenario: Additional VestedAt field configure with Death
 Scenario: Additional VestedAt field configure with null
   Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
-           | key                          | value |
-           | vestingName                  |       | Scenario: Vesting Name field Null
-           | immediateVestingIndicator    | false |
-           | vestedAt                     |   1,2 |
-           | vestingMethod                |     2 |
-           | breakInServiceApplicable     | true  |
-           | breakInServiceRules          |     2 |
-           | disregardPrior               |       | Scenario: Vesting BIS rule field configure with null of disregardPrior
-           | hours                        |   500 |
-           | elapsedTime                  |       | Scenario: Vesting method field ElapsedTime configure with Null
-           | hoursOfService               |       |
-           | firstYear                    |     0 |
-           | secondYear                   |   100 |
-           | thirdYear                    |   100 |
-           | fourthYear                   |   100 |
-           | fifthYear                    |   100 |
-           | sixthYear                    |   100 |
+           | key                       | value |
+           | vestingName               |       | Scenario: Vesting Name field Null
+           | immediateVestingIndicator | false |
+           | vestedAt                  |   1,2 |
+           | vestingMethod             |     2 |
+           | breakInServiceApplicable  | true  |
+           | breakInServiceRules       |     2 |
+           | disregardPrior            |       | Scenario: Vesting BIS rule field configure with null of disregardPrior
+           | hours                     |   500 |
+           | elapsedTime               |       | Scenario: Vesting method field ElapsedTime configure with Null
+           | hoursOfService            |   500 |
+           | firstYear                 |     0 |
+           | secondYear                |   100 |
+           | thirdYear                 |   100 |
+           | fourthYear                |   100 |
+           | fifthYear                 |   100 |
+           | sixthYear                 |   100 |
+           | months                    |    12 |
 And Collection in a model is configured with 1 blocks for the property "AdditionalVestings" with values to save model portfolio as given below
            | BlockNumber | Key                       | Value |
            |           1 | ImmediateVestingIndicator | false |
-           |           1 | VestedAt                  | 1,    |
+           |           1 | VestedAt                  |       |
            |           1 | VestingMethod             |     2 |
            |           1 | ElapsedTime               |    11 |
            |           1 | HoursOfService            |       | Scenario: Additional Vesting method hours configure with null
@@ -656,4 +657,10 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 
  #Scenario: VestingPastComputationPeriod is configured with half year
  #Scenario: VestingPastComputationPeriod is configured with full year
- #Scenario: VestingPastComputationPeriod is configured with do not compute
+ Scenario: VestingPastComputationPeriod is configured with do not compute
+ Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
+When Configuration has been made as per following
+           | key                | value               |
+           | vestedAt           |             1,2,4,8 |
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveVesting"
+ Then API should respond with successful message

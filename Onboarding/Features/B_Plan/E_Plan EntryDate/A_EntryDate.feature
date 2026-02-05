@@ -30,7 +30,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   Scenario:To verify the validation message for source entry date field is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"
-  When the property "entryDateRule" is configured as "2"
+  When the property "entryDateRuleFor" is configured as "2"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   When the property "ruleName" is configured as "abc1263"
   When the property "entryDateRule" is configured as ""
@@ -75,17 +75,17 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL726 : Required"
 
-      Scenario:To verify the validation message for already exit month and date 
+Scenario: To verify the validation message for already exit month and date 
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "ruleName" is configured as "abc123" 
-    When the property "entryDateRule" is configured as "7"
-  When the property "month" is configured as "2"
-  When the property "day" is configured as "1"
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
-      When the property "entryDateRule" is configured as "7"
-      When the property "ruleName" is configured as "abc1243" 
-  When the property "month" is configured as "2"
-  When the property "day" is configured as "1"
+  When the property "entryDateRuleFor" is configured as "1"
+  When the property "entryDateRule" is configured as "7"
+   When Collection in a model is configured with 2 blocks for the property "OtherEntryDates" with values as given below
+   | BlockNumber | Key   | Value |
+   |           1 | Month |     2 |
+   |           1 | Day   |     1 |
+   |           2 | Month |     2 |
+   |           2 | Day   |     1 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1042 : The entered day and month already exists for the plan"
 
@@ -146,19 +146,20 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1084 : Required"
 
-   Scenario:To verify the validation message for already exit month and date when Switch to plan year is "yes"
-  Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
-  When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
-  When the property "additionalEntryDateRule" is configured as "7"
-  When the property "month" is configured as "2"
-   When the property "day" is configured as "0"
-   When the property "addDay0" is configured as "1"
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
-  When the property "month" is configured as "2"
-   When the property "day" is configured as "0"
-   When the property "addDay0" is configured as "2"
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
-  Then API should give response as "PL1044 : The entered day and month already exists for the plan"
+  #Handled in frontend
+  # Scenario:To verify the validation message for already exit month and date when Switch to plan year is "yes"
+  #Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
+  #When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
+  #When the property "ruleName" is configured as "truabcdee"
+  #When the property "additionalEntryDateRule" is configured as "7"
+  #   When Collection in a model is configured with 2 blocks for the property "OtherEntryDates" with values as given below
+  # | BlockNumber | Key     | Value |
+  # |           1 | Month   |     2 |
+  # |           1 | Day     |     0 |
+  # |           2 | Month   |     2 |
+  # |           2 | Day     |     0 |
+  #And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
+  #Then API should give response as "PL1044 : The entered day and month already exists for the plan"
 
   Scenario: Entry date Name field validation
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"

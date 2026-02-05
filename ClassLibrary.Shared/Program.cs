@@ -366,6 +366,7 @@ namespace RefitSandBox
         }
 
         public static List<System.Reflection.PropertyInfo> matchingProperties = new List<System.Reflection.PropertyInfo>();
+        JArray newArray = new JArray();
         public async Task Configuration(string ControlName, string Value)
         {
             var program = new Program();
@@ -391,10 +392,10 @@ namespace RefitSandBox
                     .Select(entry => entry.Value)
                     .ToList();
             }
-            if (ControlName.Contains(","))
+            if (Value.Contains(","))
             {
                 var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                var newArray = new JArray();
+                //var newArray = new JArray();
 
                 foreach (var part in parts)
                 {
@@ -414,6 +415,8 @@ namespace RefitSandBox
                         newArray.Add(trimmed);
                     }
                 }
+
+
             }
 
             //for (int i = 0; i < Value.Length; i++)
@@ -601,10 +604,16 @@ namespace RefitSandBox
                             }
                             else
                             {
-                                // Otherwise, convert the value to the underlying type and set it
-                                var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
-                                var convertedValue = Convert.ChangeType(Value, underlyingType);
-                                property.SetValue(modelAfterConvention, convertedValue);
+                                if (newArray.Count != 0)
+                                    property.SetValue(modelAfterConvention, newArray);
+                                else
+                                {
+                                    // Otherwise, convert the value to the underlying type and set it
+                                    var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
+                                    var convertedValue = Convert.ChangeType(Value, underlyingType);
+                                    property.SetValue(modelAfterConvention, convertedValue);
+                                }
+                                   
                             }
                         }
                     }

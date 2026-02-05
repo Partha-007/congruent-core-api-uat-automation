@@ -115,7 +115,7 @@ namespace SharedStepDefinitions
                 //{
                 //    Value = await GetDate(Convert.ToInt32(Value.Split("/")[1]), Value.Split("/")[0]);
                 //}
-                     if (Value.Contains(","))
+                /*if (Value.Contains(","))
                 {
                     var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     var newArray = new JArray();
@@ -137,8 +137,12 @@ namespace SharedStepDefinitions
                         {
                             newArray.Add(trimmed);
                         }
+
+                       // Program.modelAfterConvention;
                     }
-                }
+
+                    
+                }*/
                 if(string.IsNullOrEmpty(Value))
                     Value = null;
                 //if (property.PropertyType == typeof(DateTimeOffset?))
