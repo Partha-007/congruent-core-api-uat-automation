@@ -32,17 +32,17 @@ namespace RefitSandBox.Hooks
     public partial class Hooks : TestBase
     {
 
-        
+
         public Program? program;
         public SampleStepDefinitions _sampledefinition;
-        public static int i = 0,j=0;
+        public static int i = 0, j = 0;
         public static HttpClient? httpClient;
 
         public static string? bearer;
         //public string planId;
         public static string? companyId, planId, RollOverSource;
-        public static AppSettings? _appSettings;        
-        public static string? url, name, password,clearingPartnerName,iD;
+        public static AppSettings? _appSettings;
+        public static string? url, name, password, clearingPartnerName, iD;
 
         DataTable configTable = new DataTable();
         //public List<Dictionary<string, Dictionary<string, string>>> ClearingPartners { get; set; }
@@ -347,12 +347,12 @@ namespace RefitSandBox.Hooks
                 {
                     string key = keyValue[0], value = keyValue[1];
 
-                   
+
                     var existingRow = table.Rows.FirstOrDefault(row => row["Key"].ToString() == key);
 
                     if (existingRow != null)
                         existingRow["Value"] = value;
-                    
+
                 }
             }
 
@@ -361,18 +361,20 @@ namespace RefitSandBox.Hooks
 
         public static async Task<string> CreateCPAccount(string name, int id)
         {
+
             var cpModel = new ClearingPartnerViewModel
             {
                 Id = 0,
                 ClearingPartnerId = id,
                 Description = $"Account for {name}",
                 AccountName = name,
-                AccountAggregationLevel = 0,
+                AccountAggregationLevel = AccountAggregationLevel._0,
                 BankName = "Federal Bank of America",
                 AccountNumber = "152436789",
-                AbaRoutingNumber = "092345867",
+                AbaRoutingNumber = "292345867",
                 BankAccountType = BankAccountType._1
             };
+
 
             httpClient = new HttpClient
             {
@@ -382,10 +384,7 @@ namespace RefitSandBox.Hooks
 
             var clearingPartnerInterface = RestService.For<IClearingPartner>(httpClient);
             var response = await clearingPartnerInterface.AddClearingPartnerAccount(cpModel);
-            
-            Console.WriteLine($"Created clearing partner account for {name}");
-            
-            return response?.ToString() ?? string.Empty;
+            return null;
         }
 
         public static async Task<Object> GetClearingPartner()
@@ -409,10 +408,10 @@ namespace RefitSandBox.Hooks
             var clearingPartnerInterface = RestService.For<IClearingPartner>(httpClient);
             var MasterClearingPartnersResponse = await clearingPartnerInterface.GetMasterClearingPartnersId();
 
-            
+
             var partnersListArray = JArray.Parse(MasterClearingPartnersResponse.ToString());
 
-            
+
             var apiPartnersDictionary = new Dictionary<string, string>();
             foreach (var partner in partnersListArray)
             {
@@ -420,36 +419,26 @@ namespace RefitSandBox.Hooks
                 var name = partner["name"]?.ToString();
                 apiPartnersDictionary[name!] = id!;
 
-               
+
             }
 
-            
+
             foreach (var configuredPartner in ListofClearingPartners)
             {
                 string configuredPartnerName = configuredPartner.Key;
-                string configuredPartnerValue = configuredPartner.Value;
+                int configuredPartnerId = apiPartnersDictionary.ContainsKey(configuredPartnerName) ? Convert.ToInt32(apiPartnersDictionary[configuredPartnerName]) : 0;
 
                 if (apiPartnersDictionary.ContainsKey(configuredPartnerName))
                 {
-                    var partnerId = apiPartnersDictionary[configuredPartnerName];
-                    var responseObject = await clearingPartnerInterface.GetMasterClearingPartnerAccounts(Convert.ToInt32(partnerId));
+                    var responseObject = await clearingPartnerInterface.GetMasterClearingPartnerAccounts(Convert.ToInt32(configuredPartnerId!));
 
-                    JObject masterClearingPartnerAccountResponse = JObject.Parse(responseObject?.ToString() ?? "{}");
-                    
-                    var clearingPartnerListArray = (JArray?)masterClearingPartnerAccountResponse["clearingPartnerListResponses"];
+                    JObject masterClearingPartnerAccountResponse = JObject.Parse(responseObject.ToString());
 
-                    var accountId = clearingPartnerListArray?.FirstOrDefault(item => 
-                        item["accountName"]?.ToString() == configuredPartnerName)?["id"]?.ToString();
-                    
-                    if (string.IsNullOrEmpty(accountId))
-                    {
-                        Console.WriteLine($"Account not found for {configuredPartnerName}, creating new account...");
-                        await CreateCPAccount(configuredPartnerName, Convert.ToInt32(partnerId));
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Account found for {configuredPartnerName} with ID: {accountId}");
-                    }
+                    var clearingPartnerListArray = (JArray)masterClearingPartnerAccountResponse["clearingPartnerListResponses"];
+
+                    var id = (await Task.FromResult(clearingPartnerListArray!.FirstOrDefault(item => item["accountName"]?.ToString() == configuredPartnerName)?["id"]?.ToString())) ?? CreateCPAccount(configuredPartner.Value, configuredPartnerId).ToString();
+                    // var MasterClearingPartnerAccountResponse = JObject.Parse( await clearingPartnerInterface!.GetMasterClearingPartnerAccounts(Convert.ToInt32(partnerId!))).ToString();
+
                 }
                 else
                 {
@@ -463,6 +452,9 @@ namespace RefitSandBox.Hooks
         [BeforeTestRun]
         public static async Task CompanyCreation()
         {
+            var prm = new Programs();
+            await prm.GenerateApiClientAsync();
+
             await UserLogin();
 
             var listOfClearingPartners = await GetClearingPartner();
@@ -476,15 +468,15 @@ namespace RefitSandBox.Hooks
 
             foreach (var partner in _appSettings.ClearingPartners)
             {
-                
-               // ListofClearingPartners[partner] = $"{partner}001";
+
+                // ListofClearingPartners[partner] = $"{partner}001";
             }
 
 
-          //  var partnersList = JsonConvert.DeserializeObject<List<CPInfo>>(response.ToString());
+            //  var partnersList = JsonConvert.DeserializeObject<List<CPInfo>>(response.ToString());
 
-           
-            
+
+
 
 
 
@@ -504,7 +496,7 @@ namespace RefitSandBox.Hooks
                 await Program.SaveCompensation(bearer!, planId);
             }
 
-            
+
             await program.AddInvestmentToPlan("SEAS001");
             await program.AddInvestmentToPlan("SEAS002");
             await program.EnrollmentSetup();
