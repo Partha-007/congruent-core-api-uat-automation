@@ -192,6 +192,18 @@ And Enrollment configuration
 #
 #When API request has been sent to the "IPlanDetailsSave" with the method name "SaveEnrollmentSettings"
 
+Given Model is selected for the endpoint "/api/v1/TradeOutboundFileGeneration/GenerateFile"
+When Configuration has been made as per following
+| propertyName         | value  |
+| tenantIdentifier     | QTC    |
+| transmissionType     |      2 |
+| transmissionMode     |      1 |
+| tradeFileType        |      1 |
+| custodianIndentifier | Matrix |
+
+And Save Loan details in Plan
+
+
 Given Model is selected for the endpoint "/api/Loan/SaveLoan"
 
 When Configuration has been made as per following

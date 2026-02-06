@@ -46,6 +46,7 @@ using ClassLibrary.Shared.Enum;
 using Microsoft.Extensions.Configuration;
 //using Microsoft.Extensions.Configuration.Json;
 using static Org.BouncyCastle.Bcpg.Attr.ImageAttrib;
+using ClassLibrary.Shared.AppSettings;
 //using Io.Cucumber.Messages.Types;
 //using Gherkin.CucumberMessages.Types;
 
@@ -1733,6 +1734,7 @@ namespace RefitSandBox
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
                 { "/api/Source/SaveSource",() => sourceobjModel==null?new SourceViewModel():sourceobjModel},
+                {"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -2068,7 +2070,21 @@ namespace RefitSandBox
             return employeeId;
         }
 
-        public async Task SaveLoan()
+
+        public async Task GenerateOBFile()
+        {
+            
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(_url)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            var planClient = RestService.For<IPayroll>(httpClient);
+            await planClient.GenerateOutboundFile();
+        }
+
+            public async Task SaveLoan()
         {
             await Configuration("planId", planId);
             //string BaseURL = "https://dev.coreretirementsolutions.com/";
@@ -3201,11 +3217,15 @@ namespace RefitSandBox
             var sponsorSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType!, "SavePlanSponsor");
         }
 
-        public static async Task ClearingPartnerPlanMapping(string bearer, string planId)
+        public static async Task ClearingPartnerPlanMapping(string bearer, string planId,string? ACName=null)
         {
+            
+            
+
             var program = new Program();
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var clearingPartnerIds = await program.SendAPIRequest(bearer, 1, interfaceType, "GetClearingPartnersId");
+            
+            var clearingPartnerIds = await program.SendAPIRequest(bearer,1, interfaceType, "GetClearingPartnersId");
             var clearingPartnerId = clearingPartnerIds["clearingPartnerListResponses"][0]["id"].ToString();
             var CPAddToPlan = new PlanWithClearingPartnerViewModel();
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", CPAddToPlan);

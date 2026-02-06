@@ -8296,6 +8296,101 @@
         }
       }
     },
+    "/api/v1/DataMigration/UploadToStaging": {
+      "post": {
+        "tags": [
+          "DataMigration"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "File",
+                  "FileIdentifier"
+                ],
+                "type": "object",
+                "properties": {
+                  "FileIdentifier": {
+                    "type": "string"
+                  },
+                  "DataMigrationId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "File": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "FileIdentifier": {
+                  "style": "form"
+                },
+                "DataMigrationId": {
+                  "style": "form"
+                },
+                "File": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/DataMigration/Submit/{migrationId}": {
+      "post": {
+        "tags": [
+          "DataMigration"
+        ],
+        "parameters": [
+          {
+            "name": "migrationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/DataMigration/CheckDataSubmitStatus/{migrationId}": {
+      "get": {
+        "tags": [
+          "DataMigration"
+        ],
+        "parameters": [
+          {
+            "name": "migrationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v1/Disclosure/SaveDisclosure": {
       "post": {
         "tags": [
@@ -13404,6 +13499,171 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EsignTemplate/GetTemplates/{companyId}/{planId}/{transactionNameId}": {
+      "get": {
+        "tags": [
+          "EsignTemplate"
+        ],
+        "parameters": [
+          {
+            "name": "companyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "transactionNameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.DocuSign.Message.GetTemplateResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.DocuSign.Message.GetTemplateResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.DocuSign.Message.GetTemplateResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/EsignTemplate/DownloadTemplatesByDetails": {
+      "post": {
+        "tags": [
+          "EsignTemplate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocuSignControllers.Controllers.DownloadTemplateModel"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocuSignControllers.Controllers.DownloadTemplateModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocuSignControllers.Controllers.DownloadTemplateModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocuSignControllers.Controllers.DownloadTemplateModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/EsignTemplate/DownloadESignEnvelope/{requestType}/{requestId}": {
+      "get": {
+        "tags": [
+          "EsignTemplate"
+        ],
+        "parameters": [
+          {
+            "name": "requestType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Congruent.Core.Infrastructure.RequestType"
+            }
+          },
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
           }
         }
       }
@@ -29104,6 +29364,13 @@
             }
           },
           {
+            "name": "HPIIndicator",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "UploadedThrough",
             "in": "query",
             "schema": {
@@ -36657,6 +36924,59 @@
         }
       }
     },
+    "/api/v1/Payroll/GetAllErrorAndWarningContribution": {
+      "post": {
+        "tags": [
+          "Payroll"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.ErrorWarningFile"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.ErrorWarningFile"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.ErrorWarningFile"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.ErrorWarningFile"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.GetAllErrorAndWarningContributionResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.GetAllErrorAndWarningContributionResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.GetAllErrorAndWarningContributionResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/Ping": {
       "get": {
         "tags": [
@@ -38593,6 +38913,45 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.PrintDocumentAnalyticsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/PrintDocument/ResendPrintCommunication": {
+      "post": {
+        "tags": [
+          "PrintDocument"
+        ],
+        "parameters": [
+          {
+            "name": "documentForPrintId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.ResendPrintDocumentResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.ResendPrintDocumentResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Congruent.Core.PrintingService.Message.ResendPrintDocumentResult"
                 }
               }
             }
@@ -45414,7 +45773,7 @@
         }
       }
     },
-    "/api/v1/RetirementReadiness/CalculateRetirementProjection/{employeeId}": {
+    "/api/v1/RetirementReadiness/CalculateRetirementProjection/{employeeId}/{planId}": {
       "get": {
         "tags": [
           "RetirementReadiness"
@@ -45422,6 +45781,15 @@
         "parameters": [
           {
             "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "planId",
             "in": "path",
             "required": true,
             "schema": {
@@ -51749,6 +52117,59 @@
         }
       }
     },
+    "/api/v1/TradeOutboundFileGeneration/GenerateFile": {
+      "post": {
+        "tags": [
+          "TradeOutboundFileGeneration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Trade.Controller.OutboundFileGeneration"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Trade.Controller.OutboundFileGeneration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Trade.Controller.OutboundFileGeneration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Congruent.Core.Trade.Controller.OutboundFileGeneration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.BadRequestResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.BadRequestResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.BadRequestResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/TradeService/GenerateTradeFile/{Id}": {
       "get": {
         "tags": [
@@ -51785,6 +52206,18 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v1/TradeService/poll-clearing-partners": {
+      "get": {
+        "tags": [
+          "TradeService"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -61612,6 +62045,10 @@
           "transactionKey": {
             "type": "string",
             "nullable": true
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -62101,7 +62538,7 @@
           "withdrawalDocumentType": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Congruent.Core.Messages.PlanService.WithdrawalDocumentType"
+              "$ref": "#/components/schemas/Congruent.Core.Distribution.Message.WithdrawalDocumentType"
             },
             "nullable": true
           },
@@ -62864,6 +63301,59 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Distribution.Message.WithdrawalDocumentType": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "isAdded": {
+            "type": "boolean",
+            "nullable": true,
+            "readOnly": true
+          },
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true,
+            "readOnly": true
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "templateId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "canDownload": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "isESignRequired": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "filePath": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Distribution.Message.WithdrawalRequest": {
         "type": "object",
         "properties": {
@@ -63319,6 +63809,56 @@
         "type": "object",
         "properties": {
           "statusResult": {
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.DocuSign.Message.GetTemplateResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessful": {
+            "type": "boolean"
+          },
+          "templates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.DocuSign.Message.GetTenantLevelTemplate"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.DocuSign.Message.GetTenantLevelTemplate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "templateId": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "filePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionTypeId": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
             "nullable": true
           }
         },
@@ -67886,6 +68426,13 @@
             },
             "nullable": true
           },
+          "employeeHPIDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Events.Shared.Payroll.EmployeeHPIDetails"
+            },
+            "nullable": true
+          },
           "acceptedErrorIds": {
             "type": "array",
             "items": {
@@ -67925,6 +68472,11 @@
           "vestingPercentage": {
             "type": "number",
             "format": "double",
+            "nullable": true
+          },
+          "learningSubscriptionId": {
+            "type": "integer",
+            "format": "int64",
             "nullable": true
           }
         },
@@ -68243,6 +68795,24 @@
           "updatedBy": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Events.Shared.Payroll.EmployeeHPIDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hpiIndicator": {
+            "type": "string",
+            "nullable": true
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -73921,6 +74491,13 @@
               "$ref": "#/components/schemas/Congruent.Core.Events.Shared.AccountBalance.EmployeeSourceBalances"
             },
             "nullable": true
+          },
+          "remainingSourceBalances": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Events.Shared.AccountBalance.EmployeeSourceBalances"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -73986,6 +74563,9 @@
               "$ref": "#/components/schemas/Congruent.Core.Events.Shared.AccountBalance.EmployeeSourceBalances"
             },
             "nullable": true
+          },
+          "deductedFromUnVested": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -73993,6 +74573,13 @@
       "Congruent.Core.Helpers.DistributionCalculations.FeesAndNetAmountSplit": {
         "type": "object",
         "properties": {
+          "feesSplitVested": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Events.Shared.AccountBalance.EmployeeSourceBalances"
+            },
+            "nullable": true
+          },
           "feesTaxesSplit": {
             "type": "array",
             "items": {
@@ -74015,6 +74602,13 @@
             "nullable": true
           },
           "grossExcludingFeesSplit": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Events.Shared.AccountBalance.EmployeeSourceBalances"
+            },
+            "nullable": true
+          },
+          "remainingSourceBalances": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Congruent.Core.Events.Shared.AccountBalance.EmployeeSourceBalances"
@@ -74407,6 +75001,7 @@
       },
       "Congruent.Core.Infrastructure.EnvelopeStatus": {
         "enum": [
+          0,
           1,
           2,
           3,
@@ -74964,6 +75559,16 @@
         "type": "integer",
         "format": "int32"
       },
+      "Congruent.Core.Infrastructure.RequestType": {
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "Congruent.Core.Infrastructure.SectionType": {
         "enum": [
           0,
@@ -75038,6 +75643,43 @@
         "type": "integer",
         "format": "int32"
       },
+      "Congruent.Core.Infrastructure.TradeFileType": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "Congruent.Core.Infrastructure.TransactionType": {
         "enum": [
           1,
@@ -75084,6 +75726,22 @@
         "format": "int32"
       },
       "Congruent.Core.Infrastructure.TransferTradeType": {
+        "enum": [
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Congruent.Core.Infrastructure.TransmissionMode": {
+        "enum": [
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Congruent.Core.Infrastructure.TransmissionType": {
         "enum": [
           1,
           2
@@ -89493,6 +90151,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "isSharedService": {
+            "type": "boolean",
+            "nullable": true
+          },
           "planName": {
             "type": "string",
             "nullable": true
@@ -89551,10 +90213,6 @@
           "effectiveDate": {
             "type": "string",
             "format": "date-time",
-            "nullable": true
-          },
-          "validationMode": {
-            "type": "boolean",
             "nullable": true
           },
           "shortYearIndicator": {
@@ -90224,6 +90882,14 @@
           "isDeleted": {
             "type": "boolean",
             "nullable": true
+          },
+          "trackTraditionalAndRothSDBSeparately": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "tradeIdentifier": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -90663,6 +91329,10 @@
           },
           "isDeleted": {
             "type": "boolean"
+          },
+          "templateId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -92344,7 +93014,8 @@
           },
           "showProspectusNotice": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "typesPermitted": {
             "type": "array",
@@ -93206,11 +93877,11 @@
             "type": "integer",
             "format": "int32"
           },
-          "identifier": {
+          "description": {
             "type": "string",
             "nullable": true
           },
-          "description": {
+          "accountName": {
             "type": "string",
             "nullable": true
           },
@@ -93309,6 +93980,10 @@
           },
           "isDeleted": {
             "type": "boolean"
+          },
+          "templateId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -98680,6 +99355,21 @@
           "employeeId": {
             "type": "integer",
             "format": "int32"
+          },
+          "statusFilterType": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "typeFilterType": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "investmentFilterType": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -99524,6 +100214,10 @@
           "returnMailIndicator": {
             "type": "boolean",
             "nullable": true
+          },
+          "hpiIndicator": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -100224,6 +100918,16 @@
           "referenceId": {
             "type": "integer",
             "format": "int64"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.Payroll.Message.ErrorWarningFile": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -101076,6 +101780,29 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Payroll.Message.GetAllErrorAndWarningContributionResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessfull": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "errorReportDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Congruent.Core.Payroll.Message.WarningErrorReportDetails"
+            },
+            "nullable": true
+          },
+          "warningAndErrorEmployeeContribution": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Payroll.Message.GetFileLockInfo": {
         "type": "object",
         "properties": {
@@ -101691,6 +102418,10 @@
             "nullable": true
           },
           "hceIndicator": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hpiIndicator": {
             "type": "boolean",
             "nullable": true
           },
@@ -104251,6 +104982,52 @@
         },
         "additionalProperties": false
       },
+      "Congruent.Core.Payroll.Message.WarningErrorReportDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "ssn": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "employeeName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "planId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "payDate": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "errorCount": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "warningCount": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Payroll.Message.YearEndProcessingInformation": {
         "type": "object",
         "properties": {
@@ -105113,6 +105890,10 @@
             "type": "boolean",
             "nullable": true
           },
+          "hpiIndicator": {
+            "type": "boolean",
+            "nullable": true
+          },
           "isSponsor": {
             "type": "boolean",
             "nullable": true
@@ -105824,7 +106605,7 @@
         "properties": {
           "documentForPrintId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "documentId": {
             "type": "integer",
@@ -105903,6 +106684,15 @@
           },
           "isPassword": {
             "type": "boolean"
+          },
+          "participantId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentHubId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -106060,6 +106850,23 @@
             "format": "int32"
           },
           "planId": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentForPrintId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Congruent.Core.PrintingService.Message.ResendPrintDocumentResult": {
+        "type": "object",
+        "properties": {
+          "isSuccessFull": {
+            "type": "boolean"
+          },
+          "errorMessage": {
             "type": "string",
             "nullable": true
           }
@@ -107262,6 +108069,10 @@
             "type": "string",
             "nullable": true
           },
+          "hpiIndicator": {
+            "type": "string",
+            "nullable": true
+          },
           "employmentStatusCode": {
             "type": "string",
             "nullable": true
@@ -108299,6 +109110,10 @@
             "nullable": true
           },
           "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "correctedBy": {
             "type": "string",
             "nullable": true
           },
@@ -120134,6 +120949,10 @@
           "errorLogId": {
             "type": "integer",
             "format": "int32"
+          },
+          "correctedBy": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -121772,6 +122591,14 @@
           "showQuestionnaireImmediately": {
             "type": "boolean"
           },
+          "participantName": {
+            "type": "string",
+            "nullable": true
+          },
+          "stateName": {
+            "type": "string",
+            "nullable": true
+          },
           "message": {
             "type": "string",
             "nullable": true
@@ -123348,6 +124175,29 @@
         "type": "integer",
         "format": "int32"
       },
+      "Congruent.Core.Trade.Controller.OutboundFileGeneration": {
+        "type": "object",
+        "properties": {
+          "tenantIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "transmissionType": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.TransmissionType"
+          },
+          "transmissionMode": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.TransmissionMode"
+          },
+          "tradeFileType": {
+            "$ref": "#/components/schemas/Congruent.Core.Infrastructure.TradeFileType"
+          },
+          "custodianIndentifier": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Congruent.Core.Trade.Controller.ViewModel.CheckFundMergerViewModel": {
         "type": "object",
         "properties": {
@@ -124054,6 +124904,10 @@
             "nullable": true
           },
           "updatedDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdDate": {
             "type": "string",
             "nullable": true
           }
@@ -124794,6 +125648,25 @@
           },
           "sourceName": {
             "type": "string",
+            "nullable": true
+          },
+          "sourceType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sourceCategory": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "sourceSubCategory": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "sourceSubSubCategory": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "units": {
@@ -134294,6 +135167,20 @@
         },
         "additionalProperties": false
       },
+      "DocuSignControllers.Controllers.DownloadTemplateModel": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "filePath": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DocuSignControllers.Controllers.EnvelopeDetailsFromBody": {
         "type": "object",
         "properties": {
@@ -137073,6 +137960,29 @@
             "readOnly": true
           },
           "isDeleted": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "templateId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "filePath": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "isESignRequired": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "canDownload": {
             "type": "boolean",
             "readOnly": true
           }
@@ -145356,8 +146266,8 @@
         "type": "oauth2",
         "flows": {
           "authorizationCode": {
-            "authorizationUrl": "https://test.coreretirementsolutions.com/connect/authorize",
-            "tokenUrl": "https://test.coreretirementsolutions.com/connect/token",
+            "authorizationUrl": "https://dev.coreretirementsolutions.com/connect/authorize",
+            "tokenUrl": "https://dev.coreretirementsolutions.com/connect/token",
             "scopes": {}
           }
         }

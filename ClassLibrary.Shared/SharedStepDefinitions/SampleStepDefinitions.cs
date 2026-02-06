@@ -36,6 +36,12 @@ namespace SharedStepDefinitions
             await _program.SaveLoan();
         }
 
+        [When("Generate Outbound File")]
+        public async Task GenerateOutboundFile()
+        {
+            await _program.SaveLoan();
+        }
+
         [When("the property {string} is configured with {string} with {int} characters")]
         public void WhenThePropertyIsConfiguredWithWithCharacters(string ControlName, Pattern patternType, int length)
         {

@@ -11,6 +11,10 @@
     <ReqnrollObsoleteCodeBehindFiles Remove="TestDataGenerator\Sample.feature.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="C:\Users\mannaiya.l\Downloads\Hooks.cs" Link="Hooks.cs" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="AutoFixture" Version="5.0.0-preview0011" />
 		<PackageReference Include="AutoMapper" Version="14.0.0" />

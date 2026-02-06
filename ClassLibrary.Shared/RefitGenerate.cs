@@ -41,6 +41,18 @@ namespace RefitSandBox
         Task<object> CreateAdvisorDetailsAsync([Body] object advisor);
     }
 
+    public interface IClearingPartner
+    {
+        [Get("/api/ClearingPartner/GetClearingPartners")]
+        Task<object> GetMasterClearingPartnersId();
+
+        [Get("/api/ClearingPartner/GetClearingPartner/{id}")]
+        Task<object> GetMasterClearingPartnerAccounts(int id);
+
+        [Post("/api/ClearingPartner/UpsertClearingPartnerAccount")]
+        Task<object> AddClearingPartnerAccount([Body] ClearingPartnerViewModel clearingPartnerPlanMapping);
+    }
+
     public interface IPlanDetailsSave
     {
         [Post("/api/BasicPlanDetails/SaveBasicPlanDetails")]
@@ -53,6 +65,8 @@ namespace RefitSandBox
 
         [Get("/api/ClearingPartner/GetClearingPartner/{id}")]
         Task<object> GetClearingPartnersId(int id);
+
+       
 
         [Post("/api/ClearingPartner/UpsertPlanWithClearingPartnerAccount")]
         Task<object> AddClearingPartnerToPlan([Body] PlanWithClearingPartnerViewModel clearingPartnerPlanMapping);
@@ -182,7 +196,9 @@ namespace RefitSandBox
         [Get("/api/v1/TradeGeneration/GenerateConsoliation")]
         Task<object> GenerateConsolidation();
 
-        
+        [Get("/api/v1/TradeOutboundFileGeneration/GenerateFile")]
+        Task<object> GenerateOutboundFile();
+
 
         [Post("/api/v1/Payroll/GetEmployeesBySearchCriteria")]
         Task<GetEmployeesBySearchCriteriaResult> GetEmployeesBySearchCriteria(SearchCriterias search);

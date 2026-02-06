@@ -1,4 +1,6 @@
 ﻿using Microsoft.Playwright;
+using Newtonsoft.Json.Linq;
+using RefitSandBox;
 
 namespace ClassLibrary.Shared.AppSettings
 {
@@ -10,7 +12,19 @@ namespace ClassLibrary.Shared.AppSettings
             UserName = string.Empty;
             Password = string.Empty;
             Args = new List<string>();
+            
+        id =string.Empty;
+            
         }
+
+       
+        public class ClearingPartnerConfig
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
+
+      
 
         public const string Name = "AppSettings";
 
@@ -26,6 +40,8 @@ namespace ClassLibrary.Shared.AppSettings
         public int SlowMotion { get; set; }
 
         public List<string> Args { get; set; }
+        public List<ClearingPartnerConfig> ClearingPartners { get; set; } = new List<ClearingPartnerConfig>();
+        public string id {  get; set; }
 
         public static IPage Page { get; set; }
 
