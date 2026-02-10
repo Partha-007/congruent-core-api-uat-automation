@@ -1,4 +1,6 @@
-﻿using ClassLibrary.Shared.AppSettings;
+﻿using Bogus;
+using ClassLibrary.Shared.AppSettings;
+using FizzWare.NBuilder;
 using Generator.sourceGenerator;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,6 +9,7 @@ using Microsoft.Playwright;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using MyNamespace;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using NSwag;
 using NSwag.CodeGeneration.CSharp;
@@ -19,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -35,8 +39,9 @@ namespace RefitSandBox.Hooks
 
         public Program? program;
         public SampleStepDefinitions _sampledefinition;
-        public static int i = 0, j = 0;
+        public static int i = 0, j = 0,AccountId;
         public static HttpClient? httpClient;
+        public static Faker? faker = new Faker();
 
         public static string? bearer;
         //public string planId;
@@ -359,9 +364,10 @@ namespace RefitSandBox.Hooks
             return table;
         }
 
-        public static async Task<string> CreateCPAccount(string name, int id)
-        {
+        
 
+        public static async Task<int> CreateCPAccount(string name, int id)
+        {
             var cpModel = new ClearingPartnerViewModel
             {
                 Id = 0,
@@ -369,91 +375,89 @@ namespace RefitSandBox.Hooks
                 Description = $"Account for {name}",
                 AccountName = name,
                 AccountAggregationLevel = AccountAggregationLevel._0,
-                BankName = "Federal Bank of America",
-                AccountNumber = "152436789",
-                AbaRoutingNumber = "292345867",
-                BankAccountType = BankAccountType._1
+                BankAccountType = BankAccountType._1,
+                BankName = faker!.Finance.AccountName(),
+                AbaRoutingNumber = faker!.Finance.RoutingNumber(),
+                AccountNumber = faker!.Finance.Account(9)
             };
 
-
-            httpClient = new HttpClient
+            var refitSettings = new RefitSettings
             {
-                BaseAddress = new Uri(_appSettings.ApplicationURL)
+                ContentSerializer = new NewtonsoftJsonContentSerializer(new JsonSerializerSettings())
             };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
 
-            var clearingPartnerInterface = RestService.For<IClearingPartner>(httpClient);
-            var response = await clearingPartnerInterface.AddClearingPartnerAccount(cpModel);
-            return null;
+            var clearingPartnerInterface = RestService.For<IClearingPartner>(httpClient, refitSettings);
+
+            int accId = 0;
+            try
+            {
+                await clearingPartnerInterface.AddClearingPartnerAccount(cpModel);
+
+                var responseObject = await clearingPartnerInterface.GetMasterClearingPartnerAccounts(id);
+
+                var clearingPartnerListArray = JArray.Parse(responseObject.ToString())["clearingPartnerListResponses"] as JArray;
+
+                accId = clearingPartnerListArray?
+                    .Where(x => x["accountName"] != null && x["accountName"]!.ToString().Equals(name, StringComparison.OrdinalIgnoreCase))
+                    .Select(x => Convert.ToInt32(x["id"]))
+                    .FirstOrDefault() ?? 0;
+            }
+            catch (Refit.ValidationApiException ex)
+            {
+                var problemDetails = ex.Content != null ? ex.Content.Errors : null;
+                throw;
+            }
+
+            return accId;
         }
 
-        public static async Task<Object> GetClearingPartner()
+        public static async Task<Dictionary<string, string>> GetClearingPartner()
         {
-            var ListofClearingPartners = new Dictionary<string, string>();
+            // Prepare list of partners with fake names
+            var listOfClearingPartners = _appSettings.ClearingPartners
+                .Where(p => !string.IsNullOrEmpty(p.Name))
+                .ToDictionary(p => p.Name, p => faker!.Name.FirstName());
 
-            foreach (var partner in _appSettings.ClearingPartners)
-            {
-                if (!string.IsNullOrEmpty(partner.Name))
-                {
-                    ListofClearingPartners[partner.Name] = $"{partner.Name}001";
-                }
-            }
-
-            httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(_appSettings.ApplicationURL)
-            };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
+            // Initialize HttpClient
+            httpClient.BaseAddress = new Uri(_appSettings.ApplicationURL);
+            httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
 
             var clearingPartnerInterface = RestService.For<IClearingPartner>(httpClient);
-            var MasterClearingPartnersResponse = await clearingPartnerInterface.GetMasterClearingPartnersId();
+            var masterClearingPartnersResponse = await clearingPartnerInterface.GetMasterClearingPartnersId();
 
+            var apiPartnersDictionary = JArray.Parse(masterClearingPartnersResponse.ToString())
+                .ToDictionary(
+                    p => p["name"]!.ToString(),
+                    p => p["id"]!.ToString()
+                );
 
-            var partnersListArray = JArray.Parse(MasterClearingPartnersResponse.ToString());
-
-
-            var apiPartnersDictionary = new Dictionary<string, string>();
-            foreach (var partner in partnersListArray)
+            // Run CreateCPAccount in parallel for faster execution
+            var tasks = listOfClearingPartners.Select(async configuredPartner =>
             {
-                var id = partner["id"]?.ToString();
-                var name = partner["name"]?.ToString();
-                apiPartnersDictionary[name!] = id!;
-
-
-            }
-
-
-            foreach (var configuredPartner in ListofClearingPartners)
-            {
-                string configuredPartnerName = configuredPartner.Key;
-                int configuredPartnerId = apiPartnersDictionary.ContainsKey(configuredPartnerName) ? Convert.ToInt32(apiPartnersDictionary[configuredPartnerName]) : 0;
-
-                if (apiPartnersDictionary.ContainsKey(configuredPartnerName))
+                if (apiPartnersDictionary.TryGetValue(configuredPartner.Key, out var partnerIdStr) &&
+                    int.TryParse(partnerIdStr, out int partnerId))
                 {
-                    var responseObject = await clearingPartnerInterface.GetMasterClearingPartnerAccounts(Convert.ToInt32(configuredPartnerId!));
-
-                    JObject masterClearingPartnerAccountResponse = JObject.Parse(responseObject.ToString());
-
-                    var clearingPartnerListArray = (JArray)masterClearingPartnerAccountResponse["clearingPartnerListResponses"];
-
-                    var id = (await Task.FromResult(clearingPartnerListArray!.FirstOrDefault(item => item["accountName"]?.ToString() == configuredPartnerName)?["id"]?.ToString())) ?? CreateCPAccount(configuredPartner.Value, configuredPartnerId).ToString();
-                    // var MasterClearingPartnerAccountResponse = JObject.Parse( await clearingPartnerInterface!.GetMasterClearingPartnerAccounts(Convert.ToInt32(partnerId!))).ToString();
-
+                    AccountId = await CreateCPAccount(configuredPartner.Value, partnerId);
                 }
                 else
                 {
-                    Console.WriteLine($"Clearing Partner: {configuredPartnerName} Not found in API response");
+                    Console.WriteLine($"Clearing Partner: {configuredPartner.Key} Not found in API response");
                 }
-            }
+            });
+
+            await Task.WhenAll(tasks);
 
             return apiPartnersDictionary;
         }
 
+
+
         [BeforeTestRun]
         public static async Task CompanyCreation()
         {
-            var prm = new Programs();
-            await prm.GenerateApiClientAsync();
+            //var prm = new Programs();
+            //await prm.GenerateApiClientAsync();
 
             await UserLogin();
 
@@ -508,3 +512,6 @@ namespace RefitSandBox.Hooks
 
     }
 }
+
+
+

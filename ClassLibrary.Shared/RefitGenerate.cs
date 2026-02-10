@@ -51,6 +51,7 @@ namespace RefitSandBox
 
         [Post("/api/ClearingPartner/UpsertClearingPartnerAccount")]
         Task<object> AddClearingPartnerAccount([Body] ClearingPartnerViewModel clearingPartnerPlanMapping);
+
     }
 
     public interface IPlanDetailsSave

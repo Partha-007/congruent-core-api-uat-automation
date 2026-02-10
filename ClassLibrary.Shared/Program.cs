@@ -1734,7 +1734,7 @@ namespace RefitSandBox
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
                 { "/api/Source/SaveSource",() => sourceobjModel==null?new SourceViewModel():sourceobjModel},
-                {"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
+                //{"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -3147,6 +3147,8 @@ namespace RefitSandBox
             string finalDate = adjustedDate.ToString("MM/dd/yyyy");
             return finalDate;
         }
+
+       
 
         public static async Task<string> SaveCompany(string bearer)
         {
