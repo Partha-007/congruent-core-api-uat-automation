@@ -72,6 +72,9 @@ namespace RefitSandBox
         [Post("/api/ClearingPartner/UpsertPlanWithClearingPartnerAccount")]
         Task<object> AddClearingPartnerToPlan([Body] PlanWithClearingPartnerViewModel clearingPartnerPlanMapping);
 
+        [Get("/api/ClearingPartner/GetPlanAssociatedClearingPartnerAccounts/{id}")]
+        Task<object> GetPlanAssociatedClearingPartnerAccounts(int id);
+
         [Post("/api/v1/EligibleRule/SavePlanAmendmentEligibleRule")]
         [Headers("Accept: */*", "Content-Type: application/json-patch+json")]
         Task<object> SavePlanAmendmentEligibleRule([Body] EligibilityRuleViewModel eligibilityRuleViewModel);
@@ -161,6 +164,9 @@ namespace RefitSandBox
         [AliasAs("planId")] string planId,
         [AliasAs("participantId")] string participantId,
         [AliasAs("date")] string date);
+
+        [Post("/api/v1/TradeOutboundFileGeneration/GenerateFile")]
+        Task<object> GenerateFileAsync(OutboundFileGeneration outboundFileGeneration);
     }
 
     public interface IInvestment

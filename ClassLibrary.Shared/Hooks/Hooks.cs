@@ -49,7 +49,7 @@ namespace RefitSandBox.Hooks
         public static AppSettings? _appSettings;
         public static string? url, name, password, clearingPartnerName, iD;
 
-        DataTable configTable = new DataTable();
+        //DataTable configTable = new DataTable();
         //public List<Dictionary<string, Dictionary<string, string>>> ClearingPartners { get; set; }
 
         public class CPInfo
@@ -395,7 +395,7 @@ namespace RefitSandBox.Hooks
 
                 var responseObject = await clearingPartnerInterface.GetMasterClearingPartnerAccounts(id);
 
-                var clearingPartnerListArray = JArray.Parse(responseObject.ToString())["clearingPartnerListResponses"] as JArray;
+                var clearingPartnerListArray = JObject.Parse(responseObject.ToString())["clearingPartnerListResponses"] as JArray;
 
                 accId = clearingPartnerListArray?
                     .Where(x => x["accountName"] != null && x["accountName"]!.ToString().Equals(name, StringComparison.OrdinalIgnoreCase))
@@ -411,17 +411,13 @@ namespace RefitSandBox.Hooks
             return accId;
         }
 
-        public static async Task<Dictionary<string, string>> GetClearingPartner()
+        public static async Task<Dictionary<string, string>> GetClearingPartner(HttpClient httpClient)
         {
             // Prepare list of partners with fake names
             var listOfClearingPartners = _appSettings.ClearingPartners
                 .Where(p => !string.IsNullOrEmpty(p.Name))
                 .ToDictionary(p => p.Name, p => faker!.Name.FirstName());
 
-            // Initialize HttpClient
-            httpClient.BaseAddress = new Uri(_appSettings.ApplicationURL);
-            httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
 
             var clearingPartnerInterface = RestService.For<IClearingPartner>(httpClient);
             var masterClearingPartnersResponse = await clearingPartnerInterface.GetMasterClearingPartnersId();
@@ -461,7 +457,15 @@ namespace RefitSandBox.Hooks
 
             await UserLogin();
 
-            var listOfClearingPartners = await GetClearingPartner();
+            // Initialize HttpClient
+            httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(_appSettings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
+
+            var listOfClearingPartners = await GetClearingPartner(httpClient);
 
 
 
@@ -486,13 +490,14 @@ namespace RefitSandBox.Hooks
 
             var program = new Program();
             companyId = await Program.SaveCompany(bearer!); // Static method call
-            for (i = 0; i < j; i++)
+            for (i = 1; i < j; i++)
             {
                 planId = await Program.SavePlan(bearer!, companyId);
                 await Program.SaveSponsor(bearer!, planId);
-                await Program.ClearingPartnerPlanMapping(bearer!, planId);
-                await Program.EligibilityConfiguration(bearer!, planId);
-                await Program.SaveEntryDate(bearer!, planId);
+                //await Program.ClearingPartnerPlanMapping(bearer!, planId);
+                await Program.UpsertPlanWithClearingPartnerAccount(httpClient, planId, AccountId);
+                //await Program.EligibilityConfiguration(bearer!, planId);
+                //await Program.SaveEntryDate(bearer!, planId);
                 await Program.SavePretaxSource(bearer!, planId);
                 //await Program.SavePretaxRollOverSource(bearer!, planId);
                 //await Program.SaveMatchSource(bearer!, planId);
@@ -507,6 +512,8 @@ namespace RefitSandBox.Hooks
             await Program.UpdatePlanStatus(bearer!, planId, "2");
             await Program.UpdatePlanStatus(bearer!, planId, "3");
             await Program.SaveFunding(bearer!, planId);
+            clearingPartnerName = _appSettings.ClearingPartners.Select(_ => _.Name).FirstOrDefault() ?? "DefaultPartner";
+            await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);
             //RollOverSource = await Program.SavePretaxRollOverSource(bearer!, planId);
         }
 

@@ -47,6 +47,8 @@ using Microsoft.Extensions.Configuration;
 //using Microsoft.Extensions.Configuration.Json;
 using static Org.BouncyCastle.Bcpg.Attr.ImageAttrib;
 using ClassLibrary.Shared.AppSettings;
+using System.Net.NetworkInformation;
+using ClassLibrary.Shared;
 //using Io.Cucumber.Messages.Types;
 //using Gherkin.CucumberMessages.Types;
 
@@ -3176,8 +3178,8 @@ namespace RefitSandBox
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.ICompanyDetails");
             var companyresponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewCompanyAsync");
             var companyId = companyresponse["company"]["id"].ToString();
-            companyGrossCompensationId = companyresponse["company"]["compensationCategories"][2]["id"].ToString();
-            companyPlanCompensationId = companyresponse["company"]["compensationCategories"][1]["id"].ToString();
+            companyGrossCompensationId = companyresponse["company"]["compensationCategories"][1]["id"].ToString();
+            companyPlanCompensationId = companyresponse["company"]["compensationCategories"][0]["id"].ToString();
             companyName = companyresponse["company"]["name"].ToString();
             companyClassificationId = companyresponse["company"]["classifications"][0]["employeeClassificationCodes"][0]["id"].ToString();
             employeeClassificationId = companyresponse["company"]["classifications"][0]["id"].ToString();
@@ -3236,6 +3238,23 @@ namespace RefitSandBox
             var clearingPartnerAddToPlanResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddClearingPartnerToPlan");
         }
 
+        public static async Task UpsertPlanWithClearingPartnerAccount(HttpClient httpClient, string planId, int accountId )
+        {
+            var clearingPartnerPlanMapping = new PlanWithClearingPartnerViewModel
+            {
+                PlanId = Convert.ToInt32(planId),
+                ClearingPartnerAccountIds = new List<int> { accountId },
+                DefaultClearingPartnerAccountId = accountId
+            };
+
+            var PlanInterface = RestService.For<IPlanDetailsSave>(httpClient);
+            var clearingPartnerPlanMappingResponse = await PlanInterface.AddClearingPartnerToPlan(clearingPartnerPlanMapping);
+            var parsedResponse = JObject.Parse(clearingPartnerPlanMappingResponse.ToString());
+            var errorMessage = parsedResponse["errorMessage"]?.ToString();
+            if(!(errorMessage == null))
+                throw new Exception($"Error in upserting clearing partner account to plan: {errorMessage}");
+        }
+
         public static async Task EligibilityConfiguration(string bearer, string planId)
         {
             var program = new Program();
@@ -3253,6 +3272,8 @@ namespace RefitSandBox
             await program.Configuration("planId", planId.ToString());
             await program.Configuration("age", "20");
             await program.Configuration("ltptAgeInYears", "20");
+            await program.Configuration("sourceId", null);
+            await program.Configuration("eligibilityRuleFor", "1");
 
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SavePlanAmendmentEligibleRule");
@@ -3266,6 +3287,14 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             await program.Configuration("ruleName", "Immediate");
+            await program.Configuration("sourceId", null);
+            await program.Configuration("eligibilityRuleFor", "1");
+            await program.Configuration("entryDateRuleType", "");
+            await program.Configuration("entryDateSources", null);
+            await program.Configuration("otherEntryDates", null);
+            await program.Configuration("planYearOtherEntryDates", null);
+            await program.Configuration("entryDateRehireOption", "0");
+
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEntryDate");
         }
@@ -3290,10 +3319,18 @@ namespace RefitSandBox
             await program.Configuration("limitMaximumPercentage", "70");
             await program.Configuration("limitMaximumDollar", "70");
             await program.Configuration("sourceCode", "A");
+            await program.Configuration("employerDiscretionarySource", null);
+            await program.Configuration("employerMatchSource", null);
+            await program.Configuration("employerOtherSource", null);
+            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            await program.Configuration("employerSourceExclusion", null);
+
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
             sourceId = sourceSave["source"]["id"].ToString();
+            pretaxsourceName = sourceSave["source"]["sourceName"].ToString();
         }
 
         public static async Task SaveMatchSource(string bearer, string planId, string sourceName = "null")
@@ -3341,15 +3378,22 @@ namespace RefitSandBox
             await program.Configuration("limitMaximumPercentage", "70");
             await program.Configuration("limitMaximumDollar", "70");
             await program.Configuration("sourceCode", "Q");
+            await program.Configuration("sourceId", "");
+            await program.Configuration("employerDiscretionarySource", null);
+            await program.Configuration("employerMatchSource", null);
+            await program.Configuration("employerOtherSource", null);
+            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            await program.Configuration("employerSourceExclusion", null);
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
             rothSourceId = sourceSave["source"]["id"].ToString();
+            rothSourceName = sourceSave["source"]["sourceName"].ToString();
         }
 
 
         public static async Task SaveCompensation(string bearer, string planId)
         {
-
             var program = new Program();
             var compensationModel = new CompensationViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(compensationModel);
@@ -3358,13 +3402,8 @@ namespace RefitSandBox
             await program.Configuration("compensationCategoryId", companyPlanCompensationId);
             await program.Configuration("isIncluded", "true");
             await program.Configuration("calculationType", "1");
-
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var compSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveCompensation");
-
-
-
-
         }
 
         public static async Task UpdatePlanStatus(string bearer, string planId, string statusCode)
@@ -3559,6 +3598,7 @@ namespace RefitSandBox
             await program.Configuration("classificationIds", null);
             await program.Configuration("fundingId", fundingId);
             await program.Configuration("1id", fundingId);
+            await program.Configuration("sponsorFeePaymentMethod", "1");
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var fundingSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveFunding");
             fundingBankId = fundingSave["funding"]["sponsorFundingAccounts"][0]["id"].ToString();
@@ -3635,6 +3675,68 @@ namespace RefitSandBox
             var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
 
+        public async Task TradeOutboundFileGeneration(string ClearingPartner, int AccountId)
+        {
+            var program = new Program();
+            var sftp = new SFTP();
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            switch (ClearingPartner)
+            {
+                case "DTCC":
+                    await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 5);
+                    await program.VerifyClearingPartnerMappingId(httpClient, planId);
+                    await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 7);
+                    var b50Response = await sftp.SFTPOperations(AccountId.ToString());
+                    break;
+
+                default:
+                    throw new Exception($"Invalid Clearing partner {ClearingPartner}");
+            }
+        }
+
+        public async Task GenerateOutboundFile(HttpClient httpClient, string tenantIdentifier, string custodianIdentifier, int tradeFileType)
+        {
+            var generateOutboundFileModel = new OutboundFileGeneration
+            {
+                TenantIdentifier = tenantIdentifier,
+                TransmissionType = TransmissionType2._2,
+                TransmissionMode = TransmissionMode._1,
+                TradeFileType = (TradeFileType)tradeFileType,
+                CustodianIndentifier = custodianIdentifier,
+            };
+
+            var settings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Include
+            };
+
+            var json = JsonConvert.SerializeObject(generateOutboundFileModel, settings);
+            var requestPayload = JObject.Parse(json);
+            Console.WriteLine("Trade order request :" + requestPayload.ToString());
+            string Action = "api/v1/TradeOutboundFileGeneration/GenerateFile";
+            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+            
+            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
+            var contentTask = await task.Content.ReadAsStringAsync();
+            if (!(contentTask == "Outbound File generation initiated successfully"))
+                throw new Exception($"Error in running {Action} endpoint");
+            
+        }
+
+        public async Task VerifyClearingPartnerMappingId(HttpClient httpClient, string planId)
+        {
+            var PlanInterface = RestService.For<IPlanDetailsSave>(httpClient);
+            var clearingPartnerPlanMappingResponse = await PlanInterface.GetPlanAssociatedClearingPartnerAccounts(Convert.ToInt32(planId));
+
+            var parsedResponse = JObject.Parse(clearingPartnerPlanMappingResponse.ToString())["planAssociatedClearingPartnerAccounts"] as JArray;
+            var clearingPartnerMappingId = parsedResponse[0]["clearingPartnerId"].ToString();
+            if(clearingPartnerMappingId == null)
+                throw new Exception("Clearing Partner Mapping Id is null");
+        }
     
         public async Task EnrollmentConfiguration(string planId, string pretaxSourceId, string rothSourceId, string investment1Name, string investment2Name)
         {
