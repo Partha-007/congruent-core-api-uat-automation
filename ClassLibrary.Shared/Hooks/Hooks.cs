@@ -253,14 +253,20 @@ namespace RefitSandBox.Hooks
         [BeforeFeature("@MatchPlanActivation")]
         public static async Task<string> MatchPlanActivation()
         {
+            httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(_appSettings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
             var hook = new Hooks();
             await UserLogin();
             string companyId = await Program.SaveCompany(bearer!); // Static method call
             planId = await Program.SavePlan(bearer!, companyId);
             await Program.SaveSponsor(bearer!, planId);
             await Program.ClearingPartnerPlanMapping(bearer!, planId);
-            await Program.EligibilityConfiguration(bearer!, planId);
-            await Program.SaveEntryDate(bearer!, planId);
+            await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
+            await Program.SaveEntryDate(httpClient, bearer!, planId);
             await Program.SavePretaxSource(bearer!, planId);
             await Program.SaveRothSource(bearer!, planId);
             await Program.SaveCompensation(bearer!, planId);
@@ -303,12 +309,18 @@ namespace RefitSandBox.Hooks
         [BeforeScenario("@PlanActivation")]
         public async Task<string> PlanActivation()
         {
+            httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(_appSettings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
             string companyId = await Program.SaveCompany(Hooks.bearer); // Static method call
             planId = await Program.SavePlan(bearer!, companyId);
             await Program.SaveSponsor(bearer!, planId);
             await Program.ClearingPartnerPlanMapping(bearer!, planId);
-            await Program.EligibilityConfiguration(bearer!, planId);
-            await Program.SaveEntryDate(bearer!, planId);
+            await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
+            await Program.SaveEntryDate(httpClient, bearer!, planId);
             await Program.SavePretaxSource(bearer!, planId);
             //await Program.SavePretaxRollOverSource(bearer!, planId);
             //await Program.SaveMatchSource(bearer!, planId);
@@ -325,13 +337,19 @@ namespace RefitSandBox.Hooks
         [BeforeScenario("@PlanActivationWithoutInvestmentAndEnrollment")]
         public async Task PlanActivationWithoutInvestment()
         {
+            httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(_appSettings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
             string companyId = await Program.SaveCompany(bearer); // Static method call
             planId = await Program.SavePlan(bearer!, companyId);
 
             await Program.SaveSponsor(bearer!, planId);
             await Program.ClearingPartnerPlanMapping(bearer!, planId);
-            await Program.EligibilityConfiguration(bearer!, planId);
-            await Program.SaveEntryDate(bearer!, planId);
+            await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
+            await Program.SaveEntryDate(httpClient, bearer!, planId);
             await Program.SavePretaxSource(bearer!, planId);
             //await Program.SavePretaxRollOverSource(bearer!, planId);
             //await Program.SaveMatchSource(bearer!, planId);
@@ -496,8 +514,8 @@ namespace RefitSandBox.Hooks
                 await Program.SaveSponsor(bearer!, planId);
                 //await Program.ClearingPartnerPlanMapping(bearer!, planId);
                 await Program.UpsertPlanWithClearingPartnerAccount(httpClient, planId, AccountId);
-                //await Program.EligibilityConfiguration(bearer!, planId);
-                //await Program.SaveEntryDate(bearer!, planId);
+                await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
+                await Program.SaveEntryDate(httpClient, bearer!, planId);
                 await Program.SavePretaxSource(bearer!, planId);
                 //await Program.SavePretaxRollOverSource(bearer!, planId);
                 //await Program.SaveMatchSource(bearer!, planId);
@@ -509,11 +527,11 @@ namespace RefitSandBox.Hooks
             await program.AddInvestmentToPlan("SEAS001");
             await program.AddInvestmentToPlan("SEAS002");
             await program.EnrollmentSetup();
-            await Program.UpdatePlanStatus(bearer!, planId, "2");
-            await Program.UpdatePlanStatus(bearer!, planId, "3");
             await Program.SaveFunding(bearer!, planId);
             clearingPartnerName = _appSettings.ClearingPartners.Select(_ => _.Name).FirstOrDefault() ?? "DefaultPartner";
             await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);
+            await Program.UpdatePlanStatus(bearer!, planId, "2");
+            await Program.UpdatePlanStatus(bearer!, planId, "3");
             //RollOverSource = await Program.SavePretaxRollOverSource(bearer!, planId);
         }
 

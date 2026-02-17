@@ -117,14 +117,13 @@ Then Available balance for the employee to avail loan should be 38000
 
 
 
-@PlanActivationWithoutInvestmentAndEnrollment
 Scenario: 59905 : To verify the Calculation Avilable Balance for loan valuefiled in Loan request page
 
-Given Investment "SEAS001" has been mapped to the plan
-
-And Investment "SEAS002" has been mapped to the plan
-
-And Enrollment configuration
+#Given Investment "SEAS001" has been mapped to the plan
+#
+#And Investment "SEAS002" has been mapped to the plan
+#
+#And Enrollment configuration
 
 #Given Model is selected for the endpoint "/api/Enrollment/SaveEnrollmentSetting"
 #
@@ -192,52 +191,52 @@ And Enrollment configuration
 #
 #When API request has been sent to the "IPlanDetailsSave" with the method name "SaveEnrollmentSettings"
 
-Given Model is selected for the endpoint "/api/v1/TradeOutboundFileGeneration/GenerateFile"
-When Configuration has been made as per following
-| propertyName         | value  |
-| tenantIdentifier     | QTC    |
-| transmissionType     |      2 |
-| transmissionMode     |      1 |
-| tradeFileType        |      1 |
-| custodianIndentifier | Matrix |
+#Given Model is selected for the endpoint "/api/v1/TradeOutboundFileGeneration/GenerateFile"
+#When Configuration has been made as per following
+#| propertyName         | value  |
+#| tenantIdentifier     | QTC    |
+#| transmissionType     |      2 |
+#| transmissionMode     |      1 |
+#| tradeFileType        |      1 |
+#| custodianIndentifier | Matrix |
+#
+#And Save Loan details in Plan
 
-And Save Loan details in Plan
 
-
-Given Model is selected for the endpoint "/api/Loan/SaveLoan"
-
-When Configuration has been made as per following
-| propertyName                                  | value           |
-| loanType                                      | 1               |
-| numberOfLoansAllowed                          | 5               |
-| loanPerPlanYear                               | 3               |
-| minimumAmount                                 | 10              |
-| processingTimeForLoan                         | 10              |
-| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
-| numberOfSuspensionsPerLoanAllowed             | 1               |
-| checkFee                                      | 2               |
-| overnightDeliveryFees                         | 1               |
-| maximumAmount                                 | 1               |
-| withdrawalBasis                               | 1               |
-| refinancingAllowed                            | false           |
-| curePeriod                                    | 1               |
-| curePeriodForEmployeeTermination              | 1               |
-| defaultMethod                                 | 1               |
-| minimumLoanRepaymentAmount                    | 10              |
-| loanApportioningMethod                        | 1               |
-| loanInterestRate                              | 1               |
-| loanFeeAmount                                 | 5               |
-| minimumLengthYears                            | 1               |
-| minimumLengthMonths                           | 0               |
-| maximumLengthYears                            | 5               |
-| maximumLengthMonths                           | 0               |
-| firstRepaymentDateFallsAfter                  | 20              |
-| firstRepaymentDateFallsWithin                 | 25              |
-| masterLoanTypeId                              | 1               |
-| isMaster                                      | true            |
-| loanDescription                               | General Purpose |
-
-And Save Loan details in Plan
+#Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+#
+#When Configuration has been made as per following
+#| propertyName                                  | value           |
+#| loanType                                      | 1               |
+#| numberOfLoansAllowed                          | 5               |
+#| loanPerPlanYear                               | 3               |
+#| minimumAmount                                 | 10              |
+#| processingTimeForLoan                         | 10              |
+#| waitingPeriodBetweenLoansPayoffAndLoanRequest | 10              |
+#| numberOfSuspensionsPerLoanAllowed             | 1               |
+#| checkFee                                      | 2               |
+#| overnightDeliveryFees                         | 1               |
+#| maximumAmount                                 | 1               |
+#| withdrawalBasis                               | 1               |
+#| refinancingAllowed                            | false           |
+#| curePeriod                                    | 1               |
+#| curePeriodForEmployeeTermination              | 1               |
+#| defaultMethod                                 | 1               |
+#| minimumLoanRepaymentAmount                    | 10              |
+#| loanApportioningMethod                        | 1               |
+#| loanInterestRate                              | 1               |
+#| loanFeeAmount                                 | 5               |
+#| minimumLengthYears                            | 1               |
+#| minimumLengthMonths                           | 0               |
+#| maximumLengthYears                            | 5               |
+#| maximumLengthMonths                           | 0               |
+#| firstRepaymentDateFallsAfter                  | 20              |
+#| firstRepaymentDateFallsWithin                 | 25              |
+#| masterLoanTypeId                              | 1               |
+#| isMaster                                      | true            |
+#| loanDescription                               | General Purpose |
+#
+#And Save Loan details in Plan
 
 Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
 | Key                | Value      |

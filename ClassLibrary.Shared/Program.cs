@@ -745,10 +745,9 @@ namespace RefitSandBox
                         form.Add(new StringContent("false"), "isYearEndProcessing");
                         form.Add(new StringContent("0"), "payrollFrequencyId");
 
-                        //string BaseURL = "https://dev.coreretirementsolutions.com";
                         var httpClient = new HttpClient()
                         {
-                            BaseAddress = new Uri(_url)
+                            BaseAddress = new Uri(Settings.ApplicationURL)
                         };
 
                         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
@@ -1411,7 +1410,7 @@ namespace RefitSandBox
 
         public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
         {
-            //string BaseURL = "https://dev.coreretirementsolutions.com/";
+
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(Settings.ApplicationURL)
@@ -3255,48 +3254,84 @@ namespace RefitSandBox
                 throw new Exception($"Error in upserting clearing partner account to plan: {errorMessage}");
         }
 
-        public static async Task EligibilityConfiguration(string bearer, string planId)
+        public static async Task EligibilityConfiguration(string URL, HttpClient httpClient, string bearer, string planId)
         {
-            var program = new Program();
-            var eligibility = new EligibilityRuleViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(eligibility);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanAmendments.PlanId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("exclusionType", "0");
-            await program.Configuration("isLTPTApplicable", "false");
-            await program.Configuration("ltptHours", "500");
-            await program.Configuration("isRevaluationRequired", "false");
-            await program.Configuration("isBreakInService", "false");
-            await program.Configuration("eligibilityType", null);
-            await program.Configuration("planId", planId.ToString());
-            await program.Configuration("age", "20");
-            await program.Configuration("ltptAgeInYears", "20");
-            await program.Configuration("sourceId", null);
-            await program.Configuration("eligibilityRuleFor", "1");
+            var model = new EligibilityRuleViewModel
+            {
+                Id = 0,
+                PlanId = Convert.ToInt32(planId),
+                //PlanAmendmentId = 0,
 
-            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SavePlanAmendmentEligibleRule");
+                Name = "Immediate",
+                Description = "Immediate eligibility",
+                ImmediateEligibility = true,
+                EligibilityRuleFor = 1,
+
+                IsLTPTApplicable = false,
+                IsBreakInService = false,
+                IsRevaluationRequired = false,
+                RehiredOneYearLookBack = null,
+
+                EligibilityCalculationPeriod = null,
+                AdditionalEligibilityRules = new List<AdditionalEligibilityRuleViewModel>(),
+
+                ExclusionFromRule = new ExclusionFromRuleViewModel
+                {
+                    ExclusionType = 0
+                },
+
+                LtptExclusionFromRule = new ExclusionFromRuleViewModel
+                {
+                    ExclusionType = 0
+                },
+
+                LtptVestingComputationPeriod = new VestingComputationPeriod(),
+
+                LtptServiceCreditPeriod = new ServiceCreditPeriod(),
+
+                PlanAmendments = new PlanAmendmentViewModel
+                {
+                    Id = 0,
+                    EffectiveStartDate = DateTimeOffset.Parse("2015-01-01T00:00:00Z"),
+                    DirectAmendment = false,
+                    Description = "Initial Rule",
+                    PlanId = Convert.ToInt32(planId)
+                },
+
+                IsDeleted = false
+            };
+
+            var requestBody = JsonConvert.SerializeObject(model);
+            var requestPayload = JObject.Parse(requestBody);
+            string Action = "api/v1/EligibleRule/SavePlanAmendmentEligibleRule";
+            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+            var task = await httpClient.PostAsync($"{URL}/{Action}/", data);
+            var contentTask = await task.Content.ReadAsStringAsync();
+            response = JObject.Parse(contentTask);
+            Console.Write(response.ToString());
         }
 
-        public static async Task SaveEntryDate(string bearer, string planId)
+        public static async Task SaveEntryDate(HttpClient httpClient, string bearer, string planId)
         {
-            var program = new Program();
-            var entryDateModel = new EntryDateRuleViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(entryDateModel);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("ruleName", "Immediate");
-            await program.Configuration("sourceId", null);
-            await program.Configuration("eligibilityRuleFor", "1");
-            await program.Configuration("entryDateRuleType", "");
-            await program.Configuration("entryDateSources", null);
-            await program.Configuration("otherEntryDates", null);
-            await program.Configuration("planYearOtherEntryDates", null);
-            await program.Configuration("entryDateRehireOption", "0");
+            var entryDate = new EntryDateRuleViewModel
+            {
+                Id = 0,
+                PlanId = Convert.ToInt32(planId),
+                EntryDateRuleType = null,
+                EntryDateRuleFor = 1,
+                RuleName = "Immediate",
+                EntryDateRule = 6,
+                EntryDateRehireOption = 0,
+                IsSwitchToPlanYearHaveDifferentEntryDates = false,
+                EntryDateSources = null,
+                OtherEntryDates = null,
+                PlanYearOtherEntryDates = null,
+                AdditionalEntryDateRules = null
+            };
 
-            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEntryDate");
+            var planDetailsSaveInterface = RestService.For<IPlanDetailsSave>(httpClient);
+            var entryDateSaveResponse = await planDetailsSaveInterface.SaveEntryDate(entryDate);
         }
 
         public static async Task SavePretaxSource(string bearer, string planId)
@@ -3691,6 +3726,11 @@ namespace RefitSandBox
                     await program.VerifyClearingPartnerMappingId(httpClient, planId);
                     await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 7);
                     var b50Response = await sftp.SFTPOperations(AccountId.ToString());
+                    if (b50Response.Count == 0)
+                        throw new Exception("B50 File does not contain investments");
+                    sftp.EditF53Lines(Hooks.Hooks.clearingPartnerName, "D260119.P2084.C00", b50Response);
+                    sftp.UploadFile(Hooks.Hooks.clearingPartnerName, "D260119.P2084.C00");
+                    await sftp.PollingIdentifier(httpClient, Hooks.Hooks.clearingPartnerName, planId);
                     break;
 
                 default:
