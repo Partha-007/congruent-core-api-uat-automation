@@ -261,6 +261,13 @@ public interface ILoan
         [Get("/api/v1/Loan/GetLoan/{Id}")]
         Task<GetLoanResult> GetLoan(string Id);
     }
+
+    public interface ITransfer
+    {
+        [Post("/api/v1/Transfer/SaveTransferDetailsForAdmin")]
+
+        Task<object> SaveTransferDetailsForAdminAsync(TransferDetailsForAdminViewModel transferDetails);
+    }
     public class Advisor
     {
         public string Name { get; set; }

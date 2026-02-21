@@ -1,3 +1,4 @@
+using ClassLibrary.Shared;
 using ClassLibrary.Shared.TestDataGenerator;
 using CucumberExpressions.Ast;
 using MyNamespace;
@@ -13,9 +14,11 @@ namespace SharedStepDefinitions
     public class SampleStepDefinitions
     {
         public Program _program;
-        public SampleStepDefinitions(Program program)
+        public AccountBalanceVerifier _accountBalanceVerifier;
+        public SampleStepDefinitions(Program program, AccountBalanceVerifier accountBalanceVerifier)
         {
             _program = program;
+            _accountBalanceVerifier = accountBalanceVerifier;
         }
 
         [Given("Model is selected for the endpoint {string}")]
@@ -29,6 +32,20 @@ namespace SharedStepDefinitions
         {
             await _program.APIRequestForRefit(interfaceName, methodName);
         }
+
+        [When("Trade procedures completed for the transaction {string}")]
+        public async Task WhenTradeProceduresCompletedForTheTransaction(string transfer)
+        {
+            await _program.TransferTransaction();
+        }
+
+
+        [Then("The source {string} should match the following balances")]
+        public async Task ThenTheSourceShouldMatchTheFollowingBalances(string sourceName, DataTable dataTable)
+        {
+            await _accountBalanceVerifier.VerifySourceWiseBalance(sourceName, dataTable);
+        }
+
 
         [When("Save Loan details in Plan")]
         public async Task GivenSaveLoanDetailsInPlan()

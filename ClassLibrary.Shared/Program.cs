@@ -67,13 +67,16 @@ namespace RefitSandBox
         public static Hooks.Hooks _hooks;
         public static string _url;
         public static ParseToObjectTestResponse? employee;
+        public SFTP _sftp;
+        public static List<B50MatchResult> b50Response = new List<B50MatchResult>();
 
 
-        public Program(FakeDataHelper fake, Hooks.Hooks hooks)
+        public Program(FakeDataHelper fake, Hooks.Hooks hooks, SFTP sftp)
         {
             _fakeDataHelper = fake;
             _hooks = hooks;
             _url = Settings.ApplicationURL;
+            _sftp = sftp;
         }
 
         public Program()
@@ -607,8 +610,14 @@ namespace RefitSandBox
                     else
                     {
                         var propertyType = property.PropertyType;
-                        var convertedValue = Convert.ChangeType(Value, propertyType);
-                        // For non-nullable types, just set the value
+                        object convertedValue;
+
+                        if (propertyType.IsEnum)
+                            convertedValue = Enum.Parse(propertyType, Value.ToString(), true);
+                        
+                        else
+                            convertedValue = Convert.ChangeType(Value, propertyType);
+                        
                         try
                         {
                             property.SetValue(modelAfterConvention, convertedValue);
@@ -618,6 +627,7 @@ namespace RefitSandBox
                             Console.WriteLine(ex.Message);
                         }
                     }
+
                 }
             }
             else
@@ -739,7 +749,7 @@ namespace RefitSandBox
                         form.Add(new StringContent("1"), "inputType");
                         form.Add(new StringContent("1"), "format");
                         form.Add(new StringContent("true"), "isMultiplePlanOrPaydate");
-                        //form.Add(new StringContent(directoryPath), "fileName");
+                        form.Add(new StringContent("savePayroll.csv"), "fileName");
                         form.Add(new StringContent("null"), "planId");
                         form.Add(new StringContent("null"), "payDate");
                         form.Add(new StringContent("false"), "isYearEndProcessing");
@@ -747,10 +757,10 @@ namespace RefitSandBox
 
                         var httpClient = new HttpClient()
                         {
-                            BaseAddress = new Uri(Settings.ApplicationURL)
+                            BaseAddress = new Uri(_url)
                         };
 
-                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
 
                         var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
                         var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileAsync(form);
@@ -771,13 +781,12 @@ namespace RefitSandBox
                                 throw new Exception("Error in accepting warnings");
                             }
                         }
-                        await Task.Delay(1000);
+                        await Task.Delay(5000);
                         var finalSubmit = await payrollClient.FinalSubmit(fileId, "3");
-                        await Task.Delay(1000);
+                        await Task.Delay(5000);
                         if (fundingType == "File")
                         {
                             var fundByFile = await payrollClient.FinalSubmit(fileId, fundingType);
-                            var fundByFileID = await payrollClient.SaveFundingDetailsByFileAsync(Convert.ToInt32(fileId));
                             var responseAfterFileSubmission = fundByFile.IsSuccessfull;
                             if (!responseAfterFileSubmission)
                             {
@@ -786,12 +795,19 @@ namespace RefitSandBox
                         }
                         else
                         {
-                            await SaveFundingDetailsByPlan(planId, fileId);
+                            var fundByFile = await payrollClient.FinalSubmit(fileId, fundingType);
+                            await SaveFundingDetailsByPlan(httpClient, planId, fileId);
                             await Task.Delay(5000);
+                            
+                            var responseAfterFileSubmission = fundByFile.IsSuccessfull;
+                            if (!responseAfterFileSubmission)
+                            {
+                                throw new Exception("Error in submitting the file");
+                            }
                             var getAwaitingFundsForFile = await payrollClient.GetAwaitingFundingDetailsByPlan(fileId, planId);
                             payrollFundingId = getAwaitingFundsForFile.PayrollFundingId.ToString();
-                            await ConfirmFunds(planId, fileId, payrollFundingId);
-                            if (filename == "Combined.csv")
+                            await ConfirmFunds(httpClient, planId, fileId, payrollFundingId);
+                            if (filename == "CombinedFile.csv")
                             {
                                 await Task.Delay(3000);
                             }
@@ -799,10 +815,18 @@ namespace RefitSandBox
                             {
                                 await Task.Delay(10000);
                             }
+                            await GenerateOutboundFile(httpClient,"Saturna","DTCC",1);
+                            await Task.Delay(2000);
+                            var tradeOrderNumbers = _sftp.ProcessTradeOrderFile(SFTP.CUSIPTradeIdentifierDict,b50Response);
+                            _sftp.EditFixedWidthFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09", new List<B50MatchResult>(), tradeOrderNumbers);
+                            _sftp.UploadFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09");
+                            await _sftp.PollingIdentifier(httpClient, Hooks.Hooks.clearingPartnerName, planId, "AccountBalanceVerification");
+                            /*var generateConsolidationResponse = await payrollClient.GenerateConsolidation();
+                            var parsedResponse = JObject.Parse(generateConsolidationResponse.ToString());
+                            if (!(parsedResponse["isSuccessful"].ToString() == "True"))
+                                throw new Exception("Error in generating consolidation");*/
 
-                            await payrollClient.GenerateConsolidation();
-
-                            await Task.Delay(40000);
+                            //await Task.Delay(10000);
                         }
                         return responseObject;
 
@@ -1442,7 +1466,14 @@ namespace RefitSandBox
                         }
 
                         Console.WriteLine(JsonConvert.SerializeObject(model));
-                        if (methodName == "SavePlanAmendmentEligibleRule")
+
+                        if (MethodNamesNotHandledByRefit.ContainsKey(methodName))
+                        {
+                            response = await PostCall(httpClient, model, MethodNamesNotHandledByRefit[methodName]);
+                            return response;
+                        }
+                            
+                        /*if (methodName == "SavePlanAmendmentEligibleRule")
                         {
                             var requestBody = JsonConvert.SerializeObject(model);
                             var requestPayload = JObject.Parse(requestBody);
@@ -1527,7 +1558,7 @@ namespace RefitSandBox
                             response = JObject.Parse(contentTask);
                             Console.Write(response.ToString());
                             return response;
-                        }
+                        }*/
                         else
                         {
                             try
@@ -1575,7 +1606,30 @@ namespace RefitSandBox
             }
         }
 
+        public static async Task<JObject> PostCall(HttpClient httpClient, object model, string endpoint)
+        {
+            var requestBody = JsonConvert.SerializeObject(model);
+            var requestPayload = JObject.Parse(requestBody);
 
+            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+            
+            var task = await httpClient.PostAsync($"{_url}/{endpoint}/", data);
+            var contentTask = await task.Content.ReadAsStringAsync();
+            response = JObject.Parse(contentTask);
+            Console.Write(response.ToString());
+            return response;
+        }
+
+        public static Dictionary<string,string> MethodNamesNotHandledByRefit = new Dictionary<string, string>
+        {
+             { "SavePlanAmendmentEligibleRule", "api/v1/EligibleRule/SavePlanAmendmentEligibleRule" },
+             { "SaveEnrollmentSettings", "api/Enrollment/SaveEnrollmentSetting" },
+             { "SaveFunding", "api/Funding/SaveFunding" },
+             {"SaveInprogressLoanRequest","api/v1/Loan/SaveInprogressLoanRequest" },
+             {"SubmitLoanRequest","api/v1/Loan/SubmitLoanRequest" },
+             {"SaveEmployeeAsync","api/v1/Payroll/SaveEmployee" },
+            {"SaveTransferDetailsForAdminAsync","api/v1/Transfer/SaveTransferDetailsForAdmin" }
+        };
 
         public static MultipartFormDataContent HandlingFileUpload(string filename)
         {
@@ -1735,6 +1789,8 @@ namespace RefitSandBox
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
                 { "/api/Source/SaveSource",() => sourceobjModel==null?new SourceViewModel():sourceobjModel},
+                {"/api/Transfer/SaveTransfer",() => new TransferViewModel() },
+                {"/api/v1/Transfer/SaveTransferDetailsForAdmin", () => new TransferDetailsForAdminViewModel() }
                 //{"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
             };
 
@@ -2050,7 +2106,6 @@ namespace RefitSandBox
 
         public static async Task<string> GetEmployeeId()
         {
-            //string BaseURL = "https://dev.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(_url)
@@ -2746,6 +2801,8 @@ namespace RefitSandBox
             else if (value == "<CompEmpClassId>") return employeeClassificationId;
             else if (value == "<DailyFreqId>") return payrollFrequencyId;
             else if (value == "<ActiveStatusId>") return ActiveStatusId;
+            else if (value == "<EmployeeId>") return await GetEmployeeId();
+            else if (value == "<PlanId>") return planId;
 
             else return null;
         }
@@ -2844,6 +2901,10 @@ namespace RefitSandBox
                         else if (underlyingType == typeof(string))
                         {
                             convertedValue = value.ToString();
+                        }
+                        else if(propType.IsEnum)
+                        {
+                            convertedValue = Enum.Parse(propType, value.ToString(), true);
                         }
                         else
                         {
@@ -3671,32 +3732,60 @@ namespace RefitSandBox
             var payrollFileList = await program.SendAPIRequest(bearer, payrollSearch, interfaceType, "GetUploadedFilesBasedOnSearchCriteria");*/
         }
 
-        public static async Task SaveFundingDetailsByPlan(string planId, string fileId)
+        public static async Task SaveFundingDetailsByPlan(HttpClient httpClient, string planId, string fileId)
         {
-            var program = new Program();
-            var fundingByPlan = new FundingByPlanViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(fundingByPlan);
-            var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("planId", planId);
-            await program.Configuration("fileId", fileId);
-            await program.Configuration("bankId", fundingBankId);
-            await program.Configuration("amount", totalAmount.ToString());
-            await program.Configuration("totalFundingAmount", totalAmount.ToString());
-            await program.Configuration("forfeitureFundings", null);
-            await program.Configuration("achPullFundings", null);
-            await program.Configuration("wireFundings", null);
-            await program.Configuration("checkFundings", null);
-            await program.Configuration("achPushFundings", null);
-            await program.Configuration("totalEmployerContribution", "0");
-            await program.Configuration("bankFundings", null);
-            var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var fundByPlan = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
+            var PlanFunding = new FundingByPlanViewModel
+            {
+                PlanId = Convert.ToInt32(planId),
+                FileId = Convert.ToInt32(fileId),
+                TotalFundingAmount = totalAmount,
+                TotalEmployerContribution = 0,
+                BankFundings = null,
+                ForfeitureFundings = null,
+                AchDebitFundings = new List<ACHDebitFundingViewModel>
+                {
+                    new ACHDebitFundingViewModel
+                    {
+                        BankName = "HSBC Bank",
+                        BankId = Convert.ToInt32(fundingBankId),
+                        PlanAccountId = 0,
+                        Amount = totalAmount,
+                    }
+                },
+                AchPushFundings = null,
+                WireFundings = null,
+                CheckFundings = null,
+                IsPayDateWise = false,
+                PayDate = null
+            };
+
+            var PayrollInterface = RestService.For<IPayroll>(httpClient);
+            var saveFundingByPlanResponse = await PayrollInterface.SaveFundingDetailsByPlan(PlanFunding);
         }
 
 
-        public static async Task ConfirmFunds(string planId, string fileId, string payrollFundingId)
+        public static async Task ConfirmFunds(HttpClient httpClient, string planId, string fileId, string payrollFundingId)
         {
-            var program = new Program();
+            var ConfirmFunds = new ConfirmFundsViewModel
+            {
+                FileId = Convert.ToInt32(fileId),
+                PayrollFundingId = Convert.ToInt32(payrollFundingId),
+                FundingType = "Plan",
+                IsForfeiture = false,
+                IsACHDebit = true,
+                IsACHPushFunding = false,
+                IsCheckFunding = false,
+                IsWireFunding = false,
+                PlanId = Convert.ToInt32(planId),
+                Amount = totalAmount,
+                NodConfirmationNumber = "",
+                PayDate = null,
+                IsPayDateWise = false
+            };
+
+            var PayrollInterface = RestService.For<IPayroll>(httpClient);
+            var ResponseAfterConfirmFunds = await PayrollInterface.ConfirmFunds(ConfirmFunds);
+            /*var program = new Program();
             var confirmFunds = new ConfirmFundsViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(confirmFunds);
             var list = GetJsonPropertyList(modelAfterConvention);
@@ -3707,9 +3796,24 @@ namespace RefitSandBox
             await program.Configuration("amount", totalAmount.ToString());
             await program.Configuration("payrollFundingId", payrollFundingId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
+            var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");*/
         }
-
+        public async Task TransferTransaction()
+        {
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            await GenerateOutboundFile(httpClient, "Saturna", "DTCC", 1);
+            await Task.Delay(2000);
+            var tradeOrderNumbers = _sftp.ProcessTradeOrderFile(SFTP.CUSIPTradeIdentifierDict, b50Response);
+            _sftp.EditFixedWidthFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09", new List<B50MatchResult>(), tradeOrderNumbers);
+            _sftp.UploadFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09");
+            var filePicked = await _sftp.WaitForFileToBePickedAsync("D260102.P2361.C09");
+            if (!filePicked)
+                throw new TimeoutException("File not picked up within 2 minutes");
+        }
         public async Task TradeOutboundFileGeneration(string ClearingPartner, int AccountId)
         {
             var program = new Program();
@@ -3724,13 +3828,14 @@ namespace RefitSandBox
                 case "DTCC":
                     await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 5);
                     await program.VerifyClearingPartnerMappingId(httpClient, planId);
+                    await Task.Delay(2000);
                     await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 7);
-                    var b50Response = await sftp.SFTPOperations(AccountId.ToString());
+                    b50Response = await sftp.SFTPOperations(AccountId.ToString());
                     if (b50Response.Count == 0)
                         throw new Exception("B50 File does not contain investments");
-                    sftp.EditF53Lines(Hooks.Hooks.clearingPartnerName, "D260119.P2084.C00", b50Response);
+                    sftp.EditFixedWidthFile(Hooks.Hooks.clearingPartnerName, "D260119.P2084.C00", b50Response, new Dictionary<string, CusipProcessingResult>());
                     sftp.UploadFile(Hooks.Hooks.clearingPartnerName, "D260119.P2084.C00");
-                    await sftp.PollingIdentifier(httpClient, Hooks.Hooks.clearingPartnerName, planId);
+                    await sftp.PollingIdentifier(httpClient, Hooks.Hooks.clearingPartnerName, planId, "ClearingPartnerMapping");
                     break;
 
                 default:
@@ -3776,6 +3881,20 @@ namespace RefitSandBox
             var clearingPartnerMappingId = parsedResponse[0]["clearingPartnerId"].ToString();
             if(clearingPartnerMappingId == null)
                 throw new Exception("Clearing Partner Mapping Id is null");
+        }
+
+        public static async Task<bool> VerifyAccountBalanceReflection(HttpClient httpClient, string planId)
+        {
+            var employeeId = await GetEmployeeId();
+            await Task.Delay(3000);
+            var currentDate = DateTime.Today.ToString("yyyy-MM-dd");
+            var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
+            employeeAccountBalance = await tradeOrderClient.GetParticipantAccountBalanceByPlan(planId, employeeId, currentDate);
+            var accountBalance = employeeAccountBalance.RegularAccountBalance;
+            if (accountBalance == 0)
+                return false;
+            else
+                return true;
         }
     
         public async Task EnrollmentConfiguration(string planId, string pretaxSourceId, string rothSourceId, string investment1Name, string investment2Name)
