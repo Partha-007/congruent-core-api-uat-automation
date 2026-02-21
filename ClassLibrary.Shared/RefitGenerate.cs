@@ -41,6 +41,19 @@ namespace RefitSandBox
         Task<object> CreateAdvisorDetailsAsync([Body] object advisor);
     }
 
+    public interface IClearingPartner
+    {
+        [Get("/api/ClearingPartner/GetClearingPartners")]
+        Task<object> GetMasterClearingPartnersId();
+
+        [Get("/api/ClearingPartner/GetClearingPartner/{id}")]
+        Task<object> GetMasterClearingPartnerAccounts(int id);
+
+        [Post("/api/ClearingPartner/UpsertClearingPartnerAccount")]
+        Task<object> AddClearingPartnerAccount([Body] ClearingPartnerViewModel clearingPartnerPlanMapping);
+
+    }
+
     public interface IPlanDetailsSave
     {
         [Post("/api/BasicPlanDetails/SaveBasicPlanDetails")]
@@ -54,8 +67,13 @@ namespace RefitSandBox
         [Get("/api/ClearingPartner/GetClearingPartner/{id}")]
         Task<object> GetClearingPartnersId(int id);
 
+       
+
         [Post("/api/ClearingPartner/UpsertPlanWithClearingPartnerAccount")]
         Task<object> AddClearingPartnerToPlan([Body] PlanWithClearingPartnerViewModel clearingPartnerPlanMapping);
+
+        [Get("/api/ClearingPartner/GetPlanAssociatedClearingPartnerAccounts/{id}")]
+        Task<object> GetPlanAssociatedClearingPartnerAccounts(int id);
 
         [Post("/api/v1/EligibleRule/SavePlanAmendmentEligibleRule")]
         [Headers("Accept: */*", "Content-Type: application/json-patch+json")]
@@ -132,7 +150,8 @@ namespace RefitSandBox
         Task<object> UploadCombinedFileAsync([Body] MultipartFormDataContent form);
 
         [Post("/api/v1/Payroll/PayrollAndCensusFileUploadTest")]
-        Task<PayrollAndCensusFileUploadTestResult> UploadCombinedFileToTestEndpoint([Body] MultipartFormDataContent form);
+        Task<PayrollAndCensusFileUploadTestResult> UploadCombinedFileTestAsync([Body] MultipartFormDataContent form);
+
     }
 
     public interface ITradeOrderFileUpload
@@ -145,6 +164,9 @@ namespace RefitSandBox
         [AliasAs("planId")] string planId,
         [AliasAs("participantId")] string participantId,
         [AliasAs("date")] string date);
+
+        [Post("/api/v1/TradeOutboundFileGeneration/GenerateFile")]
+        Task<object> GenerateFileAsync(OutboundFileGeneration outboundFileGeneration);
     }
 
     public interface IInvestment
@@ -181,10 +203,15 @@ namespace RefitSandBox
         [Get("/api/v1/TradeGeneration/GenerateConsoliation")]
         Task<object> GenerateConsolidation();
 
-        
+        [Get("/api/v1/TradeOutboundFileGeneration/GenerateFile")]
+        Task<object> GenerateOutboundFile();
+
 
         [Post("/api/v1/Payroll/GetEmployeesBySearchCriteria")]
         Task<GetEmployeesBySearchCriteriaResult> GetEmployeesBySearchCriteria(SearchCriterias search);
+
+        [Post("/api/v1/Payroll/SaveFundingDetailsByFile")]
+        Task<bool> SaveFundingDetailsByFileAsync([Body] int body);
     }
 
     public interface IEmployee
@@ -233,6 +260,13 @@ public interface ILoan
 
         [Get("/api/v1/Loan/GetLoan/{Id}")]
         Task<GetLoanResult> GetLoan(string Id);
+    }
+
+    public interface ITransfer
+    {
+        [Post("/api/v1/Transfer/SaveTransferDetailsForAdmin")]
+
+        Task<object> SaveTransferDetailsForAdminAsync(TransferDetailsForAdminViewModel transferDetails);
     }
     public class Advisor
     {

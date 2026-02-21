@@ -9,12 +9,12 @@ namespace Generator.sourceGenerator
 {
     public class Programs
     {
-        [Fact]
+       // [Fact]
             public async Task GenerateApiClientAsync() {
             try
             {
                 // Load the OpenAPI document (adjust the file path as needed)
-                var document = await OpenApiDocument.FromFileAsync("D:\\API_AutomationSuite\\Congruent.Core.API.TestAutomation\\SourceGenerator\\json1.json");
+                var document = await OpenApiDocument.FromFileAsync("D:\\01MODULES\\Congruent.Core.API.TestAutomation\\SourceGenerator\\json1.json");
 
                 // Create settings for the CSharpClientGenerator
                 var settings = new CSharpClientGeneratorSettings
