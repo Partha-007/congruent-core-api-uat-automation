@@ -4,10 +4,10 @@
 #Scenario: To Verify the data acceptance for Routing number field when user enters a numerics - create mode
 #Scenario: To Verify the data acceptance for Routing number field when user enters a numerics - create mode
 Scenario: To verify the Most recent Term Date  value with valid date format of Current date + 29 date MM/DD/YYYY in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                |
 | address1          | <Address1>           |
@@ -109,10 +109,10 @@ Examples:
 
 
 Scenario:To verify the address1 field  value with Null  in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value |
 | address1          |       |
@@ -143,10 +143,10 @@ Then the API response should contain the 11 following errors
 
 
 Scenario:To verify the address1 field  value with above 150 alphaebts  in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                |
 | address1          | random 151 alphabets |
@@ -185,10 +185,10 @@ Then the API response should contain the 14 following errors
 
 
 Scenario:To Verify the data acceptance of  Bank Account Number field when user enters special characters  - create mode
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                       |
 | accountNumber     | random 10 specialCharacters |
@@ -221,10 +221,10 @@ Then the API response should contain the 11 following errors
 
 
 Scenario:To Verify the data acceptance of  Bank Account Number field when user enters alphanumerics   - create mode
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                       |
 | accountNumber     | random 10 alphaNumerics     |
@@ -255,10 +255,10 @@ Then the API response should contain the 10 following errors
 
 
 Scenario:To Verify the data acceptance of  Bank Account Number field when user enters alphanumerics with special characters  - create mode
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                                       |
 | accountNumber     | random 10 alphaNumericWithSpecialCharacters |
@@ -290,10 +290,10 @@ Then the API response should contain the 9 following errors
 
 
 Scenario:To verify the BeneficiaryBankaAccountNumber field with Numerics of above 18 in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                                       |
 | accountNumber     | random 19 numerics                          |
@@ -324,10 +324,10 @@ Then the API response should contain the 10 following errors
 	| EM205      | Phone Number must be in a valid format – XXX-XXX-XXXX.             |Scenario:To verify the phoneNumber field  value name with below 10 digits  in Create Mode of Employee Information Page
 
 Scenario:To verify the BeneficiaryBankAccountHolderName field with alphabets of above 150 characters  in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                |
 | accountHolderName | random 151 alphabets |
@@ -353,10 +353,10 @@ Then the API response should contain the 5 following errors
 #Scenario: To Verify the of valid format of  Date of Birth field - create mode
 #Scenario:To verify the BeneficiaryRoutingNumber field with numerics of below 9  in Create Mode of Employee Information Page
 Scenario:To verify the BeneficiaryCountry field  value USA  in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key           | value                |
 | country       |                    1 |
@@ -369,16 +369,16 @@ When API request has been sent to the "IEmployee" with the method name "AddBenef
 Then API should respond with successful message
 
 Scenario: To Verify the length acceptance of Foreign Zipcode when value is above 36 characters  - create mode
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                                                                                               |
 | accountHolderName | random 151 alphabets                                                                                |
 | country           |                                                                                                   2 |
 | zipCode           | 123456789012345678901234567890abcdefh                                                               |
-| dateOfBirth       | days_0                                                                                              |
+| dateOfBirth       | day_0                                                                                              |
 | email             | testbeneficiarytestbeneficiarytestbeneficiarytestbeneficiarytestbeneficiarytestbeneficiary@test.com |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
@@ -390,10 +390,10 @@ Then the API response should contain the 3 following errors
 
 
 Scenario:To verify the beneficiaryName field  value name with alphabets  in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value               |
 | name              | random 10 alphabets |
@@ -426,13 +426,13 @@ Then API should respond with successful message
 
 
 Scenario: To Verify the data acceptance when user enter alphabets in Zipcode field - create mode
-  Given Model is selected for the endpoint "api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
+| employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key     | value     |
-| country |         1 |
+| countryId |         1 |
 | zipCode | <ZipCode> |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"

@@ -50,7 +50,7 @@ namespace RefitSandBox.TestDataGenerator
                     }
                     continue; // Skip further processing for this property
                 }
-                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
+                else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
                 {
                     // Handle ICollection<T> types
                     var itemType = propertyType.GetGenericArguments()[0]; // Get the item type T
@@ -81,17 +81,45 @@ namespace RefitSandBox.TestDataGenerator
 
                     property.SetValue(obj, collectionInstance);  // Set the populated collection to the property
                 }
+                else if (propertyType.IsClass && propertyType != typeof(string))
+                {
+                    try
+                    {
+                        var nestedObject = Activator.CreateInstance(propertyType);
+                        PopulateModelWithFakeData(nestedObject);
+                        property.SetValue(obj, nestedObject);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Exception :" + ex.Message);
+                    }
+                }
 
+                else if (propertyType.IsEnum)
+                {
+                    object randomValueFromEnumList = null;
+                    var listOfEnumValues = Enum.GetValues(propertyType);
+
+                    if (propertyType.Name == "FundingCategory")
+                        randomValueFromEnumList = listOfEnumValues.GetValue(0);
+
+                    else
+                        randomValueFromEnumList = listOfEnumValues.GetValue(new Random().Next(listOfEnumValues.Length));
+
+                    property.SetValue(obj, randomValueFromEnumList);
+                }
                 else
                 {
-                    // Handle other property types as in the original code
-                    property.SetValue(obj,
+                    try
+                    {
+                        // Handle other property types as in the original code
+                        property.SetValue(obj,
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Id") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "PlanAmendmentId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CompanyId") ? null :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Tenantid") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CountryId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "StateId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "masterLoanTypeId") ? 1 :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "IsMaster")? true :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "IsMaster") ? true : StringComparer.OrdinalIgnoreCase.Equals(propertyName, "AllowOptingOutOfStateWithholdingTax") ? false :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "LoanDescription") ? "General Purpose" :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate") ? "2025-03-02T00:00:00Z" :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? "2026-03-02T00:00:00Z" :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate")? DateTimeOffset.Parse("2025-03-02T00:00:00Z") :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? DateTimeOffset.Parse( "2026-03-02T00:00:00Z") :
                         propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("UniquePersonalIdentification", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
                         propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? faker.Name.FirstName() :
                         propertyType == typeof(string) && propertyName.Contains("Name", StringComparison.OrdinalIgnoreCase) ? faker.Company.CompanyName() :
@@ -100,8 +128,8 @@ namespace RefitSandBox.TestDataGenerator
                         propertyType == typeof(string) && propertyName.Contains("Zipcode", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("PostalCode", StringComparison.OrdinalIgnoreCase) ? faker.Address.ZipCode("#####") :
                         propertyName == "SicCode" ? faker.Random.Number(1000, 9999).ToString() :
                         propertyName == "BusinessCode" ? faker.Random.Number(100000, 999999).ToString() :
-                        (propertyName == "LimitMaximumPercentage") || (propertyName == "LimitMaximumDollar") || (propertyName == "MaximumDollarCompensation") || (propertyName == "||(propertyName == ") || (propertyName == "MaximumPercentageCompensation") || (propertyName == "HceMaximumAmount") || (propertyName == "HceMaximumPercentage") || (propertyName == "CatchupMaximumAmount") || (propertyName == "CatchupMaximumPercentage") ? faker.Random.Number(50, 100).ToString() :
-                        (propertyName == "LimitMinimumPercentage") || (propertyName == "LimitMinimumDollar") || (propertyName == "HceMinimumAmount") || (propertyName == "HceMinimumPercentage") || (propertyName == "CatchupMinimumAmount") || (propertyName == "CatchupMinimumPercentage") ? faker.Random.Number(1, 50).ToString() :
+                        (propertyName == "LimitMaximumPercentage") || (propertyName == "LimitMaximumDollar") || (propertyName == "MaximumDollarCompensation") || (propertyName == "MaximumPercentageCompensation") || (propertyName == "HceMaximumAmount") || (propertyName == "HceMaximumPercentage") || (propertyName == "CatchupMaximumAmount") || (propertyName == "CatchupMaximumPercentage") ? faker.Random.Double(50, 100) :
+                        (propertyName == "LimitMinimumPercentage") || (propertyName == "LimitMinimumDollar") || (propertyName == "HceMinimumAmount") || (propertyName == "HceMinimumPercentage") || (propertyName == "CatchupMinimumAmount") || (propertyName == "CatchupMinimumPercentage") ? faker.Random.Double(1, 50) :
                         propertyName == "TaxEIN" ? faker.Phone.PhoneNumber("##-#######") :
                         propertyName == "BusinessType" ? 1 :
                         propertyName.Contains("Address", StringComparison.OrdinalIgnoreCase) && !propertyType.IsClass && !propertyName.Equals("AddressType") ? faker.Address.StreetAddress() :
@@ -111,7 +139,7 @@ namespace RefitSandBox.TestDataGenerator
                         propertyName.Equals("Website", StringComparison.OrdinalIgnoreCase) ? faker.Internet.DomainName() :
                         propertyName.Equals("day", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 28) :
                         propertyName.Equals("SourceName", StringComparison.OrdinalIgnoreCase) ? faker.Random.AlphaNumeric(10) :
-                        propertyName.Equals("month", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("agemonth", StringComparison.OrdinalIgnoreCase)? faker.Random.Number(1, 12) :
+                        propertyName.Equals("month", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("agemonth", StringComparison.OrdinalIgnoreCase) ? faker.Random.Number(1, 12) :
                         propertyName == "TrsContractId" || propertyName == "RkPlanNumber" ? faker.Random.AlphaNumeric(5).ToUpper() :
                         propertyName == "IrsPlanNumber" ? faker.Random.Number(3, 3).ToString() :
                         propertyName == "LetterSerialNumber" || propertyName.Contains("CustomData", StringComparison.OrdinalIgnoreCase) || propertyName == "MepPlanId" || propertyName == "Level" || propertyName == "Prototype" || propertyName == "PlanTerminationDate" || propertyName.Contains("Enddate", StringComparison.OrdinalIgnoreCase) || propertyName == "PostSeveranceCompensationCategories" || propertyName == "EmployeeClasificationCategories" ? null :
@@ -126,6 +154,8 @@ namespace RefitSandBox.TestDataGenerator
                         propertyName == "EntryDateRule" ? 6 :
                         propertyName.Equals("Minimum", StringComparison.OrdinalIgnoreCase) ? 10 :
                         propertyName.Equals("InvestmentPercentage") ? 100.00 :
+                        propertyType == typeof(bool?) ? false : // For nullable bool
+                        propertyType == typeof(bool) ? false :
                         propertyType == typeof(string) ? faker.Lorem.Word() :
                         propertyType == typeof(int?) ? (object)faker.Random.Int(1, 100) : // For nullable int
                         propertyType == typeof(int) ? faker.Random.Int(1, 100) : // For non-nullable int
@@ -135,43 +165,16 @@ namespace RefitSandBox.TestDataGenerator
                         propertyType == typeof(DateTime) && propertyName.Contains("Date") ? faker.Date.Past().ToUniversalTime() : // For non-nullable DateTime
                         propertyType == typeof(DateTimeOffset?) ? (object)new DateTimeOffset(faker.Date.Past()) : // For nullable DateTimeOffset
                         propertyType == typeof(DateTimeOffset) ? new DateTimeOffset(faker.Date.Past()) : // For non-nullable DateTimeOffset
-                        propertyType == typeof(bool?) ? false : // For nullable bool
-                        propertyType == typeof(bool) ? false :
+                        
                         // For non-nullable bool
                         property.GetValue(obj) // Fallback for any unmatched type
                         );
-
-                    if (propertyType.IsClass && propertyType != typeof(string))
-                    {
-                        try
-                        {
-                            var nestedObject = Activator.CreateInstance(propertyType);
-                            PopulateModelWithFakeData(nestedObject);
-                            property.SetValue(obj, nestedObject);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Exception :" + ex.Message);
-                        }
                     }
-
-                    if (propertyType.IsEnum)
+                    catch(Exception ex)
                     {
-                        object randomValueFromEnumList = null;
-                        var listOfEnumValues = Enum.GetValues(propertyType);
-
-                        if (propertyType.Name == "FundingCategory")
-                            randomValueFromEnumList = listOfEnumValues.GetValue(0);
-                        
-                        else
-                            randomValueFromEnumList = listOfEnumValues.GetValue(new Random().Next(listOfEnumValues.Length));
-                        
-                        property.SetValue(obj, randomValueFromEnumList);
+                        throw new Exception(ex.Message);
                     }
-                    else
-                    {
-                        Console.WriteLine($"No generator for type {propertyName}");
-                    }
+                    
                 }
             }
             return obj;
@@ -367,7 +370,7 @@ namespace RefitSandBox.TestDataGenerator
                 "EmploymentStatus",
                 "RepaymentBankDetail",
                 "LoanSuspension",
-                "ErrorMessages","HoursDetails","PayrollLoans","Contributions","CompensationCategories","Compensations","EmployeePlanLevelCompensationCategories","RehireDetails","EmployeeYOSs",
+                "ErrorMessages","HoursDetails","PayrollLoans","Contributions","CompensationCategories","Compensations","EmployeePlanLevelCompensationCategories","RehireDetails","EmployeeYOSs","LoanDocumentType",
                 "DeletedContributionIds","DeletedLoanIds"
 
             };

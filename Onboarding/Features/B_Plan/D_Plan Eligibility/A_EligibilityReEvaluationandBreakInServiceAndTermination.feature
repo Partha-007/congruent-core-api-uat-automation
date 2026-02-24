@@ -1,6 +1,7 @@
 ﻿Feature: A_EligibilityReEvaluationandBreakInServiceAndTermination
 [BeforeTestRun]
 
+@CompanyAndPlanBasicDetails
 Scenario: eligibilityReEvaluationandBreakInServiceAndTermination field validate(error message)
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -9,6 +10,7 @@ Scenario: eligibilityReEvaluationandBreakInServiceAndTermination field validate(
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then API should give response as "PL503 : Required"
 
+ @CompanyAndPlanBasicDetails
 Scenario: EligibilityReEvaluationAndTermination field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured as "<Name>"
@@ -21,7 +23,7 @@ Examples:
 | random 10 alphabets | isRevaluationRequired | true   |
 | random 10 alphabets | isRevaluationRequired | false  |
 
-
+@CompanyAndPlanBasicDetails
 Scenario: EligibilityBreakInServiceAndTermination field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured as "<Name>"

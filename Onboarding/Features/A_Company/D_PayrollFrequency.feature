@@ -445,19 +445,14 @@ Then the API response should contain the 15 following errors
 
  Scenario: Validating Payroll frequency name with existing frequency name
 	Given Model is selected for the endpoint "/api/v1/Company"
-	  When Collection in a model is configured with 1 blocks for the property "PayrollFrequencies" with values to save model portfolio as given below
+	  When Collection in a model is configured with 2 blocks for the property "PayrollFrequencies" with values to save model portfolio as given below
 | BlockNumber | Key           | Value   |
 |           1 | FrequencyName | abcdefg |
 |           1 | FrequencyType |       1 |
-When the property "companyName" is configured as "addfg"
+|           2 | FrequencyName | abcdefg |
+|           2 | FrequencyType |       1 |
 	When API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
-	  When Collection in a model is configured with 1 blocks for the property "PayrollFrequencies" with values to save model portfolio as given below
-| BlockNumber | Key           | Value   |
-|           1 | FrequencyName | abcdefg |
-|           1 | FrequencyType |       1 |
-When the property "companyName" is configured as "cdeefg"
-	When API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
-	Then API should give response as "CM067:Frequency Name already exists"
+	Then API should give response as "CM067 : Frequency Name already exists"
 
 
 
