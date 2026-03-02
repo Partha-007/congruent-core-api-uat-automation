@@ -80,7 +80,7 @@ namespace RefitSandBox
         public static string companyPlanCompensationId;
         public static string companyGrossCompensationId;
         public static string companyName;
-        public static string companyClassificationId;
+        public static string companyClassificationId, employeeClassificationId, payrollFrequencyId, ActiveStatusId;
         public static string planId;
         public static string planName;
         public static string rkPlanNumber;
@@ -391,6 +391,13 @@ namespace RefitSandBox
                     .Where(entry => entry.Key == ControlName)
                     .Select(entry => entry.Value)
                     .ToList();
+            }
+            if (Value.Contains("random"))
+            {
+                var splitted = Value.Split(" ");
+
+                Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
+                Value = Regex.Replace(Regex.Replace(GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue), @"[^\w\s]", " "), @"\s+", " ").Trim();
             }
             if (Value.Contains(","))
             {
@@ -1364,7 +1371,7 @@ namespace RefitSandBox
                         {
                             var requestBody = JsonConvert.SerializeObject(model);
                             var requestPayload = JObject.Parse(requestBody);
-                            string Action = "/api/v1/Payroll/SaveEmployee";
+                            string Action = "api/v1/Payroll/SaveEmployee";
                             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
                             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
                             var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
@@ -2544,6 +2551,11 @@ namespace RefitSandBox
             else if (value == "<RecordKeeperId>") return recordKeeperId.ToString();
             else if (value == "<MatchSourceName>") return matchSourceName;
             else if (value == "<LoanId>") return loanId;
+            else if (value == "<CompEmpClassTypeId>") return companyClassificationId;
+            else if (value == "<CompEmpClassId>") return employeeClassificationId;
+            else if (value == "<DailyFreqId>") return payrollFrequencyId;
+            else if (value == "<ActiveStatusId>") return ActiveStatusId;
+
             else return null;
         }
 
@@ -3174,6 +3186,9 @@ namespace RefitSandBox
             companyPlanCompensationId = companyresponse["company"]["compensationCategories"][1]["id"].ToString();
             companyName = companyresponse["company"]["name"].ToString();
             companyClassificationId = companyresponse["company"]["classifications"][0]["employeeClassificationCodes"][0]["id"].ToString();
+            employeeClassificationId = companyresponse["company"]["classifications"][0]["id"].ToString();
+            payrollFrequencyId = companyresponse["company"]["payrollFrequencies"][0]["id"].ToString();
+            ActiveStatusId = companyresponse["company"]["employmentStatus"][0]["id"].ToString();
             return companyId;
         }
 
@@ -3278,7 +3293,7 @@ namespace RefitSandBox
             await program.Configuration("sourceSubCategory", "4");
             await program.Configuration("sourceSubSubCategory", "1");
             await program.Configuration("effectiveStartDate", "2020-01-01");
-            await program.Configuration("sourceName", "EEPretax");
+            await program.Configuration("sourceName", "EEPreTax");
             await program.Configuration("contributionType", "1");
             await program.Configuration("limitMinimumDollar", "10");
             await program.Configuration("limitMinimumPercentage", "10");
@@ -3365,7 +3380,7 @@ namespace RefitSandBox
             await program.Configuration("sourceSubCategory", "5");
             await program.Configuration("sourceSubSubCategory", "1");
             await program.Configuration("effectiveStartDate", "2020-01-01");
-            await program.Configuration("sourceName", "Roth");
+            await program.Configuration("sourceName", "EERoth");
             await program.Configuration("contributionType", "1");
             await program.Configuration("limitMinimumDollar", "10");
             await program.Configuration("limitMinimumPercentage", "10");
@@ -3712,18 +3727,19 @@ namespace RefitSandBox
             var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
         }
 
-        public async Task EnrollmentSetup()
+        public static async Task EnrollmentSetup()
         {
             try
             {
-                await EnrollmentConfiguration(planId, sourceId, rothSourceId, "<SEAS001>", "<SEAS002>");
+                var program = new Program();
+                await program.EnrollmentConfiguration(planId, sourceId, rothSourceId, "<SEAS001>", "<SEAS002>");
             }
             catch(Exception ex)
             {
                 throw ex;
             }
         }
-        public static async Task EnrollmentConfiguration(string planId, string pretaxSourceId, string rothSourceId, string investment1Name, string investment2Name)
+        public async Task EnrollmentConfiguration(string planId, string pretaxSourceId, string rothSourceId, string investment1Name, string investment2Name)
         {
             var program = new Program();
             var investment1PlanMappingId = await program.IdentifyValue(investment1Name);
@@ -3957,13 +3973,13 @@ namespace RefitSandBox
             Console.WriteLine("Enrollment request :" + requestPayload.ToString());
             string Action = "api/Enrollment/SaveEnrollmentSetting";
             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-            string token = _hooks != null && !string.IsNullOrEmpty(Hooks.Hooks.bearer!) ? Hooks.Hooks.bearer! : bearer;
+            string token = _hooks != null || !string.IsNullOrEmpty(Hooks.Hooks.bearer!) ? Hooks.Hooks.bearer! : bearer;
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(_url)
+                BaseAddress = new Uri(Settings.ApplicationURL)
             };
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            var task = await httpClient.PostAsync($"{_url}/{Action}/", data);
+            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
             var contentTask = await task.Content.ReadAsStringAsync();
             response = JObject.Parse(contentTask);
             Console.Write(response.ToString());

@@ -27,7 +27,7 @@ namespace RefitSandBox.TestDataGenerator
                 var propertyType = property.PropertyType;
                 var propertyName = property.Name;
 
-                if (propertyName.Equals("SourceCompensations", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("PostSeveranceCompensationCategories", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("Additional", StringComparison.OrdinalIgnoreCase) ||  propertyName.Equals("PlanGroupMappings", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("EmploymentStatus", StringComparison.OrdinalIgnoreCase) || propertyName.Equals("RepaymentBankDetail") || propertyName.Equals("LoanSuspension"))
+                if (IsPropertyNeedsToBeEmpty(propertyName))
                 {
                     if (propertyType.IsArray)
                     {
@@ -92,7 +92,7 @@ namespace RefitSandBox.TestDataGenerator
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "LoanDescription") ? "General Purpose" :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate") ? "2025-03-02T00:00:00Z" :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? "2026-03-02T00:00:00Z" :
-                        propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
+                        propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("UniquePersonalIdentification", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
                         propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? faker.Name.FirstName() :
                         propertyType == typeof(string) && propertyName.Contains("Name", StringComparison.OrdinalIgnoreCase) ? faker.Company.CompanyName() :
                         propertyType == typeof(string) && propertyName.Contains("Email", StringComparison.OrdinalIgnoreCase) ? faker.Person.Email :
@@ -356,7 +356,33 @@ namespace RefitSandBox.TestDataGenerator
             }
         }
 
-        
+        public static bool IsPropertyNeedsToBeEmpty(string propertyName)
+        {
+            var propertiesToBeEmpty = new List<string>
+            {
+                "SourceCompensations",
+                "PostSeveranceCompensationCategories",
+                "AdditionalData",
+                "PlanGroupMappings",
+                "EmploymentStatus",
+                "RepaymentBankDetail",
+                "LoanSuspension",
+                "ErrorMessages","HoursDetails","PayrollLoans","Contributions","CompensationCategories","Compensations","EmployeePlanLevelCompensationCategories","RehireDetails","EmployeeYOSs",
+                "DeletedContributionIds","DeletedLoanIds"
+
+            };
+
+            bool flag = false;
+            foreach (var property in propertiesToBeEmpty)
+            {
+                if (property.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
+                {
+                    flag = true;
+                    break;
+                }
+            }
+            return flag;
+        }
     }
     
     public class CombinedTemplateModel

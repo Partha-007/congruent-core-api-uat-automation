@@ -7,9 +7,17 @@
 #Scenario: 20267 Employee last Name field space validation 
 Scenario: 20392 To verify the Address 1 field  value name with Null  in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
-  When Configuration has been made as per following
-| key       | value       |
-| companyId | <CompanyId> |
+ When Configuration has been made as per following
+| key                  | value                |
+| companyId            | <CompanyId>          |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                      |
 | address1                     |                            |
@@ -92,6 +100,14 @@ Scenario: To verify the Additional ZipCode field  value length validation in Cre
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                                      |
 | additionalZipcode            | random 37 numerics                         |
@@ -150,6 +166,14 @@ Scenario: To verify the Additional ZipCode field  value format validation in Cre
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                       |
 | additionalZipcode            |                         123 |
@@ -206,8 +230,16 @@ Then the API response should contain the 20 following errors
 Scenario: 110174 To verify the bankAccountHolderName field with alphaNumerics of below 10  in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
-| key       | value       |
-| companyId | <CompanyId> |
+| key                  | value                |
+| companyId            | <CompanyId>          |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                       |
 | accountHolderName            | random 10 alphanumerics     |
@@ -250,6 +282,14 @@ Scenario:To verify the bankAccountHolderName field with alphaNumericWithSpecialC
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                                       |
 | accountHolderName            | random 10 alphaNumericWithSpecialCharacters |
@@ -289,6 +329,14 @@ Scenario:To verify the bankAccountHolderName field with alphabets of above 150 c
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                       |
 | accountHolderName            | random 151 alphabets        |
@@ -328,6 +376,14 @@ Scenario: 20393 To verify the Address 1 field  value with lower case in Create M
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                 |
 | address1                     | <Address1>            |
@@ -353,7 +409,6 @@ When Configuration has been made as per following
 | zipCode                      | <ZipCode>             |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
-
 Examples: 
 | Address1                                    | Address2                                    | Address3                                    | AccountHolderName    | bankAccountName     | BankAccountNumber  | BankAccountType | City                | ForeignCountry                              | ForeignState                                | PrimaryEmailAddress                                                              | EmployeeNumber         | SSN         | FirstName            | Gender | LastName             | MaritalStatus | MiddleName | RoutingNumber     | ZipCode                                     |
 | abc                                         |                                             |                                             | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abc                 | abc                                         | abc                                         |                                                                                  | aca                    | 123-12-3452 | random 10 alphabets  | m      | random 10 alphabets  | m             |            | random 9 numerics | abc                                         |
@@ -536,6 +591,14 @@ Scenario: 20621 To verify the Birth Date  value with valid date format of  MM/DD
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value       |
 | birthDate                    | 01-04-1988  |
@@ -550,6 +613,14 @@ Scenario: 20629 To verify the Hire Date  value with valid date format of Current
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When The date property "hireDate" is configured as "<type>" and should add "<hi>" days to the current date
 When The date property "terminationDate" is configured as "days" and should add "<te>" days to the current date
 When The date property "reHireDate" is configured as "days" and should add "<re>" days to the current date
@@ -582,6 +653,14 @@ Scenario: 20636 To verify the Hire Date value before of Birth date format MM/DD/
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                                                                                                                                |
 | employmentStatus             | Active                                                                                                                               |
@@ -613,6 +692,14 @@ Scenario: 20646 To verify the Leave start Date  value as Null Create Mode of Emp
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | employmentStatus             | Military Leave      |
@@ -643,6 +730,14 @@ Scenario: 20650 To verify the Leave Start Date  value with valid date format of 
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | employmentStatus             | Military Leave      |
@@ -669,6 +764,14 @@ Scenario:(Tc419)To verify the validation message forLeave End Date  value as Nul
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key               | value          |
 | employmentStatus  | Military Leave |
@@ -697,6 +800,14 @@ Scenario: 20482 To verify the ZipCode field  value with below 5 characters in Cr
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key               | value          |
 | zipCode           | random 3 numerics |
@@ -710,6 +821,14 @@ Scenario: 20657 To verify the validation message for Leave End Date  value as be
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | employmentStatus             | Military Leave      |
@@ -733,12 +852,32 @@ Scenario: 150479 Verify whether validation is triggered if "Secondary Phone Numb
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | workPhoneNumber              | 978-456-735         |
 | firstName                    | random 10 alphabets |
 | uniquePersonalIdentification | 123-45-6789         |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
+Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
+When Configuration has been made as per following
+| key       | value       |
+| companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | workPhoneNumber              |          0678437328 |
@@ -758,6 +897,14 @@ Scenario: 20302 Employee SSN field with  Combination of first three digits are 9
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | firstName                    | random 10 alphabets |
@@ -778,6 +925,14 @@ Scenario: To verify the SSN  value with above 9 characters in Create Mode of Emp
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | firstName                    | random 10 alphabets |
@@ -802,6 +957,14 @@ Scenario: 20627 To verify the Same Fistname, Lastname, Birth date of another emp
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value       |
 | firstName                    | John        |
@@ -824,6 +987,14 @@ Scenario:(Tc396)To verify the Hire Date  value with valid date format of Current
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value |
 | employmentStatus | Leave |
@@ -852,6 +1023,14 @@ Scenario: To verify the Most recent Term date value with valid date format of Cu
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value      |
 | employmentStatus | Terminated |
@@ -868,6 +1047,14 @@ Scenario: To verify the Most recent Term date value with valid date format of Pa
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
@@ -884,6 +1071,14 @@ Scenario: To verify the Most recent Term date value with valid date format of Pa
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
@@ -900,6 +1095,14 @@ Scenario: To verify the Most recent Term Date  value with valid date format of F
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value      |
 | employmentStatus | Terminated |
@@ -915,6 +1118,14 @@ Scenario: To verify the Most recent Term Date  value with valid date format of C
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value      |
 | employmentStatus | Terminated |
@@ -930,6 +1141,14 @@ Scenario: To verify the validation message for Most Recent term Date  value as b
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
@@ -952,6 +1171,14 @@ Scenario: To verify the validation message for Most Recent term Date is admitted
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
@@ -971,15 +1198,23 @@ Then the API response should contain the 2 following errors
 
 
 #**********************
-@PlanActivation
-Scenario: positive case
-  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
-  When Configuration has been made as per following
-| key       | value       |
-| companyId | <CompanyId> |
-When Configuration has been made as per following
-| key       | value |
-| firstName | Rock  |
-When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then API should respond with successful message
+#@PlanActivation
+#Scenario: positive case
+#  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
+#  When Configuration has been made as per following
+#| key       | value       |
+#| companyId | <CompanyId> |
+#| classificationId     | <CompEmpClassId>     |
+#| classificationTypeId | <CompEmpClassTypeId> |
+#| payrollFrequencyId   | <DailyFreqId>        |
+#| employmentStatusId   | <ActiveStatusId>     |
+#When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+#| BlockNumber | Key                  | Value                |
+#|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+#|           1 | ClassificationId     | <CompEmpClassId>     |
+#When Configuration has been made as per following
+#| key       | value |
+#| firstName | Rock  |
+#When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
+#Then API should respond with successful message
 
