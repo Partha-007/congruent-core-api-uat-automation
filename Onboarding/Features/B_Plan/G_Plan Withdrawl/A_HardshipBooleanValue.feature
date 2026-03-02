@@ -29,12 +29,11 @@ Scenario: Hardship restrictNumberOfHardshipsInDefinedPeriod field accepts true
            | minimumWithDrawalLimitAmount                      |              550.00 | Scenario: Hardship minimum limit configured with value as decimal
            | maximumWithDrawalLimitAmount                      |              560.00 | Scenario: Hardship maximum limit configured with value as decimal
            | hardshipReason                                    |                   1 | Scenario: Hardship Reason Certain Medical Expenses
-           | withdrawalDescription                             | random 10 alphabets |
            | hardshipWithdrawalFee                             |           999999999 | Scenario: Hardship hardshipWithdrawalFee field accepts 9 digits
            | overnightExpressDeliveryFee                       |          9999999999 | Scenario: Hardship overnightExpressDeliveryFee field accepts 10 digits
            | earlyWithdrawalPenalty                            |                 100 | Scenario: Hardship Early Penalty configured with 100
 
-           
+   And the property "withdrawalDescription" is configured with "alphabets" with 10 characters          
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
   Then API should respond with successful message
 
@@ -276,8 +275,8 @@ Scenario: Inservice ageLimitApplicable configured with years as Null
            | withDrawalType                |                                            1 |
            | withdrawalLimitPerPeriod      |                                              |
            | numberOfWithdrawalAllowed     |                                           13 |
-           | minimumWithDrawalLimitAmount     |                                           |
-           | maximumWithDrawalLimitAmount     |                                           |
+           | minimumWithDrawalLimitAmount  |                                              |
+           | maximumWithDrawalLimitAmount  |                                              |
            | overnightExpressDeliveryFee   |                                              |
            | withdrawalOneTimeOriginateFee |                                              |
            | withdrawalDescription         | random 151 AlphaNumericWithSpecialCharacters |
@@ -309,8 +308,8 @@ Scenario: Inservice ageLimitApplicable configured with below 18 years
    When Configuration has been made as per following
            | key                           | value |
            | withDrawalType                |     1 |
-           | withdrawalLimitPerPeriod                |     3 |
-           | numberOfWithdrawalAllowed                |     0 |
+           | withdrawalLimitPerPeriod      |     3 |
+           | numberOfWithdrawalAllowed     |     0 |
            | withdrawalOneTimeOriginateFee |     0 |
            | ageLimitApplicable            | true  |
            | years                         |    17 |
@@ -453,12 +452,12 @@ Scenario: Permissible description field accepts alphanumerics
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
 Then API should respond with successful message
 Examples: 
-| description             |
-| random 10 alphaNumerics |
-| random 10 specialCharacters |Scenario: Permissible description field accepts specialCharacters
-| random 10 AlphaNumericWithSpecialCharacters |Scenario: Permissible description field accepts alphanumericsspecialcharacters
-| random 149 AlphaNumericWithSpecialCharacters |Scenario: Permissible description field accepts below 150
-| random 150 AlphaNumericWithSpecialCharacters |Scenario: Permissible description field accepts equal 150
+| description                                  |
+| random 10 alphaNumerics                      |
+| random 10 specialCharacters                  | Scenario: Permissible description field accepts specialCharacters
+| random 10 AlphaNumericWithSpecialCharacters  | Scenario: Permissible description field accepts alphanumericsspecialcharacters
+| random 149 AlphaNumericWithSpecialCharacters | Scenario: Permissible description field accepts below 150
+| random 150 AlphaNumericWithSpecialCharacters | Scenario: Permissible description field accepts equal 150
 
 
 
@@ -762,7 +761,7 @@ Scenario: SFS Payment Frequency Applicable is configured with Weekly
          | paymentFrequencyApplicable   |        2 |
          | periodicPaymentApplicable    | true     |
          | paymentMethod                | 1,       |
-         | startDay                     | startday |
+         | startDay                     | <startday> |
          | calculationMethods           | 1,       |
          | distributionAllocationMethod | 1,       |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"

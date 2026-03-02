@@ -38,11 +38,14 @@ Scenario: Sponsor Email field validate with null value(error message)
   Scenario: Sponsor Email field validate more than 80 characters(error message)
   Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
   When the property "firstName" is configured with "specialCharacters" with 5 characters
-  And the property "lastName" is configured as "<lastName>"
-  And the property "ssn" is configured as "<SSN>"
+  When Configuration has been made as per following
+           | key               | value      |
+           | lastName          | <lastName> |
+           | ssn               | <SSN>      |
+           | mobilePhoneNumber | <Phone>    |
+
   And the property "isSponsor" is configured as "false"
   And the property "email" is configured as "aabcderbcderbcderbcderbcderbcderbcderbcderbcderbcderbcderbcderbcderbcder@test.com"
-  And the property "mobilePhoneNumber" is configured as "<Phone>"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
      Then the API response should contain the 5 following errors 
      | error_code | error_message                                                |
@@ -109,13 +112,13 @@ Examples:
 Scenario: Sponsor Email field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
   When Configuration has been made as per following
-           | key       | value       |
-           | firstName | <firstName> |
-           | lastName  | <lastName>  |
+           | key               | value               |
+           | firstName         | <firstName>         |
+           | lastName          | <lastName>          |
+           | email             | <Email>             |
+           | mobilePhoneNumber | <mobilePhoneNumber> |
   And the property "ssn" is configured as "123-45-7891"
   And the property "isSponsor" is configured as "false"
-  And the property "email" is configured as "<Email>"
-  And the property "mobilePhoneNumber" is configured as "<mobilePhoneNumber>"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
  Then API should respond with successful message
 Examples: 
@@ -144,10 +147,12 @@ Scenario: Sponsor Email field validat( succcessfull response)(last name 10 chara
 Scenario: SponsorSSN field validate of assigning same values(error message)
   Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
   When the property "firstName" is configured with "alphabets" with 5 characters
+     When Configuration has been made as per following
+           | key   | value |
+           | ssn   | <SSN>   |
+           | email | <email> |
   And the property "lastName" is configured with "alphabets" with 5 characters
-  And the property "ssn" is configured as "<SSN>"
   And the property "isSponsor" is configured as "false"
-  And the property "email" is configured as "<email>"
   And the property "mobilePhoneNumber" is configured as "123-456-7899"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
   Then API should give response as "PL059 : Social Security Number digits should not be all the same."
@@ -180,10 +185,12 @@ Scenario: SponsorSSN field validate of assigning same values(error message)
 Scenario: SponsorSSN field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/Sponsor/SaveSponsor"
   When the property "firstName" is configured with "alphabets" with 5 characters
+     When Configuration has been made as per following
+           | key   | value   |
+           | ssn   | <SSN>   |
+           | email | <email> |
   And the property "lastName" is configured with "alphabets" with 5 characters
-  And the property "ssn" is configured as "<SSN>"
   And the property "isSponsor" is configured as "false"
-  And the property "email" is configured as "<email>"
   And the property "mobilePhoneNumber" is configured as "123-456-7899"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
  Then API should respond with successful message

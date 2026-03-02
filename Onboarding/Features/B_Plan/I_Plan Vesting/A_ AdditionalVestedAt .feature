@@ -415,7 +415,7 @@ When Configuration has been made as per following
            | vestedAt                   |                 1,2 |
            | vestingMethod              |                   1 |
            | hoursOfService             |                 200 | Scenario: Vesting method field configure with hours of service
-           | breakInServiceApplicable   | false                |
+           | breakInServiceApplicable   | false               |
            | vestingComputationalPeriod |                   2 |
            | hours                      |                 500 |
            | disregardPrior             |                   6 |
