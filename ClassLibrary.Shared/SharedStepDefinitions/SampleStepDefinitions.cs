@@ -249,6 +249,12 @@ namespace SharedStepDefinitions
             await _program.SendAPIRequestForFileUploadTest(filename);
         }
 
+        [When("Adjustment is created for the employee with Adjustment type as {string} and Incident code as {string}")]
+        public async Task WhenAdjustmentIsCreatedForTheEmployeeWithAdjustmentTypeAsAndIncidentCodeAs(string AdjustmentType, string IncidentCode)
+        {
+            await _program.AdjustmentConfigurations(AdjustmentType, IncidentCode);
+        }
+
 
         [Then("API should respond Match Calculated values as")]
         public void ThenAPIShouldRespondWithMatchValue(Table table)

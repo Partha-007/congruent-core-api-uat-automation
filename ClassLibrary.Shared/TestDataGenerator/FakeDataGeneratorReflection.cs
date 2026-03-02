@@ -118,8 +118,8 @@ namespace RefitSandBox.TestDataGenerator
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Tenantid") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CountryId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "StateId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "masterLoanTypeId") ? 1 :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "IsMaster") ? true : StringComparer.OrdinalIgnoreCase.Equals(propertyName, "AllowOptingOutOfStateWithholdingTax") ? false :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "LoanDescription") ? "General Purpose" :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate")? DateTimeOffset.Parse("2025-03-02T00:00:00Z") :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? DateTimeOffset.Parse( "2026-03-02T00:00:00Z") :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate") ? DateTimeOffset.Parse("2025-03-02T00:00:00Z") :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? DateTimeOffset.Parse("2026-03-02T00:00:00Z") :
                         propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("UniquePersonalIdentification", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
                         propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? faker.Name.FirstName() :
                         propertyType == typeof(string) && propertyName.Contains("Name", StringComparison.OrdinalIgnoreCase) ? faker.Company.CompanyName() :
@@ -165,16 +165,16 @@ namespace RefitSandBox.TestDataGenerator
                         propertyType == typeof(DateTime) && propertyName.Contains("Date") ? faker.Date.Past().ToUniversalTime() : // For non-nullable DateTime
                         propertyType == typeof(DateTimeOffset?) ? (object)new DateTimeOffset(faker.Date.Past()) : // For nullable DateTimeOffset
                         propertyType == typeof(DateTimeOffset) ? new DateTimeOffset(faker.Date.Past()) : // For non-nullable DateTimeOffset
-                        
+
                         // For non-nullable bool
                         property.GetValue(obj) // Fallback for any unmatched type
                         );
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         throw new Exception(ex.Message);
                     }
-                    
+
                 }
             }
             return obj;
@@ -212,7 +212,7 @@ namespace RefitSandBox.TestDataGenerator
                         var convertedValue = Convert.ChangeType(id, underlyingType);
                         property.SetValue(obj, convertedValue);
                     }
-                    else if(property.PropertyType == typeof(ICollection<int>))
+                    else if (property.PropertyType == typeof(ICollection<int>))
                     {
                         var convertedValue = new List<int> { Convert.ToInt32(id) };
                         property.SetValue(obj, convertedValue);
@@ -301,23 +301,23 @@ namespace RefitSandBox.TestDataGenerator
         {
             //var sourceNames = await Program.GetSourceNameHeader("1723");
             DisplayNameAttribute value;
-            
-            if(values.Count == 0)
+
+            if (values.Count == 0)
             {
                 values = RuleSetForCombinedTemplate();
             }
-            
-            
+
+
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
-            string directoryPath = Path.Combine(projectDirectory, "Templates",filename);
-            
+            string directoryPath = Path.Combine(projectDirectory, "Templates", filename);
+
             using (var writer = new StreamWriter(directoryPath, false))
             {
                 using (CsvWriter csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
                     var Test = typeof(CombinedTemplateModel);
                     var propertyInfo = Test.GetProperties();
-                    foreach(var property in propertyInfo)
+                    foreach (var property in propertyInfo)
                     {
                         value = property.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault();
                         csv.WriteField(value.DisplayName);
@@ -327,25 +327,25 @@ namespace RefitSandBox.TestDataGenerator
                     {
                         csv.WriteField($"{Program.rkPlanNumber}_{source.ToUpper()}");
                     }
-                    if(filename == "LoanRepayment.csv")
+                    if (filename == "LoanRepayment.csv")
                     {
                         csv.WriteField($"{Program.rkPlanNumber}_FIRST LOAN ID");
                         csv.WriteField($"{Program.rkPlanNumber}_FIRST LOAN REPAYMENT");
                     }
                     csv.NextRecord();
-                    foreach(var item in values)
+                    foreach (var item in values)
                     {
                         var itemProperty = item.GetType().GetProperties();
                         foreach (var property in itemProperty)
                         {
                             var valueToWrite = property.GetValue(item);
-                            csv.WriteField(valueToWrite?.ToString()); 
+                            csv.WriteField(valueToWrite?.ToString());
                         }
                         for (int i = 0; i < sourceNames.Count; i++)
                         {
                             csv.WriteField("");
                         }
-                        if(filename == "LoanRepayment.csv")
+                        if (filename == "LoanRepayment.csv")
                         {
                             csv.WriteField($"{Program.businessKey}");
                             csv.WriteField("");
@@ -354,8 +354,8 @@ namespace RefitSandBox.TestDataGenerator
                     }
 
                 }
-                
-                
+
+
             }
         }
 
@@ -387,7 +387,7 @@ namespace RefitSandBox.TestDataGenerator
             return flag;
         }
     }
-    
+
     public class CombinedTemplateModel
     {
         [DisplayName("EMPLOYEE ID")]
@@ -496,13 +496,13 @@ namespace RefitSandBox.TestDataGenerator
         public string PlanCompensation { get; set; }
     }
 
-    
+
     public class Contributions
     {
         public string Name { get; set; }
     }
-    
 
-    
+
+
 
 }
