@@ -230,7 +230,7 @@ namespace RefitSandBox
         Task<object> SaveEmployeeAsync([Body] PayrollEmployeeViewModel employee);
 
         [Post("/api/v1/Payroll/AddBeneficary")]
-        Task<object> AddBeneficaryAsync([Body] PayrollEmployeeViewModel employee);
+        Task<object> AddBeneficaryAsync([Body] BeneficiaryInformation beneficiary);
 
     }
 public interface ILoan

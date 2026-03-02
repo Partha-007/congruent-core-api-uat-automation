@@ -10,6 +10,16 @@ A short summary of the feature
 
 Scenario: Validating the Compensation field
 Given Model is selected for the endpoint "/api/v1/Company"
+ When Configuration has been done as mentioned below
+| key                        | value    |
+| frequencyName              | Daily    |
+| frequencyType              | 1        |
+| modeOfHours                | 1        |
+| modeOfCompensation         | 1        |
+| modeOfContribution         | 1        |
+| employeeClassificationType | 1        |
+| code                       | L1       |
+| classificationName         | Location |
 When Configuration has been done as mentioned below
 | Object Name | Object Name1           | Key        | Value   |
 | company     | compensationCategories | name       | testing |

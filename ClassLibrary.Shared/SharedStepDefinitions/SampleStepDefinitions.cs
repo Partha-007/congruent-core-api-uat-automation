@@ -75,7 +75,7 @@ namespace SharedStepDefinitions
         [When("the property {string} is configured as {string}")]
         public async Task WhenThePropertyIsConfiguredAs(string controlName, string Value)
         {
-            await _program.Configuration(controlName, Value);
+            _program.Configuration(controlName, Value);
         }
 
         [Then("API should give response as {string}")]
@@ -172,7 +172,7 @@ namespace SharedStepDefinitions
                 //        property.SetValue(targetObject, convertedValue);
                 //    }
                 //}
-                await _program.Configuration(ObjectName, Value);
+                _program.Configuration(ObjectName, Value);
             }
         }
 
