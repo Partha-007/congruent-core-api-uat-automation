@@ -1041,6 +1041,13 @@ namespace RefitSandBox
                             ResponseFromTestEndpoint = responseAfterFileUpload;
                         else
                             throw new Exception("Error in uploading file to test endpoint");
+
+                        Console.WriteLine("Full Response from Test Endpoint (JSON):");
+                        Console.WriteLine(JsonConvert.SerializeObject(ResponseFromTestEndpoint, Formatting.Indented));
+
+                        var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages).ToList();
+                        Console.WriteLine("Error messages (JSON):");
+                        Console.WriteLine(JsonConvert.SerializeObject(errorMessages, Formatting.Indented));
                     }
                 }
             }
@@ -1058,6 +1065,7 @@ namespace RefitSandBox
                 ReferenceNumber = null,
                 IsReInitiate = false,
 
+            
             };
             var ProcessLoanDisbursementViewModel2 = new ProcessLoanDisbursementViewModel()
             {
