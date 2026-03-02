@@ -266,7 +266,7 @@ Scenario: Validating the incorporation details page with exact length
   And the property "fisicalYearMonth" is configured as "2"
   And the property "fisicalYearDay" is configured as "2"
   And the property "companyStartDate" is configured as "2006-07-08T00:00:00Z"
-  And the property "taxEIN" is configured as "12-1231234"
+	And the property "taxEIN" is configured with "TaxEIN" with 9 characters
   And the property "sicCode" is configured with "Numerics" with 4 characters
   And the property "businessCode" is configured with "Numerics" with 6 characters
   And Configuration has been done as mentioned below

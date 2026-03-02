@@ -14,6 +14,7 @@ namespace ClassLibrary.Shared.TestDataGenerator
         AlphaNumerics,
         AlphaNumericWithSpecialCharacters,
         Phone,
-        Email
+        Email,
+        TaxEIN
     }
 }

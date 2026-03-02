@@ -2,49 +2,66 @@
 [BeforeTestRun]
 
 Scenario: Additional VestedAt field configure with Death
-  Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
-  When Configuration has been made as per following
-           | key                          | value               |
-           | vestingName                  | random 10 alphabets | Scenario: Vesting Name field configure
-           | immediateVestingIndicator    | false               |
-           | vestedAt                     | 1,                  | #VestedAt Scenario: VestedAt field configure with Death
-           | vestingMethod                |                   2 |
-           | elapsedTime                  |                  11 |
-           | firstYear                    |                   0 |
-           | secondYear                   |                 100 |
-           | thirdYear                    |                 100 |
-           | fourthYear                   |                 100 |
-           | fifthYear                    |                 100 |
-           | sixthYear                    |                 100 |
- And Collection in a model is configured with 5 blocks for the property "AdditionalVestings" with values to save model portfolio as given below
- | BlockNumber | Key                       | Value                       |
- |           1 | VestedAt                  | 1,                          | 
- |           1 | VestingDescription        | random 10 alphabets         | Scenario: Additional Vesting description field configure with alphabets
- |           1 | ImmediateVestingIndicator | false                       |
- |           1 | VestingMethod             |                           2 |
- |           1 | ElapsedTime               |                          11 |
- |           2 | VestedAt                  | 2,                          | Scenario: Additional VestedAt field configure with Disability
- |           2 | VestingDescription        | random 10 numerics          | Scenario: Additional Vesting description field configure with numerics
- |           2 | ImmediateVestingIndicator | false                       |
- |           2 | VestingMethod             |                           2 |
- |           2 | ElapsedTime               |                          11 |
- |           3 | VestedAt                  | 4,                          | Scenario: Additional VestedAt field configure with NRA
- |           3 | VestingDescription        | random 10 specialCharacters | Scenario: Additional Vesting description field configure with specialCharacters
- |           3 | ImmediateVestingIndicator | false                       |
- |           3 | VestingMethod             |                           2 |
- |           3 | ElapsedTime               |                          11 |
- |           4 | VestedAt                  | 8,                          | Scenario: Additional VestedAt field configure with ERA
- |           4 | VestingDescription        | random 10 alphaNumerics     | Scenario: Additional Vesting description field configure with alphaNumerics
- |           4 | ImmediateVestingIndicator | false                       |
- |           4 | VestingMethod             |                           2 |
- |           4 | ElapsedTime               |                          11 |
- |           5 | VestedAt                  |                     1,2,4,8 | Scenario: Additional VestedAt field configure with all options
- |           5 | VestingDescription        | random 150 alphaNumerics    | Scenario: Additional Vesting description field configure with 150 characters
- |           5 | ImmediateVestingIndicator | false                       |
- |           5 | VestingMethod             |                           2 |
- |           5 | ElapsedTime               |                          11 |
- And API request has been sent to the "IPlanDetailsSave" with the method name "SaveVesting"
- Then API should respond with successful message
+
+Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
+
+When Configuration has been made as per following
+| key                          | value               |
+| vestingName                  | random 10 alphabets | Scenario: Vesting Name field configure
+| immediateVestingIndicator    | false               |
+| vestedAt                     | 1,                  | #VestedAt Scenario: VestedAt field configure with Death
+| vestingMethod                |                   2 |
+| forfeitureTimings            |                   1 |Scenario: Vesting forfeiture timings field configure with after 5 Consecutive breaks in service
+| vestingPastPeriodComputation |                   1 | Scenario: VestingPastComputationPeriod is configured with full year
+| elapsedTime                  |                  11 |
+| firstYear                    |                   0 |
+| secondYear                   |                 100 |
+| thirdYear                    |                 100 |
+| fourthYear                   |                 100 |
+| fifthYear                    |                 100 |
+| sixthYear                    |                 100 |
+
+And Collection in a model is configured with 5 blocks for the property "AdditionalVestings" with values to save model portfolio as given below
+| BlockNumber | Key                       | Value                       |
+|           1 | VestedAt                  | 1,                          | 
+|           1 | VestingDescription        | random 10 alphabets         | Scenario: Additional Vesting description field configure with alphabets
+|           1 | VestingName               | abcdef                      |
+|           1 | ImmediateVestingIndicator | false                       |
+|           1 | VestingMethod             |                           2 |
+|           1 | ElapsedTime               |                          11 |
+|           2 | VestedAt                  | 2,                          | Scenario: Additional VestedAt field configure with Disability
+|           2 | VestingDescription        | random 10 numerics          | Scenario: Additional Vesting description field configure with numerics
+|           2 | VestingName               | abcdef                      |
+|           2 | ImmediateVestingIndicator | false                       |
+|           2 | VestingMethod             |                           2 |
+|           2 | ElapsedTime               |                          11 |
+|           3 | VestedAt                  | 4,                          | Scenario: Additional VestedAt field configure with NRA
+|           3 | VestingDescription        | random 10 specialCharacters | Scenario: Additional Vesting description field configure with specialCharacters
+|           3 | VestingName               | abcdef                      |
+|           3 | ImmediateVestingIndicator | false                       |
+|           3 | VestingMethod             |                           2 |
+|           3 | ElapsedTime               |                          11 |
+|           4 | VestedAt                  | 8,                          | Scenario: Additional VestedAt field configure with ERA
+|           4 | VestingDescription        | random 10 alphaNumerics     | Scenario: Additional Vesting description field configure with alphaNumerics
+|           4 | VestingName               | abcdef                      |
+|           4 | ImmediateVestingIndicator | false                       |
+|           4 | VestingMethod             |                           2 |
+|           4 | ElapsedTime               |                          11 |
+|           5 | VestedAt                  |                     1,2,4,8 | Scenario: Additional VestedAt field configure with all options
+|           5 | VestingDescription        | random 150 alphaNumerics    | Scenario: Additional Vesting description field configure with 150 characters
+|           5 | VestingName               | abcdef                      |
+|           5 | ImmediateVestingIndicator | false                       |
+|           5 | VestingMethod             |                           2 |
+|           5 | ElapsedTime               |                          11 |
+
+And API request has been sent to the "IPlanDetailsSave" with the method name "SaveVesting"
+
+Then API should respond with successful message
+
+
+
+
+
 
 Scenario: Additional VestedAt field configure with null
   Given Model is selected for the endpoint "/api/Vesting/SaveVesting"

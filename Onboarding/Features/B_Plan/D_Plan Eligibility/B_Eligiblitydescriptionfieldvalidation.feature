@@ -1,6 +1,7 @@
 ﻿Feature: B_Eligiblitydescriptionfieldvalidation.feature
 [BeforeTestRun]
 
+@CompanyAndPlanBasicDetails
 Scenario: Eligiblitydescription field validate(error message)
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -9,6 +10,7 @@ Scenario: Eligiblitydescription field validate(error message)
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then API should give response as "PL169 : Eligibility Description length should not exceed  50 characters"
 
+ @CompanyAndPlanBasicDetails
 Scenario: Eligiblitydescription field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When Configuration has been made as per following

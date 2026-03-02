@@ -12,6 +12,7 @@ Scenario: allowLoansIfAnotherLoanIsDelinquentDefaultDeemed is true/false
            | maximumLengthMonths          |     0 |
            | minimumLengthYears           |     1 |
            | minimumLengthMonths          |     0 |
+           | loanDocumentType             |       |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then API should respond with successful message
 Examples: 

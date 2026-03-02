@@ -236,7 +236,7 @@ Scenario: 110174 To verify the bankAccountHolderName field with alphaNumerics of
 | classificationTypeId | <CompEmpClassTypeId> |
 | payrollFrequencyId   | <DailyFreqId>        |
 | employmentStatusId   | <ActiveStatusId>     |
-When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
 | BlockNumber | Key                  | Value                |
 |           1 | ClassificationTypeId | <CompEmpClassTypeId> |
 |           1 | ClassificationId     | <CompEmpClassId>     |
@@ -372,7 +372,7 @@ Then the API response should contain the 11 following errors
 
 
 Scenario: 20393 To verify the Address 1 field  value with lower case in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
@@ -587,7 +587,7 @@ Examples:
 #Scenario: Employee Hire Date
 #Scenario: 20369 To verify the  Phone Number  value name with Null  in Create Mode of Employee Information Page
 Scenario: 20621 To verify the Birth Date  value with valid date format of  MM/DD/YYYY in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
@@ -609,7 +609,7 @@ When API request has been sent to the "IEmployee" with the method name "SaveEmpl
 Then API should respond with successful message
 
 Scenario: 20629 To verify the Hire Date  value with valid date format of Current date MM/DD/YYYY in Create Mode of Employee Information Page
-  Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
+  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
@@ -856,7 +856,7 @@ Scenario: 150479 Verify whether validation is triggered if "Secondary Phone Numb
 | classificationTypeId | <CompEmpClassTypeId> |
 | payrollFrequencyId   | <DailyFreqId>        |
 | employmentStatusId   | <ActiveStatusId>     |
-When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
 | BlockNumber | Key                  | Value                |
 |           1 | ClassificationTypeId | <CompEmpClassTypeId> |
 |           1 | ClassificationId     | <CompEmpClassId>     |
@@ -874,7 +874,7 @@ When Configuration has been made as per following
 | classificationTypeId | <CompEmpClassTypeId> |
 | payrollFrequencyId   | <DailyFreqId>        |
 | employmentStatusId   | <ActiveStatusId>     |
-When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationHistory" with values as given below
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
 | BlockNumber | Key                  | Value                |
 |           1 | ClassificationTypeId | <CompEmpClassTypeId> |
 |           1 | ClassificationId     | <CompEmpClassId>     |
@@ -997,10 +997,13 @@ When Collection in a model is configured with 1 blocks for the property "Employe
 |           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value |
-| employmentStatus | Leave |
+| employmentStatus | Active |
 When The date property "hireDate" is configured as "<hi>" and should add "<di>" days to the current date
 When The date property "reHireDate" is configured as "days" and should add "<ri>" days to the current date
 When The date property "terminationDate" is configured as "days" and should add "<ti>" days to the current date
+ When Collection in a model is configured with 1 blocks for the property "RehireDetails" with values to save model portfolio as given below
+| BlockNumber | Key             | Value  |
+|           1 | RehireDate | day_10 |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
 Examples: 
@@ -1034,10 +1037,10 @@ When Collection in a model is configured with 1 blocks for the property "Employe
 When Configuration has been made as per following
 | key              | value      |
 | employmentStatus | Terminated |
-When The date property "terminationDate" is configured as "days" and should add "0" days to the current date
- When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
+When The date property "terminationDate" is configured as "day" and should add "0" days to the current date
+ When Collection in a model is configured with 1 blocks for the property "RehireDetails" with values to save model portfolio as given below
 | BlockNumber | Key             | Value  |
-|           1 | terminationDate | days_0 |
+|           1 | TerminationDate | day_0 |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
 
@@ -1059,9 +1062,9 @@ When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
 | terminationDate  | 2023-12-12T06:56:11.258Z |
- When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
+ When Collection in a model is configured with 1 blocks for the property "RehireDetails" with values to save model portfolio as given below
 | BlockNumber | Key             | Value                    |
-|           1 | terminationDate | 2023-12-12T06:56:11.258Z |
+|           1 | TerminationDate | 2023-12-12T06:56:11.258Z |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
 
@@ -1083,9 +1086,9 @@ When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
 | terminationDate  | 2023-01-12T06:56:11.258Z |
- When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
+ When Collection in a model is configured with 1 blocks for the property "RehireDetails" with values to save model portfolio as given below
 | BlockNumber | Key             | Value                    |
-|           1 | terminationDate | 2023-01-12T06:56:11.258Z |
+|           1 | TerminationDate | 2023-01-12T06:56:11.258Z |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
 
@@ -1106,10 +1109,10 @@ When Collection in a model is configured with 1 blocks for the property "Employe
 When Configuration has been made as per following
 | key              | value      |
 | employmentStatus | Terminated |
-When The date property "terminationDate" is configured as "days" and should add "1" days to the current date
- When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
+When The date property "terminationDate" is configured as "day" and should add "1" days to the current date
+ When Collection in a model is configured with 1 blocks for the property "RehireDetails" with values to save model portfolio as given below
 | BlockNumber | Key             | Value  |
-|           1 | terminationDate | days_1 |
+|           1 | TerminationDate | day_1 |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
 
@@ -1129,10 +1132,10 @@ When Collection in a model is configured with 1 blocks for the property "Employe
 When Configuration has been made as per following
 | key              | value      |
 | employmentStatus | Terminated |
-When The date property "terminationDate" is configured as "days" and should add "29" days to the current date
- When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
+When The date property "terminationDate" is configured as "day" and should add "29" days to the current date
+ When Collection in a model is configured with 1 blocks for the property "RehireDetails" with values to save model portfolio as given below
 | BlockNumber | Key             | Value  |
-|           1 | terminationDate | days_29 |
+|           1 | TerminationDate | day_29 |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
 
@@ -1155,9 +1158,9 @@ When Configuration has been made as per following
 | terminationDate  | 2022-04-04T06:56:11.258Z |
 | zipCode          | random 10 alphaNumericWithSpecialCharacters  |
 
- When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
+ When Collection in a model is configured with 1 blocks for the property "RehireDetails" with values to save model portfolio as given below
 | BlockNumber | Key             | Value                    |
-|           1 | terminationDate | 2022-04-04T06:56:11.258Z |
+|           1 | TerminationDate | 2022-04-04T06:56:11.258Z |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 2 following errors 
 	| error_code | error_message                                                                      |
@@ -1186,10 +1189,10 @@ When Configuration has been made as per following
 | hireDate         | 2022-12-27T06:56:11.258Z |
 | terminationDate  | 2023-12-26T06:56:11.258Z |
 | zipCode          | random 10 alphaNumerics  |
- When Collection in a model is configured with 1 blocks for the property "RehireDetail" with values to save model portfolio as given below
+ When Collection in a model is configured with 1 blocks for the property "RehireDetails" with values to save model portfolio as given below
 | BlockNumber | Key             | Value                    |
-|           1 | terminationDate | 2023-12-26T06:56:11.258Z |
-|           1 | rehireDate      |                          |
+|           1 | TerminationDate | 2023-12-26T06:56:11.258Z |
+|           1 | RehireDate      |                          |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 2 following errors 
 	| error_code | error_message                                                                      |

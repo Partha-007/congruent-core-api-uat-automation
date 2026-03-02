@@ -1,55 +1,58 @@
-﻿using AutoFixture;
-using AutoMapper;
-using Bogus;
-using Bogus.Bson;
-using Bogus.DataSets;
-using ClassLibrary.Shared.Enum;
-using ClassLibrary.Shared.TestDataGenerator;
-using CsvHelper;
-using FizzWare.NBuilder;
-using FizzWare.NBuilder.Extensions;
-using Fluid.Values;
-using Generator.sourceGenerator;
-using HtmlAgilityPack;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
-using Microsoft.Playwright;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using MyNamespace;
-using Namotion.Reflection;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NSwag.CodeGeneration.Models;
 using NUnit.Framework;
-using NUnit.Framework.Diagnostics;
 using NUnit.Framework.Legacy;
 using Refit;
-using RefitSandBox;
-using RefitSandBox.Hooks;
-using RefitSandBox.TestDataGenerator;
-using Renci.SshNet;
-using Reqnroll;
-using System;
-using System.Collections;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Data;
-using System.Globalization;
-using System.Net.Http;
-using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
-using System.Xml.Linq;
+using System.Data;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using Microsoft.Playwright;
+using MyNamespace;
+using System.Security.Cryptography.X509Certificates;
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.AspNetCore.Mvc.Infrastructure;
+//using Microsoft.AspNetCore.Http;
+using System.Net.Http;
+using System;
+using System.Collections.Specialized;
+using System.Text.RegularExpressions;
+using HtmlAgilityPack;
+using Bogus;
+using FizzWare.NBuilder;
+using AutoFixture;
+using System.Reflection;
+using RefitSandBox.TestDataGenerator;
+using System.Data;
+using Reqnroll;
+using Bogus.Bson;
+using FizzWare.NBuilder.Extensions;
+using RefitSandBox;
+using NSwag.CodeGeneration.Models;
+using System.ComponentModel;
+using CsvHelper;
+using System.Globalization;
+using Bogus.DataSets;
+using ClassLibrary.Shared.TestDataGenerator;
+using RefitSandBox.Hooks;
+using Fluid.Values;
+using System.Collections;
+using NUnit.Framework.Diagnostics;
+using System.Text;
+using Renci.SshNet;
+using System.Runtime.InteropServices.WindowsRuntime;
+using AutoMapper;
+using ClassLibrary.Shared.Enum;
+using Microsoft.Extensions.Configuration;
+//using Microsoft.Extensions.Configuration.Json;
 using static Org.BouncyCastle.Bcpg.Attr.ImageAttrib;
+using ClassLibrary.Shared.AppSettings;
+using System.Net.NetworkInformation;
+using ClassLibrary.Shared;
+using Bogus.Extensions.Canada;
+using Bogus.Extensions.UnitedStates;
+//using Io.Cucumber.Messages.Types;
+//using Gherkin.CucumberMessages.Types;
 
 
 namespace RefitSandBox
@@ -65,12 +68,17 @@ namespace RefitSandBox
         public static object modelAfterConvention;
         public static Hooks.Hooks _hooks;
         public static string _url;
+        public static ParseToObjectTestResponse? employee;
+        public SFTP _sftp;
+        public static List<B50MatchResult> b50Response = new List<B50MatchResult>();
 
-        public Program(FakeDataHelper fake, Hooks.Hooks hooks)
+
+        public Program(FakeDataHelper fake, Hooks.Hooks hooks, SFTP sftp)
         {
             _fakeDataHelper = fake;
             _hooks = hooks;
             _url = Settings.ApplicationURL;
+            _sftp = sftp;
         }
 
         public Program()
@@ -80,7 +88,7 @@ namespace RefitSandBox
         public static string companyPlanCompensationId;
         public static string companyGrossCompensationId;
         public static string companyName;
-        public static string companyClassificationId, employeeClassificationId, payrollFrequencyId, ActiveStatusId;
+        public static string companyClassificationId, employeeClassificationId, payrollFrequencyId, ActiveStatusId, employeeId;
         public static string planId;
         public static string planName;
         public static string rkPlanNumber;
@@ -89,6 +97,7 @@ namespace RefitSandBox
         public static string matchSourceId;
         public static string matchSourceName;
         public static string rothSourceId;
+        public static string MatcheditId;
         public static string rothSourceName;
         public static string uploadedFileId;
         public static string fundingBankId;
@@ -106,11 +115,16 @@ namespace RefitSandBox
         public static AccountBalanceByPlanResponse employeeAccountBalance;
         public static int? recordKeeperId;
         public static Dictionary<string, string> InvestmentNameAndPlanMappingIdDict = new Dictionary<string, string>();
+        public static SourceViewModel? sourceobjModel;
+        public static PayrollEmployeeViewModel? employeeViewModel;
+
+
+
 
         public async Task UserLogin()
         {
-            string authorizationEndpoint = "https://test.coreretirementsolutions.com/connect/authorize";
-            string redirectUri = "https://test.coreretirementsolutions.com/api/swagger/oauth2-redirect.html";
+            string authorizationEndpoint = $"{Settings.ApplicationURL}/connect/authorize";
+            string redirectUri = $"{Settings.ApplicationURL}/api/swagger/oauth2-redirect.html";
             string codeChallenge;
             string codeChallengeMethod;
             (codeChallenge, codeChallengeMethod) = PKCEHelper.GeneratePKCE();
@@ -177,7 +191,7 @@ namespace RefitSandBox
                 };
 
                 var content = new FormUrlEncodedContent(loginData);
-                var requestLogin = $"https://test.coreretirementsolutions.com/Identity/Account/Login?ReturnUrl=%2Fconnect%2Fauthorize%3Frequest_id%3D{requestid[0]}%26prompt%3D";
+                var requestLogin = $"{Settings.ApplicationURL}/Identity/Account/Login?ReturnUrl=%2Fconnect%2Fauthorize%3Frequest_id%3D{requestid[0]}%26prompt%3D";
                 // Post the login form data
                 var loginFormResponse = await client1.PostAsync(requestLogin, content);
 
@@ -209,7 +223,7 @@ namespace RefitSandBox
             var page = await browser.NewPageAsync();
 
 
-            await page.GotoAsync("https://test.coreretirementsolutions.com/");
+            await page.GotoAsync($"{Settings.ApplicationURL}/");
             var UserNameField = page.Locator("//input[@name = 'Input.Email']");
             var PasswordField = page.Locator("//input[@name = 'Input.Password']");
             var LoginButton = page.Locator("//button[text()='Log in']");
@@ -224,7 +238,7 @@ namespace RefitSandBox
             var isLocalStorageAvailable = await page.EvaluateAsync<bool>("typeof window.localStorage !== 'undefined'");
             Console.WriteLine("localStorage available: " + isLocalStorageAvailable);
 
-            var bearerToken = await page.EvaluateAsync<string>("window.localStorage.getItem('COREIIuser:https://test.coreretirementsolutions.com:COREII')");
+            var bearerToken = await page.EvaluateAsync<string>($"window.localStorage.getItem('COREIIuser:{Settings.ApplicationURL}:COREII')");
             JObject jwt = JObject.Parse(bearerToken.ToString());
             bearer = jwt["access_token"].ToString();
         }
@@ -328,7 +342,7 @@ namespace RefitSandBox
 
 
 
-        public async Task ConfigureWithTestDate(string ControlName, int length, Pattern pattern)
+        public void ConfigureWithTestDate(string ControlName, int length, Pattern pattern)
         {
             var value = GenerateTestData.RandomString(length, pattern);
 
@@ -343,8 +357,7 @@ namespace RefitSandBox
                 var property = entry.Value;
                 try
                 {
-                    await Configuration(ControlName, value);
-                    //property.SetValue(modelAfterConvention, value);
+                    Configuration(ControlName, value);
                 }
                 catch (Exception ex)
                 {
@@ -362,12 +375,11 @@ namespace RefitSandBox
             {
                 firstRepaymentDate = Value;
             }
-            await Configuration(ControlName, Value);
+            Configuration(ControlName, Value);
         }
 
         public static List<System.Reflection.PropertyInfo> matchingProperties = new List<System.Reflection.PropertyInfo>();
-        JArray newArray = new JArray();
-        public async Task Configuration(string ControlName, string Value)
+        public void Configuration(string ControlName, string Value)
         {
             var program = new Program();
             if (ControlName.Contains("1") || ControlName.Contains("2"))
@@ -392,14 +404,8 @@ namespace RefitSandBox
                     .Select(entry => entry.Value)
                     .ToList();
             }
-            if (Value.Contains("random"))
-            {
-                var splitted = Value.Split(" ");
 
-                Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
-                Value = Regex.Replace(Regex.Replace(GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue), @"[^\w\s]", " "), @"\s+", " ").Trim();
-            }
-            if (Value.Contains(","))
+            if (ControlName.Contains(","))
             {
                 var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
                 //var newArray = new JArray();
@@ -442,6 +448,7 @@ namespace RefitSandBox
             {
                 Value = companyClassificationId;
             }
+
 
             if (matchingProperties.Any())
             {
@@ -652,8 +659,14 @@ namespace RefitSandBox
                     else
                     {
                         var propertyType = property.PropertyType;
-                        var convertedValue = Convert.ChangeType(Value, propertyType);
-                        // For non-nullable types, just set the value
+                        object convertedValue;
+
+                        if (propertyType.IsEnum)
+                            convertedValue = Enum.Parse(propertyType, Value.ToString(), true);
+                        
+                        else
+                            convertedValue = Convert.ChangeType(Value, propertyType);
+                        
                         try
                         {
                             property.SetValue(modelAfterConvention, convertedValue);
@@ -663,6 +676,7 @@ namespace RefitSandBox
                             Console.WriteLine(ex.Message);
                         }
                     }
+
                 }
             }
             else
@@ -670,7 +684,6 @@ namespace RefitSandBox
                 Console.WriteLine($"No matching property found for {ControlName}");
             }
         }
-
 
         public static async Task SetPropertyValueRecursive(object targetObject, string propertyName, object value)
         {
@@ -749,20 +762,21 @@ namespace RefitSandBox
                     // If it's a collection, iterate through each item in the collection
                     foreach (var item in (System.Collections.IEnumerable)propertyValue)
                     {
-                        SetPropertyValueRecursive(item, propertyName, value);
+                        await SetPropertyValueRecursive(item, propertyName, value);
                     }
                 }
                 else if (propertyValue != null && !property.PropertyType.IsValueType && property.PropertyType != typeof(string))
                 {
                     // If the property is a complex type, recurse into it
-                    SetPropertyValueRecursive(propertyValue, propertyName, value);
+                    await SetPropertyValueRecursive(propertyValue, propertyName, value);
                 }
             }
         }
 
 
 
-        
+        public const string BASE_URL = "https://localhost:3200";
+        public string APIEndpoint = "api/v1/Payroll/PayrollAndCensusFileUpload";
         public static string uploadedFileName;
         public async Task<JObject> SendAPIRequestForFileUpload(string filename, string fundingType)
         {
@@ -830,9 +844,10 @@ namespace RefitSandBox
                         }
                         else
                         {
-                            await SaveFundingDetailsByPlan(planId, fileId);
-                            await Task.Delay(5000);
                             var fundByFile = await payrollClient.FinalSubmit(fileId, fundingType);
+                            await SaveFundingDetailsByPlan(httpClient, planId, fileId);
+                            await Task.Delay(5000);
+                            
                             var responseAfterFileSubmission = fundByFile.IsSuccessfull;
                             if (!responseAfterFileSubmission)
                             {
@@ -840,7 +855,7 @@ namespace RefitSandBox
                             }
                             var getAwaitingFundsForFile = await payrollClient.GetAwaitingFundingDetailsByPlan(fileId, planId);
                             payrollFundingId = getAwaitingFundsForFile.PayrollFundingId.ToString();
-                            await ConfirmFunds(planId, fileId, payrollFundingId);
+                            await ConfirmFunds(httpClient, planId, fileId, payrollFundingId);
                             if (filename == "CombinedFile.csv")
                             {
                                 await Task.Delay(3000);
@@ -849,13 +864,18 @@ namespace RefitSandBox
                             {
                                 await Task.Delay(10000);
                             }
-
-                            var generateConsolidationResponse = await payrollClient.GenerateConsolidation();
+                            await GenerateOutboundFile(httpClient,"Saturna","DTCC",1);
+                            await Task.Delay(2000);
+                            var tradeOrderNumbers = _sftp.ProcessTradeOrderFile(SFTP.CUSIPTradeIdentifierDict,b50Response);
+                            _sftp.EditFixedWidthFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09", new List<B50MatchResult>(), tradeOrderNumbers);
+                            _sftp.UploadFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09");
+                            await _sftp.PollingIdentifier(httpClient, Hooks.Hooks.clearingPartnerName, planId, "AccountBalanceVerification");
+                            /*var generateConsolidationResponse = await payrollClient.GenerateConsolidation();
                             var parsedResponse = JObject.Parse(generateConsolidationResponse.ToString());
                             if (!(parsedResponse["isSuccessful"].ToString() == "True"))
-                                throw new Exception("Error in generating consolidation");
+                                throw new Exception("Error in generating consolidation");*/
 
-                            await Task.Delay(10000);
+                            //await Task.Delay(10000);
                         }
                         return responseObject;
 
@@ -917,6 +937,79 @@ namespace RefitSandBox
 
         }
 
+
+
+        public async Task<PayrollAndCensusFileUploadTestResult> SendAPIRequestForFileUploadTest(string filename)
+        {
+            MultipartFormDataContent form;
+            string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+            uploadedFileName = Path.Combine(projectDirectory, "Templates", filename);
+            using (form = new MultipartFormDataContent())
+            {
+                StreamContent streamContent;
+                using (var fileStream = new FileStream(uploadedFileName, FileMode.Open))
+                {
+                    streamContent = new StreamContent(fileStream);
+                    form.Add(streamContent, "file", uploadedFileName);
+                    form.Add(new StringContent("1"), "fileType");
+                    form.Add(new StringContent("testing stuff"), "description");
+                    form.Add(new StringContent("true"), "isSFTP");
+                    form.Add(new StringContent("1"), "inputType");
+                    form.Add(new StringContent("1"), "format");
+                    form.Add(new StringContent("true"), "isMultiplePlanOrPaydate");
+                    //form.Add(new StringContent(directoryPath), "fileName");
+                    form.Add(new StringContent("null"), "planId");
+                    form.Add(new StringContent("null"), "payDate");
+                    form.Add(new StringContent("false"), "isYearEndProcessing");
+                    form.Add(new StringContent("0"), "payrollFrequencyId");
+
+                    //string BaseURL = "https://dev.coreretirementsolutions.com";
+                    var httpClient = new HttpClient()
+                    {
+                        BaseAddress = new Uri(_url)
+                    };
+
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+
+                    var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
+                    var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileTestAsync(form);
+                    employee = responseAfterFileUpload.ParseToObjectTestReponse;
+                    Console.WriteLine("EMPLOYEE: ", employee);
+                    return responseAfterFileUpload;
+
+                }
+            }
+
+
+
+
+        }
+
+        public async Task TradeOrderFileUpload(string filename)
+        {
+            MultipartFormDataContent form;
+            string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+            uploadedFileName = Path.Combine(projectDirectory, "Templates", filename);
+            using (form = new MultipartFormDataContent())
+            {
+                // Add the file content to the form
+                var fileStream = new FileStream(uploadedFileName, FileMode.Open);
+                var fileContent = new StreamContent(fileStream);
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
+                form.Add(fileContent, "File", uploadedFileName);
+                form.Add(new StringContent("1"), "FileType");
+                //string BaseURL = "https://dev.coreretirementsolutions.com";
+                var httpClient = new HttpClient()
+                {
+                    BaseAddress = new Uri(_url)
+                };
+
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+                var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
+                var tradeOrderFileUploadResult = await tradeOrderClient.UploadFile(form);
+            }
+        }
+
         public async Task SendAPIRequestForFileUploadToTestEndpoint(string filename)
         {
             MultipartFormDataContent form;
@@ -948,72 +1041,175 @@ namespace RefitSandBox
                             BaseAddress = new Uri(_url)
                         };
 
-                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
+                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
 
                         var PayrollAPI = RestService.For<IPayrollFileUpload>(httpClient);
-                        var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileToTestEndpoint(form);
+                        var responseAfterFileUpload = await PayrollAPI.UploadCombinedFileTestAsync(form);
 
                         if (responseAfterFileUpload.IsSuccessfull)
                             ResponseFromTestEndpoint = responseAfterFileUpload;
                         else
                             throw new Exception("Error in uploading file to test endpoint");
+
+                        Console.WriteLine("Full Response from Test Endpoint (JSON):");
+                        Console.WriteLine(JsonConvert.SerializeObject(ResponseFromTestEndpoint, Formatting.Indented));
+
+                        var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages).ToList();
+                        Console.WriteLine("Error messages (JSON):");
+                        Console.WriteLine(JsonConvert.SerializeObject(errorMessages, Formatting.Indented));
                     }
                 }
             }
 
         }
 
-        PayrollAndCensusFileUploadTestResult ResponseFromTestEndpoint;
-        public async Task ValidateResponseFromTestEndpoint(string controlName, string errorReportMessage, string ecrMessage)
+        public async Task ProcessLoanDisbursement()
         {
-            bool errorTriggered = false;
-            if(ResponseFromTestEndpoint == null)
-                throw new Exception("No response from test endpoint to validate");
-
-            var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages);
-
-            foreach(var error in errorMessages)
+            var ProcessLoanDisbursementViewModel = new ProcessLoanDisbursementViewModel()
             {
-                if(controlName == error.ControlName)
-                {
-                    errorTriggered = true;
-                    var actualErrorReportMessage = error.MessageCode;
-                    var actualECRReportMessage = error.MessageDescCode;
-                    ClassicAssert.AreEqual(errorReportMessage, actualErrorReportMessage);
-                    ClassicAssert.AreEqual(ecrMessage, actualECRReportMessage);
-                }
-            }
+                IsDisbursed = false,
+                LoanId = int.Parse(loanId!),
+                PaymentMethod = 1,
+                Reason = null,
+                ReferenceNumber = null,
+                IsReInitiate = false,
 
-            if (!errorTriggered)
-                throw new Exception($"Error not triggered for the given control name {controlName}");
+            
+            };
+            var ProcessLoanDisbursementViewModel2 = new ProcessLoanDisbursementViewModel()
+            {
+                IsDisbursed = true,
+                LoanId = int.Parse(loanId!),
+                PaymentMethod = 1,
+                Reason = null,
+                ReferenceNumber = null,
+                IsReInitiate = false,
+
+            };
+            try
+            {
+                await DisbursementProcessing(ProcessLoanDisbursementViewModel);
+                await DisbursementProcessing(ProcessLoanDisbursementViewModel2);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
-        public async Task TradeOrderFileUpload(string filename)
+        public async Task AddInvestmentToPlan(string InvestmentName)
         {
-            MultipartFormDataContent form;
-            string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
-            uploadedFileName = Path.Combine(projectDirectory, "Templates", filename);
-            using (form = new MultipartFormDataContent())
+            var investmentSearchModel = new MasterInvestmentSearchModel();
+            investmentSearchModel.Search = InvestmentName;
+            investmentSearchModel.To = 20;
+
+            var httpClient = new HttpClient()
             {
-                // Add the file content to the form
-                var fileStream = new FileStream(uploadedFileName, FileMode.Open);
-                var fileContent = new StreamContent(fileStream);
-                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
-                form.Add(fileContent, "File", uploadedFileName);
-                form.Add(new StringContent("1"), "FileType");
-                var httpClient = new HttpClient()
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+
+            var settings = new RefitSettings
+            {
+                ContentSerializer = new NewtonsoftJsonContentSerializer()
+            };
+            var apiClient = RestService.For<IInvestment>(httpClient, settings);
+            var investmentResponse = await apiClient.GetMasterInvestmentBySearchCriteria(investmentSearchModel);
+            if (investmentResponse.Count > 0)
+            {
+                var investmentId = investmentResponse[0]["id"].ToString();
+                var investmentPlanMapping = new AddInvestmentsInput
                 {
-                    BaseAddress = new Uri(_url)
+                    AddInvestmentInputs = new List<AddInvestmentInput>()
                 };
 
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
-                var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
-                var tradeOrderFileUploadResult = await tradeOrderClient.UploadFile(form);
+                var newInvestment = new AddInvestmentInput
+                {
+                    Id = 0,
+                    InvestmentId = Convert.ToInt32(investmentId),
+                    PlanId = Convert.ToInt32(Hooks.Hooks.planId),
+                    Status = 1,
+                    InvestmentType = 2,
+                    SuspendedFromDate = null,
+                    SuspendedToDate = null
+                };
+
+                investmentPlanMapping.AddInvestmentInputs.Add(newInvestment);
+
+                var planApiClient = RestService.For<IPlanDetailsSave>(httpClient);
+                var responseAfterAddingInvestment = await planApiClient.AddInvestmentsToPlan(investmentPlanMapping);
+                if (!(responseAfterAddingInvestment is bool value && value))
+                    throw new Exception($"Investment {InvestmentName} not mapped to Plan");
+
+                var listInvestmentsOfPlan = await planApiClient.GetInvestmentListByPlanId(Hooks.Hooks.planId);
+                var parsedList = JObject.Parse(listInvestmentsOfPlan.ToString());
+
+                var investmentPlanDetails = parsedList["investmentPlanDetails"] as JArray;
+                foreach (var investment in investmentPlanDetails)
+                {
+                    if (investment["name"].ToString() == InvestmentName)
+                    {
+                        InvestmentNameAndPlanMappingIdDict.Add(investment["name"].ToString(), investment["id"].ToString());
+                    }
+                }
+            }
+            else
+            {
+                await CreateInvestment(InvestmentName);
+                await AddInvestmentToPlan(InvestmentName);
+            }
+
+
+
+        }
+
+        public async Task CreateInvestment(string investmentName)
+        {
+
+        }
+
+        public async Task DisbursementProcessing(ProcessLoanDisbursementViewModel _ProcessLoanDisbursementViewModel)
+        {
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(_url)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            var loanClient = RestService.For<ILoan>(httpClient);
+            var loanDisbursementResult = await loanClient.ProcessLoanDisbursement(_ProcessLoanDisbursementViewModel);
+            if (!loanDisbursementResult)
+                throw new Exception("Process Loan Disbursement API returned false");
+        }
+
+        public async Task EnrollmentSetup()
+        {
+            try
+            {
+                await EnrollmentConfiguration(planId, sourceId, rothSourceId, "<SEAS001>", "<SEAS002>");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 
         public async Task<Dictionary<string, string>> SFTPConnect()
         {
+
+            /*var configuration = new ConfigurationBuilder()
+            .SetBasePath("D:\\NewBackEndAutomation\\Congruent.Core.API.TestAutomation\\ClassLibrary.Shared\\AppSettings")
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();*/
+
+            //string url = configuration["AppSettings:ApplicationURL"];
+            /*string ftp_user = configuration["AppSettings:ftp_user"];
+            string userName = configuration["AppSettings:ftp_userName"];
+            string password = configuration["AppSettings:ftp_password"];
+            string hostName = configuration["AppSettings:ftp_host"];*/
+
+            //string hostName = "10.4.1.5";
+            //string userName = "ftp_dev";
+            //string password = "jack@123";
             var FileContent = new List<string>();
             var connectionInfo = new PasswordConnectionInfo(Settings.ftp_host, Settings.ftp_username, Settings.ftp_password);
             using (var sftp = new SftpClient(connectionInfo))
@@ -1071,7 +1267,7 @@ namespace RefitSandBox
         {
 
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
-            if (responseBody.ErrorMessages.Count != null)
+            if (responseBody!.ErrorMessages != null)
             {
                 if (responseBody.ErrorMessages.Count > 1)
                 {
@@ -1083,47 +1279,80 @@ namespace RefitSandBox
                     errorMessage = responseBody.ErrorMessages.First().Message;
                     errorCode = responseBody.ErrorMessages.First().ErrorCode;
                 }
-
                 /*var errorObject= JsonConvert.DeserializeObject<dynamic>(response.ToString());
-     var errorMessage = new ErrorMessages()
-     {
-         MessageCode = errorObject["errorMessages"][0]["errorCode"],
-         MessageDescCode = errorObject["errorMessages"][0]["message"],
-     };
-     Console.WriteLine("Error message : " +errorMessage.MessageCode);*/
+                var errorMessage = new ErrorMessages()
+                {
+                    MessageCode = errorObject["errorMessages"][0]["errorCode"],
+                    MessageDescCode = errorObject["errorMessages"][0]["message"],
+                };
+                Console.WriteLine("Error message : " +errorMessage.MessageCode);*/
                 ClassicAssert.AreEqual(expectedValue, $"{errorCode} : {errorMessage}");
             }
         }
-        public async Task VerifyMultipleErrors(int NoOfErrors, Reqnroll.DataTable dataTable)
+
+
+        public void VerifyResponseObject(Table table)
         {
-            var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
-            if (responseBody.ErrorMessages.Count != NoOfErrors)
-                throw new Exception("Error count mismatch");
 
-            foreach (var row in dataTable.Rows)
+            foreach (var row in table.Rows)
             {
-                string errorCode = row["error_code"].Trim();
-                string errorMessage = row["error_message"].Trim();
+                string SourceName = row[0];
+                string Calculatedvalue = row[1];
 
-                string expectedError = $"{errorCode} : {errorMessage}";
 
-                for (int i = 0; i < responseBody.ErrorMessages.Count; i++)
-                {
-                    var actualErrorCode = responseBody.ErrorMessages[i].ErrorCode;
-                    var actualErrorMessage = responseBody.ErrorMessages[i].Message;
 
-                    var actualError = $"{actualErrorCode} : {actualErrorMessage}";
 
-                    if (expectedError == actualError)
-                        Assert.Pass();
-                }
 
             }
+
+            var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
+            if (responseBody!.ErrorMessages == null && responseBody.isSuccessful)
+            {
+                Assert.Pass();
+            }
+            else
+            {
+                Assert.Fail();
+                throw new ArgumentException("API failed");
+            }
         }
+
+
+        public void VerifyMatchvalue(Table table)
+        {
+            foreach (var row in table.Rows)
+            {
+                var sourcename = row[0];
+                var CalculatedAmount = row[1];
+                var PPAmount = row[2];
+                var YTDAmount = row[3];
+
+                var contributions = Program.employee!.Employees.SelectMany(e => e.Contributions).Where(_ => _.SourceName == sourcename).ToList();
+                var CalcAmount = ((double)contributions.Sum(_ => _.CalculatedContributionAmount)).ToString("0.00");
+                var PPValue = ((double)contributions.Sum(_ => _.ContributionAmount)).ToString("0.00");
+                var YTDValue = ((double)contributions.Sum(_ => _.YtdContributionAmount)).ToString("0.00");
+
+                ClassicAssert.AreEqual(CalculatedAmount, CalcAmount);
+                ClassicAssert.AreEqual(PPAmount, PPValue);
+                ClassicAssert.AreEqual(YTDAmount, YTDValue);
+
+
+
+            }
+
+        }
+
+
         public void VerifyResponse()
         {
+            if (response.ContainsKey("isSuccessfull"))
+            {
+                response["isSuccessful"] = response["isSuccessfull"];  
+                response.Remove("isSuccessfull");                      
+            }
+
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
-            if (responseBody.isSuccessful && responseBody.ErrorMessages == null)
+            if (responseBody!.ErrorMessages == null && responseBody.isSuccessful)
             {
                 Assert.Pass();
             }
@@ -1139,61 +1368,40 @@ namespace RefitSandBox
             {
                 if (methodName == "SaveLoan")
                 {
-                    await Configuration("sourceId", sourceId);
+                    Configuration("sourceId", sourceId);
                 }
                 if (methodName == "SaveVesting")
                 {
-                    await Configuration("sourceId", matchSourceId);
+                    Configuration("sourceId", matchSourceId);
                 }
                 FakeDataHelper.AssignId(planId, "PlanId", modelAfterConvention);
             }
-
             if (methodName == "SaveInprogressLoanRequest")
             {
                 var employeeId = await GetEmployeeId();
-                await Configuration("employeeId", employeeId);
-                await Configuration("planId", planId);
-                await Configuration("loanDocumentTypeId", loanDocumentId);
-                await Configuration("loanSettingId", loanSettingsId);
+                Configuration("employeeId", employeeId);
+                Configuration("planId", planId);
+                Configuration("loanDocumentTypeId", loanDocumentId);
+                Configuration("loanSettingId", loanSettingsId);
             }
             if (methodName == "SaveLoanRefinance")
             {
-                await Configuration("loanId", loanId);
+                Configuration("loanId", loanId);
             }
-            if (methodName == "SaveRecordKeepersAsync")
-                recordKeeperId = await GetRecordKeeperId();
-
-            //if (interfaceName == "IEmployee" && methodName == "AddBeneficaryAsync")
-            //{
-            //    await Configuration("planId", planId);
-
-            //}
-
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
-            JObject? response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
-            Console.WriteLine("Response : " + response.ToString());
-
-            if (response != null && methodName == "SaveInprogressLoanRequest")
+            Console.WriteLine($"Data001: {JsonConvert.SerializeObject(sourceobjModel, Formatting.Indented)}");
+            var response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
+            if(response != null)
             {
-                loanId = response["loan"]["id"].ToString();
-                businessKey = response["loan"]["businessKey"].ToString();
+                if (response.ContainsKey("source"))
+                {
+                    MatcheditId = response["source"]?["sourceName"]?.ToString() == "ERMatch" ? response["source"]?["id"]?.ToString() : null;
+                    var sourceName = response["source"]?["sourceName"]?.ToString();
+                    sourceobjModel = (sourceName == "ERMatch" || sourceName == "ERNonMatch") && response["source"] is JObject matchSource ? MapJObjectToModel<SourceViewModel>(matchSource) : null;
+                    Console.WriteLine($"Data: {JsonConvert.SerializeObject(sourceobjModel, Formatting.Indented)}");
+                }
+                Console.WriteLine("Response : " + response.ToString());
             }
-                
-        }
-
-
-        public async Task<int> GetRecordKeeperId()
-        {
-            var httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri(Settings.ApplicationURL)
-            };
-
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
-            var apiClient = RestService.For<ICompanyDetails>(httpClient);
-            var recordKeepers = await apiClient.GetRecordKeepers();
-            recordKeeperId = recordKeepers.Count;
-            return (int)recordKeeperId;
         }
 
         /*public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
@@ -1246,9 +1454,55 @@ namespace RefitSandBox
             return responseObject;*//*
         }*/
 
+
+        public static T MapJObjectToModel<T>(JObject source) where T : new()
+        {
+            var target = new T();
+            var targetType = typeof(T);
+
+            foreach (var prop in targetType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (!prop.CanWrite) continue;
+
+                var jsonName = prop.GetCustomAttribute<JsonPropertyAttribute>()?.PropertyName ?? prop.Name;
+                var token = source[jsonName];
+
+                if (token == null || token.Type == JTokenType.Null) continue;
+
+                try
+                {
+                    object? value;
+
+                    if (prop.PropertyType != typeof(string) &&
+                        typeof(IEnumerable).IsAssignableFrom(prop.PropertyType))
+                    {
+                        var elementType = prop.PropertyType.IsGenericType
+                            ? prop.PropertyType.GetGenericArguments()[0]
+                            : prop.PropertyType.GetElementType();
+
+                        var listType = typeof(List<>).MakeGenericType(elementType!);
+                        value = token.ToObject(listType);
+                    }
+                    else
+                    {
+                        value = token.ToObject(prop.PropertyType);
+                    }
+
+                    prop.SetValue(target, value);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Mapping failed for '{prop.Name}': {ex.Message}");
+                }
+            }
+
+            return target;
+        }
+
+
         public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
         {
-            //string BaseURL = "https://dev.coreretirementsolutions.com/";
+
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(Settings.ApplicationURL)
@@ -1280,104 +1534,10 @@ namespace RefitSandBox
                         }
 
                         Console.WriteLine(JsonConvert.SerializeObject(model));
-                        if (methodName == "SavePlanAmendmentEligibleRule")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/v1/EligibleRule/SavePlanAmendmentEligibleRule";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SaveEnrollmentSettings")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            Console.WriteLine("Enrollment request :" + requestPayload);
-                            string Action = "api/Enrollment/SaveEnrollmentSetting";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
 
-                            //    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-
-                            // Use Hooks.Hooks.bearer! if available, otherwise fallback to the provided bearer
-                            string token = _hooks != null && !string.IsNullOrEmpty(Hooks.Hooks.bearer!) ? Hooks.Hooks.bearer! : bearer;
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-                            Task.Delay(10000);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SaveFunding")
+                        if (MethodNamesNotHandledByRefit.ContainsKey(methodName))
                         {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/Funding/SaveFunding";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        //******
-                        else if (methodName == "SaveSourceLimitsAsync")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "/api/v1/Plan/SaveSourceLimits";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SaveInprogressLoanRequest")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/v1/Loan/SaveInprogressLoanRequest";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SubmitLoanRequest")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/v1/Loan/SubmitLoanRequest";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SaveEmployeeAsync")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/v1/Payroll/SaveEmployee";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
+                            response = await PostCall(httpClient, model, MethodNamesNotHandledByRefit[methodName]);
                             return response;
                         }
                         else
@@ -1400,19 +1560,41 @@ namespace RefitSandBox
                         throw new InvalidOperationException("The method signature does not match the expected parameters.");
                     }
 
-                    Console.WriteLine("Response: " + responseObject?.ToString());
-                    if (responseObject is bool)
+                    // Handle response based on type
+                    if (responseObject is bool boolResult)
                     {
-                        Console.WriteLine("API Returned true");
+                        Console.WriteLine("API Returned: " + boolResult);
+
+                        var responseJObject = new JObject
+                        {
+                            ["IsSuccessful"] = boolResult,
+                            ["errorMessages"] = new JArray()  // Empty array when successful
+                        };
+
+                        response = responseJObject;
+                        return response;
+                    }
+                    else if (responseObject != null)
+                    {
+                        Console.WriteLine("Response: " + responseObject.ToString());
+                        response = JObject.Parse(responseObject.ToString());
                         return response;
                     }
                     else
                     {
-                        response = JObject.Parse(responseObject?.ToString());
+                        var responseObjectForFail = new JObject
+                        {
+                            ["IsSuccessful"] = false,
+                            ["errorMessages"] = new JArray
+                            {
+                                new JObject { ["message"] = "No response received" }
+                            }
+                        };
 
-                        Console.Write(responseObject.ToString());
+                        response = responseObjectForFail;
                         return response;
                     }
+
 
 
                 }
@@ -1427,7 +1609,30 @@ namespace RefitSandBox
             }
         }
 
+        public static async Task<JObject> PostCall(HttpClient httpClient, object model, string endpoint)
+        {
+            var requestBody = JsonConvert.SerializeObject(model);
+            var requestPayload = JObject.Parse(requestBody);
 
+            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+            
+            var task = await httpClient.PostAsync($"{_url}/{endpoint}/", data);
+            var contentTask = await task.Content.ReadAsStringAsync();
+            response = JObject.Parse(contentTask);
+            Console.Write(response.ToString());
+            return response;
+        }
+
+        public static Dictionary<string,string> MethodNamesNotHandledByRefit = new Dictionary<string, string>
+        {
+             { "SavePlanAmendmentEligibleRule", "api/v1/EligibleRule/SavePlanAmendmentEligibleRule" },
+             { "SaveEnrollmentSettings", "api/Enrollment/SaveEnrollmentSetting" },
+             { "SaveFunding", "api/Funding/SaveFunding" },
+             {"SaveInprogressLoanRequest","api/v1/Loan/SaveInprogressLoanRequest" },
+             {"SubmitLoanRequest","api/v1/Loan/SubmitLoanRequest" },
+             {"SaveEmployeeAsync","api/v1/Payroll/SaveEmployee" },
+            {"SaveTransferDetailsForAdminAsync","api/v1/Transfer/SaveTransferDetailsForAdmin" }
+        };
 
         public static MultipartFormDataContent HandlingFileUpload(string filename)
         {
@@ -1580,13 +1785,20 @@ namespace RefitSandBox
                 { "/api/BasicPlanDetails/SaveBasicPlanDetails", () => new PlanDetailsViewModel() },
                 { "/api/v1/Company", () => new CompanyViewModel() },
                 { "/api/v1/Payroll/SaveEmployee",() => new PayrollEmployeeViewModel() },
-                { "/api/v1/Payroll/AddBeneficary",() => new PayrollEmployeeViewModel() },
+                { "/api/v1/Payroll/AddBeneficary",() => new BeneficiaryInformation() },
                 { "/api/Loan/SaveLoan", () => new LoanSettingViewModel() },
                 { "/api/v1/Loan/SaveInprogressLoanRequest", () => new EmployeeLoanViewModel()},
                 {"/api/Vesting/SaveVesting", () => new VestingViewModel() },
                 {"/api/v1/Loan/SaveLoanRefinance", () => new LoanRefinanceViewModel() },
                 {"/api/v1/Investment/AddMasterInvestment", () => new InvestmentViewModel() },
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
+                { "/api/Source/SaveSource",() => sourceobjModel==null?new SourceViewModel():sourceobjModel},
+                {"/api/Transfer/SaveTransfer",() => new TransferViewModel() },
+                {"/api/v1/Transfer/SaveTransferDetailsForAdmin", () => new TransferDetailsForAdminViewModel() },
+                {"/api/Rollover/SaveRollover", () => new RolloverViewModel() },
+                { "/api/RolloverIn/SaveRolloverInRequest", () => new RollOverInRequestDetails()},
+                { "/api/v1/Adjustment/SaveBasicAdjustmentDetails", () => new BasicDetails() },
+                //{"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
                 { "/api/Transfer/SaveTransfer",() => new TransferViewModel()},
                // { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
                 {"/api/Source/SaveSource",() => new SourceViewModel() },
@@ -1606,11 +1818,26 @@ namespace RefitSandBox
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
             {
                 var Model = viewModelType();
-                modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(Model);
                 if (recordKeeperId != null)
                 {
-                    await Configuration("recordKeeperId", recordKeeperId.ToString());
+                    Configuration("recordKeeperId", recordKeeperId.ToString());
                 }
+
+                if (endpoint == "/api/v1/Payroll/SaveEmployee")
+                {
+                    employeeViewModel = EmployeeConfiguration();
+                    Model = employeeViewModel;
+                    modelAfterConvention = employeeViewModel;
+                }
+                else if(endpoint == "/api/v1/Payroll/AddBeneficary")
+                {
+                    var benModel = BeneficiaryConfiguration();
+                    Model = benModel;
+                    modelAfterConvention = benModel;
+                }
+                else
+                    modelAfterConvention = sourceobjModel != null ? sourceobjModel : FakeDataHelper.PopulateModelWithFakeData(Model);
+
                 var listOfProperties = GetJsonPropertyList(Model);
                 if (endpoint == "/api/Enrollment/SaveEnrollmentSetting")
                 {
@@ -1618,18 +1845,13 @@ namespace RefitSandBox
                     var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
                     var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
                     if (listOfPlanInvestments == null)
-                    {
                         throw new Exception("Investments not mapped to this plan");
-                    }
+                    
                     var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
 
-                    if (InvestmentPlanMappingIds.Count > 0)
-                    {
-                        modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
-                        modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
-                        RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
-                    }
-
+                    modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
+                    modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
+                    RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
                 }
                 return viewModelType;
             }
@@ -1645,7 +1867,7 @@ namespace RefitSandBox
             switch (filename)
             {
                 case "CombinedFile.csv":
-                    var sourceNames = await GetSourceNameHeader(Hooks.Hooks.planId);
+                    var sourceNames = await GetSourceNameHeader(Hooks.Hooks.planId!);
                     FakeDataHelper.WriteHeadersWithConventionalData(filename, sourceNames);
                     await EditFile(filename, dataTable);
                     break;
@@ -1655,7 +1877,7 @@ namespace RefitSandBox
                     break;
 
                 case "LoanRepayment.csv":
-                    var sourceNames1 = await GetSourceNameHeader(Hooks.Hooks.planId);
+                    var sourceNames1 = await GetSourceNameHeader(Hooks.Hooks.planId!);
                     FakeDataHelper.WriteHeadersWithConventionalData(filename, sourceNames1);
                     await EditFile(filename, dataTable);
                     break;
@@ -1717,7 +1939,9 @@ namespace RefitSandBox
                 {
                     var Columnname = row[0];
                     var Value = row[1];
-                    UpdateFile(FileToEdit, Columnname, Value, directoryPath);
+                    Value = Value.Contains("_") ? await GetDate(Convert.ToInt32(Value.Split('_')[0]), Value.Split('_')[1]) : Value;
+                    Value = Columnname == "SSN" ? employeeSSN : Value;
+                    UpdateFile(FileToEdit, Columnname, Value!, directoryPath);
                 }
             }
 
@@ -1753,7 +1977,7 @@ namespace RefitSandBox
                 {
                     var pretaxHeader = fileToEdit.Keys.First(_ => _.Contains(ColumnHeader, StringComparison.OrdinalIgnoreCase));
                     fileToEdit[pretaxHeader] = Value;
-                    if (Value is string)
+                    if (Value is string && Value.Any())
                     {
                         totalAmount = totalAmount + Convert.ToDouble(Value);
                     }
@@ -1934,20 +2158,35 @@ namespace RefitSandBox
                 Offset = 20
             };
             await Task.Delay(3000);
+            //searchBody.SearchBySSNEmpIdName = "691209015";
             var payrollClient = RestService.For<IPayroll>(httpClient);
             var getEmployee = await payrollClient.GetEmployeesBySearchCriteria(searchBody);
             var employeeId = getEmployee.SearchEmployeeResults.Select(_ => _.Id).FirstOrDefault().ToString();
             return employeeId;
         }
 
-        public async Task SaveLoan()
+
+        public async Task GenerateOBFile()
         {
-            await Configuration("planId", planId);
-            await Configuration("sourceId", sourceId);
-            //string BaseURL = "https://dev.coreretirementsolutions.com/";
+            
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(Settings.ApplicationURL)
+                BaseAddress = new Uri(_url)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            var planClient = RestService.For<IPayroll>(httpClient);
+            await planClient.GenerateOutboundFile();
+        }
+
+        public async Task SaveLoan()
+        {
+            Configuration("planId", planId);
+            Configuration("sourceId", sourceId);
+            
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(_url)
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
@@ -1965,6 +2204,7 @@ namespace RefitSandBox
         {
             try
             {
+                //string BaseURL = "https://dev.coreretirementsolutions.com/";
                 var httpClient = new HttpClient()
                 {
                     BaseAddress = new Uri(_url)
@@ -1976,15 +2216,19 @@ namespace RefitSandBox
                     var loanApproved = await loanClient.ApproveLoan(loanId);
                     if (!loanApproved)
                     {
-                        throw new Exception($"Error in approving loan refinance request for the loan id {loanId}");
+                        throw new Exception();
                     }
                 }
                 else
                 {
                     Console.WriteLine($"Loan approve started on {DateTime.Now}");
-                    if (loanId == null)
-                        throw new Exception("Loan id is not present");
-                    
+                    /*var check = JsonConvert.DeserializeObject<SaveLoanResult>(response.ToString(), new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });*/
+                    loanId = response["loan"]["id"].ToString();
+                    businessKey = response["loan"]["businessKey"].ToString();
+
                     var loanClient = RestService.For<ILoan>(httpClient);
                     var loanApproved = await loanClient.ApproveLoan(loanId);
                     if (!loanApproved)
@@ -1996,12 +2240,15 @@ namespace RefitSandBox
                         Console.WriteLine($"Loan has been approved on {DateTime.Now}");
                         await Task.Delay(5000);
                         var loanActiveResult = await loanClient.GenerateLoan();
-                        
-                        if (!loanActiveResult.IsSuccessful)
-                            throw new Exception("Generate Loan API returned false");
+                        var loanResponse = loanActiveResult.IsSuccessful;
+                        if (!loanResponse)
+                        {
+                            throw new Exception();
+                        }
                         else
+                        {
                             Console.WriteLine($"Generate Loan API returns success on {DateTime.Now}");
-                        
+                        }
                         await Task.Delay(3000);
                         /*var payrollClient = RestService.For<IPayroll>(httpClient);
                         var consolidationResult = await payrollClient.GenerateConsolidation();*/
@@ -2015,51 +2262,7 @@ namespace RefitSandBox
             }
         }
 
-        public async Task ProcessLoanDisbursement()
-        {
-            var ProcessLoanDisbursementViewModel = new ProcessLoanDisbursementViewModel()
-            {
-                IsDisbursed = false,
-                LoanId = int.Parse(loanId!),
-                PaymentMethod = 1,
-                Reason = null,
-                ReferenceNumber = null,
-                IsReInitiate = false,
 
-            };
-            var ProcessLoanDisbursementViewModel2 = new ProcessLoanDisbursementViewModel()
-            {
-                IsDisbursed = true,
-                LoanId = int.Parse(loanId!),
-                PaymentMethod = 1,
-                Reason = null,
-                ReferenceNumber = null,
-                IsReInitiate = false,
-
-            };
-            try
-            {
-                await DisbursementProcessing(ProcessLoanDisbursementViewModel);
-                await DisbursementProcessing(ProcessLoanDisbursementViewModel2);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task DisbursementProcessing(ProcessLoanDisbursementViewModel _ProcessLoanDisbursementViewModel)
-        {
-            var httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri(_url)
-            };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
-            var loanClient = RestService.For<ILoan>(httpClient);
-            var loanDisbursementResult = await loanClient.ProcessLoanDisbursement(_ProcessLoanDisbursementViewModel);
-            if (!loanDisbursementResult)
-                throw new Exception("Process Loan Disbursement API returned false");
-        }
 
         public async Task<GetEmployeeEligiblePlanLoansResult> GetEmployeePlanLoans()
         {
@@ -2218,6 +2421,92 @@ namespace RefitSandBox
             }
 
 
+        }
+
+
+        public async Task SubmitLoanRequest(List<string> sourceNames)
+        {
+            var applicableSources = new List<ApplicableSourcesViewModel>();
+            var program = new Program();
+            foreach (var source in sourceNames)
+            {
+                applicableSources.Add(new ApplicableSourcesViewModel
+                {
+                    Id = 0,
+                    SourceId = program.IdentifyValue(source).Result != null ? int.Parse(program.IdentifyValue(source).Result) : throw new Exception($"Given source name is not valid {source}"),
+                    IsDeleted = false
+                });
+            }
+
+            var submitLoanRequestModel = new SubmitLoanRequestViewModel
+            {
+                LoanId = int.Parse(loanId),
+                ApplicableSources = applicableSources
+            };
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            var loanClient = RestService.For<ILoan>(httpClient);
+            var submitLoanRequestResponse = await loanClient.SubmitLoanRequest(submitLoanRequestModel);
+            if (!submitLoanRequestResponse.IsSuccessfull)
+                throw new Exception("Submit loan request returns false");
+        }
+
+
+        PayrollAndCensusFileUploadTestResult ResponseFromTestEndpoint;
+        public async Task ValidateResponseFromTestEndpoint(string controlName, string errorReportMessage, string ecrMessage)
+        {
+            bool errorTriggered = false;
+            if (ResponseFromTestEndpoint == null)
+                throw new Exception("No response from test endpoint to validate");
+
+            var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages);
+
+            foreach (var error in errorMessages)
+            {
+                if (controlName == error.ControlName)
+                {
+                    errorTriggered = true;
+                    var actualErrorReportMessage = error.MessageCode;
+                    var actualECRReportMessage = error.MessageDescCode;
+                    ClassicAssert.AreEqual(errorReportMessage, actualErrorReportMessage);
+                    ClassicAssert.AreEqual(ecrMessage, actualECRReportMessage);
+                }
+            }
+
+            if (!errorTriggered)
+                throw new Exception($"Error not triggered for the given control name {controlName}");
+        }
+
+
+        public async Task VerifyMultipleErrors(int NoOfErrors, Reqnroll.DataTable dataTable)
+        {
+            var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
+            if (responseBody.ErrorMessages.Count != NoOfErrors)
+                throw new Exception($"Error count mismatch, Expected error count : {NoOfErrors}, Actual error count : {responseBody.ErrorMessages.Count}");
+
+            foreach (var row in dataTable.Rows)
+            {
+                string errorCode = row["error_code"].Trim();
+                string errorMessage = row["error_message"].Trim();
+
+                string expectedError = $"{errorCode} : {errorMessage}";
+
+                for (int i = 0; i < responseBody.ErrorMessages.Count; i++)
+                {
+                    var actualErrorCode = responseBody.ErrorMessages[i].ErrorCode;
+                    var actualErrorMessage = responseBody.ErrorMessages[i].Message;
+
+                    var actualError = $"{actualErrorCode} : {actualErrorMessage}";
+
+                    if (expectedError == actualError)
+                        Assert.Pass();
+                }
+
+            }
         }
 
         public async Task VerifyLoanStatus(string expectedStatus)
@@ -2555,6 +2844,11 @@ namespace RefitSandBox
             else if (value == "<CompEmpClassId>") return employeeClassificationId;
             else if (value == "<DailyFreqId>") return payrollFrequencyId;
             else if (value == "<ActiveStatusId>") return ActiveStatusId;
+            else if (value == "<EmployeeId>") return await GetEmployeeId();
+            else if (value == "<PlanId>") return planId;
+            else if (value == "<SSN>") return employeeSSN.Replace("-", "");
+            else if (value == "<PayrollTransactionId>") return await GetPayrollTransactionId();
+            else if (value == "<HooksEmpId>") return employeeId;
 
             else return null;
         }
@@ -2590,6 +2884,7 @@ namespace RefitSandBox
             for (int i = 0; i < noOfBlocks; i++)
             {
                 var newElement = Activator.CreateInstance(elementType);
+
                 // Initialize collection properties to avoid null reference issues during property search
                 foreach (var prop in elementType.GetProperties())
                 {
@@ -2609,6 +2904,7 @@ namespace RefitSandBox
 
                     var elementPropName = row[1].ToString();
                     var value = row[2];
+                    //value = value.Contains("_") ? await Program.GetDate(Convert.ToInt32(value.Split('_')[0]), (value.Split('_')[1])) : value;
                     if (value.Contains("<"))
                     {
                         value = await IdentifyValue(value);
@@ -2647,7 +2943,7 @@ namespace RefitSandBox
                     //****
                     if (value.Contains("_"))
                     {
-                        value = await GetDate(Convert.ToInt32(value.Split("_")[1]),value.Split("_")[0]);
+                        value = await GetDate(Convert.ToInt32(value.Split("_")[1]), value.Split("_")[0]);
                         //var splitted = value.Split("_");
 
                         //Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[0], ignoreCase: true);
@@ -2678,32 +2974,6 @@ namespace RefitSandBox
                         DateTime startbiweekly = new DateTime(2023, 1, 15);
                         DateTime startsemimonthly = new DateTime(2023, 1, 14);
                     }
-                    //if (value.Contains(","))
-                    //{
-                    //    var parts = value.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    //    var newArray = new JArray();
-
-                    //    foreach (var part in parts)
-                    //    {
-                    //        var trimmed = part.Trim();
-
-                    //        // Try to parse into number (int/float), fallback to string
-                    //        if (int.TryParse(trimmed, out int intVal))
-                    //        {
-                    //            newArray.Add(intVal);
-                    //        }
-                    //        else if (double.TryParse(trimmed, out double doubleVal))
-                    //        {
-                    //            newArray.Add(doubleVal);
-                    //        }
-                    //        else
-                    //        {
-                    //            newArray.Add(trimmed);
-                    //        }
-                    //    }
-                    //}
-
-                    //******
                     var elementProperty = elementType.GetProperty(elementPropName);
 
                     //if (elementProperty == null) continue;
@@ -2743,6 +3013,10 @@ namespace RefitSandBox
                         {
                             convertedValue = value.ToString();
                         }
+                        else if(propType.IsEnum)
+                        {
+                            convertedValue = Enum.Parse(propType, value.ToString(), true);
+                        }
                         else
                         {
                             convertedValue = Convert.ChangeType(value, underlyingType);
@@ -2758,6 +3032,16 @@ namespace RefitSandBox
 
                 collection.Add(newElement);
             }
+
+            //var additionalMatchTier = new AdditionalMatchTierBasedContributionTypeViewModel()
+            //{
+            //    new AdditionalMatchTierBasedContributionTypeViewModel
+            //    {
+            //        Id = null,
+            //        AdditionalMatchSourceId = null,
+
+            //    }
+            //};
 
             // Re-set the collection on the correct object
             property.SetValue(targetObject, collection);
@@ -2797,31 +3081,6 @@ namespace RefitSandBox
             if (modelPortfolioId == "0") throw new Exception("Model portfolio investment not saved");
             await AddInvestmentsToPlan(planId, modelPortfolioId, "993", noOfBlocks, PropertyName, dataTable);
         }
-
-        //public async Task doubleLength(string control_name, int length1, int length2, Pattern pattern)
-        //{
-        //    //   response["planAdministrator"]["taxEIN"] = GenerateTestData.RandomString(length1, pattern) + "-" + GenerateTestData.RandomString(length2, pattern);
-        //    var value = GenerateTestData.RandomString(length1,length2, pattern);
-        //    // Find matching entries in the list
-        //    var matchingProperties = jsonPropertyListTotal
-        //        .Where(entry => entry.Key == ControlName)
-        //        .ToList();
-
-        //    // If we have at least one matching property, set the value
-        //    foreach (var entry in matchingProperties)
-        //    {
-        //        var property = entry.Value;
-        //        try
-        //        {
-        //            property.SetValue(modelAfterConvention, value);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Console.WriteLine($"Error setting value for property {property.Name}: {ex.Message}");
-        //        }
-        //    }
-        //}
-        //}
 
 
         public static async Task<Dictionary<string, int>> GetInvestmentIdsByNames(JObject jsonObject, List<string> targetNames)
@@ -2999,79 +3258,10 @@ namespace RefitSandBox
             }
         }
 
-        public async Task AddInvestmentToPlan(string InvestmentName)
-        {
-            var investmentSearchModel = new MasterInvestmentSearchModel();
-            investmentSearchModel.Search = InvestmentName;
-            investmentSearchModel.To = 20;
 
-            var httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri(Settings.ApplicationURL)
-            };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
-
-            var settings = new RefitSettings
-            {
-                ContentSerializer = new NewtonsoftJsonContentSerializer()
-            };
-            var apiClient = RestService.For<IInvestment>(httpClient, settings);
-            var investmentResponse = await apiClient.GetMasterInvestmentBySearchCriteria(investmentSearchModel);
-            if (investmentResponse.Count > 0)
-            {
-                var investmentId = investmentResponse[0]["id"].ToString();
-                var investmentPlanMapping = new AddInvestmentsInput
-                {
-                    AddInvestmentInputs = new List<AddInvestmentInput>()
-                };
-
-                var newInvestment = new AddInvestmentInput
-                {
-                    Id = 0,
-                    InvestmentId = Convert.ToInt32(investmentId),
-                    PlanId = Convert.ToInt32(Hooks.Hooks.planId),
-                    Status = 1,
-                    InvestmentType = 2,
-                    SuspendedFromDate = null,
-                    SuspendedToDate = null
-                };
-
-                investmentPlanMapping.AddInvestmentInputs.Add(newInvestment);
-
-                var planApiClient = RestService.For<IPlanDetailsSave>(httpClient);
-                var responseAfterAddingInvestment = await planApiClient.AddInvestmentsToPlan(investmentPlanMapping);
-                if (!(responseAfterAddingInvestment is bool value && value))
-                    throw new Exception($"Investment {InvestmentName} not mapped to Plan");
-
-                var listInvestmentsOfPlan = await planApiClient.GetInvestmentListByPlanId(Hooks.Hooks.planId);
-                var parsedList = JObject.Parse(listInvestmentsOfPlan.ToString());
-
-                var investmentPlanDetails = parsedList["investmentPlanDetails"] as JArray;
-                foreach (var investment in investmentPlanDetails)
-                {
-                    if (investment["name"].ToString() == InvestmentName)
-                    {
-                        InvestmentNameAndPlanMappingIdDict.Add(investment["name"].ToString(), investment["id"].ToString());
-                    }
-                }
-            }
-            else
-            {
-                await CreateInvestment(InvestmentName);
-                await AddInvestmentToPlan(InvestmentName);
-            }
-
-
-
-        }
-
-        public async Task CreateInvestment(string investmentName)
-        {
-
-        }
         public async Task UpdateEmployeeInformation(Reqnroll.DataTable dataTable)
         {
-            //Will do research later blud!!
+            //Will do research later blud!
             /*var employeeId = await GetEmployeeId();
             string BaseURL = "https://test.coreretirementsolutions.com/";
             var httpClient = new HttpClient()
@@ -3105,43 +3295,11 @@ namespace RefitSandBox
             {
                 string controlName = row[0];
                 string Value = row[1];
-                await Configuration(controlName, Value);
+                Configuration(controlName, Value);
             }
             var employee = (PayrollEmployeeViewModel)employeeResponse;
             var updateEmployee = employeeClient.UpdateExistingEmployee(employee);*/
         }
-
-        public async Task SubmitLoanRequest(List<string> sourceNames)
-        {
-            var applicableSources = new List<ApplicableSourcesViewModel>();
-            var program = new Program();
-            foreach (var source in sourceNames)
-            {
-                applicableSources.Add(new ApplicableSourcesViewModel
-                {
-                    Id = 0,
-                    SourceId = program.IdentifyValue(source).Result != null ? int.Parse(program.IdentifyValue(source).Result) : throw new Exception($"Given source name is not valid {source}"),
-                    IsDeleted = false
-                });
-            }
-
-            var submitLoanRequestModel = new SubmitLoanRequestViewModel
-            {
-                LoanId = int.Parse(loanId),
-                ApplicableSources = applicableSources
-            };
-
-            var httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri(Settings.ApplicationURL)
-            };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer);
-            var loanClient = RestService.For<ILoan>(httpClient);
-            var submitLoanRequestResponse = await loanClient.SubmitLoanRequest(submitLoanRequestModel);
-            if (!submitLoanRequestResponse.IsSuccessfull)
-                throw new Exception("Submit loan request returns false");
-        }
-
         public static async Task<string> GetDate(int n, string pattern)
         {
             DateTime currentDate = DateTime.Now;
@@ -3163,27 +3321,36 @@ namespace RefitSandBox
             return finalDate;
         }
 
-        public static async Task<string> SaveCompany(string? bearer)
+       
+
+        public static async Task<string> SaveCompany(string bearer)
         {
             var program = new Program();
             var companyModel = new CompanyViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(companyModel);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             modelAfterConvention = FakeDataHelper.AssignId(null, "CompanyId", modelAfterConvention);
-            await program.Configuration("frequencyName", "Daily");
-            await program.Configuration("frequencyType", "1");
-            await program.Configuration("modeOfHours", "1");
-            await program.Configuration("modeOfCompensation", "1");
-            await program.Configuration("modeOfContribution", "1");
-            await program.Configuration("employeeClassificationType", "1");
-            await program.Configuration("code", "L1");
-            await program.Configuration("classificationName", "Location");
-            await program.Configuration("value", "Location");
+            Reqnroll.DataTable frequency = new Reqnroll.DataTable("Block", "FrequencyType", "FrequencyName");
+            frequency.AddRow("1", "FrequencyName", "Daily"); frequency.AddRow("2", "FrequencyName", "Monthly");
+            frequency.AddRow("1", "FrequencyType", "1"); frequency.AddRow("2", "FrequencyType", "4"); frequency.AddRow("2", "StartDate", "1");
+            Reqnroll.DataTable calendar = new Reqnroll.DataTable("Block", "FrequencyType", "FrequencyName");
+            calendar.AddRow("1", "FrequencyType", "1"); frequency.AddRow("1", "FrequencyName", "Daily");
+            Program _program = new Program();
+            await _program.EditCollection(2, "PayrollFrequencies", frequency);
+            await _program.EditCollection(1, "PayrollCalendars", calendar);
+            //program.Configuration("frequencyType", "1");
+            program.Configuration("modeOfHours", "1");
+            program.Configuration("modeOfCompensation", "1");
+            program.Configuration("modeOfContribution", "1");
+            program.Configuration("employeeClassificationType", "1");
+            program.Configuration("code", "L1");
+            program.Configuration("classificationName", "Location");
+            program.Configuration("value", "Location");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.ICompanyDetails");
             var companyresponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewCompanyAsync");
             var companyId = companyresponse["company"]["id"].ToString();
-            companyGrossCompensationId = companyresponse["company"]["compensationCategories"][0]["id"].ToString();
-            companyPlanCompensationId = companyresponse["company"]["compensationCategories"][1]["id"].ToString();
+            companyGrossCompensationId = companyresponse["company"]["compensationCategories"][1]["id"].ToString();
+            companyPlanCompensationId = companyresponse["company"]["compensationCategories"][0]["id"].ToString();
             companyName = companyresponse["company"]["name"].ToString();
             companyClassificationId = companyresponse["company"]["classifications"][0]["employeeClassificationCodes"][0]["id"].ToString();
             employeeClassificationId = companyresponse["company"]["classifications"][0]["id"].ToString();
@@ -3192,19 +3359,19 @@ namespace RefitSandBox
             return companyId;
         }
 
-        public static async Task<string> SavePlan(string? bearer, string companyId)
+        public static async Task<string> SavePlan(string bearer, string companyId)
         {
             var program = new Program();
             var planModel = new PlanDetailsViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(planModel);
             modelAfterConvention = FakeDataHelper.AssignId(companyId.ToString(), "CompanyId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("effectiveDate", "2019-01-02");
-            await program.Configuration("name", "ABC123");
-            await program.Configuration("1month", "1");
-            await program.Configuration("1day", "1");
-            await program.Configuration("2month", "12");
-            await program.Configuration("2day", "31");
+            program.Configuration("effectiveDate", "2015-01-01");
+            program.Configuration("name", "ABC123");
+            program.Configuration("1month", "1");
+            program.Configuration("1day", "1");
+            program.Configuration("2month", "12");
+            program.Configuration("2day", "31");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewPlanAsync");
             planId = planResponse["plan"]["id"].ToString();
@@ -3213,21 +3380,70 @@ namespace RefitSandBox
             return planId;
         }
 
-        public static async Task SaveSponsor(string bearer, string planId)
+        public static async Task SaveSponsor(HttpClient httpClient, string bearer, string planId)
         {
+            var faker = new Faker();
             var program = new Program();
-            var sponsorModel = new SponsorViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sponsorModel);
+            var sponsorModel = new SponsorViewModel
+            {
+                Id = 0,
+                Ssn = faker.Random.Replace("6##-##-####"),
+                Name = new MyNamespace.Name
+                {
+                    FirstName = faker.Person.FirstName,
+                    LastName = faker.Person.LastName,
+                    MiddleName = faker.Name.Suffix()
+                },
+                ContactDetails = new MyNamespace.Contact
+                {
+                    MobilePhoneNumber = faker.Random.Replace("###-###-####"),
+                    WorkPhoneNumber = null,
+                    Email = faker.Person.Email,
+                    Website = null,
+                },
+                PlanId = int.Parse(planId),
+                ExistingEmployeeId = null,
+                IsDeleted = false,
+                IsSponsor = true,
+                Validate = null,
+                Address = new MyNamespace.Address
+                {
+                    Address1 = faker.Address.StreetAddress(),
+                    Address2 = faker.Address.StreetName(),
+                    Address3 = null,
+                    City = faker.Address.City(),
+                    State = null,
+                    ZipCode = faker.Random.Replace("#####-####"),
+                    PostalCode = null,
+                    Country = null
+                },
+                StateId = 1,
+                CountryId = 1,
+                ForeignCountry = null,
+                ForeignState = null,
+                ForeignZipCode = null,
+            };
+
+            var planInterface = RestService.For<IPlanDetailsSave>(httpClient);
+            var sponsorSaveResponse = await planInterface.SavePlanSponsor(sponsorModel);
+
+            /*modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sponsorModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            modelAfterConvention = FakeDataHelper.AssignId("1", "CountryId", modelAfterConvention);
+            modelAfterConvention = FakeDataHelper.AssignId("1", "StateId", modelAfterConvention);
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var sponsorSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SavePlanSponsor");
+            var sponsorSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType!, "SavePlanSponsor");*/
         }
 
-        public static async Task ClearingPartnerPlanMapping(string bearer, string planId)
+        public static async Task ClearingPartnerPlanMapping(string bearer, string planId,string? ACName=null)
         {
+            
+            
+
             var program = new Program();
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var clearingPartnerIds = await program.SendAPIRequest(bearer, 1, interfaceType, "GetClearingPartnersId");
+            
+            var clearingPartnerIds = await program.SendAPIRequest(bearer,1, interfaceType, "GetClearingPartnersId");
             var clearingPartnerId = clearingPartnerIds["clearingPartnerListResponses"][0]["id"].ToString();
             var CPAddToPlan = new PlanWithClearingPartnerViewModel();
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", CPAddToPlan);
@@ -3236,48 +3452,101 @@ namespace RefitSandBox
             var clearingPartnerAddToPlanResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddClearingPartnerToPlan");
         }
 
-        public static async Task EligibilityConfiguration(string bearer, string planId)
+        public static async Task UpsertPlanWithClearingPartnerAccount(HttpClient httpClient, string planId, int accountId )
         {
-            var program = new Program();
-            var eligibility = new EligibilityRuleViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(eligibility);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanAmendments.PlanId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("exclusionType", "0");
-            await program.Configuration("isLTPTApplicable", "false");
-            await program.Configuration("ltptHours", "500");
-            await program.Configuration("isRevaluationRequired", "false");
-            await program.Configuration("isBreakInService", "false");
-            await program.Configuration("eligibilityType", null);
-            await program.Configuration("planId", planId.ToString());
-            await program.Configuration("age", "20");
-            await program.Configuration("ltptAgeInYears", "20");
-            await program.Configuration("sourceId", null);
-            await program.Configuration("eligibilityRuleFor", "1");
+            var clearingPartnerPlanMapping = new PlanWithClearingPartnerViewModel
+            {
+                PlanId = Convert.ToInt32(planId),
+                ClearingPartnerAccountIds = new List<int> { accountId },
+                DefaultClearingPartnerAccountId = accountId
+            };
 
-            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SavePlanAmendmentEligibleRule");
+            var PlanInterface = RestService.For<IPlanDetailsSave>(httpClient);
+            var clearingPartnerPlanMappingResponse = await PlanInterface.AddClearingPartnerToPlan(clearingPartnerPlanMapping);
+            var parsedResponse = JObject.Parse(clearingPartnerPlanMappingResponse.ToString());
+            var errorMessage = parsedResponse["errorMessage"]?.ToString();
+            if(!(errorMessage == null))
+                throw new Exception($"Error in upserting clearing partner account to plan: {errorMessage}");
         }
 
-        public static async Task SaveEntryDate(string bearer, string planId)
+        public static async Task EligibilityConfiguration(string URL, HttpClient httpClient, string bearer, string planId)
         {
-            var program = new Program();
-            var entryDateModel = new EntryDateRuleViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(entryDateModel);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("ruleName", "Immediate");
-            await program.Configuration("sourceId", null);
-            await program.Configuration("eligibilityRuleFor", "1");
-            await program.Configuration("entryDateRuleType", "");
-            await program.Configuration("entryDateSources", null);
-            await program.Configuration("otherEntryDates", null);
-            await program.Configuration("planYearOtherEntryDates", null);
-            await program.Configuration("entryDateRehireOption", "0");
+            var model = new EligibilityRuleViewModel
+            {
+                Id = 0,
+                PlanId = Convert.ToInt32(planId),
+                //PlanAmendmentId = 0,
 
-            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var eligibilitySave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEntryDate");
+                Name = "Immediate",
+                Description = "Immediate eligibility",
+                ImmediateEligibility = true,
+                EligibilityRuleFor = 1,
+
+                IsLTPTApplicable = false,
+                IsBreakInService = false,
+                IsRevaluationRequired = false,
+                RehiredOneYearLookBack = null,
+
+                EligibilityCalculationPeriod = null,
+                AdditionalEligibilityRules = new List<AdditionalEligibilityRuleViewModel>(),
+
+                ExclusionFromRule = new ExclusionFromRuleViewModel
+                {
+                    ExclusionType = 0
+                },
+
+                LtptExclusionFromRule = new ExclusionFromRuleViewModel
+                {
+                    ExclusionType = 0
+                },
+
+                LtptVestingComputationPeriod = new VestingComputationPeriod(),
+
+                LtptServiceCreditPeriod = new ServiceCreditPeriod(),
+
+                PlanAmendments = new PlanAmendmentViewModel
+                {
+                    Id = 0,
+                    EffectiveStartDate = DateTimeOffset.Parse("2015-01-01T00:00:00Z"),
+                    DirectAmendment = false,
+                    Description = "Initial Rule",
+                    PlanId = Convert.ToInt32(planId)
+                },
+
+                IsDeleted = false
+            };
+
+            var requestBody = JsonConvert.SerializeObject(model);
+            var requestPayload = JObject.Parse(requestBody);
+            string Action = "api/v1/EligibleRule/SavePlanAmendmentEligibleRule";
+            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+            var task = await httpClient.PostAsync($"{URL}/{Action}/", data);
+            var contentTask = await task.Content.ReadAsStringAsync();
+            response = JObject.Parse(contentTask);
+            Console.Write(response.ToString());
+        }
+
+        public static async Task SaveEntryDate(HttpClient httpClient, string bearer, string planId)
+        {
+            var entryDate = new EntryDateRuleViewModel
+            {
+                Id = 0,
+                PlanId = Convert.ToInt32(planId),
+                EntryDateRuleType = null,
+                EntryDateRuleFor = 1,
+                RuleName = "Immediate",
+                EntryDateRule = 6,
+                EntryDateRehireOption = 0,
+                IsSwitchToPlanYearHaveDifferentEntryDates = false,
+                EntryDateSources = null,
+                OtherEntryDates = null,
+                PlanYearOtherEntryDates = null,
+                AdditionalEntryDateRules = null
+            };
+
+            var planDetailsSaveInterface = RestService.For<IPlanDetailsSave>(httpClient);
+            var entryDateSaveResponse = await planDetailsSaveInterface.SaveEntryDate(entryDate);
         }
 
         public static async Task SavePretaxSource(string bearer, string planId)
@@ -3288,30 +3557,266 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             var currentDate = DateTime.UtcNow;
-            await program.Configuration("sourceType", "1");
-            await program.Configuration("sourceCategory", "2");
-            await program.Configuration("sourceSubCategory", "4");
-            await program.Configuration("sourceSubSubCategory", "1");
-            await program.Configuration("effectiveStartDate", "2020-01-01");
-            await program.Configuration("sourceName", "EEPreTax");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("limitMinimumDollar", "10");
-            await program.Configuration("limitMinimumPercentage", "10");
-            await program.Configuration("limitMaximumPercentage", "70");
-            await program.Configuration("limitMaximumDollar", "70");
-            await program.Configuration("sourceCode", "A");
-            await program.Configuration("employerDiscretionarySource", null);
-            await program.Configuration("employerMatchSource", null);
-            await program.Configuration("employerOtherSource", null);
-            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
-            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
-            await program.Configuration("employerSourceExclusion", null);
+            program.Configuration("sourceType", "1");
+            program.Configuration("sourceCategory", "2");
+            program.Configuration("sourceSubCategory", "4");
+            program.Configuration("sourceSubSubCategory", "1");
+            program.Configuration("effectiveStartDate", "2020-01-01");
+            program.Configuration("sourceName", "EEPreTax");
+            program.Configuration("contributionType", "1");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
+            program.Configuration("limitMaximumPercentage", "70");
+            program.Configuration("limitMaximumDollar", "70");
+            program.Configuration("sourceCode", "A");
+            program.Configuration("employerDiscretionarySource", null);
+            program.Configuration("employerMatchSource", null);
+            program.Configuration("employerOtherSource", null);
+            program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            program.Configuration("employerSourceExclusion", null);
 
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
             sourceId = sourceSave["source"]["id"].ToString();
             pretaxsourceName = sourceSave["source"]["sourceName"].ToString();
+        }
+
+        public static async Task SaveMatchSource(string bearer, string planId, string sourceName = "null")
+        {
+            var program = new Program();
+            var sourceModel = new SourceViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            var currentDate = DateTime.UtcNow;
+            program.Configuration("sourceType", "2");
+            program.Configuration("sourceCategory", "6");
+            program.Configuration("effectiveStartDate", "2015-01-01");
+            program.Configuration("sourceName", "Match");
+            program.Configuration("responsibleMode", "1");
+            program.Configuration("sourceCode", "D");
+            program.Configuration("contributionType", "1");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
+            program.Configuration("limitMaximumPercentage", "70");
+            program.Configuration("limitMaximumDollar", "70");
+            //program.Configuration("EmployeeDeferralSource.contributionType", "7");
+            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
+            matchSourceId = sourceSave["source"]["id"].ToString();
+        }
+
+        public static async Task SaveRothSource(string bearer, string planId)
+        {
+            var program = new Program();
+            var sourceModel = new SourceViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            var currentDate = DateTime.UtcNow;
+            program.Configuration("sourceType", "1");
+            program.Configuration("sourceCategory", "2");
+            program.Configuration("sourceSubCategory", "5");
+            program.Configuration("sourceSubSubCategory", "1");
+            program.Configuration("effectiveStartDate", "2020-01-01");
+            program.Configuration("sourceName", "EERoth");
+            program.Configuration("contributionType", "1");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
+            program.Configuration("limitMaximumPercentage", "70");
+            program.Configuration("limitMaximumDollar", "70");
+            program.Configuration("sourceCode", "Q");
+            program.Configuration("sourceId", "");
+            program.Configuration("employerDiscretionarySource", null);
+            program.Configuration("employerMatchSource", null);
+            program.Configuration("employerOtherSource", null);
+            program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            program.Configuration("employerSourceExclusion", null);
+            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
+            rothSourceId = sourceSave["source"]["id"].ToString();
+            rothSourceName = sourceSave["source"]["sourceName"].ToString();
+        }
+
+        public static async Task SavePretaxRolloverSource(string bearer, string planId)
+        {
+            var program = new Program();
+            var sourceModel = new SourceViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            var currentDate = DateTime.UtcNow;
+            program.Configuration("sourceType", "1");
+            program.Configuration("sourceCategory", "4");
+            program.Configuration("sourceSubCategory", "7");
+            program.Configuration("sourceSubSubCategory", "");
+            program.Configuration("effectiveStartDate", "2020-01-01");
+            program.Configuration("sourceName", "Pretax Rollover");
+            program.Configuration("contributionType", "1");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
+            program.Configuration("limitMaximumPercentage", "70");
+            program.Configuration("limitMaximumDollar", "70");
+            program.Configuration("sourceCode", "R");
+            program.Configuration("employerDiscretionarySource", null);
+            program.Configuration("employerMatchSource", null);
+            program.Configuration("employerOtherSource", null);
+            program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            program.Configuration("employerSourceExclusion", null);
+
+            //program.Configuration("EmployeeDeferralSource.contributionType", "7");
+            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
+            sourceId = sourceSave["source"]["id"].ToString();
+            pretaxsourceName = sourceSave["source"]["sourceName"].ToString();
+        }
+        public static async Task SaveCompensation(string bearer, string planId)
+        {
+            var program = new Program();
+            var compensationModel = new CompensationViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(compensationModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            program.Configuration("compensationCategoryId", companyPlanCompensationId);
+            program.Configuration("isIncluded", "true");
+            program.Configuration("calculationType", "1");
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var compSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveCompensation");
+        }
+
+        public static async Task UpdatePlanStatus(string bearer, string planId, string statusCode)
+        {
+            var program = new Program();
+            var updatePlanStatusModel = new UpdatePlanStatusViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(updatePlanStatusModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            program.Configuration("planStatus", statusCode);
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "UpdatePlanStatus");
+        }
+
+        public static async Task AddInvestmentsToPlan(string bearer, string planId)
+        {
+            var program = new Program();
+            var investmentPlanMapping = new AddInvestmentsInput();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            program.Configuration("investmentId", "2");
+            program.Configuration("status", "1");
+            program.Configuration("investmentType", "2");
+            program.Configuration("planId", planId);
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+            program.Configuration("investmentId", "3");
+            program.Configuration("status", "1");
+            program.Configuration("investmentType", "2");
+            program.Configuration("planId", planId);
+            var interfaceType1 = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var addedToPlan = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+        }
+
+        public static async Task AddInvestmentsToPlan(string planId, string modelPortfolioId, string investmentId2, int noOfBlocks, string propertyName, Reqnroll.DataTable dataTable)
+        {
+            var program = new Program();
+            var investmentPlanMapping = new AddInvestmentsInput();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            program.Configuration("investmentId", modelPortfolioId);
+            program.Configuration("status", "1");
+            program.Configuration("investmentType", "1");
+            program.Configuration("planId", planId);
+            await program.EditCollection(noOfBlocks, propertyName, dataTable);
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var planStatus = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+            program.Configuration("investmentId", investmentId2);
+            program.Configuration("status", "1");
+            program.Configuration("investmentType", "2");
+            program.Configuration("planId", planId);
+            var addedToPlan = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
+        }
+
+        public static async Task SaveEnrollmentSettings(string bearer, string planId)
+        {
+            var program = new Program();
+            var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var listOfPlanInvestments = await program.SendAPIRequest(bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var investmentPlanMappingId = listOfPlanInvestments["investmentPlanDetails"][0]["id"].ToString();
+            var enrollmentSettings = new EnrollmentViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(enrollmentSettings);
+            var list = GetJsonPropertyList(modelAfterConvention);
+            program.Configuration("planId", planId);
+            program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            program.Configuration("sourceName", "Pretax");
+            program.Configuration("contributionRate", "12");
+            program.Configuration("autoDeferralIncreaseProgram", "true");
+            program.Configuration("increaseAllowanceDays", "30");
+            program.Configuration("periodOfIncrease", "1");
+            program.Configuration("applyADITo", "0");
+            program.Configuration("adiApplicableTo", "2");
+            program.Configuration("subjecttoAutoEnrollment", "True");
+            program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpen", "3");
+            program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            program.Configuration("exclusionType", "0");
+            program.Configuration("usePlanDefaultDeferralElection", "true");
+            program.Configuration("usePlanDefaultInvestmentElection", "true");
+            program.Configuration("sendEnrollmentInvite", "1");
+            program.Configuration("deferralContributionRateUponRehire", "2");
+            program.Configuration("contributionType", "1");
+            program.Configuration("sourceId", sourceId);
+            program.Configuration("autoDeferralIncreasePercentage", "15");
+            program.Configuration("maximumADIPercentage", "18");
+            program.Configuration("investmentId", investmentPlanMappingId);
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
+        }
+
+        public async Task SaveEnrollmentForModelPortfolio()
+        {
+            var program = new Program();
+            var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
+            var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
+            modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
+            modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
+            RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
+            program.Configuration("planId", planId);
+            program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            program.Configuration("sourceName", "Pretax");
+            program.Configuration("contributionRate", "12");
+            program.Configuration("autoDeferralIncreaseProgram", "true");
+            program.Configuration("increaseAllowanceDays", "30");
+            program.Configuration("periodOfIncrease", "1");
+            program.Configuration("applyADITo", "0");
+            program.Configuration("adiApplicableTo", "2");
+            program.Configuration("subjecttoAutoEnrollment", "True");
+            program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpen", "3");
+            program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            program.Configuration("exclusionType", "0");
+            program.Configuration("usePlanDefaultDeferralElection", "true");
+            program.Configuration("usePlanDefaultInvestmentElection", "true");
+            program.Configuration("sendEnrollmentInvite", "1");
+            program.Configuration("deferralContributionRateUponRehire", "2");
+            program.Configuration("contributionType", "1");
+            program.Configuration("sourceId", sourceId);
+            program.Configuration("autoDeferralIncreasePercentage", "15");
+            program.Configuration("maximumADIPercentage", "18");
+            /*program.Configuration("1investmentId", RegularInvestmentId);
+            program.Configuration("2investmentId", modelPortfolioInvestmentId);
+            program.Configuration("1investmentName", "SEAS003");
+            program.Configuration("21investmentName", modelPortfolioName);*/
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
         }
 
         /*public static async Task<string> SavePretaxRollOverSource(string bearer, string planId)
@@ -3340,213 +3845,6 @@ namespace RefitSandBox
             pretaxRolloverSourceId = sourceSave["source"]["id"].ToString();
             return pretaxRolloverSourceId;
         }
-
-        public static async Task SaveMatchSource(string bearer, string planId)
-        {
-            var program = new Program();
-            var sourceModel = new SourceViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            var currentDate = DateTime.UtcNow;
-            await program.Configuration("sourceType", "2");
-            await program.Configuration("sourceCategory", "6");
-            await program.Configuration("effectiveStartDate", "2022-01-01");
-            await program.Configuration("sourceName", "Match");
-            await program.Configuration("responsibleMode", "1");
-            await program.Configuration("sourceCode", "D");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("limitMinimumDollar", "10");
-            await program.Configuration("limitMinimumPercentage", "10");
-            await program.Configuration("limitMaximumPercentage", "70");
-            await program.Configuration("limitMaximumDollar", "70");
-            //program.Configuration("EmployeeDeferralSource.contributionType", "7");
-            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
-            matchSourceId = sourceSave["source"]["id"].ToString();
-            matchSourceName = sourceSave["source"]["sourceName"].ToString();
-        }*/
-
-        public static async Task SaveRothSource(string bearer, string planId)
-        {
-            var program = new Program();
-            var sourceModel = new SourceViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            var currentDate = DateTime.UtcNow;
-            await program.Configuration("sourceType", "1");
-            await program.Configuration("sourceCategory", "2");
-            await program.Configuration("sourceSubCategory", "5");
-            await program.Configuration("sourceSubSubCategory", "1");
-            await program.Configuration("effectiveStartDate", "2020-01-01");
-            await program.Configuration("sourceName", "EERoth");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("limitMinimumDollar", "10");
-            await program.Configuration("limitMinimumPercentage", "10");
-            await program.Configuration("limitMaximumPercentage", "70");
-            await program.Configuration("limitMaximumDollar", "70");
-            await program.Configuration("sourceCode", "Q");
-            await program.Configuration("sourceId", "");
-            await program.Configuration("employerDiscretionarySource", null);
-            await program.Configuration("employerMatchSource", null);
-            await program.Configuration("employerOtherSource", null);
-            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
-            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
-            await program.Configuration("employerSourceExclusion", null);
-            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
-            rothSourceId = sourceSave["source"]["id"].ToString();
-            rothSourceName = sourceSave["source"]["sourceName"].ToString();
-        }
-
-
-        public static async Task SaveCompensation(string bearer, string planId)
-        {
-            var program = new Program();
-            var compensationModel = new CompensationViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(compensationModel);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("compensationCategoryId", companyPlanCompensationId);
-            await program.Configuration("isIncluded", "true");
-            await program.Configuration("calculationType", "1");
-            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var compSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveCompensation");
-        }
-
-        public static async Task UpdatePlanStatus(string bearer, string planId, string statusCode)
-        {
-            var program = new Program();
-            var updatePlanStatusModel = new UpdatePlanStatusViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(updatePlanStatusModel);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("planStatus", statusCode);
-            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "UpdatePlanStatus");
-        }
-
-        public static async Task AddInvestmentsToPlan(string bearer, string planId)
-        {
-            var program = new Program();
-            var investmentPlanMapping = new AddInvestmentsInput();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("investmentId", "2");
-            await program.Configuration("status", "1");
-            await program.Configuration("investmentType", "2");
-            await program.Configuration("planId", planId);
-            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
-            await program.Configuration("investmentId", "3");
-            await program.Configuration("status", "1");
-            await program.Configuration("investmentType", "2");
-            await program.Configuration("planId", planId);
-            var interfaceType1 = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var addedToPlan = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
-        }
-
-        public static async Task AddInvestmentsToPlan(string planId, string modelPortfolioId, string investmentId2, int noOfBlocks, string propertyName, Reqnroll.DataTable dataTable)
-        {
-            var program = new Program();
-            var investmentPlanMapping = new AddInvestmentsInput();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
-            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
-            var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("investmentId", modelPortfolioId);
-            await program.Configuration("status", "1");
-            await program.Configuration("investmentType", "1");
-            await program.Configuration("planId", planId);
-            await program.EditCollection(noOfBlocks, propertyName, dataTable);
-            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var planStatus = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
-            await program.Configuration("investmentId", investmentId2);
-            await program.Configuration("status", "1");
-            await program.Configuration("investmentType", "2");
-            await program.Configuration("planId", planId);
-            var addedToPlan = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
-        }
-
-        public static async Task SaveEnrollmentSettings(string bearer, string planId)
-        {
-            var program = new Program();
-            var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var listOfPlanInvestments = await program.SendAPIRequest(bearer, planId, planDetailsClient, "GetInvestmentListByPlanId");
-            var investmentPlanMappingId = listOfPlanInvestments["investmentPlanDetails"][0]["id"].ToString();
-            var enrollmentSettings = new EnrollmentViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(enrollmentSettings);
-            var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("planId", planId);
-            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
-            await program.Configuration("sourceName", "Pretax");
-            await program.Configuration("contributionRate", "12");
-            await program.Configuration("autoDeferralIncreaseProgram", "true");
-            await program.Configuration("increaseAllowanceDays", "30");
-            await program.Configuration("periodOfIncrease", "1");
-            await program.Configuration("applyADITo", "0");
-            await program.Configuration("adiApplicableTo", "2");
-            await program.Configuration("subjecttoAutoEnrollment", "True");
-            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpen", "3");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
-            await program.Configuration("exclusionType", "0");
-            await program.Configuration("usePlanDefaultDeferralElection", "true");
-            await program.Configuration("usePlanDefaultInvestmentElection", "true");
-            await program.Configuration("sendEnrollmentInvite", "1");
-            await program.Configuration("deferralContributionRateUponRehire", "2");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("sourceId", sourceId);
-            await program.Configuration("autoDeferralIncreasePercentage", "15");
-            await program.Configuration("maximumADIPercentage", "18");
-            await program.Configuration("investmentId", investmentPlanMappingId);
-            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
-        }
-
-        public async Task SaveEnrollmentForModelPortfolio()
-        {
-            var program = new Program();
-            var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
-            var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
-            modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
-            modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
-            RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
-            await program.Configuration("planId", planId);
-            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
-            await program.Configuration("sourceName", "Pretax");
-            await program.Configuration("contributionRate", "12");
-            await program.Configuration("autoDeferralIncreaseProgram", "true");
-            await program.Configuration("increaseAllowanceDays", "30");
-            await program.Configuration("periodOfIncrease", "1");
-            await program.Configuration("applyADITo", "0");
-            await program.Configuration("adiApplicableTo", "2");
-            await program.Configuration("subjecttoAutoEnrollment", "True");
-            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpen", "3");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
-            await program.Configuration("exclusionType", "0");
-            await program.Configuration("usePlanDefaultDeferralElection", "true");
-            await program.Configuration("usePlanDefaultInvestmentElection", "true");
-            await program.Configuration("sendEnrollmentInvite", "1");
-            await program.Configuration("deferralContributionRateUponRehire", "2");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("sourceId", sourceId);
-            await program.Configuration("autoDeferralIncreasePercentage", "15");
-            await program.Configuration("maximumADIPercentage", "18");
-            /*await program.Configuration("1investmentId", RegularInvestmentId);
-            await program.Configuration("2investmentId", modelPortfolioInvestmentId);
-            await program.Configuration("1investmentName", "SEAS003");
-            await program.Configuration("21investmentName", modelPortfolioName);*/
-            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
-        }
-
-
 
         //public static async Task<string> SaveRollOverSource(string? bearer,string planId)
         //{
@@ -3586,7 +3884,6 @@ namespace RefitSandBox
         //    planName = planResponse["plan"]["planName"].ToString();
         //    return RollOverSource;
         //}
-
         public async Task SaveEnrollmentForModelPortfolioWithDiffernentInvestionElectionToAllSources()
         {
             var program = new Program();
@@ -3596,37 +3893,37 @@ namespace RefitSandBox
             modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
             modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
             RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
-            await program.Configuration("planId", planId);
-            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
-            await program.Configuration("sourceName", "Pretax");
-            await program.Configuration("contributionRate", "12");
-            await program.Configuration("autoDeferralIncreaseProgram", "true");
-            await program.Configuration("increaseAllowanceDays", "30");
-            await program.Configuration("periodOfIncrease", "1");
-            await program.Configuration("applyADITo", "0");
-            await program.Configuration("adiApplicableTo", "2");
-            await program.Configuration("subjecttoAutoEnrollment", "True");
-            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpen", "3");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
-            await program.Configuration("exclusionType", "0");
-            await program.Configuration("usePlanDefaultDeferralElection", "true");
-            await program.Configuration("usePlanDefaultInvestmentElection", "false");
-            await program.Configuration("sameInvestmentElectionToAllSources", "false");
-            await program.Configuration("sendEnrollmentInvite", "1");
-            await program.Configuration("deferralContributionRateUponRehire", "2");
-            await program.Configuration("contributionType", "1");
-            //await program.Configuration("sourceId", sourceId);
-            await program.Configuration("autoDeferralIncreasePercentage", "15");
-            await program.Configuration("maximumADIPercentage", "18");
-            /*await program.Configuration("1investmentId", RegularInvestmentId);
-            await program.Configuration("2investmentId", modelPortfolioInvestmentId);
-            await program.Configuration("1investmentName", "SEAS003");
-            await program.Configuration("21investmentName", modelPortfolioName);*/
-            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            program.Configuration("planId", planId);
+            program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            program.Configuration("sourceName", "Pretax");
+            program.Configuration("contributionRate", "12");
+            program.Configuration("autoDeferralIncreaseProgram", "true");
+            program.Configuration("increaseAllowanceDays", "30");
+            program.Configuration("periodOfIncrease", "1");
+            program.Configuration("applyADITo", "0");
+            program.Configuration("adiApplicableTo", "2");
+            program.Configuration("subjecttoAutoEnrollment", "True");
+            program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpen", "3");
+            program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            program.Configuration("exclusionType", "0");
+            program.Configuration("usePlanDefaultDeferralElection", "true");
+            program.Configuration("usePlanDefaultInvestmentElection", "false");
+            program.Configuration("sameInvestmentElectionToAllSources", "false");
+            program.Configuration("sendEnrollmentInvite", "1");
+            program.Configuration("deferralContributionRateUponRehire", "2");
+            program.Configuration("contributionType", "1");
+            //program.Configuration("sourceId", sourceId);
+            program.Configuration("autoDeferralIncreasePercentage", "15");
+            program.Configuration("maximumADIPercentage", "18");
+            /*program.Configuration("1investmentId", RegularInvestmentId);
+            program.Configuration("2investmentId", modelPortfolioInvestmentId);
+            program.Configuration("1investmentName", "SEAS003");
+            program.Configuration("21investmentName", modelPortfolioName);
+        var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
-        }
+        }*/
         public static async Task SaveFunding(string bearer, string planId)
         {
             var program = new Program();
@@ -3636,19 +3933,19 @@ namespace RefitSandBox
             var funding = new FundingViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(funding);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("planId", planId);
-            await program.Configuration("planCashAccountEnabled", "true");
-            await program.Configuration("achPullEnabled", "true");
-            await program.Configuration("bankAccountNumber", "647823647236");
-            await program.Configuration("abaRoutingNumber", "527183462");
-            await program.Configuration("bankAccountName", "HSBC Bank");
-            await program.Configuration("bankAccountType", "2");
-            await program.Configuration("bankAccountStatus", "1");
-            await program.Configuration("defaultBankAccountIndicator", "true");
-            await program.Configuration("classificationIds", null);
-            await program.Configuration("fundingId", fundingId);
-            await program.Configuration("1id", fundingId);
-            await program.Configuration("sponsorFeePaymentMethod", "1");
+            program.Configuration("planId", planId);
+            program.Configuration("planCashAccountEnabled", "true");
+            program.Configuration("achPullEnabled", "true");
+            program.Configuration("bankAccountNumber", "647823647236");
+            program.Configuration("abaRoutingNumber", "527183462");
+            program.Configuration("bankAccountName", "HSBC Bank");
+            program.Configuration("bankAccountType", "2");
+            program.Configuration("bankAccountStatus", "1");
+            program.Configuration("defaultBankAccountIndicator", "true");
+            program.Configuration("classificationIds", null);
+            program.Configuration("fundingId", fundingId);
+            program.Configuration("1id", fundingId);
+            program.Configuration("sponsorFeePaymentMethod", "1");
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var fundingSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveFunding");
             fundingBankId = fundingSave["funding"]["sponsorFundingAccounts"][0]["id"].ToString();
@@ -3661,13 +3958,13 @@ namespace RefitSandBox
             var payrollSearch = new UploadedFileInformationDetails();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(payrollSearch);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("companyName", companyName);
-            await program.Configuration("planName", planName);
-            await program.Configuration("rkPlanNumber", rkPlanNumber);
-            await program.Configuration("uploadedOn", null);
-            await program.Configuration("fileStatus", null);
-            await program.Configuration("fileType", null);
-            await program.Configuration("fileName", null);
+            program.Configuration("companyName", companyName);
+            program.Configuration("planName", planName);
+            program.Configuration("rkPlanNumber", rkPlanNumber);
+            program.Configuration("uploadedOn", null);
+            program.Configuration("fileStatus", null);
+            program.Configuration("fileType", null);
+            program.Configuration("fileName", null);
             //string BaseURL = "https://dev.coreretirementsolutions.com/";
             payrollSearch = (UploadedFileInformationDetails)modelAfterConvention;
             var httpClient = new HttpClient()
@@ -3682,63 +3979,175 @@ namespace RefitSandBox
             var responseArray = JArray.Parse(response.ToString());
             uploadedFileId = responseArray[0]["id"].ToString();
             return uploadedFileId;
-            /*var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var payrollFileList = await program.SendAPIRequest(bearer, payrollSearch, interfaceType, "GetUploadedFilesBasedOnSearchCriteria");*/
-        }
-
-        public static async Task SaveFundingDetailsByPlan(string planId, string fileId)
-        {
-            var program = new Program();
-            var fundingByPlan = new FundingByPlanViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(fundingByPlan);
-            var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("planId", planId);
-            await program.Configuration("fileId", fileId);
-            await program.Configuration("bankId", fundingBankId);
-            await program.Configuration("amount", totalAmount.ToString());
-            await program.Configuration("totalFundingAmount", totalAmount.ToString());
-            await program.Configuration("forfeitureFundings", null);
-            await program.Configuration("achPullFundings", null);
-            await program.Configuration("wireFundings", null);
-            await program.Configuration("checkFundings", null);
-            await program.Configuration("achPushFundings", null);
-            await program.Configuration("totalEmployerContribution", "0");
-            await program.Configuration("bankFundings", null);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var fundByPlan = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "SaveFundingDetailsByPlan");
+            var payrollFileList = await program.SendAPIRequest(bearer, payrollSearch, interfaceType, "GetUploadedFilesBasedOnSearchCriteria");
+        }
+
+        public static async Task SaveFundingDetailsByPlan(HttpClient httpClient, string planId, string fileId)
+        {
+            var PlanFunding = new FundingByPlanViewModel
+            {
+                PlanId = Convert.ToInt32(planId),
+                FileId = Convert.ToInt32(fileId),
+                TotalFundingAmount = totalAmount,
+                TotalEmployerContribution = 0,
+                BankFundings = null,
+                ForfeitureFundings = null,
+                AchDebitFundings = new List<ACHDebitFundingViewModel>
+                {
+                    new ACHDebitFundingViewModel
+                    {
+                        BankName = "HSBC Bank",
+                        BankId = Convert.ToInt32(fundingBankId),
+                        PlanAccountId = 0,
+                        Amount = totalAmount,
+                    }
+                },
+                AchPushFundings = null,
+                WireFundings = null,
+                CheckFundings = null,
+                IsPayDateWise = false,
+                PayDate = null
+            };
+
+            var PayrollInterface = RestService.For<IPayroll>(httpClient);
+            var saveFundingByPlanResponse = await PayrollInterface.SaveFundingDetailsByPlan(PlanFunding);
         }
 
 
-        public static async Task ConfirmFunds(string planId, string fileId, string payrollFundingId)
+        public static async Task ConfirmFunds(HttpClient httpClient, string planId, string fileId, string payrollFundingId)
         {
-            var program = new Program();
+            var ConfirmFunds = new ConfirmFundsViewModel
+            {
+                FileId = Convert.ToInt32(fileId),
+                PayrollFundingId = Convert.ToInt32(payrollFundingId),
+                FundingType = "Plan",
+                IsForfeiture = false,
+                IsACHDebit = true,
+                IsACHPushFunding = false,
+                IsCheckFunding = false,
+                IsWireFunding = false,
+                PlanId = Convert.ToInt32(planId),
+                Amount = totalAmount,
+                NodConfirmationNumber = "",
+                PayDate = null,
+                IsPayDateWise = false
+            };
+
+            var PayrollInterface = RestService.For<IPayroll>(httpClient);
+            var ResponseAfterConfirmFunds = await PayrollInterface.ConfirmFunds(ConfirmFunds);
+            /*var program = new Program();
             var confirmFunds = new ConfirmFundsViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(confirmFunds);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("fileId", fileId);
-            await program.Configuration("fundingType", "Plan");
-            await program.Configuration("isACHDebit", "true");
-            await program.Configuration("planId", planId);
-            await program.Configuration("amount", totalAmount.ToString());
-            await program.Configuration("payrollFundingId", payrollFundingId);
-            await program.Configuration("nodConfirmationNumber", "");
-            await program.Configuration("payDate", "");
+            program.Configuration("fileId", fileId);
+            program.Configuration("fundingType", "Plan");
+            program.Configuration("isACHDebit", "true");
+            program.Configuration("planId", planId);
+            program.Configuration("amount", totalAmount.ToString());
+            program.Configuration("payrollFundingId", payrollFundingId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");
+            var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");*/
+        }
+        public async Task TransferTransaction()
+        {
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            await GenerateOutboundFile(httpClient, "Saturna", "DTCC", 1);
+            await Task.Delay(2000);
+            var tradeOrderNumbers = _sftp.ProcessTradeOrderFile(SFTP.CUSIPTradeIdentifierDict, b50Response);
+            _sftp.EditFixedWidthFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09", new List<B50MatchResult>(), tradeOrderNumbers);
+            _sftp.UploadFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09");
+            var filePicked = await _sftp.WaitForFileToBePickedAsync("D260102.P2361.C09");
+            if (!filePicked)
+                throw new TimeoutException("File not picked up within 2 minutes");
+        }
+        public async Task TradeOutboundFileGeneration(string ClearingPartner, int AccountId)
+        {
+            var program = new Program();
+            var sftp = new SFTP();
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            switch (ClearingPartner)
+            {
+                case "DTCC":
+                    await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 5);
+                    await program.VerifyClearingPartnerMappingId(httpClient, planId);
+                    await Task.Delay(2500);
+                    await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 7);
+                    b50Response = await sftp.SFTPOperations(AccountId.ToString());
+                    if (b50Response.Count == 0)
+                        throw new Exception("B50 File does not contain investments");
+                    sftp.EditFixedWidthFile(Hooks.Hooks.clearingPartnerName, "D260119.P2084.C00", b50Response, new Dictionary<string, CusipProcessingResult>());
+                    sftp.UploadFile(Hooks.Hooks.clearingPartnerName, "D260119.P2084.C00");
+                    await sftp.PollingIdentifier(httpClient, Hooks.Hooks.clearingPartnerName, planId, "ClearingPartnerMapping");
+                    break;
+
+                default:
+                    throw new Exception($"Invalid Clearing partner {ClearingPartner}");
+            }
         }
 
-        public static async Task EnrollmentSetup()
+        public async Task GenerateOutboundFile(HttpClient httpClient, string tenantIdentifier, string custodianIdentifier, int tradeFileType)
         {
-            try
+            var generateOutboundFileModel = new OutboundFileGeneration
             {
-                var program = new Program();
-                await program.EnrollmentConfiguration(planId, sourceId, rothSourceId, "<SEAS001>", "<SEAS002>");
-            }
-            catch(Exception ex)
+                TenantIdentifier = tenantIdentifier,
+                TransmissionType = TransmissionType2._2,
+                TransmissionMode = TransmissionMode._1,
+                TradeFileType = (TradeFileType)tradeFileType,
+                CustodianIndentifier = custodianIdentifier,
+            };
+
+            var settings = new JsonSerializerSettings
             {
-                throw ex;
-            }
+                NullValueHandling = NullValueHandling.Include
+            };
+
+            var json = JsonConvert.SerializeObject(generateOutboundFileModel, settings);
+            var requestPayload = JObject.Parse(json);
+            Console.WriteLine("Trade order request :" + requestPayload.ToString());
+            string Action = "api/v1/TradeOutboundFileGeneration/GenerateFile";
+            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
+            
+            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
+            var contentTask = await task.Content.ReadAsStringAsync();
+            if (!(contentTask == "Outbound File generation initiated successfully"))
+                throw new Exception($"Error in running {Action} endpoint");
+            
         }
+
+        public async Task VerifyClearingPartnerMappingId(HttpClient httpClient, string planId)
+        {
+            var PlanInterface = RestService.For<IPlanDetailsSave>(httpClient);
+            var clearingPartnerPlanMappingResponse = await PlanInterface.GetPlanAssociatedClearingPartnerAccounts(Convert.ToInt32(planId));
+
+            var parsedResponse = JObject.Parse(clearingPartnerPlanMappingResponse.ToString())["planAssociatedClearingPartnerAccounts"] as JArray;
+            var clearingPartnerMappingId = parsedResponse[0]["clearingPartnerId"].ToString();
+            if(clearingPartnerMappingId == null)
+                throw new Exception("Clearing Partner Mapping Id is null");
+        }
+
+        public static async Task<bool> VerifyAccountBalanceReflection(HttpClient httpClient, string planId)
+        {
+            var employeeId = await GetEmployeeId();
+            await Task.Delay(3000);
+            var currentDate = DateTime.Today.ToString("yyyy-MM-dd");
+            var tradeOrderClient = RestService.For<ITradeOrderFileUpload>(httpClient);
+            employeeAccountBalance = await tradeOrderClient.GetParticipantAccountBalanceByPlan(planId, employeeId, currentDate);
+            var accountBalance = employeeAccountBalance.RegularAccountBalance;
+            if (accountBalance == 0)
+                return false;
+            else
+                return true;
+        }
+    
         public async Task EnrollmentConfiguration(string planId, string pretaxSourceId, string rothSourceId, string investment1Name, string investment2Name)
         {
             var program = new Program();
@@ -3757,72 +4166,72 @@ namespace RefitSandBox
                     SameInvestmentElectionToAllParticipants = true,
                     InvestmentElectionBasedOn = null,
                     DeferralSourceContribution = new List<DeferralSourceContributionViewModel>
-        {
-            new DeferralSourceContributionViewModel
-            {
-                DefaultElectionSettingsId = 0,
-                Id = 0,
-                SourceId = int.Parse(pretaxSourceId),
-                SourceName = "EEPretax",
-                SourceType = 0,
-                SourceCategory = 0,
-                SourceSubCategory = 0,
-                ContributionType = 1,
-                ContributionRate = 30.0, // double
-                MinimumRate = null,
-                MaximumRate = null,
-                PercentageMinimumRate = null,
-                PercentageMaximumRate = null,
-                IsDeleted = false,
-                ContributionFieldType = 1,
-                HceContributionFieldType = null,
-                HceRate = null
-            },
-            new DeferralSourceContributionViewModel
-            {
-                DefaultElectionSettingsId = 0,
-                Id = 0,
-                SourceId = int.Parse(rothSourceId),
-                SourceName = "Roth",
-                SourceType = 0,
-                SourceCategory = 0,
-                SourceSubCategory = 0,
-                ContributionType = 1,
-                ContributionRate = 30.0,
-                MinimumRate = null,
-                MaximumRate = null,
-                PercentageMinimumRate = null,
-                PercentageMaximumRate = null,
-                IsDeleted = false,
-                ContributionFieldType = 1,
-                HceContributionFieldType = null,
-                HceRate = null
-            }
-        },
+                    {
+                        new DeferralSourceContributionViewModel
+                        {
+                            DefaultElectionSettingsId = 0,
+                            Id = 0,
+                            SourceId = int.Parse(pretaxSourceId),
+                            SourceName = "EEPretax",
+                            SourceType = 0,
+                            SourceCategory = 0,
+                            SourceSubCategory = 0,
+                            ContributionType = 1,
+                            ContributionRate = 30.0, // double
+                            MinimumRate = null,
+                            MaximumRate = null,
+                            PercentageMinimumRate = null,
+                            PercentageMaximumRate = null,
+                            IsDeleted = false,
+                            ContributionFieldType = 1,
+                            HceContributionFieldType = null,
+                            HceRate = null
+                        },
+                        new DeferralSourceContributionViewModel
+                        {
+                            DefaultElectionSettingsId = 0,
+                            Id = 0,
+                            SourceId = int.Parse(rothSourceId),
+                            SourceName = "Roth",
+                            SourceType = 0,
+                            SourceCategory = 0,
+                            SourceSubCategory = 0,
+                            ContributionType = 1,
+                            ContributionRate = 30.0,
+                            MinimumRate = null,
+                            MaximumRate = null,
+                            PercentageMinimumRate = null,
+                            PercentageMaximumRate = null,
+                            IsDeleted = false,
+                            ContributionFieldType = 1,
+                            HceContributionFieldType = null,
+                            HceRate = null
+                        }
+                    },
                     DefaultElectionBasedOnList = new List<DefaultElectionBasedOnViewModel>(),
                     PlanInvestment = new List<PlanInvestmentViewModel>
-        {
-            new PlanInvestmentViewModel
-            {
-                DefaultElectionSettingsId = 0,
-                InvestmentElectionBasedOnId = null,
-                Id = 0,
-                InvestmentId = int.Parse(investment1PlanMappingId),
-                InvestmentName = "SEAS001",
-                InvestmentPercentage = 70.0, // double
-                IsDeleted = false
-            },
-            new PlanInvestmentViewModel
-            {
-                DefaultElectionSettingsId = 0,
-                InvestmentElectionBasedOnId = null,
-                Id = 0,
-                InvestmentId = int.Parse(investment2PlanMappingId),
-                InvestmentName = "SEAS002",
-                InvestmentPercentage = 30.0,
-                IsDeleted = false
-            }
-        },
+                    {
+                        new PlanInvestmentViewModel
+                        {
+                            DefaultElectionSettingsId = 0,
+                            InvestmentElectionBasedOnId = null,
+                            Id = 0,
+                            InvestmentId = int.Parse(investment1PlanMappingId),
+                            InvestmentName = "SEAS001",
+                            InvestmentPercentage = 70.0, // double
+                            IsDeleted = false
+                        },
+                        new PlanInvestmentViewModel
+                        {
+                            DefaultElectionSettingsId = 0,
+                            InvestmentElectionBasedOnId = null,
+                            Id = 0,
+                            InvestmentId = int.Parse(investment2PlanMappingId),
+                            InvestmentName = "SEAS002",
+                            InvestmentPercentage = 30.0,
+                            IsDeleted = false
+                        }
+                    },
                     AdditionalDefaultElectionSetting = new List<AdditionalDefaultElectionSettingViewModel>()
                 },
                 AutoDeferralncreaseApplicable = new ADIApplicableConfigurationViewModel2
@@ -3913,32 +4322,32 @@ namespace RefitSandBox
                     HiredBetweenFrom = null,
                     HiredBetweenTo = null,
                     AutoEnrollmentDeferralSources = new List<AutoEnrollmentDeferralSourcesViewModel2>
-        {
-            new AutoEnrollmentDeferralSourcesViewModel2
-            {
-                AutoEnrollmentId = 0,
-                Id = 0,
-                SourceId = int.Parse(pretaxSourceId),
-                DeferralSourceName = "EEPretax",
-                DeferralSourcePercentage = 30.0,
-                ExcludeFromEnrollment = false,
-                LimitMinimum = 10.0,
-                LimitMaximum = 70.0,
-                IsDeleted = false
-            },
-            new AutoEnrollmentDeferralSourcesViewModel2
-            {
-                AutoEnrollmentId = 0,
-                Id = 0,
-                SourceId = int.Parse(rothSourceId),
-                DeferralSourceName = "Roth",
-                DeferralSourcePercentage = 30.0,
-                ExcludeFromEnrollment = false,
-                LimitMinimum = 10.0,
-                LimitMaximum = 70.0,
-                IsDeleted = false
-            }
-        },
+                    {
+                        new AutoEnrollmentDeferralSourcesViewModel2
+                        {
+                            AutoEnrollmentId = 0,
+                            Id = 0,
+                            SourceId = int.Parse(pretaxSourceId),
+                            DeferralSourceName = "EEPretax",
+                            DeferralSourcePercentage = 30.0,
+                            ExcludeFromEnrollment = false,
+                            LimitMinimum = 10.0,
+                            LimitMaximum = 70.0,
+                            IsDeleted = false
+                        },
+                        new AutoEnrollmentDeferralSourcesViewModel2
+                        {
+                            AutoEnrollmentId = 0,
+                            Id = 0,
+                            SourceId = int.Parse(rothSourceId),
+                            DeferralSourceName = "Roth",
+                            DeferralSourcePercentage = 30.0,
+                            ExcludeFromEnrollment = false,
+                            LimitMinimum = 10.0,
+                            LimitMaximum = 70.0,
+                            IsDeleted = false
+                        }
+                    },
                     AdditionalAutoEnrollment = new List<AdditionalAutoEnrollmentDataViewModel2>()
                 },
                 OtherInformation = new OtherInformationViewModel
@@ -3967,7 +4376,7 @@ namespace RefitSandBox
             {
                 NullValueHandling = NullValueHandling.Include
             };
-            
+
             var json = JsonConvert.SerializeObject(enrollmentModel, settings);
             var requestPayload = JObject.Parse(json);
             Console.WriteLine("Enrollment request :" + requestPayload.ToString());
@@ -3985,5 +4394,242 @@ namespace RefitSandBox
             Console.Write(response.ToString());
         }
 
+        public async Task<string> GetPayrollTransactionId()
+        {
+            var getTransactionModel = new GetEmployeeTransactionViewModel
+            {
+                PlanId = int.Parse(planId),
+                EmployeeId = Convert.ToInt32(await GetEmployeeId()),
+                TransactionType = new List<int> { 5 },
+                FromDate = DateTimeOffset.Now.AddYears(-10),
+                ToDate = DateTimeOffset.Now,
+                PageNumber = 1,
+                RecordsPerPage = 20
+            };
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+
+            var tradeInterface = RestService.For<ITradeOrderFileUpload>(httpClient);
+            var transactionResponse = await tradeInterface.GetEmployeeTransactionViewAsync(getTransactionModel);
+
+            var payrollTransactionId = transactionResponse.TransactionDetails.Select(_ => _.TransactionKey).First().ToString();
+
+            if(payrollTransactionId == null)
+            {
+                throw new Exception("Payroll Transaction Id is null"); 
+                return null;
+            }
+                
+            else
+                return payrollTransactionId;
+        }
+
+        public static async Task SaveEmployee(HttpClient httpClient, string companyId)
+        {
+            var program = new Program();
+            var employeeModel = program.EmployeeConfiguration();
+            employeeModel.CompanyId = int.Parse(companyId);
+
+            var employeeInterface = RestService.For<IEmployee>(httpClient);
+            var saveEmployeeResponse = await employeeInterface.SaveEmployeeAsync(employeeModel);
+
+            var parsedResponse = JObject.Parse(saveEmployeeResponse.ToString());
+            employeeId = parsedResponse["employee"]["id"].ToString();
+            Console.WriteLine("Employee created with id: " + employeeId);
+        }
+
+        public PayrollEmployeeViewModel EmployeeConfiguration()
+        {
+            var faker = new Faker();
+            employeeViewModel = new PayrollEmployeeViewModel
+            {
+                Id = 0,
+                CompanyId = 0,
+                ModeOfHours = 1,
+                FirstName = faker.Name.FirstName(),
+                LastName = faker.Name.LastName(),
+                MiddleName = "A",
+                EmployeeNumber = null,
+                UniquePersonalIdentification = faker.Person.Ssn(),
+                VestingPercentage = 0,
+                Gender = faker.PickRandom(new[] { "M", "F" }),
+                MaritalStatus = faker.PickRandom(new[] { "S", "M", "D", "W" }),
+                FamilyStatus = "",
+                PermanentId = 0,
+                BirthDate = faker.Date.Past(30, DateTime.Today.AddYears(-18)).ToUniversalTime(),
+                Address = faker.Address.StreetAddress(),
+                Address1 = faker.Address.SecondaryAddress(),
+                Address2 = null,
+                Address3 = null,
+                Country = "USA",
+                CountryId = 1,
+                State = "AL",
+                StateId = 1,
+                City = faker.Address.City(),
+                ZipCode = faker.Random.Replace("#####-####"),
+                MobilePhoneNumber = faker.Random.Replace("9##-###-####"),
+                WorkPhoneNumber = null,
+                Fax = null,
+                PrimaryEmailAddress = faker.Internet.Email(),
+                AlternativeEmailAddress = null,
+                ForeignState = null,
+                ForeignCountry = null,
+                HireDate = faker.Date.Past(10).ToUniversalTime(),
+                ReHireDate = null,
+                TerminationDate = null,
+                LeaveStartDate = null,
+                LeaveEndDate = null,
+                PayPeriodHours = null,
+                YtdHours = null,
+                TempAmt = null,
+                FileUploadId = null,
+                UploadedThrough = null,
+                PayDate = null,
+                EmploymentStatusId = null,
+                EmploymentStatus = "Active",
+                EmploymentSchedule = null,
+                PayrollFrequency = "Daily",
+                PayrollFrequencyId = null,
+                ConfirmationNumber = null,
+                EntryMode = null,
+                AnnualSalary = null,
+                RkPlanNumber = null,
+                ImageURL = null,
+                HceIndicator = null,
+                IsSponsor = false,
+                HceIndicatorReason = null,
+                PendingQDROIndicator = false,
+                OfficerIndicator = false,
+                FamilyMemberOfOwnerIndicator = false,
+                RelationUniquePersonalIdentification = null,
+                OwnerShip = null,
+                Relationship = null,
+                SsnOfOwner = null,
+                InsiderOrRestrictedEmployeeIndicator = false,
+                KeyEmployeeIndicator = false,
+                ReturnMailIndicator = false,
+                TotalContributionAmount = null,
+                UnionEmployeeIndicator = false,
+                LeasedOrContractedEmployeeIndicator = false,
+                PartTimeEmployeeIndicator = false,
+                NonResidentAlienIndicator = false,
+                TotalLoanRePayAmount = null,
+                ErrorMessages = null,
+                HoursDetails = null,
+                EmployeeClassifications = new List<PayrollEmployeeClassificationViewModel>
+                {
+                    new PayrollEmployeeClassificationViewModel
+                    {
+                       Id = 0,
+                       ClassificationTypeName = "Location",
+                       Code = "L1",
+                       ClassificationTypeId = 0,
+                       ClassificationId = 0,
+                       EffectiveStartDate = DateTimeOffset.Now,
+                       EffectiveEndDate = null,
+                       ClassificationName = "Location",
+                       IsMandatory = false,
+                       DisplayOrder = 0,
+                       IsCodeExist = false,
+                       IsEndDateCalculated = false,
+                       PmtTypeWiseClassificationHistoryId = 0,
+                       EmployeeClassificationHistory = null,
+                       PayDate = null
+                    }
+                },
+                PayrollLoans = new List<PayrollLoanViewModel>(),
+                Contributions = new List<ContributionViewModel>(),
+                CompensationCategories = new List<EmployeeCompensationCategoryViewModel>(),
+                Compensations = new List<PayrollCompensationViewModel>(),
+                EmployeePlanLevelCompensationCategories = new List<PlanCompensationViewModel>(),
+                RehireDetails = new List<RehireDetailViewModel>()
+                {
+                    new RehireDetailViewModel
+                    {
+                        Id = 0,
+                        EmployeeRehireId = 0,
+                        RehireDate = null,
+                        RehireInd = false,
+                        TerminationDate = null
+                    }
+                },
+                EmployeeYOSs = new List<EmployeeYOSTestViewModel>(),
+                DeletedContributionIds = new List<int>(),
+                DeletedLoanIds = new List<int>(),
+                AcceptedErrorIds = new List<int>(),
+                AdditionalAddress = null,
+                AcceptWarning = false,
+                BankAccountNumber = faker.Finance.Account(12),
+                BankAccountName = faker.Person.FirstName,
+                RoutingNumber = faker.Finance.RoutingNumber(),
+                BankAccountType = 1,
+                AccountHolderName = faker.Name.FullName()
+            };
+
+            return employeeViewModel;
+        }
+
+        public BeneficiaryInformation BeneficiaryConfiguration()
+        {
+            var faker = new Faker();
+            var beneficiaryInformation = new BeneficiaryInformation
+            {
+                Id = 0,
+                BeneficiaryName = faker.Name.FullName(),
+                BeneficiaryType = 1,
+                RelationShipType = 1,
+                TrustName = null,
+                EstateName = null,
+                EntityName = null,
+                StateAgency = null,
+                TrusteeName = null,
+                ExecutorName = null,
+                RepresentativeName = null,
+                Ein = faker.Random.Replace("##-#######"),
+                Tin = faker.Random.Replace("##-#######"),
+                PhoneNumber = faker.Phone.PhoneNumber("9##-###-####"),
+                EmailId = faker.Internet.Email(),
+                DateOfBirth = faker.Date.Past(30, DateTime.Today.AddYears(-18)).ToUniversalTime(),
+                Address1 = faker.Address.StreetAddress(),
+                Address2 = faker.Address.SecondaryAddress(),
+                Address3 = null,
+                City = faker.Address.City(),
+                CountryId = 1,
+                StateId = 1,
+                ZipCode = faker.Random.Replace("#####-####"),
+                ForeignCountry = null,
+                ForeignState = null,
+                BankAccountNumber = faker.Finance.Account(12),
+                BankAccountName = faker.Person.FirstName,
+                RoutingNumber = faker.Finance.RoutingNumber(),
+                BankAccountType = 1,
+                AccountHolderName = faker.Person.FullName,
+                EmployeeId = int.Parse(employeeId),
+                UniquePersonalIdentification = faker.Person.Ssn()
+            };
+
+            return beneficiaryInformation;
+        }
+
+        public async Task AdjustmentConfigurations(string AdjustType, string IncidentCode)
+        {
+            //Handle Adjustment type and Incident code based on test case, for now going with default values
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            var transactionConfiguration = new TransactionsConfigurations(this);
+            var employeeId = await GetEmployeeId();
+            var payrollTransactionId = await GetPayrollTransactionId();
+            var adjustmentId = await transactionConfiguration.AdjustmentConfiguration(httpClient, Convert.ToInt32(planId), Convert.ToInt32(employeeId), planName, payrollTransactionId);
+        }
     }
 }
