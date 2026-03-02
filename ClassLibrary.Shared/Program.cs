@@ -3908,7 +3908,7 @@ namespace RefitSandBox
                 case "DTCC":
                     await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 5);
                     await program.VerifyClearingPartnerMappingId(httpClient, planId);
-                    await Task.Delay(2000);
+                    await Task.Delay(2500);
                     await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 7);
                     b50Response = await sftp.SFTPOperations(AccountId.ToString());
                     if (b50Response.Count == 0)
