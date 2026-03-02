@@ -1780,7 +1780,7 @@ namespace RefitSandBox
                 {"/api/v1/Transfer/SaveTransferDetailsForAdmin", () => new TransferDetailsForAdminViewModel() },
                 {"/api/Rollover/SaveRollover", () => new RolloverViewModel() },
                 { "/api/RolloverIn/SaveRolloverInRequest", () => new RollOverInRequestDetails()},
-                { "/api/v1/Adjustment/SaveBasicAdjustmentDetails", () => new BasicDetails() }
+                { "/api/v1/Adjustment/SaveBasicAdjustmentDetails", () => new BasicDetails() },
                 //{"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
                 { "/api/Transfer/SaveTransfer",() => new TransferViewModel()},
                // { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
@@ -3632,24 +3632,24 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             var currentDate = DateTime.UtcNow;
-            await program.Configuration("sourceType", "1");
-            await program.Configuration("sourceCategory", "4");
-            await program.Configuration("sourceSubCategory", "7");
-            await program.Configuration("sourceSubSubCategory", "");
-            await program.Configuration("effectiveStartDate", "2020-01-01");
-            await program.Configuration("sourceName", "Pretax Rollover");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("limitMinimumDollar", "10");
-            await program.Configuration("limitMinimumPercentage", "10");
-            await program.Configuration("limitMaximumPercentage", "70");
-            await program.Configuration("limitMaximumDollar", "70");
-            await program.Configuration("sourceCode", "R");
-            await program.Configuration("employerDiscretionarySource", null);
-            await program.Configuration("employerMatchSource", null);
-            await program.Configuration("employerOtherSource", null);
-            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
-            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
-            await program.Configuration("employerSourceExclusion", null);
+            program.Configuration("sourceType", "1");
+            program.Configuration("sourceCategory", "4");
+            program.Configuration("sourceSubCategory", "7");
+            program.Configuration("sourceSubSubCategory", "");
+            program.Configuration("effectiveStartDate", "2020-01-01");
+            program.Configuration("sourceName", "Pretax Rollover");
+            program.Configuration("contributionType", "1");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
+            program.Configuration("limitMaximumPercentage", "70");
+            program.Configuration("limitMaximumDollar", "70");
+            program.Configuration("sourceCode", "R");
+            program.Configuration("employerDiscretionarySource", null);
+            program.Configuration("employerMatchSource", null);
+            program.Configuration("employerOtherSource", null);
+            program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            program.Configuration("employerSourceExclusion", null);
 
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
