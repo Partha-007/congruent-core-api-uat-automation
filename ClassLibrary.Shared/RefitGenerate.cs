@@ -167,6 +167,10 @@ namespace RefitSandBox
 
         [Post("/api/v1/TradeOutboundFileGeneration/GenerateFile")]
         Task<object> GenerateFileAsync(OutboundFileGeneration outboundFileGeneration);
+
+        [Post("/api/v1/Trade/GetEmployeeTransactionView")]
+
+        Task<GetEmployeeTransactionViewResult> GetEmployeeTransactionViewAsync([Body] GetEmployeeTransactionViewModel employeeTransactionViewRequest);
     }
 
     public interface IInvestment
@@ -267,6 +271,24 @@ public interface ILoan
         [Post("/api/v1/Transfer/SaveTransferDetailsForAdmin")]
 
         Task<object> SaveTransferDetailsForAdminAsync(TransferDetailsForAdminViewModel transferDetails);
+    }
+
+    public interface IRolloverIn
+    {
+        [Post("/api/RolloverIn/SaveRolloverInRequest")]
+        Task<object> SaveRolloverInRequestAsync(RollOverInRequestDetails rollOverInRequestDetails);
+    }
+
+    public interface IAdjustments
+    {
+        [Post("/api/v1/Adjustment/SaveBasicAdjustmentDetails")]
+        Task<SaveBasicDetailsResult> SaveBasicAdjustmentDetailsAsync(BasicDetails basicDetails);
+
+        [Post("/api/v1/Adjustment/SaveAdjustmentDetails")]
+        Task<SaveAdjustmentDetailsResult> SaveAdjustmentDetailsAsync(AdjustmentDetails adjustmentDetails);
+
+        [Get("/api/v1/Adjustment/SaveAdjustmentSummaryById/{Id}")]
+        Task<SaveAdjustmentSummaryResult> SaveAdjustmentSummaryByIdAsync(int Id);
     }
     public class Advisor
     {

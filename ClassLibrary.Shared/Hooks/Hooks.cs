@@ -263,7 +263,7 @@ namespace RefitSandBox.Hooks
             await UserLogin();
             string companyId = await Program.SaveCompany(bearer!); // Static method call
             planId = await Program.SavePlan(bearer!, companyId);
-            await Program.SaveSponsor(bearer!, planId);
+            await Program.SaveSponsor(httpClient, bearer!, planId);
             await Program.ClearingPartnerPlanMapping(bearer!, planId);
             await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
             await Program.SaveEntryDate(httpClient, bearer!, planId);
@@ -317,7 +317,7 @@ namespace RefitSandBox.Hooks
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
             string companyId = await Program.SaveCompany(Hooks.bearer); // Static method call
             planId = await Program.SavePlan(bearer!, companyId);
-            await Program.SaveSponsor(bearer!, planId);
+            await Program.SaveSponsor(httpClient, bearer!, planId);
             await Program.ClearingPartnerPlanMapping(bearer!, planId);
             await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
             await Program.SaveEntryDate(httpClient, bearer!, planId);
@@ -346,7 +346,7 @@ namespace RefitSandBox.Hooks
             string companyId = await Program.SaveCompany(bearer); // Static method call
             planId = await Program.SavePlan(bearer!, companyId);
 
-            await Program.SaveSponsor(bearer!, planId);
+            await Program.SaveSponsor(httpClient, bearer!, planId);
             await Program.ClearingPartnerPlanMapping(bearer!, planId);
             await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
             await Program.SaveEntryDate(httpClient, bearer!, planId);
@@ -511,7 +511,7 @@ namespace RefitSandBox.Hooks
             for (i = 1; i < j; i++)
             {
                 planId = await Program.SavePlan(bearer!, companyId);
-                await Program.SaveSponsor(bearer!, planId);
+                await Program.SaveSponsor(httpClient, bearer!, planId);
                 //await Program.ClearingPartnerPlanMapping(bearer!, planId);
                 await Program.UpsertPlanWithClearingPartnerAccount(httpClient, planId, AccountId);
                 await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
@@ -532,7 +532,7 @@ namespace RefitSandBox.Hooks
             await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);
             await Program.UpdatePlanStatus(bearer!, planId, "2");
             await Program.UpdatePlanStatus(bearer!, planId, "3");
-            //RollOverSource = await Program.SavePretaxRollOverSource(bearer!, planId);
+            await Program.SavePretaxRolloverSource(bearer!, planId);
         }
 
     }

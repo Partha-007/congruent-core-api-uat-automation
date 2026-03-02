@@ -471,6 +471,8 @@ namespace ClassLibrary.Shared
                     await Task.Delay(interval * 1000);
                     waited += interval;
                 }
+
+                throw new Exception("Account balance not updated for the employee within the time");
             }
             
         }

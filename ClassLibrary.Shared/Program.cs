@@ -713,13 +713,13 @@ namespace RefitSandBox
                     // If it's a collection, iterate through each item in the collection
                     foreach (var item in (System.Collections.IEnumerable)propertyValue)
                     {
-                        SetPropertyValueRecursive(item, propertyName, value);
+                        await SetPropertyValueRecursive(item, propertyName, value);
                     }
                 }
                 else if (propertyValue != null && !property.PropertyType.IsValueType && property.PropertyType != typeof(string))
                 {
                     // If the property is a complex type, recurse into it
-                    SetPropertyValueRecursive(propertyValue, propertyName, value);
+                    await SetPropertyValueRecursive(propertyValue, propertyName, value);
                 }
             }
         }
@@ -1790,7 +1790,10 @@ namespace RefitSandBox
                 { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
                 { "/api/Source/SaveSource",() => sourceobjModel==null?new SourceViewModel():sourceobjModel},
                 {"/api/Transfer/SaveTransfer",() => new TransferViewModel() },
-                {"/api/v1/Transfer/SaveTransferDetailsForAdmin", () => new TransferDetailsForAdminViewModel() }
+                {"/api/v1/Transfer/SaveTransferDetailsForAdmin", () => new TransferDetailsForAdminViewModel() },
+                {"/api/Rollover/SaveRollover", () => new RolloverViewModel() },
+                { "/api/RolloverIn/SaveRolloverInRequest", () => new RollOverInRequestDetails()},
+                { "/api/v1/Adjustment/SaveBasicAdjustmentDetails", () => new BasicDetails() }
                 //{"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
             };
 
@@ -2803,6 +2806,8 @@ namespace RefitSandBox
             else if (value == "<ActiveStatusId>") return ActiveStatusId;
             else if (value == "<EmployeeId>") return await GetEmployeeId();
             else if (value == "<PlanId>") return planId;
+            else if (value == "<SSN>") return employeeSSN.Replace("-", "");
+            else if (value == "<PayrollTransactionId>") return await GetPayrollTransactionId();
 
             else return null;
         }
@@ -3269,16 +3274,59 @@ namespace RefitSandBox
             return planId;
         }
 
-        public static async Task SaveSponsor(string bearer, string planId)
+        public static async Task SaveSponsor(HttpClient httpClient, string bearer, string planId)
         {
+            var faker = new Faker();
             var program = new Program();
-            var sponsorModel = new SponsorViewModel();
-            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sponsorModel);
+            var sponsorModel = new SponsorViewModel
+            {
+                Id = 0,
+                Ssn = faker.Random.Replace("6##-##-####"),
+                Name = new MyNamespace.Name
+                {
+                    FirstName = faker.Person.FirstName,
+                    LastName = faker.Person.LastName,
+                    MiddleName = faker.Name.Suffix()
+                },
+                ContactDetails = new MyNamespace.Contact
+                {
+                    MobilePhoneNumber = faker.Random.Replace("###-###-####"),
+                    WorkPhoneNumber = null,
+                    Email = faker.Person.Email,
+                    Website = null,
+                },
+                PlanId = int.Parse(planId),
+                ExistingEmployeeId = null,
+                IsDeleted = false,
+                IsSponsor = true,
+                Validate = null,
+                Address = new MyNamespace.Address
+                {
+                    Address1 = faker.Address.StreetAddress(),
+                    Address2 = faker.Address.StreetName(),
+                    Address3 = null,
+                    City = faker.Address.City(),
+                    State = null,
+                    ZipCode = faker.Random.Replace("#####-####"),
+                    PostalCode = null,
+                    Country = null
+                },
+                StateId = 1,
+                CountryId = 1,
+                ForeignCountry = null,
+                ForeignState = null,
+                ForeignZipCode = null,
+            };
+
+            var planInterface = RestService.For<IPlanDetailsSave>(httpClient);
+            var sponsorSaveResponse = await planInterface.SavePlanSponsor(sponsorModel);
+
+            /*modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sponsorModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             modelAfterConvention = FakeDataHelper.AssignId("1", "CountryId", modelAfterConvention);
             modelAfterConvention = FakeDataHelper.AssignId("1", "StateId", modelAfterConvention);
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
-            var sponsorSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType!, "SavePlanSponsor");
+            var sponsorSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType!, "SavePlanSponsor");*/
         }
 
         public static async Task ClearingPartnerPlanMapping(string bearer, string planId,string? ACName=null)
@@ -3487,7 +3535,39 @@ namespace RefitSandBox
             rothSourceName = sourceSave["source"]["sourceName"].ToString();
         }
 
+        public static async Task SavePretaxRolloverSource(string bearer, string planId)
+        {
+            var program = new Program();
+            var sourceModel = new SourceViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            var currentDate = DateTime.UtcNow;
+            await program.Configuration("sourceType", "1");
+            await program.Configuration("sourceCategory", "4");
+            await program.Configuration("sourceSubCategory", "7");
+            await program.Configuration("sourceSubSubCategory", "");
+            await program.Configuration("effectiveStartDate", "2020-01-01");
+            await program.Configuration("sourceName", "Pretax Rollover");
+            await program.Configuration("contributionType", "1");
+            await program.Configuration("limitMinimumDollar", "10");
+            await program.Configuration("limitMinimumPercentage", "10");
+            await program.Configuration("limitMaximumPercentage", "70");
+            await program.Configuration("limitMaximumDollar", "70");
+            await program.Configuration("sourceCode", "R");
+            await program.Configuration("employerDiscretionarySource", null);
+            await program.Configuration("employerMatchSource", null);
+            await program.Configuration("employerOtherSource", null);
+            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            await program.Configuration("employerSourceExclusion", null);
 
+            //program.Configuration("EmployeeDeferralSource.contributionType", "7");
+            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
+            sourceId = sourceSave["source"]["id"].ToString();
+            pretaxsourceName = sourceSave["source"]["sourceName"].ToString();
+        }
         public static async Task SaveCompensation(string bearer, string planId)
         {
             var program = new Program();
@@ -3915,72 +3995,72 @@ namespace RefitSandBox
                     SameInvestmentElectionToAllParticipants = true,
                     InvestmentElectionBasedOn = null,
                     DeferralSourceContribution = new List<DeferralSourceContributionViewModel>
-        {
-            new DeferralSourceContributionViewModel
-            {
-                DefaultElectionSettingsId = 0,
-                Id = 0,
-                SourceId = int.Parse(pretaxSourceId),
-                SourceName = "EEPretax",
-                SourceType = 0,
-                SourceCategory = 0,
-                SourceSubCategory = 0,
-                ContributionType = 1,
-                ContributionRate = 30.0, // double
-                MinimumRate = null,
-                MaximumRate = null,
-                PercentageMinimumRate = null,
-                PercentageMaximumRate = null,
-                IsDeleted = false,
-                ContributionFieldType = 1,
-                HceContributionFieldType = null,
-                HceRate = null
-            },
-            new DeferralSourceContributionViewModel
-            {
-                DefaultElectionSettingsId = 0,
-                Id = 0,
-                SourceId = int.Parse(rothSourceId),
-                SourceName = "Roth",
-                SourceType = 0,
-                SourceCategory = 0,
-                SourceSubCategory = 0,
-                ContributionType = 1,
-                ContributionRate = 30.0,
-                MinimumRate = null,
-                MaximumRate = null,
-                PercentageMinimumRate = null,
-                PercentageMaximumRate = null,
-                IsDeleted = false,
-                ContributionFieldType = 1,
-                HceContributionFieldType = null,
-                HceRate = null
-            }
-        },
+                    {
+                        new DeferralSourceContributionViewModel
+                        {
+                            DefaultElectionSettingsId = 0,
+                            Id = 0,
+                            SourceId = int.Parse(pretaxSourceId),
+                            SourceName = "EEPretax",
+                            SourceType = 0,
+                            SourceCategory = 0,
+                            SourceSubCategory = 0,
+                            ContributionType = 1,
+                            ContributionRate = 30.0, // double
+                            MinimumRate = null,
+                            MaximumRate = null,
+                            PercentageMinimumRate = null,
+                            PercentageMaximumRate = null,
+                            IsDeleted = false,
+                            ContributionFieldType = 1,
+                            HceContributionFieldType = null,
+                            HceRate = null
+                        },
+                        new DeferralSourceContributionViewModel
+                        {
+                            DefaultElectionSettingsId = 0,
+                            Id = 0,
+                            SourceId = int.Parse(rothSourceId),
+                            SourceName = "Roth",
+                            SourceType = 0,
+                            SourceCategory = 0,
+                            SourceSubCategory = 0,
+                            ContributionType = 1,
+                            ContributionRate = 30.0,
+                            MinimumRate = null,
+                            MaximumRate = null,
+                            PercentageMinimumRate = null,
+                            PercentageMaximumRate = null,
+                            IsDeleted = false,
+                            ContributionFieldType = 1,
+                            HceContributionFieldType = null,
+                            HceRate = null
+                        }
+                    },
                     DefaultElectionBasedOnList = new List<DefaultElectionBasedOnViewModel>(),
                     PlanInvestment = new List<PlanInvestmentViewModel>
-        {
-            new PlanInvestmentViewModel
-            {
-                DefaultElectionSettingsId = 0,
-                InvestmentElectionBasedOnId = null,
-                Id = 0,
-                InvestmentId = int.Parse(investment1PlanMappingId),
-                InvestmentName = "SEAS001",
-                InvestmentPercentage = 70.0, // double
-                IsDeleted = false
-            },
-            new PlanInvestmentViewModel
-            {
-                DefaultElectionSettingsId = 0,
-                InvestmentElectionBasedOnId = null,
-                Id = 0,
-                InvestmentId = int.Parse(investment2PlanMappingId),
-                InvestmentName = "SEAS002",
-                InvestmentPercentage = 30.0,
-                IsDeleted = false
-            }
-        },
+                    {
+                        new PlanInvestmentViewModel
+                        {
+                            DefaultElectionSettingsId = 0,
+                            InvestmentElectionBasedOnId = null,
+                            Id = 0,
+                            InvestmentId = int.Parse(investment1PlanMappingId),
+                            InvestmentName = "SEAS001",
+                            InvestmentPercentage = 70.0, // double
+                            IsDeleted = false
+                        },
+                        new PlanInvestmentViewModel
+                        {
+                            DefaultElectionSettingsId = 0,
+                            InvestmentElectionBasedOnId = null,
+                            Id = 0,
+                            InvestmentId = int.Parse(investment2PlanMappingId),
+                            InvestmentName = "SEAS002",
+                            InvestmentPercentage = 30.0,
+                            IsDeleted = false
+                        }
+                    },
                     AdditionalDefaultElectionSetting = new List<AdditionalDefaultElectionSettingViewModel>()
                 },
                 AutoDeferralncreaseApplicable = new ADIApplicableConfigurationViewModel2
@@ -4071,32 +4151,32 @@ namespace RefitSandBox
                     HiredBetweenFrom = null,
                     HiredBetweenTo = null,
                     AutoEnrollmentDeferralSources = new List<AutoEnrollmentDeferralSourcesViewModel2>
-        {
-            new AutoEnrollmentDeferralSourcesViewModel2
-            {
-                AutoEnrollmentId = 0,
-                Id = 0,
-                SourceId = int.Parse(pretaxSourceId),
-                DeferralSourceName = "EEPretax",
-                DeferralSourcePercentage = 30.0,
-                ExcludeFromEnrollment = false,
-                LimitMinimum = 10.0,
-                LimitMaximum = 70.0,
-                IsDeleted = false
-            },
-            new AutoEnrollmentDeferralSourcesViewModel2
-            {
-                AutoEnrollmentId = 0,
-                Id = 0,
-                SourceId = int.Parse(rothSourceId),
-                DeferralSourceName = "Roth",
-                DeferralSourcePercentage = 30.0,
-                ExcludeFromEnrollment = false,
-                LimitMinimum = 10.0,
-                LimitMaximum = 70.0,
-                IsDeleted = false
-            }
-        },
+                    {
+                        new AutoEnrollmentDeferralSourcesViewModel2
+                        {
+                            AutoEnrollmentId = 0,
+                            Id = 0,
+                            SourceId = int.Parse(pretaxSourceId),
+                            DeferralSourceName = "EEPretax",
+                            DeferralSourcePercentage = 30.0,
+                            ExcludeFromEnrollment = false,
+                            LimitMinimum = 10.0,
+                            LimitMaximum = 70.0,
+                            IsDeleted = false
+                        },
+                        new AutoEnrollmentDeferralSourcesViewModel2
+                        {
+                            AutoEnrollmentId = 0,
+                            Id = 0,
+                            SourceId = int.Parse(rothSourceId),
+                            DeferralSourceName = "Roth",
+                            DeferralSourcePercentage = 30.0,
+                            ExcludeFromEnrollment = false,
+                            LimitMinimum = 10.0,
+                            LimitMaximum = 70.0,
+                            IsDeleted = false
+                        }
+                    },
                     AdditionalAutoEnrollment = new List<AdditionalAutoEnrollmentDataViewModel2>()
                 },
                 OtherInformation = new OtherInformationViewModel
@@ -4143,5 +4223,55 @@ namespace RefitSandBox
             Console.Write(response.ToString());
         }
 
+        public async Task<string> GetPayrollTransactionId()
+        {
+            var getTransactionModel = new GetEmployeeTransactionViewModel
+            {
+                PlanId = int.Parse(planId),
+                EmployeeId = Convert.ToInt32(await GetEmployeeId()),
+                TransactionType = new List<int> { 5 },
+                FromDate = DateTimeOffset.Now.AddYears(-10),
+                ToDate = DateTimeOffset.Now,
+                PageNumber = 1,
+                RecordsPerPage = 20
+            };
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+
+            var tradeInterface = RestService.For<ITradeOrderFileUpload>(httpClient);
+            var transactionResponse = await tradeInterface.GetEmployeeTransactionViewAsync(getTransactionModel);
+
+            var payrollTransactionId = transactionResponse.TransactionDetails.Select(_ => _.TransactionKey).First().ToString();
+
+            if(payrollTransactionId == null)
+            {
+                throw new Exception("Payroll Transaction Id is null"); 
+                return null;
+            }
+                
+            else
+                return payrollTransactionId;
+        }
+
+        public async Task AdjustmentConfigurations(string AdjustType, string IncidentCode)
+        {
+            //Handle Adjustment type and Incident code based on test case, for now going with default values
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+            var transactionConfiguration = new TransactionsConfigurations(this);
+            var employeeId = await GetEmployeeId();
+            var payrollTransactionId = await GetPayrollTransactionId();
+            var adjustmentId = await transactionConfiguration.AdjustmentConfiguration(httpClient, Convert.ToInt32(planId), Convert.ToInt32(employeeId), planName, payrollTransactionId);
+        }
     }
 }
