@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34511.84
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11217.181 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceGenerator", "SourceGenerator\SourceGenerator.csproj", "{5F600462-587F-4AA9-9082-6E416355CF88}"
 EndProject
@@ -23,11 +23,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fee", "Fee\Fee.csproj", "{D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Investment", "Investment\Investment.csproj", "{6290F5F5-2657-4E89-BDBF-558D43B64740}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary.Shared", "ClassLibrary.Shared\ClassLibrary.Shared.csproj", "{6FF4EC97-7439-46A6-91F4-15B5427F22BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassLibrary.Shared", "ClassLibrary.Shared\ClassLibrary.Shared.csproj", "{6FF4EC97-7439-46A6-91F4-15B5427F22BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loan", "Loan\Loan.csproj", "{13915F07-C96C-4B55-A3CE-437339548D19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loan", "Loan\Loan.csproj", "{13915F07-C96C-4B55-A3CE-437339548D19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transfers", "Transfers\Transfers.csproj", "{EC75AA32-4141-41F6-9D07-DE2163DA93F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transfers", "Transfers\Transfers.csproj", "{EC75AA32-4141-41F6-9D07-DE2163DA93F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eligibility", "Eligibility\Eligibility.csproj", "{89BB1CC9-020C-4D76-8188-B126ED0B4446}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RolloverIn", "RolloverIn\RolloverIn.csproj", "{40548D94-ACD9-41B6-9EFE-07E8F395A8B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +91,14 @@ Global
 		{EC75AA32-4141-41F6-9D07-DE2163DA93F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC75AA32-4141-41F6-9D07-DE2163DA93F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC75AA32-4141-41F6-9D07-DE2163DA93F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89BB1CC9-020C-4D76-8188-B126ED0B4446}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89BB1CC9-020C-4D76-8188-B126ED0B4446}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89BB1CC9-020C-4D76-8188-B126ED0B4446}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89BB1CC9-020C-4D76-8188-B126ED0B4446}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40548D94-ACD9-41B6-9EFE-07E8F395A8B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40548D94-ACD9-41B6-9EFE-07E8F395A8B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40548D94-ACD9-41B6-9EFE-07E8F395A8B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40548D94-ACD9-41B6-9EFE-07E8F395A8B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

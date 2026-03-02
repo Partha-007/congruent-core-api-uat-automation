@@ -32,7 +32,7 @@ namespace RefitSandBox
             {
                 var ObjectName = row[0];
                 var Value = row[1];
-                await _prg.Configuration(ObjectName, Value);
+                _prg.Configuration(ObjectName, Value);
             }
         }
 

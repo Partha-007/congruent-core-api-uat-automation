@@ -54,7 +54,6 @@
     <Folder Include="Features\B_Plan\K_Plan Transfers\" />
     <Folder Include="Features\B_Plan\L_Plan Limits\" />
     <Folder Include="Features\B_Plan\M_Plan Enrollment\" />
-    <Folder Include="Features\C_Employee\" />
     <Folder Include="Support\" />
   </ItemGroup>
 

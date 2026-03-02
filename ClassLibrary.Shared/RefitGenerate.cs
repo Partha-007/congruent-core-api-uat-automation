@@ -41,11 +41,25 @@ namespace RefitSandBox
         Task<object> CreateAdvisorDetailsAsync([Body] object advisor);
     }
 
+    public interface IClearingPartner
+    {
+        [Get("/api/ClearingPartner/GetClearingPartners")]
+        Task<object> GetMasterClearingPartnersId();
+
+        [Get("/api/ClearingPartner/GetClearingPartner/{id}")]
+        Task<object> GetMasterClearingPartnerAccounts(int id);
+
+        [Post("/api/ClearingPartner/UpsertClearingPartnerAccount")]
+        Task<object> AddClearingPartnerAccount([Body] ClearingPartnerViewModel clearingPartnerPlanMapping);
+
+    }
+
     public interface IPlanDetailsSave
     {
         [Post("/api/BasicPlanDetails/SaveBasicPlanDetails")]
         [Headers("Content-Type: application/json")]
         Task<object> CreateNewPlanAsync([Body] PlanDetailsViewModel planModel);
+
 
         [Post("/api/Sponsor/SaveSponsor")]
         Task<object> SavePlanSponsor([Body] SponsorViewModel sponsor);
@@ -53,8 +67,13 @@ namespace RefitSandBox
         [Get("/api/ClearingPartner/GetClearingPartner/{id}")]
         Task<object> GetClearingPartnersId(int id);
 
+       
+
         [Post("/api/ClearingPartner/UpsertPlanWithClearingPartnerAccount")]
         Task<object> AddClearingPartnerToPlan([Body] PlanWithClearingPartnerViewModel clearingPartnerPlanMapping);
+
+        [Get("/api/ClearingPartner/GetPlanAssociatedClearingPartnerAccounts/{id}")]
+        Task<object> GetPlanAssociatedClearingPartnerAccounts(int id);
 
         [Post("/api/v1/EligibleRule/SavePlanAmendmentEligibleRule")]
         [Headers("Accept: */*", "Content-Type: application/json-patch+json")]
@@ -131,7 +150,8 @@ namespace RefitSandBox
         Task<object> UploadCombinedFileAsync([Body] MultipartFormDataContent form);
 
         [Post("/api/v1/Payroll/PayrollAndCensusFileUploadTest")]
-        Task<PayrollAndCensusFileUploadTestResult> UploadCombinedFileToTestEndpoint([Body] MultipartFormDataContent form);
+        Task<PayrollAndCensusFileUploadTestResult> UploadCombinedFileTestAsync([Body] MultipartFormDataContent form);
+
     }
 
     public interface ITradeOrderFileUpload
@@ -144,6 +164,13 @@ namespace RefitSandBox
         [AliasAs("planId")] string planId,
         [AliasAs("participantId")] string participantId,
         [AliasAs("date")] string date);
+
+        [Post("/api/v1/TradeOutboundFileGeneration/GenerateFile")]
+        Task<object> GenerateFileAsync(OutboundFileGeneration outboundFileGeneration);
+
+        [Post("/api/v1/Trade/GetEmployeeTransactionView")]
+
+        Task<GetEmployeeTransactionViewResult> GetEmployeeTransactionViewAsync([Body] GetEmployeeTransactionViewModel employeeTransactionViewRequest);
     }
 
     public interface IInvestment
@@ -180,10 +207,15 @@ namespace RefitSandBox
         [Get("/api/v1/TradeGeneration/GenerateConsoliation")]
         Task<object> GenerateConsolidation();
 
-        
+        [Get("/api/v1/TradeOutboundFileGeneration/GenerateFile")]
+        Task<object> GenerateOutboundFile();
+
 
         [Post("/api/v1/Payroll/GetEmployeesBySearchCriteria")]
         Task<GetEmployeesBySearchCriteriaResult> GetEmployeesBySearchCriteria(SearchCriterias search);
+
+        [Post("/api/v1/Payroll/SaveFundingDetailsByFile")]
+        Task<bool> SaveFundingDetailsByFileAsync([Body] int body);
     }
 
     public interface IEmployee
@@ -193,8 +225,15 @@ namespace RefitSandBox
 
         [Post("/api/v1/Payroll/UpdateExistingEmployee")]
         Task<AddEmployeeResult> UpdateExistingEmployee([Body] PayrollEmployeeViewModel employee);
+
+        [Post("/api/v1/Payroll/SaveEmployee")]
+        Task<object> SaveEmployeeAsync([Body] PayrollEmployeeViewModel employee);
+
+        [Post("/api/v1/Payroll/AddBeneficary")]
+        Task<object> AddBeneficaryAsync([Body] BeneficiaryInformation beneficiary);
+
     }
-    public interface ILoan
+public interface ILoan
     {
         [Post("/api/v1/Loan/SaveInprogressLoanRequest")]
         Task<dynamic> SaveInprogressLoanRequest(EmployeeLoanViewModel loanViewModel);
@@ -225,6 +264,31 @@ namespace RefitSandBox
 
         [Get("/api/v1/Loan/GetLoan/{Id}")]
         Task<GetLoanResult> GetLoan(string Id);
+    }
+
+    public interface ITransfer
+    {
+        [Post("/api/v1/Transfer/SaveTransferDetailsForAdmin")]
+
+        Task<object> SaveTransferDetailsForAdminAsync(TransferDetailsForAdminViewModel transferDetails);
+    }
+
+    public interface IRolloverIn
+    {
+        [Post("/api/RolloverIn/SaveRolloverInRequest")]
+        Task<object> SaveRolloverInRequestAsync(RollOverInRequestDetails rollOverInRequestDetails);
+    }
+
+    public interface IAdjustments
+    {
+        [Post("/api/v1/Adjustment/SaveBasicAdjustmentDetails")]
+        Task<SaveBasicDetailsResult> SaveBasicAdjustmentDetailsAsync(BasicDetails basicDetails);
+
+        [Post("/api/v1/Adjustment/SaveAdjustmentDetails")]
+        Task<SaveAdjustmentDetailsResult> SaveAdjustmentDetailsAsync(AdjustmentDetails adjustmentDetails);
+
+        [Get("/api/v1/Adjustment/SaveAdjustmentSummaryById/{Id}")]
+        Task<SaveAdjustmentSummaryResult> SaveAdjustmentSummaryByIdAsync(int Id);
     }
     public class Advisor
     {

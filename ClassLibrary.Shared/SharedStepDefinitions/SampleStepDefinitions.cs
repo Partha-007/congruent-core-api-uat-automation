@@ -1,3 +1,4 @@
+using ClassLibrary.Shared;
 using ClassLibrary.Shared.TestDataGenerator;
 using CucumberExpressions.Ast;
 using MyNamespace;
@@ -13,9 +14,11 @@ namespace SharedStepDefinitions
     public class SampleStepDefinitions
     {
         public Program _program;
-        public SampleStepDefinitions(Program program)
+        public AccountBalanceVerifier _accountBalanceVerifier;
+        public SampleStepDefinitions(Program program, AccountBalanceVerifier accountBalanceVerifier)
         {
             _program = program;
+            _accountBalanceVerifier = accountBalanceVerifier;
         }
 
         [Given("Model is selected for the endpoint {string}")]
@@ -30,16 +33,36 @@ namespace SharedStepDefinitions
             await _program.APIRequestForRefit(interfaceName, methodName);
         }
 
+        [When("Trade procedures completed for the transaction {string}")]
+        public async Task WhenTradeProceduresCompletedForTheTransaction(string transfer)
+        {
+            await _program.TransferTransaction();
+        }
+
+
+        [Then("The source {string} should match the following balances")]
+        public async Task ThenTheSourceShouldMatchTheFollowingBalances(string sourceName, DataTable dataTable)
+        {
+            await _accountBalanceVerifier.VerifySourceWiseBalance(sourceName, dataTable);
+        }
+
+
         [When("Save Loan details in Plan")]
         public async Task GivenSaveLoanDetailsInPlan()
         {
             await _program.SaveLoan();
         }
 
-        [When("the property {string} is configured with {string} with {int} characters")]
-        public async Task WhenThePropertyIsConfiguredWithWithCharacters(string ControlName, Pattern patternType, int length)
+        [When("Generate Outbound File")]
+        public async Task GenerateOutboundFile()
         {
-            await _program.ConfigureWithTestDate(ControlName, length, patternType);
+            await _program.SaveLoan();
+        }
+
+        [When("the property {string} is configured with {string} with {int} characters")]
+        public void WhenThePropertyIsConfiguredWithWithCharacters(string ControlName, Pattern patternType, int length)
+        {
+            _program.ConfigureWithTestDate(ControlName, length, patternType);
         }
 
 
@@ -52,7 +75,7 @@ namespace SharedStepDefinitions
         [When("the property {string} is configured as {string}")]
         public async Task WhenThePropertyIsConfiguredAs(string controlName, string Value)
         {
-            await _program.Configuration(controlName, Value);
+            _program.Configuration(controlName, Value);
         }
 
         [Then("API should give response as {string}")]
@@ -84,7 +107,7 @@ namespace SharedStepDefinitions
         [Then("the API response should contain the {int} following errors")]
         public async Task ThenTheAPIResponseShouldContainTheFollowingErrors(int noOfErrors, DataTable dataTable)
         {
-              await _program.VerifyMultipleErrors(noOfErrors, dataTable);
+            await _program.VerifyMultipleErrors(noOfErrors, dataTable);
         }
 
 
@@ -149,7 +172,7 @@ namespace SharedStepDefinitions
                 //        property.SetValue(targetObject, convertedValue);
                 //    }
                 //}
-                await _program.Configuration(ObjectName, Value);
+                _program.Configuration(ObjectName, Value);
             }
         }
 
@@ -218,6 +241,25 @@ namespace SharedStepDefinitions
         public async Task WhenFileUploadIsExecutedForTheFileToTheTestEndpoint(string filename)
         {
             await _program.SendAPIRequestForFileUploadToTestEndpoint(filename);
+        }
+
+        [When("File upload is executed for the file {string}")]
+        public async Task WhenFileUploadIsExecutedForTheFileAndFundingIsDoneBy(string filename)
+        {
+            await _program.SendAPIRequestForFileUploadTest(filename);
+        }
+
+        [When("Adjustment is created for the employee with Adjustment type as {string} and Incident code as {string}")]
+        public async Task WhenAdjustmentIsCreatedForTheEmployeeWithAdjustmentTypeAsAndIncidentCodeAs(string AdjustmentType, string IncidentCode)
+        {
+            await _program.AdjustmentConfigurations(AdjustmentType, IncidentCode);
+        }
+
+
+        [Then("API should respond Match Calculated values as")]
+        public void ThenAPIShouldRespondWithMatchValue(Table table)
+        {
+            _program.VerifyMatchvalue(table);
         }
 
         [Then("Payroll API should respond for {string} with Error report message as {string} and ECR page message as {string}")]
