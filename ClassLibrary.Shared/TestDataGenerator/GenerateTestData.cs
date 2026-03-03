@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using System;
 using System.Collections.Generic;
@@ -16,25 +17,28 @@ namespace ClassLibrary.Shared.TestDataGenerator
             {
                 case Pattern.Alphabets:
                     return RandomAlpha(length);
-                    break;
+                    
                 case Pattern.AlphaNumerics:
                     return RandomAlphaNumeric(length);
-                    break;
+                    
                 case Pattern.AlphaNumericWithSpecialCharacters:
                     return RandomAlphaNumericWithSpecialCharachter(length);
-                    break;
+                    
                 case Pattern.Numerics:
                     return RandomNumeric(length);
-                    break;
+                    
                 case Pattern.SpecialCharacters:
                     return RandomSpecialCharachter(length);
-                    break;
+                    
                 case Pattern.Phone:
                     return RandomPhoneNumber(length);
-                    break;
+                    
                 case Pattern.Email:
                     return RandomEmail(length);
-                    break;
+
+                case Pattern.TaxEIN:
+                    return RandomTaxEIN();
+
                 default:
                     throw new ArgumentOutOfRangeException($"The pattern {pattern} is not supported. Check the spelling or if the pattern is supported");
                     break;
@@ -77,6 +81,12 @@ namespace ClassLibrary.Shared.TestDataGenerator
         {
             var faker = new Faker();
             return faker.Person.Email;
+        }
+
+        public static string RandomTaxEIN()
+        {
+            var faker = new Faker();
+            return faker.Random.Replace("##-#######");
         }
 
     }

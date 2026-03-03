@@ -1,6 +1,7 @@
 ﻿Feature: C_Exclusion type field validation
 [BeforeTestRun]
 
+@CompanyAndPlanBasicDetails
 Scenario:  Exclusion type field validation when null
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -15,6 +16,7 @@ Scenario:  Exclusion type field validation when null
     | PL179      |   Required      |
     | PL181      |   Required      |23273
 
+@CompanyAndPlanBasicDetails
 Scenario: HiredOnOrBeforeDate field null validation  when Exclusion type field  equal to date of hire and date of hire is chosen as HiredOnOrBeforeDate
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -27,7 +29,7 @@ Scenario: HiredOnOrBeforeDate field null validation  when Exclusion type field  
 	| error_code |   error_message |
     | PL172      |   Required      |
 
-
+@CompanyAndPlanBasicDetails
 Scenario: HiredOnOrBeforeDate field acceptance  when Exclusion type field  equal to date of hire and date of hire is chosen as HiredOnOrBeforeDate
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -38,6 +40,7 @@ Scenario: HiredOnOrBeforeDate field acceptance  when Exclusion type field  equal
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
 Then API should respond with successful message
 
+@CompanyAndPlanBasicDetails
 Scenario: HiredOnOrAfterDate field acceptance  when Exclusion type field  equal to date of hire and date of hire is chosen as HiredOnOrAfterDate
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -48,6 +51,7 @@ Scenario: HiredOnOrAfterDate field acceptance  when Exclusion type field  equal 
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
 Then API should respond with successful message
 
+@CompanyAndPlanBasicDetails
 Scenario: HiredOnOrAfterDate field null validation  when Exclusion type field  equal to date of hire and date of hire is chosen as HiredOnOrAfterDate  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
   And the property "exclusionType" is configured as "1"
@@ -59,6 +63,7 @@ Scenario: HiredOnOrAfterDate field null validation  when Exclusion type field  e
 	| error_code |   error_message |
     | PL171      |   Required      |
 
+@CompanyAndPlanBasicDetails
 Scenario: HiredBetween field acceptance when Exclusion type field  equal to date of hire and date of hire is chosen as HiredBetween
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -70,7 +75,9 @@ Scenario: HiredBetween field acceptance when Exclusion type field  equal to date
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
 Then API should respond with successful message
 
+
 #Scenario: End date field validation when Exclusion type field  equal to date of hire and date of hire is chosen as HiredBetween and start date is given
+@CompanyAndPlanBasicDetails
 Scenario: start date field validation when Exclusion type field  equal to date of hire and date of hire is chosen as HiredBetween and end date is given
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -86,6 +93,7 @@ Scenario: start date field validation when Exclusion type field  equal to date o
     | PL172      |   Required      |
 
 
+@CompanyAndPlanBasicDetails
 Scenario: End date field validation when Exclusion type field  equal to date of hire and date of hire is chosen as HiredBetween and start date is greater than end date
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -99,6 +107,7 @@ Scenario: End date field validation when Exclusion type field  equal to date of 
 	| error_code | error_message                                                    |
 	| PL192      | Exclusion from date should not be greater than exclusion to date |
 
+@CompanyAndPlanBasicDetails
 Scenario:Excluded employee classification field acceptance when Exclusion type field  equal to employee classification and employee classification is entered
  When Configuration has been made as per following
          | key                          | value |
@@ -108,6 +117,7 @@ Scenario:Excluded employee classification field acceptance when Exclusion type f
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
 Then API should respond with successful message
 
+@CompanyAndPlanBasicDetails
 Scenario:Excluded employee classification field is null when Exclusion type employee classification is entered
  When Configuration has been made as per following
          | key                          | value |
@@ -118,7 +128,7 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 	| error_code | error_message |
 	| PL1038     | Required      |
 
-
+@CompanyAndPlanBasicDetails
 Scenario:Excluded employee classification field is null when Exclusion type date of hire and empolyee classification is entered in dateOfHireType is null
  When Configuration has been made as per following
          | key                          | value |
@@ -131,7 +141,7 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 	| PL181     | Required      |
 
 
-
+@CompanyAndPlanBasicDetails
 Scenario:Excluded employee classification field is null when Exclusion type date of hire and empolyee classification is entered in employeeClassificationCodeId is null
  When Configuration has been made as per following
          | key                          | value |
@@ -144,7 +154,7 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 	| PL1038     | Required      |
 
 
-    
+ @CompanyAndPlanBasicDetails   
  Scenario:Both date of hire and empolyee classification field validation when Exclusion type field  equal to Both date of hire and empolyee classification
  When Configuration has been made as per following
          | key                          | value      |
@@ -156,7 +166,7 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
 Then API should respond with successful message
 
-
+@CompanyAndPlanBasicDetails
  Scenario:Hired on after selected on date of hire  when Exclusion type field  equal to Both date of hire and empolyee classification
  When Configuration has been made as per following
          | key                          | value      |
@@ -170,6 +180,7 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 	| error_code | error_message |
 	| PL171     | Required      |
 
+    @CompanyAndPlanBasicDetails
  Scenario:Hired on before selected on date of hire  when Exclusion type field  equal to Both date of hire and empolyee classification
  When Configuration has been made as per following
          | key                          | value      |
@@ -183,6 +194,7 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 	| error_code  | error_message |
 	| PL172 | Required      |
 
+    @CompanyAndPlanBasicDetails
  Scenario:Hired between selected on date of hire  when Exclusion type field  equal to Both date of hire and empolyee classification
  When Configuration has been made as per following
          | key                          | value      |
@@ -198,7 +210,7 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 	| PL171 | Required      |
 	| PL172 | Required      |
 
-
+@CompanyAndPlanBasicDetails
  Scenario:Save Hired between selected on date of hire  when Exclusion type field  equal to Both date of hire and employee classificationfication
  When Configuration has been made as per following
          | key                          | value      |

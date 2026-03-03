@@ -48,6 +48,8 @@ using static Org.BouncyCastle.Bcpg.Attr.ImageAttrib;
 using ClassLibrary.Shared.AppSettings;
 using System.Net.NetworkInformation;
 using ClassLibrary.Shared;
+using Bogus.Extensions.Canada;
+using Bogus.Extensions.UnitedStates;
 //using Io.Cucumber.Messages.Types;
 //using Gherkin.CucumberMessages.Types;
 
@@ -90,6 +92,7 @@ namespace RefitSandBox
         public static int? recordKeeperId;
         public static Dictionary<string, string> InvestmentNameAndPlanMappingIdDict = new Dictionary<string, string>();
         public static SourceViewModel? sourceobjModel;
+        public static PayrollEmployeeViewModel? employeeViewModel;
 
 
 
@@ -330,7 +333,7 @@ namespace RefitSandBox
                 var property = entry.Value;
                 try
                 {
-                    property.SetValue(modelAfterConvention, value);
+                    Configuration(ControlName, value);
                 }
                 catch (Exception ex)
                 {
@@ -347,11 +350,11 @@ namespace RefitSandBox
             {
                 firstRepaymentDate = Value;
             }
-            await Configuration(ControlName, Value);
+            Configuration(ControlName, Value);
         }
 
         public static List<System.Reflection.PropertyInfo> matchingProperties = new List<System.Reflection.PropertyInfo>();
-        public async Task Configuration(string ControlName, string Value)
+        public void Configuration(string ControlName, string Value)
         {
             var program = new Program();
             if (ControlName.Contains("1") || ControlName.Contains("2"))
@@ -376,6 +379,43 @@ namespace RefitSandBox
                     .Select(entry => entry.Value)
                     .ToList();
             }
+
+            if (ControlName.Contains(","))
+            {
+                var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                var newArray = new JArray();
+
+                foreach (var part in parts)
+                {
+                    var trimmed = part.Trim();
+
+                    // Try to parse into number (int/float), fallback to string
+                    if (int.TryParse(trimmed, out int intVal))
+                    {
+                        newArray.Add(intVal);
+                    }
+                    else if (double.TryParse(trimmed, out double doubleVal))
+                    {
+                        newArray.Add(doubleVal);
+                    }
+                    else
+                    {
+                        newArray.Add(trimmed);
+                    }
+                }
+            }
+
+            //for (int i = 0; i < Value.Length; i++)
+            //{
+            //    char PropertyName = Value[i];
+            //    var convertedValue = Value.ToString();
+            //    string formattedValue = convertedValue.ToString("i");
+            //    property.SetValue(targetObject, convertedValue);
+            //}
+
+
+
+
 
             if (ControlName == "employeeClassificationId")
             {
@@ -977,6 +1017,13 @@ namespace RefitSandBox
                             ResponseFromTestEndpoint = responseAfterFileUpload;
                         else
                             throw new Exception("Error in uploading file to test endpoint");
+
+                        Console.WriteLine("Full Response from Test Endpoint (JSON):");
+                        Console.WriteLine(JsonConvert.SerializeObject(ResponseFromTestEndpoint, Formatting.Indented));
+
+                        var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages).ToList();
+                        Console.WriteLine("Error messages (JSON):");
+                        Console.WriteLine(JsonConvert.SerializeObject(errorMessages, Formatting.Indented));
                     }
                 }
             }
@@ -994,6 +1041,7 @@ namespace RefitSandBox
                 ReferenceNumber = null,
                 IsReInitiate = false,
 
+            
             };
             var ProcessLoanDisbursementViewModel2 = new ProcessLoanDisbursementViewModel()
             {
@@ -1264,6 +1312,11 @@ namespace RefitSandBox
 
         public void VerifyResponse()
         {
+            if (response.ContainsKey("isSuccessfull"))
+            {
+                response["isSuccessful"] = response["isSuccessfull"];  
+                response.Remove("isSuccessfull");                      
+            }
 
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
             if (responseBody!.ErrorMessages == null && responseBody.isSuccessful)
@@ -1282,34 +1335,40 @@ namespace RefitSandBox
             {
                 if (methodName == "SaveLoan")
                 {
-                    await Configuration("sourceId", sourceId);
+                    Configuration("sourceId", sourceId);
                 }
                 if (methodName == "SaveVesting")
                 {
-                    await Configuration("sourceId", matchSourceId);
+                    Configuration("sourceId", matchSourceId);
                 }
                 FakeDataHelper.AssignId(planId, "PlanId", modelAfterConvention);
             }
             if (methodName == "SaveInprogressLoanRequest")
             {
                 var employeeId = await GetEmployeeId();
-                await Configuration("employeeId", employeeId);
-                await Configuration("planId", planId);
-                await Configuration("loanDocumentTypeId", loanDocumentId);
-                await Configuration("loanSettingId", loanSettingsId);
+                Configuration("employeeId", employeeId);
+                Configuration("planId", planId);
+                Configuration("loanDocumentTypeId", loanDocumentId);
+                Configuration("loanSettingId", loanSettingsId);
             }
             if (methodName == "SaveLoanRefinance")
             {
-                await Configuration("loanId", loanId);
+                Configuration("loanId", loanId);
             }
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.{interfaceName}");
             Console.WriteLine($"Data001: {JsonConvert.SerializeObject(sourceobjModel, Formatting.Indented)}");
             var response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
-            MatcheditId = response["source"]?["sourceName"]?.ToString() == "ERMatch" ? response["source"]?["id"]?.ToString() : null;
-            var sourceName = response["source"]?["sourceName"]?.ToString();
-            sourceobjModel = (sourceName == "ERMatch" || sourceName == "ERNonMatch") && response["source"] is JObject matchSource ? MapJObjectToModel<SourceViewModel>(matchSource) : null;
-            Console.WriteLine($"Data: {JsonConvert.SerializeObject(sourceobjModel, Formatting.Indented)}");
-            Console.WriteLine("Response : " + response.ToString());
+            if(response != null)
+            {
+                if (response.ContainsKey("source"))
+                {
+                    MatcheditId = response["source"]?["sourceName"]?.ToString() == "ERMatch" ? response["source"]?["id"]?.ToString() : null;
+                    var sourceName = response["source"]?["sourceName"]?.ToString();
+                    sourceobjModel = (sourceName == "ERMatch" || sourceName == "ERNonMatch") && response["source"] is JObject matchSource ? MapJObjectToModel<SourceViewModel>(matchSource) : null;
+                    Console.WriteLine($"Data: {JsonConvert.SerializeObject(sourceobjModel, Formatting.Indented)}");
+                }
+                Console.WriteLine("Response : " + response.ToString());
+            }
         }
 
         /*public async Task<JObject> SendAPIRequest(string bearer, object model, System.Type interfaceType, string methodName)
@@ -1448,93 +1507,6 @@ namespace RefitSandBox
                             response = await PostCall(httpClient, model, MethodNamesNotHandledByRefit[methodName]);
                             return response;
                         }
-                            
-                        /*if (methodName == "SavePlanAmendmentEligibleRule")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/v1/EligibleRule/SavePlanAmendmentEligibleRule";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SaveEnrollmentSettings")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            Console.WriteLine("Enrollment request :" + requestPayload);
-                            string Action = "api/Enrollment/SaveEnrollmentSetting";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-
-                            //    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-
-                            // Use Hooks.Hooks.bearer! if available, otherwise fallback to the provided bearer
-                            string token = _hooks != null && !string.IsNullOrEmpty(Hooks.Hooks.bearer!) ? Hooks.Hooks.bearer! : bearer;
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-                            Task.Delay(10000);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SaveFunding")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/Funding/SaveFunding";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SaveInprogressLoanRequest")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/v1/Loan/SaveInprogressLoanRequest";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SubmitLoanRequest")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/v1/Loan/SubmitLoanRequest";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }
-                        else if (methodName == "SaveEmployeeAsync")
-                        {
-                            var requestBody = JsonConvert.SerializeObject(model);
-                            var requestPayload = JObject.Parse(requestBody);
-                            string Action = "api/v1/Payroll/SaveEmployee";
-                            var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-                            var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
-                            var contentTask = await task.Content.ReadAsStringAsync();
-                            response = JObject.Parse(contentTask);
-                            Console.Write(response.ToString());
-                            return response;
-                        }*/
                         else
                         {
                             try
@@ -1555,19 +1527,41 @@ namespace RefitSandBox
                         throw new InvalidOperationException("The method signature does not match the expected parameters.");
                     }
 
-                    Console.WriteLine("Response: " + responseObject?.ToString());
-                    if (responseObject is bool)
+                    // Handle response based on type
+                    if (responseObject is bool boolResult)
                     {
-                        Console.WriteLine("API Returned true");
+                        Console.WriteLine("API Returned: " + boolResult);
+
+                        var responseJObject = new JObject
+                        {
+                            ["IsSuccessful"] = boolResult,
+                            ["errorMessages"] = new JArray()  // Empty array when successful
+                        };
+
+                        response = responseJObject;
+                        return response;
+                    }
+                    else if (responseObject != null)
+                    {
+                        Console.WriteLine("Response: " + responseObject.ToString());
+                        response = JObject.Parse(responseObject.ToString());
                         return response;
                     }
                     else
                     {
-                        response = JObject.Parse(responseObject?.ToString());
+                        var responseObjectForFail = new JObject
+                        {
+                            ["IsSuccessful"] = false,
+                            ["errorMessages"] = new JArray
+                            {
+                                new JObject { ["message"] = "No response received" }
+                            }
+                        };
 
-                        Console.Write(responseObject.ToString());
+                        response = responseObjectForFail;
                         return response;
                     }
+
 
 
                 }
@@ -1758,6 +1752,7 @@ namespace RefitSandBox
                 { "/api/BasicPlanDetails/SaveBasicPlanDetails", () => new PlanDetailsViewModel() },
                 { "/api/v1/Company", () => new CompanyViewModel() },
                 { "/api/v1/Payroll/SaveEmployee",() => new PayrollEmployeeViewModel() },
+                { "/api/v1/Payroll/AddBeneficary",() => new BeneficiaryInformation() },
                 { "/api/Loan/SaveLoan", () => new LoanSettingViewModel() },
                 { "/api/v1/Loan/SaveInprogressLoanRequest", () => new EmployeeLoanViewModel()},
                 {"/api/Vesting/SaveVesting", () => new VestingViewModel() },
@@ -1769,14 +1764,47 @@ namespace RefitSandBox
                 {"/api/v1/Transfer/SaveTransferDetailsForAdmin", () => new TransferDetailsForAdminViewModel() },
                 {"/api/Rollover/SaveRollover", () => new RolloverViewModel() },
                 { "/api/RolloverIn/SaveRolloverInRequest", () => new RollOverInRequestDetails()},
-                { "/api/v1/Adjustment/SaveBasicAdjustmentDetails", () => new BasicDetails() }
+                { "/api/v1/Adjustment/SaveBasicAdjustmentDetails", () => new BasicDetails() },
                 //{"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
+                { "/api/Transfer/SaveTransfer",() => new TransferViewModel()},
+               // { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
+                {"/api/Source/SaveSource",() => new SourceViewModel() },
+                {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() },
+                {"/api/Sponsor/SaveSponsor",() => new SponsorViewModel() },
+                {"/api/v1/EligibleRule/SavePlanAmendmentEligibleRule",() => new EligibilityRuleViewModel() },
+                {"/api/EntryDate/SaveEntryDate",() => new EntryDateRuleViewModel() },
+                {"/api/PlanYOS/SavePlanYOS",() => new YearsOfServiceViewModel() },
+                {"/api/Withdrawal/SaveWithdrawal",() => new WithdrawalViewModel() },
+                {"/api/Rollover/SaveRollover",() => new RolloverViewModel() },
+               // {"/api/Transfer/SaveTransfer",() => new TransferViewModel() },
+                {"/api/v1/Loan/SubmitLoanRequest", () => new SubmitLoanRequestViewModel() },
+                {"/api/v1/Plan/SaveSourceLimits",() => new SourceLimitsViewModel() }
+
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
             {
                 var Model = viewModelType();
-                modelAfterConvention = sourceobjModel != null ? sourceobjModel : FakeDataHelper.PopulateModelWithFakeData(Model);
+                if (recordKeeperId != null)
+                {
+                    Configuration("recordKeeperId", recordKeeperId.ToString());
+                }
+
+                if (endpoint == "/api/v1/Payroll/SaveEmployee")
+                {
+                    employeeViewModel = EmployeeConfiguration();
+                    Model = employeeViewModel;
+                    modelAfterConvention = employeeViewModel;
+                }
+                else if(endpoint == "/api/v1/Payroll/AddBeneficary")
+                {
+                    var benModel = BeneficiaryConfiguration();
+                    Model = benModel;
+                    modelAfterConvention = benModel;
+                }
+                else
+                    modelAfterConvention = sourceobjModel != null ? sourceobjModel : FakeDataHelper.PopulateModelWithFakeData(Model);
+
                 var listOfProperties = GetJsonPropertyList(Model);
                 if (endpoint == "/api/Enrollment/SaveEnrollmentSetting")
                 {
@@ -1784,9 +1812,8 @@ namespace RefitSandBox
                     var planDetailsClient = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
                     var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
                     if (listOfPlanInvestments == null)
-                    {
                         throw new Exception("Investments not mapped to this plan");
-                    }
+                    
                     var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
 
                     modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
@@ -2119,10 +2146,11 @@ namespace RefitSandBox
             await planClient.GenerateOutboundFile();
         }
 
-            public async Task SaveLoan()
+        public async Task SaveLoan()
         {
-            await Configuration("planId", planId);
-            //string BaseURL = "https://dev.coreretirementsolutions.com/";
+            Configuration("planId", planId);
+            Configuration("sourceId", sourceId);
+            
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(_url)
@@ -2197,9 +2225,11 @@ namespace RefitSandBox
             }
             catch (Exception ex)
             {
-
+                throw new Exception(ex.Message);
             }
         }
+
+
 
         public async Task<GetEmployeeEligiblePlanLoansResult> GetEmployeePlanLoans()
         {
@@ -2423,7 +2453,7 @@ namespace RefitSandBox
         {
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
             if (responseBody.ErrorMessages.Count != NoOfErrors)
-                throw new Exception("Error count mismatch");
+                throw new Exception($"Error count mismatch, Expected error count : {NoOfErrors}, Actual error count : {responseBody.ErrorMessages.Count}");
 
             foreach (var row in dataTable.Rows)
             {
@@ -2764,6 +2794,7 @@ namespace RefitSandBox
             else if (value == "<RInvestmentId>") return RegularInvestmentId;
             else if (value == "<RInvestmentName>") return "SEAS003";
             else if (value == "<PretaxSourceID>") return sourceId;
+            else if (value == "<PretaxRolloverSourceId>") return pretaxRolloverSourceId;
             else if (value == "<RothSourceID>") return rothSourceId;
             else if (value == "<MatchSourceID>") return matchSourceId;
             else if (value == "<CompanyId>") return Hooks.Hooks.companyId!;
@@ -2784,6 +2815,7 @@ namespace RefitSandBox
             else if (value == "<PlanId>") return planId;
             else if (value == "<SSN>") return employeeSSN.Replace("-", "");
             else if (value == "<PayrollTransactionId>") return await GetPayrollTransactionId();
+            else if (value == "<HooksEmpId>") return employeeId;
 
             else return null;
         }
@@ -2839,10 +2871,75 @@ namespace RefitSandBox
 
                     var elementPropName = row[1].ToString();
                     var value = row[2];
-                    value = value.Contains("_") ? await Program.GetDate(Convert.ToInt32(value.Split('_')[0]), (value.Split('_')[1])) : value;
+                    //value = value.Contains("_") ? await Program.GetDate(Convert.ToInt32(value.Split('_')[0]), (value.Split('_')[1])) : value;
                     if (value.Contains("<"))
                     {
                         value = await IdentifyValue(value);
+                    }
+                    if (value.Contains("random"))
+                    {
+                        var splitted = value.Split(" ");
+
+                        Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
+                        value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                    }
+                    if (value.Contains(","))
+                    {
+                        var parts = value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                        var newArray = new JArray();
+
+                        foreach (var part in parts)
+                        {
+                            var trimmed = part.Trim();
+
+                            // Try to parse into number (int/float), fallback to string
+                            if (int.TryParse(trimmed, out int intVal))
+                            {
+                                newArray.Add(intVal);
+                            }
+                            else if (double.TryParse(trimmed, out double doubleVal))
+                            {
+                                newArray.Add(doubleVal);
+                            }
+                            else
+                            {
+                                newArray.Add(trimmed);
+                            }
+                        }
+                    }
+                    //****
+                    if (value.Contains("_"))
+                    {
+                        value = await GetDate(Convert.ToInt32(value.Split("_")[1]), value.Split("_")[0]);
+                        //var splitted = value.Split("_");
+
+                        //Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[0], ignoreCase: true);
+                        //value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                    }
+                    // Date and time *****
+                    if (property.PropertyType == typeof(DateTimeOffset?))
+                    {
+                        var convertedValue = DateTimeOffset.Parse(value.ToString()); // Parsing the string to DateTimeOffset
+                        if (propertyName == "scheduleBeginDate" || propertyName == "scheduleEndDate")
+                        {
+                            string formattedValue = convertedValue.ToString("M/d/yyyy, hh:mm:ss tt");
+                            property.SetValue(targetObject, convertedValue);
+                        }
+                        else
+                        {
+                            property.SetValue(targetObject, convertedValue);
+                        }
+                    }
+                    if (value.Contains("12:00:00 AM"))
+                    {
+                        value = await IdentifyValue(value);
+
+
+                        DateTime start = new DateTime(2023, 1, 2);
+                        DateTime end = new DateTime(2023, 12, 31);
+                        DateTime startweekly = new DateTime(2023, 1, 8);
+                        DateTime startbiweekly = new DateTime(2023, 1, 15);
+                        DateTime startsemimonthly = new DateTime(2023, 1, 14);
                     }
                     var elementProperty = elementType.GetProperty(elementPropName);
 
@@ -3165,7 +3262,7 @@ namespace RefitSandBox
             {
                 string controlName = row[0];
                 string Value = row[1];
-                await Configuration(controlName, Value);
+                Configuration(controlName, Value);
             }
             var employee = (PayrollEmployeeViewModel)employeeResponse;
             var updateEmployee = employeeClient.UpdateExistingEmployee(employee);*/
@@ -3208,14 +3305,14 @@ namespace RefitSandBox
             Program _program = new Program();
             await _program.EditCollection(2, "PayrollFrequencies", frequency);
             await _program.EditCollection(1, "PayrollCalendars", calendar);
-            //await program.Configuration("frequencyType", "1");
-            await program.Configuration("modeOfHours", "1");
-            await program.Configuration("modeOfCompensation", "1");
-            await program.Configuration("modeOfContribution", "1");
-            await program.Configuration("employeeClassificationType", "1");
-            await program.Configuration("code", "L1");
-            await program.Configuration("classificationName", "Location");
-            await program.Configuration("value", "Location");
+            //program.Configuration("frequencyType", "1");
+            program.Configuration("modeOfHours", "1");
+            program.Configuration("modeOfCompensation", "1");
+            program.Configuration("modeOfContribution", "1");
+            program.Configuration("employeeClassificationType", "1");
+            program.Configuration("code", "L1");
+            program.Configuration("classificationName", "Location");
+            program.Configuration("value", "Location");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.ICompanyDetails");
             var companyresponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewCompanyAsync");
             var companyId = companyresponse["company"]["id"].ToString();
@@ -3236,12 +3333,12 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(planModel);
             modelAfterConvention = FakeDataHelper.AssignId(companyId.ToString(), "CompanyId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("effectiveDate", "2015-01-01");
-            await program.Configuration("name", "ABC123");
-            await program.Configuration("1month", "1");
-            await program.Configuration("1day", "1");
-            await program.Configuration("2month", "12");
-            await program.Configuration("2day", "31");
+            program.Configuration("effectiveDate", "2015-01-01");
+            program.Configuration("name", "ABC123");
+            program.Configuration("1month", "1");
+            program.Configuration("1day", "1");
+            program.Configuration("2month", "12");
+            program.Configuration("2day", "31");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "CreateNewPlanAsync");
             planId = planResponse["plan"]["id"].ToString();
@@ -3427,24 +3524,24 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             var currentDate = DateTime.UtcNow;
-            await program.Configuration("sourceType", "1");
-            await program.Configuration("sourceCategory", "2");
-            await program.Configuration("sourceSubCategory", "4");
-            await program.Configuration("sourceSubSubCategory", "1");
-            await program.Configuration("effectiveStartDate", "2020-01-01");
-            await program.Configuration("sourceName", "EEPreTax");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("limitMinimumDollar", "10");
-            await program.Configuration("limitMinimumPercentage", "10");
-            await program.Configuration("limitMaximumPercentage", "70");
-            await program.Configuration("limitMaximumDollar", "70");
-            await program.Configuration("sourceCode", "A");
-            await program.Configuration("employerDiscretionarySource", null);
-            await program.Configuration("employerMatchSource", null);
-            await program.Configuration("employerOtherSource", null);
-            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
-            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
-            await program.Configuration("employerSourceExclusion", null);
+            program.Configuration("sourceType", "1");
+            program.Configuration("sourceCategory", "2");
+            program.Configuration("sourceSubCategory", "4");
+            program.Configuration("sourceSubSubCategory", "1");
+            program.Configuration("effectiveStartDate", "2020-01-01");
+            program.Configuration("sourceName", "EEPreTax");
+            program.Configuration("contributionType", "1");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
+            program.Configuration("limitMaximumPercentage", "70");
+            program.Configuration("limitMaximumDollar", "70");
+            program.Configuration("sourceCode", "A");
+            program.Configuration("employerDiscretionarySource", null);
+            program.Configuration("employerMatchSource", null);
+            program.Configuration("employerOtherSource", null);
+            program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            program.Configuration("employerSourceExclusion", null);
 
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
@@ -3461,17 +3558,17 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             var currentDate = DateTime.UtcNow;
-            await program.Configuration("sourceType", "2");
-            await program.Configuration("sourceCategory", "6");
-            await program.Configuration("effectiveStartDate", "2015-01-01");
-            await program.Configuration("sourceName", "Match");
-            await program.Configuration("responsibleMode", "1");
-            await program.Configuration("sourceCode", "D");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("limitMinimumDollar", "10");
-            await program.Configuration("limitMinimumPercentage", "10");
-            await program.Configuration("limitMaximumPercentage", "70");
-            await program.Configuration("limitMaximumDollar", "70");
+            program.Configuration("sourceType", "2");
+            program.Configuration("sourceCategory", "6");
+            program.Configuration("effectiveStartDate", "2015-01-01");
+            program.Configuration("sourceName", "Match");
+            program.Configuration("responsibleMode", "1");
+            program.Configuration("sourceCode", "D");
+            program.Configuration("contributionType", "1");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
+            program.Configuration("limitMaximumPercentage", "70");
+            program.Configuration("limitMaximumDollar", "70");
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
@@ -3486,25 +3583,25 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             var currentDate = DateTime.UtcNow;
-            await program.Configuration("sourceType", "1");
-            await program.Configuration("sourceCategory", "2");
-            await program.Configuration("sourceSubCategory", "5");
-            await program.Configuration("sourceSubSubCategory", "1");
-            await program.Configuration("effectiveStartDate", "2020-01-01");
-            await program.Configuration("sourceName", "EERoth");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("limitMinimumDollar", "10");
-            await program.Configuration("limitMinimumPercentage", "10");
-            await program.Configuration("limitMaximumPercentage", "70");
-            await program.Configuration("limitMaximumDollar", "70");
-            await program.Configuration("sourceCode", "Q");
-            await program.Configuration("sourceId", "");
-            await program.Configuration("employerDiscretionarySource", null);
-            await program.Configuration("employerMatchSource", null);
-            await program.Configuration("employerOtherSource", null);
-            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
-            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
-            await program.Configuration("employerSourceExclusion", null);
+            program.Configuration("sourceType", "1");
+            program.Configuration("sourceCategory", "2");
+            program.Configuration("sourceSubCategory", "5");
+            program.Configuration("sourceSubSubCategory", "1");
+            program.Configuration("effectiveStartDate", "2020-01-01");
+            program.Configuration("sourceName", "EERoth");
+            program.Configuration("contributionType", "1");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
+            program.Configuration("limitMaximumPercentage", "70");
+            program.Configuration("limitMaximumDollar", "70");
+            program.Configuration("sourceCode", "Q");
+            program.Configuration("sourceId", "");
+            program.Configuration("employerDiscretionarySource", null);
+            program.Configuration("employerMatchSource", null);
+            program.Configuration("employerOtherSource", null);
+            program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            program.Configuration("employerSourceExclusion", null);
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
             rothSourceId = sourceSave["source"]["id"].ToString();
@@ -3519,24 +3616,24 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             var currentDate = DateTime.UtcNow;
-            await program.Configuration("sourceType", "1");
-            await program.Configuration("sourceCategory", "4");
-            await program.Configuration("sourceSubCategory", "7");
-            await program.Configuration("sourceSubSubCategory", "");
-            await program.Configuration("effectiveStartDate", "2020-01-01");
-            await program.Configuration("sourceName", "Pretax Rollover");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("limitMinimumDollar", "10");
-            await program.Configuration("limitMinimumPercentage", "10");
-            await program.Configuration("limitMaximumPercentage", "70");
-            await program.Configuration("limitMaximumDollar", "70");
-            await program.Configuration("sourceCode", "R");
-            await program.Configuration("employerDiscretionarySource", null);
-            await program.Configuration("employerMatchSource", null);
-            await program.Configuration("employerOtherSource", null);
-            await program.Configuration("employerSourceExcludedEmployeeClassifications", null);
-            await program.Configuration("employerSourceExcludedEmploymentStatuses", null);
-            await program.Configuration("employerSourceExclusion", null);
+            program.Configuration("sourceType", "1");
+            program.Configuration("sourceCategory", "4");
+            program.Configuration("sourceSubCategory", "7");
+            program.Configuration("sourceSubSubCategory", "");
+            program.Configuration("effectiveStartDate", "2020-01-01");
+            program.Configuration("sourceName", "Pretax Rollover");
+            program.Configuration("contributionType", "1");
+            program.Configuration("limitMinimumDollar", "10");
+            program.Configuration("limitMinimumPercentage", "10");
+            program.Configuration("limitMaximumPercentage", "70");
+            program.Configuration("limitMaximumDollar", "70");
+            program.Configuration("sourceCode", "R");
+            program.Configuration("employerDiscretionarySource", null);
+            program.Configuration("employerMatchSource", null);
+            program.Configuration("employerOtherSource", null);
+            program.Configuration("employerSourceExcludedEmployeeClassifications", null);
+            program.Configuration("employerSourceExcludedEmploymentStatuses", null);
+            program.Configuration("employerSourceExclusion", null);
 
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
@@ -3551,9 +3648,9 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(compensationModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("compensationCategoryId", companyPlanCompensationId);
-            await program.Configuration("isIncluded", "true");
-            await program.Configuration("calculationType", "1");
+            program.Configuration("compensationCategoryId", companyPlanCompensationId);
+            program.Configuration("isIncluded", "true");
+            program.Configuration("calculationType", "1");
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var compSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveCompensation");
         }
@@ -3565,7 +3662,7 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(updatePlanStatusModel);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("planStatus", statusCode);
+            program.Configuration("planStatus", statusCode);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "UpdatePlanStatus");
         }
@@ -3577,16 +3674,16 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("investmentId", "2");
-            await program.Configuration("status", "1");
-            await program.Configuration("investmentType", "2");
-            await program.Configuration("planId", planId);
+            program.Configuration("investmentId", "2");
+            program.Configuration("status", "1");
+            program.Configuration("investmentType", "2");
+            program.Configuration("planId", planId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planStatus = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
-            await program.Configuration("investmentId", "3");
-            await program.Configuration("status", "1");
-            await program.Configuration("investmentType", "2");
-            await program.Configuration("planId", planId);
+            program.Configuration("investmentId", "3");
+            program.Configuration("status", "1");
+            program.Configuration("investmentType", "2");
+            program.Configuration("planId", planId);
             var interfaceType1 = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var addedToPlan = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
         }
@@ -3598,17 +3695,17 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(investmentPlanMapping);
             modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("investmentId", modelPortfolioId);
-            await program.Configuration("status", "1");
-            await program.Configuration("investmentType", "1");
-            await program.Configuration("planId", planId);
+            program.Configuration("investmentId", modelPortfolioId);
+            program.Configuration("status", "1");
+            program.Configuration("investmentType", "1");
+            program.Configuration("planId", planId);
             await program.EditCollection(noOfBlocks, propertyName, dataTable);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var planStatus = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
-            await program.Configuration("investmentId", investmentId2);
-            await program.Configuration("status", "1");
-            await program.Configuration("investmentType", "2");
-            await program.Configuration("planId", planId);
+            program.Configuration("investmentId", investmentId2);
+            program.Configuration("status", "1");
+            program.Configuration("investmentType", "2");
+            program.Configuration("planId", planId);
             var addedToPlan = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "AddInvestmentsToPlan");
         }
 
@@ -3621,30 +3718,30 @@ namespace RefitSandBox
             var enrollmentSettings = new EnrollmentViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(enrollmentSettings);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("planId", planId);
-            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
-            await program.Configuration("sourceName", "Pretax");
-            await program.Configuration("contributionRate", "12");
-            await program.Configuration("autoDeferralIncreaseProgram", "true");
-            await program.Configuration("increaseAllowanceDays", "30");
-            await program.Configuration("periodOfIncrease", "1");
-            await program.Configuration("applyADITo", "0");
-            await program.Configuration("adiApplicableTo", "2");
-            await program.Configuration("subjecttoAutoEnrollment", "True");
-            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpen", "3");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
-            await program.Configuration("exclusionType", "0");
-            await program.Configuration("usePlanDefaultDeferralElection", "true");
-            await program.Configuration("usePlanDefaultInvestmentElection", "true");
-            await program.Configuration("sendEnrollmentInvite", "1");
-            await program.Configuration("deferralContributionRateUponRehire", "2");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("sourceId", sourceId);
-            await program.Configuration("autoDeferralIncreasePercentage", "15");
-            await program.Configuration("maximumADIPercentage", "18");
-            await program.Configuration("investmentId", investmentPlanMappingId);
+            program.Configuration("planId", planId);
+            program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            program.Configuration("sourceName", "Pretax");
+            program.Configuration("contributionRate", "12");
+            program.Configuration("autoDeferralIncreaseProgram", "true");
+            program.Configuration("increaseAllowanceDays", "30");
+            program.Configuration("periodOfIncrease", "1");
+            program.Configuration("applyADITo", "0");
+            program.Configuration("adiApplicableTo", "2");
+            program.Configuration("subjecttoAutoEnrollment", "True");
+            program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpen", "3");
+            program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            program.Configuration("exclusionType", "0");
+            program.Configuration("usePlanDefaultDeferralElection", "true");
+            program.Configuration("usePlanDefaultInvestmentElection", "true");
+            program.Configuration("sendEnrollmentInvite", "1");
+            program.Configuration("deferralContributionRateUponRehire", "2");
+            program.Configuration("contributionType", "1");
+            program.Configuration("sourceId", sourceId);
+            program.Configuration("autoDeferralIncreasePercentage", "15");
+            program.Configuration("maximumADIPercentage", "18");
+            program.Configuration("investmentId", investmentPlanMappingId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
         }
@@ -3658,37 +3755,102 @@ namespace RefitSandBox
             modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
             modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
             RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
-            await program.Configuration("planId", planId);
-            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
-            await program.Configuration("sourceName", "Pretax");
-            await program.Configuration("contributionRate", "12");
-            await program.Configuration("autoDeferralIncreaseProgram", "true");
-            await program.Configuration("increaseAllowanceDays", "30");
-            await program.Configuration("periodOfIncrease", "1");
-            await program.Configuration("applyADITo", "0");
-            await program.Configuration("adiApplicableTo", "2");
-            await program.Configuration("subjecttoAutoEnrollment", "True");
-            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpen", "3");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
-            await program.Configuration("exclusionType", "0");
-            await program.Configuration("usePlanDefaultDeferralElection", "true");
-            await program.Configuration("usePlanDefaultInvestmentElection", "true");
-            await program.Configuration("sendEnrollmentInvite", "1");
-            await program.Configuration("deferralContributionRateUponRehire", "2");
-            await program.Configuration("contributionType", "1");
-            await program.Configuration("sourceId", sourceId);
-            await program.Configuration("autoDeferralIncreasePercentage", "15");
-            await program.Configuration("maximumADIPercentage", "18");
-            /*await program.Configuration("1investmentId", RegularInvestmentId);
-            await program.Configuration("2investmentId", modelPortfolioInvestmentId);
-            await program.Configuration("1investmentName", "SEAS003");
-            await program.Configuration("21investmentName", modelPortfolioName);*/
+            program.Configuration("planId", planId);
+            program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            program.Configuration("sourceName", "Pretax");
+            program.Configuration("contributionRate", "12");
+            program.Configuration("autoDeferralIncreaseProgram", "true");
+            program.Configuration("increaseAllowanceDays", "30");
+            program.Configuration("periodOfIncrease", "1");
+            program.Configuration("applyADITo", "0");
+            program.Configuration("adiApplicableTo", "2");
+            program.Configuration("subjecttoAutoEnrollment", "True");
+            program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpen", "3");
+            program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            program.Configuration("exclusionType", "0");
+            program.Configuration("usePlanDefaultDeferralElection", "true");
+            program.Configuration("usePlanDefaultInvestmentElection", "true");
+            program.Configuration("sendEnrollmentInvite", "1");
+            program.Configuration("deferralContributionRateUponRehire", "2");
+            program.Configuration("contributionType", "1");
+            program.Configuration("sourceId", sourceId);
+            program.Configuration("autoDeferralIncreasePercentage", "15");
+            program.Configuration("maximumADIPercentage", "18");
+            /*program.Configuration("1investmentId", RegularInvestmentId);
+            program.Configuration("2investmentId", modelPortfolioInvestmentId);
+            program.Configuration("1investmentName", "SEAS003");
+            program.Configuration("21investmentName", modelPortfolioName);*/
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
         }
 
+        /*public static async Task<string> SavePretaxRollOverSource(string bearer, string planId)
+        {
+            var program = new Program();
+            var sourceModel = new SourceViewModel();
+            modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(sourceModel);
+            modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "PlanId", modelAfterConvention);
+            var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+            var currentDate = DateTime.UtcNow;
+            await program.Configuration("sourceType", "1");
+            await program.Configuration("sourceCategory", "4");
+            await program.Configuration("sourceSubCategory", "7");
+            await program.Configuration("sourceSubSubCategory", "");
+            await program.Configuration("effectiveStartDate", "2020-01-01");
+            await program.Configuration("sourceName", "Pretax Rollover");
+            //await program.Configuration("isNewContributionAllowed", "false");
+            //await program.Configuration("limitMinimumDollar", "10");
+            //await program.Configuration("limitMinimumPercentage", "10");
+            //await program.Configuration("limitMaximumPercentage", "70");
+            //await program.Configuration("limitMaximumDollar", "70");
+            await program.Configuration("sourceCode", "R");
+            //program.Configuration("EmployeeDeferralSource.contributionType", "7");
+            System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
+            pretaxRolloverSourceId = sourceSave["source"]["id"].ToString();
+            return pretaxRolloverSourceId;
+        }
+
+        //public static async Task<string> SaveRollOverSource(string? bearer,string planId)
+        //{
+        //    var program = new Program();
+        //    var RolloOver = new RolloverViewModel();
+        //    modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(RolloOver);
+        //    modelAfterConvention = FakeDataHelper.AssignId(planId.ToString(), "planId", modelAfterConvention);
+        //    var listOfProperties = GetJsonPropertyList(modelAfterConvention);
+        //    await program.Configuration("planId", planId);
+        //    await program.Configuration("sourceName", "PretaxRollover");
+        //    await program.Configuration("sourceType","1");
+        //    await program.Configuration("sourceCategory", "4");
+        //    await program.Configuration("sourceSubCategory", "7");
+        //    await program.Configuration("sourceSubSubCategory", null);
+        //    await program.Configuration("sourceCode", "8");
+        //    await program.Configuration("effectiveStartDate", "2025-04-01T00:00:00Z");
+        //    await program.Configuration("effectiveEndDate", null);
+        //    await program.Configuration("isSourceOfferdInthisPlan", "True");
+        //    await program.Configuration("recordKeepingNumber", null);
+        //    await program.Configuration("isNewContributionAllowed", "false");
+        //    await program.Configuration("isDisplayToParticipantWebsite", "false");
+        //    await program.Configuration("isEligibilityRulesUniqueThisSource", "false");
+        //    await program.Configuration("employerSourceExclusion", "");
+        //    await program.Configuration("employeeDeferralSource", null);
+        //    await program.Configuration("employerDiscretionarySource", null);
+        //    await program.Configuration("employerMatchSource", null);
+        //    await program.Configuration("employerOtherSource", null);
+        //    await program.Configuration("contributionType", "1");
+        //    await program.Configuration("employerSourceExcludedEmployeeClassifications", "");
+        //    await program.Configuration("employerSourceExcludedEmploymentStatuses", "");
+        //    await program.Configuration("isValid", null);
+        //    await program.Configuration("validate", null);
+        //    System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+        //    var planResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveRollOverAsync");
+        //    string RollOverSource = planResponse["plan"]["id"].ToString();
+        //    rkPlanNumber = planResponse["plan"]["rkPlanNumber"].ToString();
+        //    planName = planResponse["plan"]["planName"].ToString();
+        //    return RollOverSource;
+        //}
         public async Task SaveEnrollmentForModelPortfolioWithDiffernentInvestionElectionToAllSources()
         {
             var program = new Program();
@@ -3698,37 +3860,37 @@ namespace RefitSandBox
             modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
             modelPortfolioInvestmentId2 = InvestmentPlanMappingIds[modelPortfolioNames.Last()].ToString();
             RegularInvestmentId = InvestmentPlanMappingIds["SEAS003"].ToString();
-            await program.Configuration("planId", planId);
-            await program.Configuration("sameInvestmentElectionToAllParticipants", "true");
-            await program.Configuration("sourceName", "Pretax");
-            await program.Configuration("contributionRate", "12");
-            await program.Configuration("autoDeferralIncreaseProgram", "true");
-            await program.Configuration("increaseAllowanceDays", "30");
-            await program.Configuration("periodOfIncrease", "1");
-            await program.Configuration("applyADITo", "0");
-            await program.Configuration("adiApplicableTo", "2");
-            await program.Configuration("subjecttoAutoEnrollment", "True");
-            await program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpen", "3");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
-            await program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
-            await program.Configuration("exclusionType", "0");
-            await program.Configuration("usePlanDefaultDeferralElection", "true");
-            await program.Configuration("usePlanDefaultInvestmentElection", "false");
-            await program.Configuration("sameInvestmentElectionToAllSources", "false");
-            await program.Configuration("sendEnrollmentInvite", "1");
-            await program.Configuration("deferralContributionRateUponRehire", "2");
-            await program.Configuration("contributionType", "1");
-            //await program.Configuration("sourceId", sourceId);
-            await program.Configuration("autoDeferralIncreasePercentage", "15");
-            await program.Configuration("maximumADIPercentage", "18");
-            /*await program.Configuration("1investmentId", RegularInvestmentId);
-            await program.Configuration("2investmentId", modelPortfolioInvestmentId);
-            await program.Configuration("1investmentName", "SEAS003");
-            await program.Configuration("21investmentName", modelPortfolioName);*/
-            var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
+            program.Configuration("planId", planId);
+            program.Configuration("sameInvestmentElectionToAllParticipants", "true");
+            program.Configuration("sourceName", "Pretax");
+            program.Configuration("contributionRate", "12");
+            program.Configuration("autoDeferralIncreaseProgram", "true");
+            program.Configuration("increaseAllowanceDays", "30");
+            program.Configuration("periodOfIncrease", "1");
+            program.Configuration("applyADITo", "0");
+            program.Configuration("adiApplicableTo", "2");
+            program.Configuration("subjecttoAutoEnrollment", "True");
+            program.Configuration("numberOfDaysWindowIsOpenNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpen", "3");
+            program.Configuration("numberOfDaysWindowIsOpenForOptoutNumber", "1");
+            program.Configuration("numberOfDaysWindowIsOpenForOptout", "1");
+            program.Configuration("exclusionType", "0");
+            program.Configuration("usePlanDefaultDeferralElection", "true");
+            program.Configuration("usePlanDefaultInvestmentElection", "false");
+            program.Configuration("sameInvestmentElectionToAllSources", "false");
+            program.Configuration("sendEnrollmentInvite", "1");
+            program.Configuration("deferralContributionRateUponRehire", "2");
+            program.Configuration("contributionType", "1");
+            //program.Configuration("sourceId", sourceId);
+            program.Configuration("autoDeferralIncreasePercentage", "15");
+            program.Configuration("maximumADIPercentage", "18");
+            /*program.Configuration("1investmentId", RegularInvestmentId);
+            program.Configuration("2investmentId", modelPortfolioInvestmentId);
+            program.Configuration("1investmentName", "SEAS003");
+            program.Configuration("21investmentName", modelPortfolioName);
+        var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var enrollmentSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveEnrollmentSettings");
-        }
+        }*/
         public static async Task SaveFunding(string bearer, string planId)
         {
             var program = new Program();
@@ -3738,19 +3900,19 @@ namespace RefitSandBox
             var funding = new FundingViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(funding);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("planId", planId);
-            await program.Configuration("planCashAccountEnabled", "true");
-            await program.Configuration("achPullEnabled", "true");
-            await program.Configuration("bankAccountNumber", "647823647236");
-            await program.Configuration("abaRoutingNumber", "527183462");
-            await program.Configuration("bankAccountName", "HSBC Bank");
-            await program.Configuration("bankAccountType", "2");
-            await program.Configuration("bankAccountStatus", "1");
-            await program.Configuration("defaultBankAccountIndicator", "true");
-            await program.Configuration("classificationIds", null);
-            await program.Configuration("fundingId", fundingId);
-            await program.Configuration("1id", fundingId);
-            await program.Configuration("sponsorFeePaymentMethod", "1");
+            program.Configuration("planId", planId);
+            program.Configuration("planCashAccountEnabled", "true");
+            program.Configuration("achPullEnabled", "true");
+            program.Configuration("bankAccountNumber", "647823647236");
+            program.Configuration("abaRoutingNumber", "527183462");
+            program.Configuration("bankAccountName", "HSBC Bank");
+            program.Configuration("bankAccountType", "2");
+            program.Configuration("bankAccountStatus", "1");
+            program.Configuration("defaultBankAccountIndicator", "true");
+            program.Configuration("classificationIds", null);
+            program.Configuration("fundingId", fundingId);
+            program.Configuration("1id", fundingId);
+            program.Configuration("sponsorFeePaymentMethod", "1");
             var interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var fundingSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveFunding");
             fundingBankId = fundingSave["funding"]["sponsorFundingAccounts"][0]["id"].ToString();
@@ -3763,13 +3925,13 @@ namespace RefitSandBox
             var payrollSearch = new UploadedFileInformationDetails();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(payrollSearch);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("companyName", companyName);
-            await program.Configuration("planName", planName);
-            await program.Configuration("rkPlanNumber", rkPlanNumber);
-            await program.Configuration("uploadedOn", null);
-            await program.Configuration("fileStatus", null);
-            await program.Configuration("fileType", null);
-            await program.Configuration("fileName", null);
+            program.Configuration("companyName", companyName);
+            program.Configuration("planName", planName);
+            program.Configuration("rkPlanNumber", rkPlanNumber);
+            program.Configuration("uploadedOn", null);
+            program.Configuration("fileStatus", null);
+            program.Configuration("fileType", null);
+            program.Configuration("fileName", null);
             //string BaseURL = "https://dev.coreretirementsolutions.com/";
             payrollSearch = (UploadedFileInformationDetails)modelAfterConvention;
             var httpClient = new HttpClient()
@@ -3784,8 +3946,8 @@ namespace RefitSandBox
             var responseArray = JArray.Parse(response.ToString());
             uploadedFileId = responseArray[0]["id"].ToString();
             return uploadedFileId;
-            /*var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
-            var payrollFileList = await program.SendAPIRequest(bearer, payrollSearch, interfaceType, "GetUploadedFilesBasedOnSearchCriteria");*/
+            var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
+            var payrollFileList = await program.SendAPIRequest(bearer, payrollSearch, interfaceType, "GetUploadedFilesBasedOnSearchCriteria");
         }
 
         public static async Task SaveFundingDetailsByPlan(HttpClient httpClient, string planId, string fileId)
@@ -3845,12 +4007,12 @@ namespace RefitSandBox
             var confirmFunds = new ConfirmFundsViewModel();
             modelAfterConvention = FakeDataHelper.PopulateModelWithFakeData(confirmFunds);
             var list = GetJsonPropertyList(modelAfterConvention);
-            await program.Configuration("fileId", fileId);
-            await program.Configuration("fundingType", "Plan");
-            await program.Configuration("isACHDebit", "true");
-            await program.Configuration("planId", planId);
-            await program.Configuration("amount", totalAmount.ToString());
-            await program.Configuration("payrollFundingId", payrollFundingId);
+            program.Configuration("fileId", fileId);
+            program.Configuration("fundingType", "Plan");
+            program.Configuration("isACHDebit", "true");
+            program.Configuration("planId", planId);
+            program.Configuration("amount", totalAmount.ToString());
+            program.Configuration("payrollFundingId", payrollFundingId);
             var interfaceType = System.Type.GetType($"RefitSandBox.IPayroll");
             var confirmFundsResponse = await program.SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, "ConfirmFunds");*/
         }
@@ -4232,6 +4394,193 @@ namespace RefitSandBox
                 
             else
                 return payrollTransactionId;
+        }
+
+        public static async Task SaveEmployee(HttpClient httpClient, string companyId)
+        {
+            var program = new Program();
+            var employeeModel = program.EmployeeConfiguration();
+            employeeModel.CompanyId = int.Parse(companyId);
+
+            var employeeInterface = RestService.For<IEmployee>(httpClient);
+            var saveEmployeeResponse = await employeeInterface.SaveEmployeeAsync(employeeModel);
+
+            var parsedResponse = JObject.Parse(saveEmployeeResponse.ToString());
+            employeeId = parsedResponse["employee"]["id"].ToString();
+            Console.WriteLine("Employee created with id: " + employeeId);
+        }
+
+        public PayrollEmployeeViewModel EmployeeConfiguration()
+        {
+            var faker = new Faker();
+            employeeViewModel = new PayrollEmployeeViewModel
+            {
+                Id = 0,
+                CompanyId = 0,
+                ModeOfHours = 1,
+                FirstName = faker.Name.FirstName(),
+                LastName = faker.Name.LastName(),
+                MiddleName = "A",
+                EmployeeNumber = null,
+                UniquePersonalIdentification = faker.Person.Ssn(),
+                VestingPercentage = 0,
+                Gender = faker.PickRandom(new[] { "M", "F" }),
+                MaritalStatus = faker.PickRandom(new[] { "S", "M", "D", "W" }),
+                FamilyStatus = "",
+                PermanentId = 0,
+                BirthDate = faker.Date.Past(30, DateTime.Today.AddYears(-18)).ToUniversalTime(),
+                Address = faker.Address.StreetAddress(),
+                Address1 = faker.Address.SecondaryAddress(),
+                Address2 = null,
+                Address3 = null,
+                Country = "USA",
+                CountryId = 1,
+                State = "AL",
+                StateId = 1,
+                City = faker.Address.City(),
+                ZipCode = faker.Random.Replace("#####-####"),
+                MobilePhoneNumber = faker.Random.Replace("9##-###-####"),
+                WorkPhoneNumber = null,
+                Fax = null,
+                PrimaryEmailAddress = faker.Internet.Email(),
+                AlternativeEmailAddress = null,
+                ForeignState = null,
+                ForeignCountry = null,
+                HireDate = faker.Date.Past(10).ToUniversalTime(),
+                ReHireDate = null,
+                TerminationDate = null,
+                LeaveStartDate = null,
+                LeaveEndDate = null,
+                PayPeriodHours = null,
+                YtdHours = null,
+                TempAmt = null,
+                FileUploadId = null,
+                UploadedThrough = null,
+                PayDate = null,
+                EmploymentStatusId = null,
+                EmploymentStatus = "Active",
+                EmploymentSchedule = null,
+                PayrollFrequency = "Daily",
+                PayrollFrequencyId = null,
+                ConfirmationNumber = null,
+                EntryMode = null,
+                AnnualSalary = null,
+                RkPlanNumber = null,
+                ImageURL = null,
+                HceIndicator = null,
+                IsSponsor = false,
+                HceIndicatorReason = null,
+                PendingQDROIndicator = false,
+                OfficerIndicator = false,
+                FamilyMemberOfOwnerIndicator = false,
+                RelationUniquePersonalIdentification = null,
+                OwnerShip = null,
+                Relationship = null,
+                SsnOfOwner = null,
+                InsiderOrRestrictedEmployeeIndicator = false,
+                KeyEmployeeIndicator = false,
+                ReturnMailIndicator = false,
+                TotalContributionAmount = null,
+                UnionEmployeeIndicator = false,
+                LeasedOrContractedEmployeeIndicator = false,
+                PartTimeEmployeeIndicator = false,
+                NonResidentAlienIndicator = false,
+                TotalLoanRePayAmount = null,
+                ErrorMessages = null,
+                HoursDetails = null,
+                EmployeeClassifications = new List<PayrollEmployeeClassificationViewModel>
+                {
+                    new PayrollEmployeeClassificationViewModel
+                    {
+                       Id = 0,
+                       ClassificationTypeName = "Location",
+                       Code = "L1",
+                       ClassificationTypeId = 0,
+                       ClassificationId = 0,
+                       EffectiveStartDate = DateTimeOffset.Now,
+                       EffectiveEndDate = null,
+                       ClassificationName = "Location",
+                       IsMandatory = false,
+                       DisplayOrder = 0,
+                       IsCodeExist = false,
+                       IsEndDateCalculated = false,
+                       PmtTypeWiseClassificationHistoryId = 0,
+                       EmployeeClassificationHistory = null,
+                       PayDate = null
+                    }
+                },
+                PayrollLoans = new List<PayrollLoanViewModel>(),
+                Contributions = new List<ContributionViewModel>(),
+                CompensationCategories = new List<EmployeeCompensationCategoryViewModel>(),
+                Compensations = new List<PayrollCompensationViewModel>(),
+                EmployeePlanLevelCompensationCategories = new List<PlanCompensationViewModel>(),
+                RehireDetails = new List<RehireDetailViewModel>()
+                {
+                    new RehireDetailViewModel
+                    {
+                        Id = 0,
+                        EmployeeRehireId = 0,
+                        RehireDate = null,
+                        RehireInd = false,
+                        TerminationDate = null
+                    }
+                },
+                EmployeeYOSs = new List<EmployeeYOSTestViewModel>(),
+                DeletedContributionIds = new List<int>(),
+                DeletedLoanIds = new List<int>(),
+                AcceptedErrorIds = new List<int>(),
+                AdditionalAddress = null,
+                AcceptWarning = false,
+                BankAccountNumber = faker.Finance.Account(12),
+                BankAccountName = faker.Person.FirstName,
+                RoutingNumber = faker.Finance.RoutingNumber(),
+                BankAccountType = 1,
+                AccountHolderName = faker.Name.FullName()
+            };
+
+            return employeeViewModel;
+        }
+
+        public BeneficiaryInformation BeneficiaryConfiguration()
+        {
+            var faker = new Faker();
+            var beneficiaryInformation = new BeneficiaryInformation
+            {
+                Id = 0,
+                BeneficiaryName = faker.Name.FullName(),
+                BeneficiaryType = 1,
+                RelationShipType = 1,
+                TrustName = null,
+                EstateName = null,
+                EntityName = null,
+                StateAgency = null,
+                TrusteeName = null,
+                ExecutorName = null,
+                RepresentativeName = null,
+                Ein = faker.Random.Replace("##-#######"),
+                Tin = faker.Random.Replace("##-#######"),
+                PhoneNumber = faker.Phone.PhoneNumber("9##-###-####"),
+                EmailId = faker.Internet.Email(),
+                DateOfBirth = faker.Date.Past(30, DateTime.Today.AddYears(-18)).ToUniversalTime(),
+                Address1 = faker.Address.StreetAddress(),
+                Address2 = faker.Address.SecondaryAddress(),
+                Address3 = null,
+                City = faker.Address.City(),
+                CountryId = 1,
+                StateId = 1,
+                ZipCode = faker.Random.Replace("#####-####"),
+                ForeignCountry = null,
+                ForeignState = null,
+                BankAccountNumber = faker.Finance.Account(12),
+                BankAccountName = faker.Person.FirstName,
+                RoutingNumber = faker.Finance.RoutingNumber(),
+                BankAccountType = 1,
+                AccountHolderName = faker.Person.FullName,
+                EmployeeId = int.Parse(employeeId),
+                UniquePersonalIdentification = faker.Person.Ssn()
+            };
+
+            return beneficiaryInformation;
         }
 
         public async Task AdjustmentConfigurations(string AdjustType, string IncidentCode)

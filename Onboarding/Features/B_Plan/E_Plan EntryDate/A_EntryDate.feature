@@ -2,6 +2,7 @@
 [BeforeTestRun]
 
 #Scenario: Entry date Name field validation when above 50 charecters
+@CompanyAndPlanBasicDetails
 Scenario: o verify the validation message for Prospective/retrospective criteria is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "entryDateRule" is configured as "1"
@@ -16,6 +17,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
 	| PL985      | Rule name should not exceed 50 characters |
 
   #Scenario: Entry date Name field validation when null
+  @CompanyAndPlanBasicDetails
   Scenario: To verify the validation message for plan entry date field is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"
@@ -27,6 +29,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
 	| PL715      | Required      |
 	| PL173      | Required      |
 
+@CompanyAndPlanBasicDetails
   Scenario:To verify the validation message for source entry date field is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"
@@ -38,6 +41,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   Then API should give response as "PL715 : Required"
   #Scenario: Enrty date Name field validation when entetering space
 
+  @CompanyAndPlanBasicDetails
   Scenario: To verify the validation message for Other Entry date month field
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "entryDateRule" is configured as "7"
@@ -50,6 +54,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
 	| PL173      | Required      |
 
 
+@CompanyAndPlanBasicDetails
   Scenario: To verify the validation message for source name field empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"
@@ -59,6 +64,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1086 : Required"
 
+@CompanyAndPlanBasicDetails
   Scenario: To verify the validation message for Other Entry date day field
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "entryDateRule" is configured as "7"
@@ -67,6 +73,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1082 : Required"
 
+@CompanyAndPlanBasicDetails
     Scenario:To verify the validation message for Other description field is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"   
@@ -75,6 +82,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL726 : Required"
 
+@CompanyAndPlanBasicDetails
       Scenario:To verify the validation message for already exit month and date 
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "ruleName" is configured as "abc123" 
@@ -89,6 +97,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1042 : The entered day and month already exists for the plan"
 
+  @CompanyAndPlanBasicDetails
       Scenario:To verify the validation message for Is coinciding with applicable field is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "entryDateRule" is configured as "1"
@@ -98,7 +107,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL723 : Required"
 
-  
+  @CompanyAndPlanBasicDetails
       Scenario:To verify the switch to plan year entry date is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
@@ -106,6 +115,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL721 : Required"
 
+  @CompanyAndPlanBasicDetails
         Scenario:To verify the Prospective/retrospective criteria is after selection of Yes Does switch to plan year have different entry dates is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"
@@ -116,7 +126,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL724 : Required"
 
-
+  @CompanyAndPlanBasicDetails
           Scenario:To verify the Is coinciding with applicable is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
@@ -126,6 +136,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL725 : Required"
 
+  @CompanyAndPlanBasicDetails
          Scenario:To verify the validation message for Other Entry date month field when Switch to plan year is "yes"
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"
@@ -135,7 +146,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1166 : Required"
 
-  
+  @CompanyAndPlanBasicDetails
   Scenario:To verify the validation message for Other Entry date day field when Switch to plan year is "yes"
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "ruleName" is configured as "abc123"
@@ -146,6 +157,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1084 : Required"
 
+  @CompanyAndPlanBasicDetails
    Scenario:To verify the validation message for already exit month and date when Switch to plan year is "yes"
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
@@ -160,6 +172,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1044 : The entered day and month already exists for the plan"
 
+  @CompanyAndPlanBasicDetails
   Scenario: Entry date Name field validation
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
  When Configuration has been made as per following
