@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AdditionalFiles Remove="NewFolder\**" />
+    <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+    <ReqnrollFeatureFiles Remove="NewFolder\**" />
+    <ReqnrollObsoleteCodeBehindFiles Remove="NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ReqnrollObsoleteCodeBehindFiles Remove="SharedFeatureFiles\Sample.feature.cs" />
     <ReqnrollObsoleteCodeBehindFiles Remove="TestDataGenerator\Sample.feature.cs" />
   </ItemGroup>
@@ -67,10 +76,6 @@
 	    <Visible>$(UsingMicrosoftNETSdk)</Visible>
 	    <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
 	  </ReqnrollFeatureFiles>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="NewFolder\" />
 	</ItemGroup>
 
 	<ItemGroup>
