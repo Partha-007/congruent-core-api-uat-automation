@@ -23,7 +23,6 @@ using FizzWare.NBuilder;
 using AutoFixture;
 using System.Reflection;
 using RefitSandBox.TestDataGenerator;
-using System.Data;
 using Reqnroll;
 using Bogus.Bson;
 using FizzWare.NBuilder.Extensions;
@@ -59,17 +58,16 @@ namespace RefitSandBox
 {
     public class Program : TestBase
     {
-        public static string bearer;
-        public static JObject response;
+        public static string? bearer, _url;
+        public static JObject? response;
         public JObject request;
         public PlanDetailsViewModel planModel;
-        public FakeDataHelper _fakeDataHelper;
+        public FakeDataHelper? _fakeDataHelper = new FakeDataHelper();
         System.Type Model;
-        public static object modelAfterConvention;
-        public static Hooks.Hooks _hooks;
-        public static string _url;
+        public static object? modelAfterConvention;
+        public static Hooks.Hooks? _hooks = new Hooks.Hooks();
         public static ParseToObjectTestResponse? employee;
-        public SFTP _sftp;
+        public SFTP? _sftp = new SFTP();
         public static List<B50MatchResult> b50Response = new List<B50MatchResult>();
 
 
@@ -85,34 +83,12 @@ namespace RefitSandBox
         {
 
         }
-        public static string companyPlanCompensationId;
-        public static string companyGrossCompensationId;
-        public static string companyName;
-        public static string companyClassificationId, employeeClassificationId, payrollFrequencyId, ActiveStatusId, employeeId;
-        public static string planId;
-        public static string planName;
-        public static string rkPlanNumber;
-        public static string sourceId, pretaxRolloverSourceId;
-        public static string pretaxsourceName;
-        public static string matchSourceId;
-        public static string matchSourceName;
-        public static string rothSourceId;
-        public static string MatcheditId;
-        public static string rothSourceName;
-        public static string uploadedFileId;
-        public static string fundingBankId;
-        public static string payrollFundingId;
-        public static string employeeSSN;
-        public static string loanDocumentId;
-        public static string loanSettingsId;
+        public static string? companyPlanCompensationId, companyGrossCompensationId, companyName, companyClassificationId, employeeClassificationId, payrollFrequencyId, ActiveStatusId, planId, planName, rkPlanNumber,
+                              sourceId, pretaxRolloverSourceId, pretaxsourceName, matchSourceId, matchSourceName, rothSourceId, MatcheditId, rothSourceName, uploadedFileId, fundingBankId, payrollFundingId,
+                              employeeSSN,loanDocumentId, loanSettingsId, loanId, firstRepaymentDate, modelPortfolioId, modelPortfolioName, modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2, businessKey;
+
         public static double totalAmount;
-        public static string businessKey;
-        public static string loanId;
-        public static string firstRepaymentDate;
-        public static string modelPortfolioId;
-        public static string modelPortfolioName;
-        public static string modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2;
-        public static AccountBalanceByPlanResponse employeeAccountBalance;
+        public static AccountBalanceByPlanResponse? employeeAccountBalance;
         public static int? recordKeeperId;
         public static Dictionary<string, string> InvestmentNameAndPlanMappingIdDict = new Dictionary<string, string>();
         public static SourceViewModel? sourceobjModel;
@@ -136,7 +112,7 @@ namespace RefitSandBox
             using (var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true }))
             {
                 // Send a GET request to the provided URL
-                HttpResponseMessage response = await client.GetAsync(authRequestUrl);
+                HttpResponseMessage? response = await client.GetAsync(authRequestUrl);
 
                 // Check if there were any redirects
                 finalUrl = response.RequestMessage.RequestUri;
@@ -4048,7 +4024,7 @@ namespace RefitSandBox
             };
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
             await GenerateOutboundFile(httpClient, "Saturna", "DTCC", 1);
-            await Task.Delay(2000);
+            await Task.Delay(2500);
             var tradeOrderNumbers = _sftp.ProcessTradeOrderFile(SFTP.CUSIPTradeIdentifierDict, b50Response);
             _sftp.EditFixedWidthFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09", new List<B50MatchResult>(), tradeOrderNumbers);
             _sftp.UploadFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09");
@@ -4121,7 +4097,7 @@ namespace RefitSandBox
 
             var parsedResponse = JObject.Parse(clearingPartnerPlanMappingResponse.ToString())["planAssociatedClearingPartnerAccounts"] as JArray;
             var clearingPartnerMappingId = parsedResponse[0]["clearingPartnerId"].ToString();
-            if(clearingPartnerMappingId == null)
+            if(!clearingPartnerMappingId.StartsWith("0"))
                 throw new Exception("Clearing Partner Mapping Id is null");
         }
 
