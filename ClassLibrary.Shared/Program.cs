@@ -85,7 +85,7 @@ namespace RefitSandBox
         }
         public static string? companyPlanCompensationId, companyGrossCompensationId, companyName, companyClassificationId, employeeClassificationId, payrollFrequencyId, ActiveStatusId, planId, planName, rkPlanNumber,
                               sourceId, pretaxRolloverSourceId, pretaxsourceName, matchSourceId, matchSourceName, rothSourceId, MatcheditId, rothSourceName, uploadedFileId, fundingBankId, payrollFundingId,
-                              employeeSSN,loanDocumentId, loanSettingsId, loanId, firstRepaymentDate, modelPortfolioId, modelPortfolioName, modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2, businessKey;
+                              employeeSSN,loanDocumentId, loanSettingsId, loanId, firstRepaymentDate, modelPortfolioId, modelPortfolioName, modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2, businessKey, employeeId;
 
         public static double totalAmount;
         public static AccountBalanceByPlanResponse? employeeAccountBalance;
