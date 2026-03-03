@@ -8,8 +8,8 @@ Scenario: Employee status (successful response) double execution
 | 1           | EmploymentStatusName | random 5 alphabets |
 | 1           | EmploymentStatusCode | A                  |
   When Configuration has been made as per following
-           | key  | value               |
-           | name | random 10 alphabets |
+           | key                  | value               |
+           | name                 | random 10 alphabets |
   And Configuration has been done as mentioned below
 | key                        | value    |
 | frequencyName              | Daily    |
@@ -28,28 +28,24 @@ Then API should respond with successful message
 
 Scenario: Employee status (successful response)
   Given Model is selected for the endpoint "/api/v1/Company"
+ When Configuration has been done as mentioned below
+| key              | value |
+| employmentStatus |     1 |
   When Collection in a model is configured with 7 blocks for the property "EmploymentStatus" with values to save model portfolio as given below
 | BlockNumber | Key                  | Value                  |
 |           1 | EmploymentStatusName | Active                 |
-|           1 | EmploymentStatus1    |                      1 |
 |           1 | EmploymentStatusCode | random 2 numerics      |
 |           2 | EmploymentStatusName |                   1234 |
-|           2 | EmploymentStatus1    |                      1 |
 |           2 | EmploymentStatusCode | random 2 numerics      |
 |           3 | EmploymentStatusName | Active                 |
-|           3 | EmploymentStatus1    |                      1 |
 |           3 | EmploymentStatusCode | random 1 alphabets     |
 |           4 | EmploymentStatusName | Active                 |
-|           4 | EmploymentStatus1    |                      1 |
 |           4 | EmploymentStatusCode | random 2 numerics      |
 |           5 | EmploymentStatusName | Active                 |
-|           5 | EmploymentStatus1    |                      1 |
 |           5 | EmploymentStatusCode | random 2 alphaNumerics |
 |           6 | EmploymentStatusName | Active                 |
-|           6 | EmploymentStatus1    |                      1 |
 |           6 | EmploymentStatusCode | random 8 alphabets     |
 |           7 | EmploymentStatusName | Active                 |
-|           7 | EmploymentStatus1    |                      1 |
 |           7 | EmploymentStatusCode | random 10 alphabets    |
   And Configuration has been done as mentioned below
 | key                        | value    |
@@ -66,19 +62,18 @@ Then API should respond with successful message
 
  Scenario: Employee status error vlidation
   Given Model is selected for the endpoint "/api/v1/Company"
+   When Configuration has been done as mentioned below
+| key              | value |
+| employmentStatus |     1 |
   When Collection in a model is configured with 5 blocks for the property "EmploymentStatus" with values to save model portfolio as given below
   | BlockNumber | Key                  | Value                      |
   |           1 | EmploymentStatusName | Active                     | 
-  |           1 | EmploymentStatus1     |                          1 |
   |           1 | EmploymentStatusCode | random 0 alphabets         |
   |           2 | EmploymentStatusName | Active                     | 
-  |           2 | EmploymentStatus1     |                          1 |
   |           2 | EmploymentStatusCode | random 2 specialCharacters |
   |           3 | EmploymentStatusName | Active                     | 
-  |           3 | EmploymentStatus1     |                          1 |
   |           3 | EmploymentStatusCode | @f1                        |
   |           4 | EmploymentStatusName | Active                     | 
-  |           4 | EmploymentStatus1     |                          1 |
   |           4 | EmploymentStatusCode | random 11 alphabets        |
   |           5 | EmploymentStatusName | random 0 alphabets         | 
   |           5 | EmploymentStatusCode | A                          |

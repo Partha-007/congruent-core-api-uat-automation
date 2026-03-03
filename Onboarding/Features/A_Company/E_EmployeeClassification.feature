@@ -127,16 +127,15 @@ Then API should respond with successful message
  Scenario: Employee classification(error validation)
  Given Model is selected for the endpoint "/api/v1/Company"
  When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
-| BlockNumber | Key                        | Value             |
-|           1 | ClassificationName         |                   |
-|           1 | EmployeeClassificationType | random 51 Numerics |
+| BlockNumber | Key                        | Value |
+|           1 | ClassificationName         |       |
+|           1 | EmployeeClassificationType |     1 |
  When Collection in a model is configured with 1 blocks for the property "EmployeeClassificationCodes" with values to save model portfolio as given below
-| BlockNumber | Key  | Value             |
+| BlockNumber | Key  | Value               |
 |           1 | Code | random 251 Numerics |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
-Then the API response should contain the 3 following errors
+Then the API response should contain the 2 following errors
 | error_code | error_message                                               |
-| CM029      | Classification type  length should not exceed 50 characters |
 | CM091      | Required                                                    |
 | CM060      | Classification code length should not exceed 250 characters |
 
@@ -176,17 +175,20 @@ Given Model is selected for the endpoint "/api/v1/Company"
 When Configuration has been made as per following
            | key                        | value               |
            | classificationName         | random 51 Alphabets |
-           | employeeClassificationType | random 1 Numerics  |
+           | employeeClassificationType | random 1 Numerics   |
            | code                       | random 1 Numerics   |
            | frequencyName              | abc123              |
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
-Then API should respond with successful message
+Then the API response should contain the 1 following errors
+| error_code | error_message                                         |
+| CM029      | Classification type  length should not exceed 50 characters |
 
 Scenario: Save Employee classification with same classification name
  Given Model is selected for the endpoint "/api/v1/Company"
  When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
 | BlockNumber | Key                | Value    |
 |           1 | ClassificationName | Location |
+And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
  When Collection in a model is configured with 1 blocks for the property "Classifications" with values to save model portfolio as given below
 | BlockNumber | Key                | Value    |
 |           1 | ClassificationName | Location |

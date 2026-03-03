@@ -379,6 +379,8 @@ namespace RefitSandBox
         }
 
         public static List<System.Reflection.PropertyInfo> matchingProperties = new List<System.Reflection.PropertyInfo>();
+
+        JArray newArray = new JArray();
         public void Configuration(string ControlName, string Value)
         {
             var program = new Program();
@@ -1799,17 +1801,15 @@ namespace RefitSandBox
                 { "/api/RolloverIn/SaveRolloverInRequest", () => new RollOverInRequestDetails()},
                 { "/api/v1/Adjustment/SaveBasicAdjustmentDetails", () => new BasicDetails() },
                 //{"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
-                { "/api/Transfer/SaveTransfer",() => new TransferViewModel()},
+               // { "/api/Transfer/SaveTransfer",() => new TransferViewModel()},
                // { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
-                {"/api/Source/SaveSource",() => new SourceViewModel() },
                 {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() },
                 {"/api/Sponsor/SaveSponsor",() => new SponsorViewModel() },
                 {"/api/v1/EligibleRule/SavePlanAmendmentEligibleRule",() => new EligibilityRuleViewModel() },
                 {"/api/EntryDate/SaveEntryDate",() => new EntryDateRuleViewModel() },
                 {"/api/PlanYOS/SavePlanYOS",() => new YearsOfServiceViewModel() },
                 {"/api/Withdrawal/SaveWithdrawal",() => new WithdrawalViewModel() },
-                {"/api/Rollover/SaveRollover",() => new RolloverViewModel() },
-               // {"/api/Transfer/SaveTransfer",() => new TransferViewModel() },
+               // {"/api/Rollover/SaveRollover",() => new RolloverViewModel() },
                 {"/api/v1/Loan/SubmitLoanRequest", () => new SubmitLoanRequestViewModel() },
                 {"/api/v1/Plan/SaveSourceLimits",() => new SourceLimitsViewModel() }
 

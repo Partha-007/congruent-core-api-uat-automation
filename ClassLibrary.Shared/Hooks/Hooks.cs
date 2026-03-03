@@ -489,7 +489,7 @@ namespace RefitSandBox.Hooks
             await UserLogin();
 
 
-            // Initialize HttpClient
+            //Initialize HttpClient
             httpClient = new HttpClient
             {
                 BaseAddress = new Uri(_appSettings.ApplicationURL)
@@ -526,8 +526,8 @@ namespace RefitSandBox.Hooks
             {
                 planId = await Program.SavePlan(bearer!, companyId);
                 await Program.SaveSponsor(httpClient, bearer!, planId);
-                //await Program.ClearingPartnerPlanMapping(bearer!, planId);
-                await Program.UpsertPlanWithClearingPartnerAccount(httpClient, planId, AccountId);
+                await Program.ClearingPartnerPlanMapping(bearer!, planId);
+                //await Program.UpsertPlanWithClearingPartnerAccount(httpClient, planId, AccountId);
                 await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
                 await Program.SaveEntryDate(httpClient, bearer!, planId);
                 await Program.SavePretaxSource(bearer!, planId);
