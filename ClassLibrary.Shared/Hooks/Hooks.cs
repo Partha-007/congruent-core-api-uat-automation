@@ -473,6 +473,8 @@ namespace RefitSandBox.Hooks
             //var prm = new Programs();
             //await prm.GenerateApiClientAsync();
 
+            
+
             await UserLogin();
 
             // Initialize HttpClient

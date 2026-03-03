@@ -1,10 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Remove="Drivers\**" />
+    <AdditionalFiles Remove="Support\**" />
+    <Compile Remove="Drivers\**" />
+    <Compile Remove="Support\**" />
+    <EmbeddedResource Remove="Drivers\**" />
+    <EmbeddedResource Remove="Support\**" />
+    <None Remove="Drivers\**" />
+    <None Remove="Support\**" />
+    <ReqnrollFeatureFiles Remove="Drivers\**" />
+    <ReqnrollFeatureFiles Remove="Support\**" />
+    <ReqnrollObsoleteCodeBehindFiles Remove="Drivers\**" />
+    <ReqnrollObsoleteCodeBehindFiles Remove="Support\**" />
+  </ItemGroup>
 
   <ItemGroup>
 	  <PackageReference Include="AutoFixture" Version="5.0.0-preview0011" />
@@ -43,10 +58,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\ClassLibrary.Shared\ClassLibrary.Shared.csproj" />
 	</ItemGroup>
-	
-  <ItemGroup>
-    <Folder Include="Drivers\" />
-    <Folder Include="Support\" />
-  </ItemGroup>
 
 </Project>
