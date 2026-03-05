@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using CsvHelper;
 using System.Globalization;
 using Bogus.Extensions.UnitedStates;
+using System.Text.RegularExpressions;
 
 namespace RefitSandBox.TestDataGenerator
 {
@@ -121,7 +122,7 @@ namespace RefitSandBox.TestDataGenerator
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate") ? DateTimeOffset.Parse("2025-03-02T00:00:00Z") :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? DateTimeOffset.Parse("2026-03-02T00:00:00Z") :
                         propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("UniquePersonalIdentification", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
-                        propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? faker.Name.FirstName() :
+                        propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? Regex.Replace(faker.Name.FirstName(), @"[^\w\s]", "") :
                         propertyType == typeof(string) && propertyName.Contains("Name", StringComparison.OrdinalIgnoreCase) ? faker.Company.CompanyName() :
                         propertyType == typeof(string) && propertyName.Contains("Email", StringComparison.OrdinalIgnoreCase) ? faker.Person.Email :
                         propertyType == typeof(string) && propertyName.Contains("PhoneNumber", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-###-####") :

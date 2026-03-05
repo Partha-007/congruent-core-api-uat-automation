@@ -13,18 +13,18 @@ When Configuration has been made as per following
 | address1          | <Address1>           |
 | address2          | <Address2>           |
 | address3          | <Address2>           |
-| accountNumber     | <AccountNumber>      |
+| bankaccountnumber | <AccountNumber>      |
 | accountHolderName | <AccountHolderName>  |
-| accountName       | <AccountName>        |
-| accountType       | <AccountType>        |
+| bankAccountName   | <AccountName>        |
+| bankAccountType   | <AccountType>        |
 | city              | <City>               |
-| country           |                    2 |
+| countryId         |                    2 |
 | foreignCountry    | <ForeignCountry>     |
 | foreignState      | <ForeignState>       |
-| zipCode           | <ZipCode>            |
-| name              | random 150 alphabets | Scenario:To verify the beneficiaryName field  value with equal 150 alphaebts  in Create Mode of Employee Information Page
+| ZipCode           | <ZipCode>            |
+| beneficiaryName   | random 150 alphabets | Scenario:To verify the beneficiaryName field  value with equal 150 alphaebts  in Create Mode of Employee Information Page
 | routingNumber     | random 9 numerics    |
-| email             | <Email>              |
+| emailId           | <Email>              |
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
 Then API should respond with successful message
 Examples: 																				  
@@ -33,7 +33,7 @@ Examples:
 | random 150 alphabets                        | random 30 alphabets                         | random 30 alphabets                         | random 10 numerics | random 150 alphabets | random 50 alphabets |           2 | random 30 alphabets | random 30 alphabets                         | random 34 alphabets                        | 1234567890qwertyuio                  | adf123@core.com                                                                  |
 | random 10 alphabets                         | random 35 alphabets                         | random 35 alphabets                         | random 18 numerics | random 10 alphabets  | random 10 alphabets |           1 | random 35 alphabets | random 25 alphabets                         | random 35 alphabets                        | 123456789012345678901234567890abcdef | testbeneficiary@test.com                                                         |
 | random 10 numerics                          | random 10 alphabets                         | random 10 alphabets                         | random 10 numerics | random 10 alphabets  | random 10 alphabets |           1 | random 10 alphabets | random 5 alphabets                          | random 5 alphabets                         | abc123                               | beneficiarytestbeneficiarytestbeneficiarytestbeneficiarytestbeneficiary@test.com |
-| random 10 specialCharacters                 | random 10 numerics                          | random 10 numerics                          | random 10 numerics | random 10 alphabets  | random 10 alphabets |           1 | random 10 alphabets | random 5 numerics                           | random 5 specialCharacters                 | abc123                               | abc1@core.com                                                                    |
+| random 10 SpecialCharacters                 | random 10 numerics                          | random 10 numerics                          | random 10 numerics | random 10 alphabets  | random 10 alphabets |           1 | random 10 alphabets | random 5 numerics                           | random 5 specialCharacters                 | abc123                               | abc1@core.com                                                                    |
 | random 10 alphaNumerics                     | random 10 specialCharacters                 | random 10 specialCharacters                 | random 10 numerics | random 10 alphabets  | random 10 alphabets |           1 | random 10 alphabets | random 5 specialCharacters                  | random 5 alphaNumerics                     | abc123                               | abc2@core.com                                                                    |
 | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 10 numerics | random 10 alphabets  | random 10 alphabets |           1 | random 10 alphabets | random 30 alphaNumerics                     | random 5 numerics                          | abc123                               | abc4@core.com                                                                    |
 | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 numerics | random 10 alphabets  | random 10 alphabets |           1 | random 10 alphabets | random 30 alphaNumericWithSpecialCharacters | random 5 alphaNumericWithSpecialCharacters | abc123                               | abc3@core.com                                                                    |
@@ -116,15 +116,15 @@ Scenario:To verify the address1 field  value with Null  in Create Mode of Employ
 When Configuration has been made as per following
 | key               | value |
 | address1          |       |
-| accountNumber     |       |
+| bankAccountnumber |       |
 | accountHolderName |       |
-| accountName       |       |
-| accountType       |       |
+| bankAccountName   |       |
+| bankAccountType   |       |
 | city              |       |
-| country           |       |
-| name              |       |
+| countryId         |       |
+| beneficiaryName   |       |
 | routingNumber     |       |
-| email             |       |
+| emailId           |       |
 | phoneNumber       |       |
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
 Then the API response should contain the 11 following errors 
@@ -152,17 +152,17 @@ When Configuration has been made as per following
 | address1          | random 151 alphabets |
 | address2          | random 36 alphabets  |
 | address3          | random 36 alphabets  |
-| accountNumber     | random 10 alphabets  |
+| bankAccountNumber | random 10 alphabets  |
 | accountHolderName | random 10 numerics   |
-| accountName       | random 51 alphabets  |
+| bankAccountName   | random 51 alphabets  |
 | city              | random 10 numerics   |
-| country           |                    2 |
+| countryId         |                    2 |
 | foreignCountry    |                      |
 | foreignState      |                      |
 | zipCode           |                      |
-| name              | random 151 alphabets |
+| beneficiaryName   | random 151 alphabets |
 | routingNumber     | random 9 alphabets   |
-| email             | 123core34com         |
+| emailId           | 123core34com         |
 | phoneNumber       | random 10 alphabets  |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
@@ -184,6 +184,7 @@ Then the API response should contain the 14 following errors
 	| EM203      | Required.                                                     |Scenario:To Verify the data acceptance of Phone number field when user enters Alphabets - create mode
 
 
+
 Scenario:To Verify the data acceptance of  Bank Account Number field when user enters special characters  - create mode
   Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
@@ -191,18 +192,18 @@ Scenario:To Verify the data acceptance of  Bank Account Number field when user e
 | employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                       |
-| accountNumber     | random 10 specialCharacters |
+| bankAccountNumber | random 10 specialCharacters |
 | accountHolderName | random 10 specialCharacters |
-| accountName       | random 10 numerics          |
+| bankAccountName   | random 10 numerics          |
 | city              | random 10 specialCharacters |
-| country           |                           2 |
+| countryId         |                           2 |
 | foreignCountry    | random 31 alphabets         |
 | foreignState      | random 36 alphabets         |
 | zipCode           | abcde-fghi                  |
-| name              | random 15 numerics          |
+| beneficiaryName   | random 15 numerics          |
 | routingNumber     | random 9 specialCharacters  |
-| email             | #$%@corecom                 |
-| phoneNumber       | random 10 specialCharacters  |
+| emailId           | #$%@corecom                 |
+| phoneNumber       | random 10 specialCharacters |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
 Then the API response should contain the 11 following errors 
@@ -227,15 +228,15 @@ Scenario:To Verify the data acceptance of  Bank Account Number field when user e
 | employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                       |
-| accountNumber     | random 10 alphaNumerics     |
+| bankAccountNumber     | random 10 alphaNumerics     |
 | accountHolderName | random 10 alphaNumerics     |
-| accountName       | random 10 specialCharacters |
+| bankAccountName       | random 10 specialCharacters |
 | city              | random 10 alphaNumerics     |
-| country           |                           1 |
+| countryId           |                           1 |
 | stateId           |                             | Scenario: To Verify the validation message when State field is empty - create mode
-| name              | random 15 specialCharacters |
+| beneficiaryName              | random 15 specialCharacters |
 | routingNumber     | random 9 alphaNumerics      |
-| email             | adf123#$@@core.com          |
+| emailId             | adf123#$@@core.com          |
 | phoneNumber       | random 10 alphaNumerics     |
 | zipCode           |                             |
 
@@ -261,30 +262,43 @@ Scenario:To Verify the data acceptance of  Bank Account Number field when user e
 | employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                                       |
-| accountNumber     | random 10 alphaNumericWithSpecialCharacters |
+| bankAccountNumber | random 10 alphaNumericWithSpecialCharacters |
 | accountHolderName | random 10 alphaNumericWithSpecialCharacters |
-| accountName       | random 10 alphaNumerics                     |
+| bankAccountName   | random 10 alphaNumerics                     |
 | city              | random 10 alphaNumericWithSpecialCharacters |
-| country           |                                           2 |
-| zipCode           | 12345-6789                                  |
-| name              | random 15 alphaNumerics                     |
+| countryId         |                                           1 |
+| beneficiaryName   | random 15 alphaNumerics                     |
 | routingNumber     | random 9 alphaNumericWithSpecialCharacters  |
-| email             | testbeneficiary                             |
+| emailId           | testbeneficiary                             |
 | phoneNumber       | random 10 alphaNumericWithSpecialCharacters |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 9 following errors 
+Then the API response should contain the 8 following errors 
 	| error_code | error_message                                                      |
 	| EM260      | Bank account number must contain only numeric digits (0–9)         |
 	| EM219      | Account Holder Name contains hyphen ,spaces and letters only.      | Scenario:To verify the BeneficiaryBankAccountHolderName field with alphaNumericWithSpecialCharacters  in Create Mode of Employee Information Page
 	| EM187      | Bank Name contains hyphen ,spaces and letters only.                | Scenario:To verify the BeneficiaryBankAccountName field with alphaNumerics in Create Mode of Employee Information Page
 	| EM194      | City name should have spaces, dot, hyphen and letters only.        | Scenario:To verify the city field  value with valid alphaNumericWithSpecialCharacters  in Create Mode of Employee Information Page
-	| EM230      | Zipcode contains Alphanumeric only.                                | Scenario: To Verify the data acceptance Foreign Zipcode when user enters numerics  - create mode
 	| EM202      | Beneficiary Name should have spaces, hyphen, (‘) and letters only. | Scenario:To verify the beneficiaryName field  value with alphaNumerics  in Create Mode of Employee Information Page
 	| EM261      | Routing number must contain only numeric digits (0–9).             | Scenario: To Verify the data acceptance for Routing number field when user enters a alphanumerics with special characters - create mode
 	| EM233      | Email Id is invalid.                                               | Scenario:To verify the beneficiaryEmail field  value name with invalid  in Create Mode of Employee Information Page
 	| EM203      | Required                                                           |Scenario:To Verify the data acceptance of Phone number field when user enters alphanumerics with special characters - create mode
 
+Scenario: To Verify the data acceptance Foreign Zipcode when user enters numerics  - create mode  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
+  Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"  
+When Configuration has been made as per following
+| key        | value        |
+| employeeId | <HooksEmpId> |
+When Configuration has been made as per following
+| key            | value      |
+| countryId      |          2 |
+| foreignCountry | hfkjsfh    |
+| foreignState   | gdhgdj     |
+| zipCode        | 12345-6789 |
+When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
+Then the API response should contain the 1 following errors 
+	| error_code | error_message                                                      |
+	| EM230      | Zipcode contains Alphanumeric only.                                | 
 
 
 
@@ -296,17 +310,17 @@ Scenario:To verify the BeneficiaryBankaAccountNumber field with Numerics of abov
 | employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                                       |
-| accountNumber     | random 19 numerics                          |
+| bankAccountNumber | random 19 numerics                          |
 | accountHolderName | random 10 numerics                          |
-| accountName       | random 10 alphaNumericWithSpecialCharacters |
+| bankAccountName   | random 10 alphaNumericWithSpecialCharacters |
 | city              | random 36 alphabets                         |
-| country           |                                           2 |
+| countryId         |                                           1 |
 | zipCode           | ^%$#@                                       |
 | dateOfBirth       | 1/1/2022                                    |
-| name              | random 15 alphaNumericWithSpecialCharacters |
+| beneficiaryName   | random 15 alphaNumericWithSpecialCharacters |
 | routingNumber     | random 10 numerics                          |
-| email             | testbeneficiary@                            |
-| phoneNumber       | random 9 numerics |
+| emailId           | testbeneficiary@                            |
+| phoneNumber       | random 9 numerics                           |
 
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
@@ -331,11 +345,11 @@ Scenario:To verify the BeneficiaryBankAccountHolderName field with alphabets of 
 When Configuration has been made as per following
 | key               | value                |
 | accountHolderName | random 151 alphabets |
-| country           |                    2 |
+| countryId           |                    1 |
 | zipCode           | abc12-#$@#           |
 | dateOfBirth       | 1/1/2030             |
-| email             | testbeneficiary.     |
-| phoneNumber       | random 11 numerics |
+| phoneNumber       | random 11 numerics   |
+And the property "emailId" is configured as "testbeneficiary."
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
 Then the API response should contain the 5 following errors 
@@ -351,7 +365,6 @@ Then the API response should contain the 5 following errors
 #Scenario:To verify the phoneNumber field  value name with equal 9 digits  in Create Mode of Employee Information Page
 #Scenario:To verify the beneficiaryName field  value name with below 150 alphaebts  in Create Mode of Employee Information Page
 #Scenario: To Verify the of valid format of  Date of Birth field - create mode
-#Scenario:To verify the BeneficiaryRoutingNumber field with numerics of below 9  in Create Mode of Employee Information Page
 Scenario:To verify the BeneficiaryCountry field  value USA  in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
@@ -359,15 +372,15 @@ Scenario:To verify the BeneficiaryCountry field  value USA  in Create Mode of Em
 | employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key           | value                |
-| country       |                    1 |
+| countryId       |                    1 |
 | dateOfBirth   | 1/1/2000             |
-| name          | random 149 alphabets |
-| routingNumber | random 7 numerics    |
+| beneficiaryName          | random 149 alphabets |
 | phoneNumber   | 987-908-1234         |
 | zipCode       |                12345 |
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
 Then API should respond with successful message
 
+#Scenario:To verify the BeneficiaryRoutingNumber field with numerics of below 9  in Create Mode of Employee Information Page
 Scenario: To Verify the length acceptance of Foreign Zipcode when value is above 36 characters  - create mode
   Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
   When Configuration has been made as per following
@@ -376,18 +389,19 @@ Scenario: To Verify the length acceptance of Foreign Zipcode when value is above
 When Configuration has been made as per following
 | key               | value                                                                                               |
 | accountHolderName | random 151 alphabets                                                                                |
-| country           |                                                                                                   2 |
+| countryId           |                                                                                                   1 |
 | zipCode           | 123456789012345678901234567890abcdefh                                                               |
-| dateOfBirth       | day_0                                                                                              |
-| email             | testbeneficiarytestbeneficiarytestbeneficiarytestbeneficiarytestbeneficiarytestbeneficiary@test.com |
+| dateOfBirth       | day_0                                                                                               |
+| emailId             | testbeneficiarytestbeneficiarytestbeneficiarytestbeneficiarytestbeneficiarytestbeneficiary@test.com |
+| routingNumber     | random 7 numerics                                                                                   |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
 Then the API response should contain the 3 following errors 
 	| error_code | error_message                                      |
 	| EM210      | ZIP Code should not be greater than 36 characters. |
 	| EM229      | Date of Birth must be prior to the current date.   | Scenario: To verify the Date of Birth field value with valid date format of Current date MM/DD/YYYY- create mode
-	| EM234      | Email Address should not exceed 80 characters.     |Scenario:To verify the beneficiaryEmail field  value name above 80 characters  in Create Mode of Employee Information Page
-
+	| EM234      | Email Address should not exceed 80 characters.     | Scenario:To verify the beneficiaryEmail field  value name above 80 characters  in Create Mode of Employee Information Page
+	| EM212      | ABA routing number should be 9 digits.             |
 
 Scenario:To verify the beneficiaryName field  value name with alphabets  in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/AddBeneficary"
@@ -396,23 +410,23 @@ Scenario:To verify the beneficiaryName field  value name with alphabets  in Crea
 | employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value               |
-| name              | random 10 alphabets |
-| type              |                   1 |
+| beneficiaryName              | random 10 alphabets |
+| beneficiaryType              |                   1 |
 | relationshipType  |                   1 |
 | phoneNumber       | 333-222-3434        |
-| email             | test@test.com       |
+| emailId             | test@test.com       |
 | address1          | chennai             |
 | address2          | chennai             |
 | address3          | chennai             |
 | city              | chennai             |
-| country           |                   1 |
+| countryId           |                   1 |
 | state             |                   1 |
 | postalCode        | random 5 numerics   |
-| accountNumber     | random 10 numerics  |
-| accountName       | random 10 alphabets |
+| bankAccountNumber     | random 10 numerics  |
+| bankAccountName       | random 10 alphabets |
 | routingNumber     | random 9 numerics   |
 | accountHolderName | random 10 alphabets |
-| accountType       |                   1 |
+| bankAccountType       |                   1 |
 | zipCode           |12345-6789          |
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
 Then API should respond with successful message

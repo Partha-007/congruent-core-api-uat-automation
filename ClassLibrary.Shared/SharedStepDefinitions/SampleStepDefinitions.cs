@@ -1,7 +1,8 @@
-using ClassLibrary.Shared;
 using Bogus.Bson;
+using ClassLibrary.Shared;
 using ClassLibrary.Shared.TestDataGenerator;
 using CucumberExpressions.Ast;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using MyNamespace;
 using Newtonsoft.Json.Linq;
 using RefitSandBox;
@@ -132,7 +133,31 @@ namespace SharedStepDefinitions
                     var splitted = Value.Split(" ");
 
                     Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
-                    Value = Regex.Replace(Regex.Replace(GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue), @"[^\w\s]", " "), @"\s+", " ").Trim();
+
+                    var rawRandom = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                    Value = rawRandom;
+
+                    if (patternValue == Pattern.SpecialCharacters)
+                    {
+                        rawRandom = rawRandom.Replace("_", "@").Replace(",", "@");
+                        // For Specialcharacter: use the string AS-IS (no regex cleanup)
+                        Value = rawRandom;
+                    }
+                    if (patternValue == Pattern.Email)
+                    {
+                        string data = @"[!""#$%&'()*+,\-/:;<=>?\[\]^_`{|}~]";
+                        string cleaned = Regex.Replace(Value, data, "A");
+                        Value = cleaned;
+                    }
+                }
+                
+                if (Value.Contains("_"))
+                {
+                    Value = await Program.GetDate(Convert.ToInt32(Value.Split("_")[1]), Value.Split("_")[0]);
+                    //var splitted = value.Split("_");
+
+                    //Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[0], ignoreCase: true);
+                    //value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
                 }
                 //if (Value.Contains("/"))
                 //{
@@ -166,7 +191,7 @@ namespace SharedStepDefinitions
 
                     
                 }*/
-                if(string.IsNullOrEmpty(Value))
+                if (string.IsNullOrEmpty(Value))
                     Value = null;
                 //if (property.PropertyType == typeof(DateTimeOffset?))
                 //{

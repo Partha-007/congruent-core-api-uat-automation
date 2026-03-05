@@ -2480,8 +2480,11 @@ namespace RefitSandBox
 
                     if (expectedError == actualError)
                         Assert.Pass();
+                    return;
+                   
                 }
-
+                Assert.Fail();
+                throw new Exception($"Given error is not thrown, Expected error : {expectedError}");
             }
         }
 
@@ -3343,6 +3346,8 @@ namespace RefitSandBox
             modelAfterConvention = FakeDataHelper.AssignId(companyId.ToString(), "CompanyId", modelAfterConvention);
             var listOfProperties = GetJsonPropertyList(modelAfterConvention);
             program.Configuration("effectiveDate", "2015-01-01");
+            program.Configuration("shortYearStartDate", "2026-03-02T00:00:00Z");
+            program.Configuration("shortYearEndDate", "2026-10-02T00:00:00Z");
             program.Configuration("name", "ABC123");
             program.Configuration("1month", "1");
             program.Configuration("1day", "1");
