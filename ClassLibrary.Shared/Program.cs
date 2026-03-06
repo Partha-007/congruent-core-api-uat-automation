@@ -1,55 +1,56 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
-using NUnit.Framework.Legacy;
-using Refit;
-using System.Web;
-using System.Data;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using AutoFixture;
+using AutoMapper;
+using Bogus;
+using Bogus.Bson;
+using Bogus.DataSets;
+using Bogus.Extensions.Canada;
+using Bogus.Extensions.UnitedStates;
+using ClassLibrary.Shared;
+using ClassLibrary.Shared.AppSettings;
+using ClassLibrary.Shared.Enum;
+using ClassLibrary.Shared.TestDataGenerator;
+using CsvHelper;
+using FizzWare.NBuilder;
+using FizzWare.NBuilder.Extensions;
+using Fluid.Values;
+using HtmlAgilityPack;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Playwright;
 using MyNamespace;
-using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NSwag.CodeGeneration.Models;
+using NUnit.Framework;
+using NUnit.Framework.Diagnostics;
+using NUnit.Framework.Legacy;
+using Refit;
+using RefitSandBox;
+using RefitSandBox.Hooks;
+using RefitSandBox.TestDataGenerator;
+using Renci.SshNet;
+using Reqnroll;
+using System;
+using System.Collections;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Data;
+using System.Globalization;
 //using Microsoft.AspNetCore.Mvc;
 //using Microsoft.AspNetCore.Mvc.Infrastructure;
 //using Microsoft.AspNetCore.Http;
 using System.Net.Http;
-using System;
-using System.Collections.Specialized;
-using System.Text.RegularExpressions;
-using HtmlAgilityPack;
-using Bogus;
-using FizzWare.NBuilder;
-using AutoFixture;
+using System.Net.NetworkInformation;
 using System.Reflection;
-using RefitSandBox.TestDataGenerator;
-using Reqnroll;
-using Bogus.Bson;
-using FizzWare.NBuilder.Extensions;
-using RefitSandBox;
-using NSwag.CodeGeneration.Models;
-using System.ComponentModel;
-using CsvHelper;
-using System.Globalization;
-using Bogus.DataSets;
-using ClassLibrary.Shared.TestDataGenerator;
-using RefitSandBox.Hooks;
-using Fluid.Values;
-using System.Collections;
-using NUnit.Framework.Diagnostics;
-using System.Text;
-using Renci.SshNet;
 using System.Runtime.InteropServices.WindowsRuntime;
-using AutoMapper;
-using ClassLibrary.Shared.Enum;
-using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
+using static ClassLibrary.Shared.TransactionsConfigurations;
 //using Microsoft.Extensions.Configuration.Json;
 using static Org.BouncyCastle.Bcpg.Attr.ImageAttrib;
-using ClassLibrary.Shared.AppSettings;
-using System.Net.NetworkInformation;
-using ClassLibrary.Shared;
-using Bogus.Extensions.Canada;
-using Bogus.Extensions.UnitedStates;
 //using Io.Cucumber.Messages.Types;
 //using Gherkin.CucumberMessages.Types;
 
@@ -85,7 +86,7 @@ namespace RefitSandBox
         }
         public static string? companyPlanCompensationId, companyGrossCompensationId, companyName, companyClassificationId, employeeClassificationId, payrollFrequencyId, ActiveStatusId, planId, planName, rkPlanNumber,
                               sourceId, pretaxRolloverSourceId, pretaxsourceName, matchSourceId, matchSourceName, rothSourceId, MatcheditId, rothSourceName, uploadedFileId, fundingBankId, payrollFundingId,
-                              employeeSSN,loanDocumentId, loanSettingsId, loanId, firstRepaymentDate, modelPortfolioId, modelPortfolioName, modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2, businessKey;
+                              employeeSSN,loanDocumentId, loanSettingsId, loanId, firstRepaymentDate, modelPortfolioId, modelPortfolioName, modelPortfolioInvestmentId, RegularInvestmentId, modelPortfolioInvestmentId2, businessKey, employeeId;
 
         public static double totalAmount;
         public static AccountBalanceByPlanResponse? employeeAccountBalance;
@@ -832,7 +833,7 @@ namespace RefitSandBox
                                 await Task.Delay(10000);
                             }
                             await GenerateOutboundFile(httpClient,"Saturna","DTCC",1);
-                            await Task.Delay(2000);
+                            await Task.Delay(2500);
                             var tradeOrderNumbers = _sftp.ProcessTradeOrderFile(SFTP.CUSIPTradeIdentifierDict,b50Response);
                             _sftp.EditFixedWidthFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09", new List<B50MatchResult>(), tradeOrderNumbers);
                             _sftp.UploadFile(Hooks.Hooks.clearingPartnerName, "D260102.P2361.C09");
@@ -1766,20 +1767,17 @@ namespace RefitSandBox
                 { "/api/RolloverIn/SaveRolloverInRequest", () => new RollOverInRequestDetails()},
                 { "/api/v1/Adjustment/SaveBasicAdjustmentDetails", () => new BasicDetails() },
                 //{"/api/v1/TradeOutboundFileGeneration/GenerateFile",()=>new OutboundFileGeneration() }
-                { "/api/Transfer/SaveTransfer",() => new TransferViewModel()},
+               // { "/api/Transfer/SaveTransfer",() => new TransferViewModel()},
                // { "/api/Enrollment/SaveEnrollmentSetting",() => new EnrollmentViewModel()},
-                {"/api/Source/SaveSource",() => new SourceViewModel() },
                 {"api/v1/Company/SaveRecordKeepers",() => new SaveRecordKeeperViewModel() },
                 {"/api/Sponsor/SaveSponsor",() => new SponsorViewModel() },
                 {"/api/v1/EligibleRule/SavePlanAmendmentEligibleRule",() => new EligibilityRuleViewModel() },
                 {"/api/EntryDate/SaveEntryDate",() => new EntryDateRuleViewModel() },
                 {"/api/PlanYOS/SavePlanYOS",() => new YearsOfServiceViewModel() },
                 {"/api/Withdrawal/SaveWithdrawal",() => new WithdrawalViewModel() },
-                {"/api/Rollover/SaveRollover",() => new RolloverViewModel() },
-               // {"/api/Transfer/SaveTransfer",() => new TransferViewModel() },
+               // {"/api/Rollover/SaveRollover",() => new RolloverViewModel() },
                 {"/api/v1/Loan/SubmitLoanRequest", () => new SubmitLoanRequestViewModel() },
                 {"/api/v1/Plan/SaveSourceLimits",() => new SourceLimitsViewModel() }
-
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -2226,6 +2224,28 @@ namespace RefitSandBox
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task ApproveOrRejectTransactionRequestAsAdmin(string transactionType, string ApproveOrReject)
+        {
+            switch(transactionType)
+            {
+                case "Rollover":
+                    var transactionConfig = new TransactionsConfigurations(this);
+                    var httpClient = new HttpClient()
+                    {
+                        BaseAddress = new Uri(_url)
+                    };
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+                    var rolloverApproveOrReject = await transactionConfig.ApproveOrRejectRolloverRequest(httpClient, ApproveOrReject);
+                    if (!rolloverApproveOrReject)
+                        throw new Exception("Error in approving rollver request");
+                    break;
+
+
+                default:
+                    throw new Exception($"Given transaction type is not valid {transactionType}");
             }
         }
 
@@ -3638,8 +3658,7 @@ namespace RefitSandBox
             //program.Configuration("EmployeeDeferralSource.contributionType", "7");
             System.Type interfaceType = System.Type.GetType($"RefitSandBox.IPlanDetailsSave");
             var sourceSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "SaveSource");
-            sourceId = sourceSave["source"]["id"].ToString();
-            pretaxsourceName = sourceSave["source"]["sourceName"].ToString();
+            pretaxRolloverSourceId = sourceSave["source"]["id"].ToString();
         }
         public static async Task SaveCompensation(string bearer, string planId)
         {
@@ -4045,9 +4064,10 @@ namespace RefitSandBox
             {
                 case "DTCC":
                     await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 5);
+                    await Task.Delay(2000);
                     await program.VerifyClearingPartnerMappingId(httpClient, planId);
-                    await Task.Delay(2500);
                     await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 7);
+                    await Task.Delay(2500);
                     b50Response = await sftp.SFTPOperations(AccountId.ToString());
                     if (b50Response.Count == 0)
                         throw new Exception("B50 File does not contain investments");
@@ -4097,7 +4117,7 @@ namespace RefitSandBox
 
             var parsedResponse = JObject.Parse(clearingPartnerPlanMappingResponse.ToString())["planAssociatedClearingPartnerAccounts"] as JArray;
             var clearingPartnerMappingId = parsedResponse[0]["clearingPartnerId"].ToString();
-            if(!clearingPartnerMappingId.StartsWith("0"))
+            if (!clearingPartnerMappingId.StartsWith("0"))
                 throw new Exception("Clearing Partner Mapping Id is null");
         }
 
@@ -4598,5 +4618,51 @@ namespace RefitSandBox
             var payrollTransactionId = await GetPayrollTransactionId();
             var adjustmentId = await transactionConfiguration.AdjustmentConfiguration(httpClient, Convert.ToInt32(planId), Convert.ToInt32(employeeId), planName, payrollTransactionId);
         }
+
+
+        public async Task RolloverInConfiguration(RolloverInTestConfig config)
+        {
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+
+            var transactionConfiguration = new TransactionsConfigurations(this);
+            var rolloverId = await transactionConfiguration.RolloverInRequestConfiguration(httpClient, config);
+            /*var transactionConfiguration = new TransactionsConfigurations(this);
+            string employeeId = await GetEmployeeId();
+            var rolloverSourceId = await IdentifyValue("<PretaxRolloverId>");
+            var investment1PlanMappingId = await IdentifyValue("<SEAS001>");
+            var investment2PlanMappingId = await IdentifyValue("<SEAS002>");
+
+            var rolloverId = await transactionConfiguration.RolloverInRequestConfiguration(httpClient, Convert.ToInt32(employeeId), Convert.ToInt32(planId), 110, Convert.ToInt32(rolloverSourceId), 92, 93, "SEAS001", "SEAS002", 70, 30, 100, 10, Convert.ToInt32(investment1PlanMappingId), Convert.ToInt32(investment2PlanMappingId));*/
+        }
+
+
+        public async Task FeeConfiguration(string FeeFor)
+        {
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+
+            var transactionConfiguration = new TransactionsConfigurations(this);
+            await transactionConfiguration.FeeBasicDetailsConfiguration(httpClient, FeeFor);
+        }
+
+        /*public async Task FeeSpecificationConfiguration(Reqnroll.DataTable dataTable)
+        {
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Settings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.Hooks.bearer!);
+
+            var transactionConfiguration = new TransactionsConfigurations(this);
+            await transactionConfiguration.FeeSpecificationStepConfiguration(dataTable);
+        }*/
     }
 }

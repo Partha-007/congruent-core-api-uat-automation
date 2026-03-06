@@ -18,7 +18,7 @@ And Collection in a model is configured with 1 blocks for the property "Approval
 |           1 | Id        |     0 |
 |           1 | Order     |     1 |
 |           1 | UserRole  |     1 |
-|           1 | Approval  | true  |
+|           1 | Approval  | false |
 |           1 | IsDeleted | false |
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "SaveRollOverAsync"
@@ -36,50 +36,66 @@ Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as menti
 
 When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
 
-Given Model is selected for the endpoint "/api/RolloverIn/SaveRolloverInRequest"
+And Create a rollover request with the following details
+| EmployeeId   | PlanId   | RolloverAmount | SourceId                 | ContributionAmount | EarningsAmount |
+| <EmployeeId> | <PlanId> |            110 | <PretaxRolloverSourceId> |                100 |             10 |
 
-When Configuration has been made as per following
-| key                                     | value              |
-| runValidations                          | true               |
-| isSubmit                                | true               |
-| employeeId                              | <EmployeeId>       |
-| planId                                  | <PlanId>           |
-| isInvestmentAllocationsSameToAllSources | true               |
-| status                                  |                  1 |
-| planDetails                             |                    |
-| paymentMode                             |                  1 |
-| routingNumber                           | random 9 numerics  |
-| accountType                             |                    |
-| accountNumber                           | random 10 numerics | 
-| rolloverAmount                          |             100.00 |
-| rolloverCategory                        |                    |
-| isRestricted                            |                    |
-| restrictedMessage                       |                    |
-| investmentAllocation                    | true               |
-| ssn                                     | <SSN>              |
 
-And Collection in a model is configured with 2 blocks for the property "SourceLevelInvestments" with values as given below
-| BlockNumber | Key                  | Value              |
-|           1 | SourceId             | <PretaxRolloverId> |
-|           1 | InvestmentId         | <SEAS001>          |
-|           1 | InvestmentPercentage |              70.00 |
-|           1 | SourceName           | Pretax Rollover    |
-|           1 | InvestmentName       | SEAS001            |
-|           1 | SourceInvestmentId   |                 92 |
-|           2 | SourceId             | <PretaxRolloverId> |
-|           2 | InvestmentId         | <SEAS002>          |
-|           2 | InvestmentPercentage |              30.00 |
-|           2 | SourceName           | Pretax Rollover    |
-|           2 | InvestmentName       | SEAS002            |
-|           2 | SourceInvestmentId   |                 93 |
+And the rollover has the following investments
+| InvestmentId | InvestmentName | InvestmentPlanMappingId | Percentage |
+|           92 | SEAS001        | <SEAS001>               |         70 |
+|           93 | SEAS002        | <SEAS002>               |         30 |
 
-And Collection in a model is configured with 1 blocks for the property "RollOverSourceLevelContributions" with values as given below
-| BlockNumber | Key                | Value              |
-|           1 | SourceId           | <PretaxRolloverId> |
-|           1 | SourceName         | Pretax Rollover    |
-|           1 | ContributionAmount |                100 |
-|           1 | Earnings           |                  0 |
-|           1 | SourceSubCategory  |                  7 |
+And Submit the "Rollover" request
 
-When API request has been sent to the "IRolloverIn" with the method name "SaveRolloverInRequestAsync"
+#And The transaction request for the transaction "Rollover" is "Approve"
+
+And Trade procedures completed for the transaction "Rollover"
+
+#Given Model is selected for the endpoint "/api/RolloverIn/SaveRolloverInRequest"
+#
+#When Configuration has been made as per following
+#| key                                     | value              |
+#| runValidations                          | true               |
+#| isSubmit                                | true               |
+#| employeeId                              | <EmployeeId>       |
+#| planId                                  | <PlanId>           |
+#| isInvestmentAllocationsSameToAllSources | true               |
+#| status                                  |                  1 |
+#| planDetails                             |                    |
+#| paymentMode                             |                  1 |
+#| routingNumber                           | random 9 numerics  |
+#| accountType                             |                    |
+#| accountNumber                           | random 10 numerics | 
+#| rolloverAmount                          |             100.00 |
+#| rolloverCategory                        |                    |
+#| isRestricted                            |                    |
+#| restrictedMessage                       |                    |
+#| investmentAllocation                    | true               |
+#| ssn                                     | <SSN>              |
+#
+#And Collection in a model is configured with 2 blocks for the property "SourceLevelInvestments" with values as given below
+#| BlockNumber | Key                  | Value              |
+#|           1 | SourceId             | <PretaxRolloverId> |
+#|           1 | InvestmentId         | <SEAS001>          |
+#|           1 | InvestmentPercentage |              70.00 |
+#|           1 | SourceName           | Pretax Rollover    |
+#|           1 | InvestmentName       | SEAS001            |
+#|           1 | SourceInvestmentId   |                 92 |
+#|           2 | SourceId             | <PretaxRolloverId> |
+#|           2 | InvestmentId         | <SEAS002>          |
+#|           2 | InvestmentPercentage |              30.00 |
+#|           2 | SourceName           | Pretax Rollover    |
+#|           2 | InvestmentName       | SEAS002            |
+#|           2 | SourceInvestmentId   |                 93 |
+#
+#And Collection in a model is configured with 1 blocks for the property "RollOverSourceLevelContributions" with values as given below
+#| BlockNumber | Key                | Value              |
+#|           1 | SourceId           | <PretaxRolloverId> |
+#|           1 | SourceName         | Pretax Rollover    |
+#|           1 | ContributionAmount |                100 |
+#|           1 | Earnings           |                  0 |
+#|           1 | SourceSubCategory  |                  7 |
+#
+#When API request has been sent to the "IRolloverIn" with the method name "SaveRolloverInRequestAsync"
 

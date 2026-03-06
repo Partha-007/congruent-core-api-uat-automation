@@ -241,21 +241,21 @@ Scenario: 59905 : To verify the Calculation Avilable Balance for loan valuefiled
 Given Payroll file "CombinedFile.csv" is selected and Edit payroll file as mentioned below
 | Key                | Value      |
 | HIRE DATE          | 01/01/2025 |
-| HOURS              | 1000       |
+| HOURS              |       1000 |
 | PAY DATE           | 02/01/2025 |
 | BIRTH DATE         | 04/01/1996 |
 | PAYROLL FREQUENCY  | Daily      |
-| Pretax             | 10000      |
-| PLAN COMPENSATION  | 10000      |
-| GROSS COMPENSATION | 10000      |
+| EEPreTax           |      10000 |  
+| PLAN COMPENSATION  |      10000 |
+| GROSS COMPENSATION |      10000 |
 
 When File upload is executed for the file "CombinedFile.csv" and funding is done by "Plan"
 
-Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
-| Key          | Value |
-| Order Number |       |
-
-When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
+#Given Payroll file "TradeOrder.csv" is selected and Edit payroll file as mentioned below
+#| Key          | Value |
+#| Order Number |       |
+#
+#When File upload is executed for the file "TradeOrder.csv" and funding is done by ""
 
 Then Available balance for the employee to avail loan when no loan has been taken already should be 5000.00
 

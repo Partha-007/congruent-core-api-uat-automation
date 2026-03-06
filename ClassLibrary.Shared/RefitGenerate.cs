@@ -276,7 +276,10 @@ public interface ILoan
     public interface IRolloverIn
     {
         [Post("/api/RolloverIn/SaveRolloverInRequest")]
-        Task<object> SaveRolloverInRequestAsync(RollOverInRequestDetails rollOverInRequestDetails);
+        Task<SaveRolloverInRequestResult> SaveRolloverInRequestAsync(RollOverInRequestDetails rollOverInRequestDetails);
+
+        [Post("/api/RolloverIn/ApproveOrRejectRolloverInRequest")]
+        Task<bool> ApproveOrRejectRolloverInRequestAsync(ApproveOrRejectRolloverInRequest approveOrRejectRolloverInRequest);
     }
 
     public interface IAdjustments
@@ -289,6 +292,24 @@ public interface ILoan
 
         [Get("/api/v1/Adjustment/SaveAdjustmentSummaryById/{Id}")]
         Task<SaveAdjustmentSummaryResult> SaveAdjustmentSummaryByIdAsync(int Id);
+    }
+
+    public interface IFee
+    {
+        [Post("/api/v1/Fee/SaveFeeDetails")]
+        Task<SaveFeeDetailsResult> SaveFeeDetailsAsync(BasicFeeDetails basicFeeDetails);
+
+        [Post("/api/v1/Fee/SaveFeeCalculationDetails")]
+        Task<SaveFeeCalculationDetailsResult> SaveFeeCalculationDetailsAsync(CalculationDetails calculationDetails);
+
+        [Post("/api/v1/Fee/AddFeeApplicableTo")]
+        Task<AddFeeApplicableToResult> AddFeeApplicableToAsync(FeeApplicableTo feeApplicableTo);
+
+        [Post("/api/v1/Fee/AddFeeSchedule")]
+        Task<AddFeeScheduleResult> AddFeeScheduleAsync(FeeSchedule body);
+
+        [Get("/api/v1/Fee/SaveSummaryDetails/{id}")]
+        Task<SaveSummaryDetailsResult> SaveSummaryDetailsAsync(int id);
     }
     public class Advisor
     {

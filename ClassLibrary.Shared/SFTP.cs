@@ -52,6 +52,8 @@ namespace ClassLibrary.Shared
                         }
                     }
                 }
+
+                sftp.Disconnect();
             }
 
             return results;
@@ -322,6 +324,8 @@ namespace ClassLibrary.Shared
                         };
                     }
                 }
+
+                sftp.Disconnect();
             }
 
             return result;
@@ -422,6 +426,7 @@ namespace ClassLibrary.Shared
                 }
 
                 Console.WriteLine("Timeout reached. File was not picked up.");
+                sftp.Disconnect();
                 return false;
             }
         }
@@ -444,10 +449,7 @@ namespace ClassLibrary.Shared
                     var result = jsonElement.Deserialize<InvestmentResponse>(
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                    if (result?.InvestmentPlanDetails != null &&
-                        result.InvestmentPlanDetails.Count >= 2 &&
-                        result.InvestmentPlanDetails.All(x =>
-                            !string.IsNullOrWhiteSpace(x.TradeIdentifier)))
+                    if (result?.InvestmentPlanDetails != null && result.InvestmentPlanDetails.Count >= 2 && result.InvestmentPlanDetails.All(x => !string.IsNullOrWhiteSpace(x.TradeIdentifier)))
                     {
                         Console.WriteLine("Investments processed successfully.");
                         return;
