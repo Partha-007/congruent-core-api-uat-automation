@@ -534,7 +534,7 @@ namespace RefitSandBox.Hooks
                 await Program.SaveEntryDate(httpClient, bearer!, planId);
                 await Program.SavePretaxSource(bearer!, planId);
                 //await Program.SavePretaxRollOverSource(bearer!, planId);
-                //await Program.SaveMatchSource(bearer!, planId);
+                await Program.SaveMatchSource(bearer!, planId);
                 await Program.SaveRothSource(bearer!, planId);
                 await Program.SaveCompensation(bearer!, planId);
             }
@@ -542,16 +542,71 @@ namespace RefitSandBox.Hooks
 
             await program.AddInvestmentToPlan("SEAS001");
             await program.AddInvestmentToPlan("SEAS002");
-            await program.EnrollmentSetup();
+            await program.EnrollmentSetup("<SEAS001>", "<SEAS002>");
             await Program.SaveFunding(bearer!, planId);
-            //clearingPartnerName = _appSettings.ClearingPartners.Select(_ => _.Name).FirstOrDefault() ?? "DefaultPartner";
-            //await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);
+            clearingPartnerName = _appSettings.ClearingPartners.Select(_ => _.Name).FirstOrDefault() ?? "DefaultPartner";
+            await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);
+            await Program.UpdatePlanStatus(bearer!, planId, "2");
+            await Program.UpdatePlanStatus(bearer!, planId, "3");
+            await Program.SaveEmployee(httpClient, companyId);
+            //RollOverSource = await Program.SavePretaxRollOverSource(bearer!, planId);
+            await Program.SavePretaxRolloverSource(bearer!, planId); 
+        }
+
+        [BeforeFeature("@PayrollTradeSetup")]
+        public static async Task PayrollTradeFeatureSetup()
+        {
+            // No UserLogin here
+
+            // Initialize HttpClient
+            httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(_appSettings.ApplicationURL)
+            };
+            httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
+
+            var listOfClearingPartners = await GetClearingPartner(httpClient);
+
+            j = _appSettings!.ClearingPartners.Count();
+
+            var ListofClearingPartners = new Dictionary<string, string>();
+
+            foreach (var partner in _appSettings.ClearingPartners)
+            {
+                // ListofClearingPartners[partner] = $"{partner}001";
+            }
+
+            var program = new Program();
+            companyId = await Program.SaveCompany(bearer!); // Static method call
+            for (i = 1; i < j; i++)
+            {
+                planId = await Program.SavePlan(bearer!, companyId);
+                await Program.SaveSponsor(httpClient, bearer!, planId);
+                //await Program.ClearingPartnerPlanMapping(bearer!, planId);
+                await Program.UpsertPlanWithClearingPartnerAccount(httpClient, planId, AccountId);
+                await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
+                await Program.SaveEntryDate(httpClient, bearer!, planId);
+                await Program.SavePretaxSource(bearer!, planId);
+                //await Program.SavePretaxRollOverSource(bearer!, planId);
+                await Program.SaveMatchSource(bearer!, planId);
+                await Program.SaveRothSource(bearer!, planId);
+                await Program.SaveCompensation(bearer!, planId);
+            }
+
+            await program.AddInvestmentToPlan("SEAS003");
+            await program.AddInvestmentToPlan("SEAS004");
+            await program.EnrollmentSetupForPayroll();
+            await Program.SaveFunding(bearer!, planId);
+            clearingPartnerName = _appSettings.ClearingPartners.Select(_ => _.Name).FirstOrDefault() ?? "DefaultPartner";
+            await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);
             await Program.UpdatePlanStatus(bearer!, planId, "2");
             await Program.UpdatePlanStatus(bearer!, planId, "3");
             await Program.SaveEmployee(httpClient, companyId);
             //RollOverSource = await Program.SavePretaxRollOverSource(bearer!, planId);
             await Program.SavePretaxRolloverSource(bearer!, planId);
         }
+
 
     }
 }
