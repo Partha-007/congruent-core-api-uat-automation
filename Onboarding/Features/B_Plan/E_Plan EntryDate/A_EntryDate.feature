@@ -109,6 +109,9 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   @CompanyAndPlanBasicDetails
       Scenario:To verify the switch to plan year entry date is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
+   When Configuration has been made as per following
+| propertyName | value                   |
+| ruleName     | random 10 AlphaNumerics |
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
   When the property "additionalEntryDateRule" is configured as ""
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
@@ -126,9 +129,12 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   Then API should give response as "PL724 : Required"
 
   @CompanyAndPlanBasicDetails
-          Scenario:To verify the Is coinciding with applicable is empty
+  Scenario:To verify the Is coinciding with applicable is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
+  When Configuration has been made as per following
+| propertyName | value                   |
+| ruleName     | random 10 AlphaNumerics |
   When the property "additionalEntryDateRule" is configured as "1"
   When the property "additionalProspectiveOrRetrospective" is configured as "1"
    When the property "isCoincidingApplicableForAdditional" is configured as ""
@@ -159,6 +165,9 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
    Scenario:To verify the validation message for already exit month and date when Switch to plan year is "yes"
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
+   When Configuration has been made as per following
+| propertyName | value                   |
+| ruleName     | random 10 AlphaNumerics |
   When the property "additionalEntryDateRule" is configured as "7"
   When the property "month" is configured as "2"
    When the property "day" is configured as "0"

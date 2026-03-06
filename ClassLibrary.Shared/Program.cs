@@ -2888,13 +2888,31 @@ namespace RefitSandBox
                     {
                         value = await IdentifyValue(value);
                     }
+
                     if (value.Contains("random"))
                     {
                         var splitted = value.Split(" ");
 
                         Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
-                        value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+
+                        var rawRandom = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                        value = rawRandom;
+
+                        if (patternValue == Pattern.SpecialCharacters)
+                        {
+                            rawRandom = rawRandom.Replace("_", "@").Replace(",", "@");
+                            // For Specialcharacter: use the string AS-IS (no regex cleanup)
+                            value = rawRandom;
+                        }
+                        if (patternValue == Pattern.Email)
+                        {
+                            string data = @"[!""#$%&'()*+,\-/:;<=>?\[\]^_`{|}~]";
+                            string formatted = Regex.Replace(value, data, "A");
+                            value = formatted;
+                        }
                     }
+
+
                     if (value.Contains(","))
                     {
                         var parts = value.Split(',', StringSplitOptions.RemoveEmptyEntries);

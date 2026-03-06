@@ -52,8 +52,10 @@ When Configuration has been made as per following
            | limitMinimumPercentage |                     101 |
            | limitMaximumPercentage |                     80|
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL185 : Minimum limit should not exceed 100 percentage"
-
+Then the API response should contain the 2 following errors 
+	| error_code | error_message                                                         |
+	| PL185      | Minimum limit should not exceed 100 percentage                        |
+	| PL398      | Maximum limit amount should not be equal or lesser than minimum limit | 
 Scenario:To verify the validation message for Limit (minimum) acceptance criteria of values more than 10000000000.00 dollar
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
@@ -66,7 +68,10 @@ When Configuration has been made as per following
            | limitMinimumPercentage |        1000000000000.00 |
            | limitMaximumPercentage |                      80 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL185 : Minimum limit should not exceed 100 percentage"
+Then the API response should contain the 2 following errors 
+	| error_code | error_message                                                         |
+	| PL185      | Minimum limit should not exceed 100 percentage                        |
+	| PL398      | Maximum limit amount should not be equal or lesser than minimum limit | 
 
 Scenario:To verify the Limit (minimum) acceptance criteria of values equal 100 percentage
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -126,7 +131,7 @@ When Configuration has been made as per following
            | contributionType       |                        1 |
            | limitMinimumPercentage |                       60 |
            | limitMaximumPercentage |                      100 |
-           | sourceCode             | A                        |
+           | sourceCode             | B                        |
            | recordKeepingNumber    | random 30 alphabets      | Scenario: To verify the Source ID data type acceptance of only alphabets and equals with 30 characters
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
@@ -838,6 +843,8 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
  Then API should give response as "PL1015 : Maximum limit amount should not be equal or lesser than minimum limit"
 
+
+ #error code changed PL1015<==>PL1018
  Scenario:To verify the HCE Deferral limts field as Yes when  hce Minimum Amount field  equal to hce Maximum Amount in both
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
@@ -852,7 +859,7 @@ When Configuration has been made as per following
            | hceMaximumAmount |                      20 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
- Then API should give response as "PL1015 : Maximum limit amount should not be equal or lesser than minimum limit"
+ Then API should give response as "PL1018 : Maximum limit amount should not be equal or lesser than minimum limit"
 
 Scenario: To verify the HCE Deferral limts field as Yes when hce Minimum Percentage field  equal to hce Maximum Percentage in both
 Given Model is selected for the endpoint "/api/Source/SaveSource"
@@ -921,7 +928,7 @@ When Configuration has been made as per following
            | hceMaximumPercentage |                      80 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
- Then API should give response as "PL986 : Minimum limit should not exceed 100 percentage"
+ Then API should give response as "PL1015 : Maximum limit amount should not be equal or lesser than minimum limit"
 
 
   Scenario: To verify the HCE Deferral limts field as Yes when hce Minimum Percentage field and than hce Maximum Percentage is below 100
@@ -1268,7 +1275,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
  Then API should give response as "PL1019 : Maximum limit amount should not be equal or lesser than minimum limit"
 
-
+#error message changed PL1016 <==> PL1019
  Scenario:To verify the isCatchUpManatory field as Yes  when hce catchupMinimumAmount is equal to catchupMaximumAmount  field in both
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
@@ -1286,7 +1293,7 @@ When Configuration has been made as per following
            | catchupMinimumAmount |                      20 |
            | catchupMaximumAmount |                      20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
- Then API should give response as "PL1016 : Maximum limit amount should not be equal or lesser than minimum limit"
+ Then API should give response as "PL1019 : Maximum limit amount should not be equal or lesser than minimum limit"
 
 
  Scenario:To verify the isCatchUpManatory field as Yes and catchupMinimumPercentage field is equal to catchupMaximumPercentage field in both

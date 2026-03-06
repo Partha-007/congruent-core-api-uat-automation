@@ -64,12 +64,13 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                      | value |
-           | sourceType               |     1 |
-           | sourceCategory           |     1 |
-           | rehireDeferralPercentage |   100 |
-           | limitMaximumPercentage   |   100 |
-           | limitMinimumPercentage   |    20 |
+           | key                      | value  |
+           | sourceType               |      1 |
+           | sourceCategory           |      1 |
+           | sourceName               | abc123 |
+           | rehireDeferralPercentage |    100 |
+           | limitMaximumPercentage   |    100 |
+           | limitMinimumPercentage   |     20 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
@@ -131,13 +132,14 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                    | value    |
-           | sourceType             |        1 |
-           | sourceCategory         |        1 |
-           | contributionType       |        2 |
-           | limitMinimumDollar     | 10000.00 |
-           | limitMaximumPercentage |      100 |
-           | limitMinimumPercentage |       20 |
+           | key                    | value     |
+           | sourceType             |         1 |
+           | sourceCategory         |         1 |
+           | contributionType       |         2 |
+           | limitMaximumDollar     | 100000.00 |
+           | limitMinimumDollar     |  10000.00 |
+           | limitMaximumPercentage |       100 |
+           | limitMinimumPercentage |        20 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
@@ -152,6 +154,8 @@ When Configuration has been made as per following
            | sourceType             |              1 |
            | sourceCategory         |              1 |
            | contributionType       |              2 |
+           | sourceName             | abc123         |
+           | limitMaximumDollar     | 20000000000.00 |
            | limitMinimumDollar     | 10000000000.00 |
            | limitMaximumPercentage |            100 |
            | limitMinimumPercentage |             20 |
@@ -171,7 +175,6 @@ When Configuration has been made as per following
            | contributionType       |     1 |
            | limitMinimumPercentage |    75 |
            | limitMaximumPercentage |   100 |
-           | limitMinimumPercentage |    20 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
@@ -221,6 +224,7 @@ When Configuration has been made as per following
            | sourceCategory            |         1 |
            | contributionType          |         2 |
            | maximumDollarCompensation | 342445.00 |
+           | sourceName                | abc123    |
            | limitMaximumPercentage    |       100 |
            | limitMinimumPercentage    |        20 |
 
@@ -341,15 +345,17 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                      | value |
-           | sourceType               |     2 |
-           | sourceCategory           |     5 |
-           | isSafeHarbourMatch       | false |
-           | employercontributionType |     2 |
-           | percentageOfCalculation  |   100 |
-           | percentageOfCompensation |    10 |
-           | limitMaximumPercentage   |   100 |
-           | limitMinimumPercentage   |    20 |
+           | key                      | value  |
+           | sourceType               |      2 |
+           | sourceCategory           |      5 |
+           | isSafeHarbourMatch       | false  |
+           | employercontributionType |      2 |
+           | percentageOfCalculation  |    100 |
+           | percentageOfCompensation |     10 |
+           | limitMaximumPercentage   |    100 |
+           | limitMinimumPercentage   |     20 |
+           | sourceName               | abc123 |
+          
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
@@ -413,18 +419,18 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                                | value |
-           | sourceType                         |     2 |
-           | sourceCategory                     |     5 |
-           | isSafeHarbourMatch                 | false |
-           | employercontributionType           |     1 |
-           | firstTierMatchPercent              |   100 |
-           | firstTierCompensationMatchPercent  |    78 |
-           | secondTierMatchPercent             |    76 |
-           | secondTierCompensationMatchPercent |    78 |
-           | thirdTierMatchPercent              |    76 |
-           | thirdTierCompensationMatchPercent  |    78 |
-
+           | key                                | value  |
+           | sourceType                         |      2 |
+           | sourceCategory                     |      5 |
+           | isSafeHarbourMatch                 | false  |
+           | employercontributionType           |      1 |
+           | firstTierMatchPercent              |    100 |
+           | firstTierCompensationMatchPercent  |     78 |
+           | secondTierMatchPercent             |     76 |
+           | secondTierCompensationMatchPercent |     78 |
+           | thirdTierMatchPercent              |     76 |
+           | thirdTierCompensationMatchPercent  |     78 |
+           | sourceName                         | abc123 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
@@ -551,20 +557,20 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                                | value |
-           | sourceType                         |     2 |
-           | sourceCategory                     |     5 |
-           | isSafeHarbourMatch                 | false |
-           | employercontributionType           |     1 |
-           | firstTierMatchPercent              |    76 |
-           | firstTierCompensationMatchPercent  |    78 |
-           | secondTierMatchPercent             |    76 |
-           | secondTierCompensationMatchPercent |    78 |
-           | thirdTierMatchPercent              |   100 |
-           | thirdTierCompensationMatchPercent  |    78 |
-           | limitMaximumPercentage             |   100 |
-           | limitMinimumPercentage             |    20 |
-
+           | key                                | value  |
+           | sourceType                         |      2 |
+           | sourceCategory                     |      5 |
+           | isSafeHarbourMatch                 | false  |
+           | employercontributionType           |      1 |
+           | firstTierMatchPercent              |     76 |
+           | firstTierCompensationMatchPercent  |     78 |
+           | secondTierMatchPercent             |     76 |
+           | secondTierCompensationMatchPercent |     78 |
+           | thirdTierMatchPercent              |    100 |
+           | thirdTierCompensationMatchPercent  |     78 |
+           | limitMaximumPercentage             |    100 |
+           | limitMinimumPercentage             |     20 |
+           | sourceName                         | abc123 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
@@ -617,11 +623,12 @@ When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
 When Configuration has been made as per following
-           | key                      | value |
-           | sourceType               |     2 |
-           | sourceCategory           |     6 |
-           | isMaximumLimitApplicable | true  |
-           | maximumDollarLimit       |   100 |
+           | key                      | value  |
+           | sourceType               |      2 |
+           | sourceCategory           |      6 |
+           | isMaximumLimitApplicable | true   |
+           | maximumDollarLimit       |    100 |
+           | sourceName               | gdh123 |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
@@ -637,7 +644,7 @@ When Configuration has been made as per following
            | sourceCategory           |          6 |
            | isMaximumLimitApplicable | true       |
            | maximumDollarLimit       | 8738388.33 |
-
+           | sourceName               | abc1223     |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
 
@@ -652,6 +659,7 @@ When Configuration has been made as per following
            | sourceCategory           |        6 |
            | isMaximumLimitApplicable | true     |
            | maximumDollarLimit       | 87383.33 |
+           | sourceName               | abc1223  |
 
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should respond with successful message
@@ -845,12 +853,13 @@ When Configuration has been made as per following
            | companyId | <CompanyId> |
 
   And Configuration has been made as per following
-  | key                    | value |
-  | sourceType             |     1 |
-  | sourceCategory         |     1 |
-  | sourceSubCategory      |       |
-  | limitMaximumPercentage |   100 |
-  | limitMinimumPercentage |    20 |
+  | key                    | value  |
+  | sourceType             |      1 |
+  | sourceCategory         |      1 |
+  | sourceSubCategory      |        |
+  | sourceName             | abc123 |
+  | limitMaximumPercentage |    100 |
+  | limitMinimumPercentage |     20 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL176 : Required"
 
@@ -1027,21 +1036,22 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as ""
 
-Scenario: 8434 To verify the validation message for Percentage of compensation acceptance criteria of values more than 100 percentage 
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-
-  And Configuration has been made as per following
-  | key                      | value  |
-  | sourceType               |      2 |
-  | sourceCategory           |      5 |
-  | percentageOfCompensation | 111.00 |
-  | limitMaximumPercentage   |    100 |
-  | limitMinimumPercentage   |     20 |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL244 : When percentage compensation is greater than 100"
+#restricted in UI
+#Scenario: 8434 To verify the validation message for Percentage of compensation acceptance criteria of values more than 100 percentage 
+#Given Model is selected for the endpoint "/api/Source/SaveSource"
+#When Configuration has been made as per following
+#           | key       | value       |
+#           | companyId | <CompanyId> |
+#
+#  And Configuration has been made as per following
+#  | key                      | value  |
+#  | sourceType               |      2 |
+#  | sourceCategory           |      5 |
+#  | percentageOfCompensation | 111.00 |
+#  | limitMaximumPercentage   |    100 |
+#  | limitMinimumPercentage   |     20 |
+#And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+#Then API should give response as "PL244 : When percentage compensation is greater than 100"
 
 ## Need to write Backend Validation
 
@@ -1090,23 +1100,25 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as ""
 
-Scenario: 8674 To verify the Percentage of compensation matched field acceptance criteria of value above 100
-Given Model is selected for the endpoint "/api/Source/SaveSource"
-When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
-
-  And Configuration has been made as per following
-  | key                      | value |
-  | sourceType               |     2 |
-  | sourceCategory           |     6 |
-  | employercontributionType |     2 |
-  | percentageOfCalculation  |    10 |
-  | percentageOfCompensation |   101 |
-  | limitMaximumPercentage   |   100 |
-  | limitMinimumPercentage   |    20 |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
-Then API should give response as "PL244 : When percentage compensation is greater than 100  "
+#restricted in ui
+#Scenario: 8674 To verify the Percentage of compensation matched field acceptance criteria of value above 100
+#Given Model is selected for the endpoint "/api/Source/SaveSource"
+#When Configuration has been made as per following
+#           | key       | value       |
+#           | companyId | <CompanyId> |
+#
+#  And Configuration has been made as per following
+#  | key                      | value  |
+#  | sourceType               |      2 |
+#  | sourceCategory           |      6 |
+#  | employercontributionType |      2 |
+#  | percentageOfCalculation  |     10 |
+#  | percentageOfCompensation |    101 |
+#  | limitMaximumPercentage   |    100 |
+#  | limitMinimumPercentage   |     20 |
+#  | sourceName               | abc123 |
+#And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
+#Then API should give response as "PL244 : When percentage compensation is greater than 100  "
 #Error code changed
 
 Scenario: 8437 To verify the Percentage of compensation Field as empty
@@ -1164,6 +1176,7 @@ When Configuration has been made as per following
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL255 : Required"
 
+#bug
 Scenario: To verify the Maximum limit applicable as yes when maximum dollar limit  field by leaving empty
 Given Model is selected for the endpoint "/api/Source/SaveSource"
 When Configuration has been made as per following
@@ -1207,15 +1220,16 @@ When Configuration has been made as per following
            | companyId | <CompanyId> |
 
   And Configuration has been made as per following
-  | key                      | value |
-  | sourceType               |     2 |
-  | sourceCategory           |     6 |
-  | isNonPayPeriodApplicable | true  |
-  | isLastDayRule            | true  |
-  | isHoursRequirement       | true  |
-  | hours                    |  2000 |
-  | limitMaximumPercentage   |   100 |
-  | limitMinimumPercentage   |    20 |
+  | key                      | value    |
+  | sourceType               |        2 |
+  | sourceCategory           |        6 |
+  | isNonPayPeriodApplicable | true     |
+  | isLastDayRule            | true     |
+  | isHoursRequirement       | true     |
+  | hours                    |     2000 |
+  | limitMaximumPercentage   |      100 |
+  | limitMinimumPercentage   |       20 |
+  | sourceName               | ghsg6769 |
 And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSource"
 Then API should give response as "PL1174 :Hours should not be greater than 1000"
 

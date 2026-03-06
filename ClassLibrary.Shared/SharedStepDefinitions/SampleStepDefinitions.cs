@@ -146,8 +146,8 @@ namespace SharedStepDefinitions
                     if (patternValue == Pattern.Email)
                     {
                         string data = @"[!""#$%&'()*+,\-/:;<=>?\[\]^_`{|}~]";
-                        string cleaned = Regex.Replace(Value, data, "A");
-                        Value = cleaned;
+                        string formatted = Regex.Replace(Value, data, "A");
+                        Value = formatted;
                     }
                 }
                 

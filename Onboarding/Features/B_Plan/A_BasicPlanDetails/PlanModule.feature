@@ -85,6 +85,7 @@ When Configuration has been made as per following
 | irsPlanNumber |      124 |
 | trsContractId |    12345 |
 | rkPlanNumber  | ABC      |
+| name          | abc123   |
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 When Configuration has been made as per following
 | key           | value    |
@@ -283,7 +284,7 @@ When Configuration has been made as per following
 | key                | value                                       |
 | planName           | random 10 alphabets                         |
 | rkPlanNumber       | random 10 alphabets                         |
-| name               | random 5 alphanumerics                      | Scenario:13895 Plan administrator name field acceptance of alphanumerics
+| name               | random 5 AlphaNumerics                      | Scenario:13895 Plan administrator name field acceptance of alphanumerics
 | pensionBenefitCode |                                             |
 | welfareBenefitCode |                                             | Scenario: To verify the  Welfare Benefit Code field with null  Plan details page -Plan details
 | city               | random 25 AlphaNumericWithSpecialCharacters | Scenario: New city Creation with AlphaNumericsSpecial characters
@@ -299,11 +300,13 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | key       | value       |
            | companyId | <CompanyId> |
  When Configuration has been made as per following
-           | key          | value                   |
-           | planName     | random 10 alphaNumerics |
-           | pkPlanNumber | random 10 alphabets     |
-           | taxEIN       | <tax>                   |
-           | name         | random 10 alphabets     |
+           | key                | value                   |
+           | planName           | random 10 alphaNumerics |
+           | pkPlanNumber       | random 10 alphabets     |
+           | taxEIN             | <tax>                   |
+           | name               | random 10 alphabets     |
+           | shortYearStartDate | 2025-10-17T00:00:00Z    |
+           | shortYearEndDate   | 2026-08-28T00:00:00Z    |
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then the API response should contain the 1 following errors
  | error_code | error_message                                  |
@@ -340,14 +343,16 @@ Scenario: New city details with space
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key          | value               |
-| planName     | random 10 alphabets |
-| rkPlanNumber | random 10 alphabets |
-| city         |                     |
-| address1     |                     | Scenario: New address1 details with space
-| address2     |                     | Scenario: New address2 details with space
-| state        |                     | Scenario:  Validating state field as null
-
+| key                | value                   |
+| planName           | random 10 alphabets     |
+| rkPlanNumber       | random 10 alphabets     |
+| city               |                         |
+| address1           |                         | Scenario: New address1 details with space
+| address2           |                         | Scenario: New address2 details with space
+| state              |                         | Scenario:  Validating state field as null
+| name               | random 10 Alphanumerics |
+| shortYearStartDate | 2025-03-02T00:00:00Z    |
+| shortYearEndDate   | 2026-03-02T00:00:00Z    |
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should respond with successful message
@@ -364,8 +369,8 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | zipCode            | <ZipCode>               |
            | irsPlanNumber      | <IrsPlanNumber>         |
            | name               | random 10 alphabets     |
-           | shortYearStartDate | "2025-03-02T00:00:00Z"  |
-           | shortYearEndDate   | "2026-03-02T00:00:00Z"  |
+           | shortYearStartDate | 2025-03-02T00:00:00Z  |
+           | shortYearEndDate   | 2026-03-02T00:00:00Z  |
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then the API response should contain the 3 following errors
  | error_code | error_message                                                      |
@@ -396,6 +401,7 @@ When Configuration has been made as per following
 | planName      | random 10 alphaNumerics |
 | name          | abc123                  |
 | irsPlanNumber |                     123 |
+| trsContractId | abv98                   |
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 When Configuration has been made as per following
 | key           | value                   |
@@ -438,33 +444,25 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Cr
  Then API should give response as "PL023 : Short Year End Date should exceed Short Year Begin Date"
     
 
+#Scenario: PLan short year start date  field validate error message as required
 Scenario: PLan short year end date  field validate error message as required
 Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
            | key       | value       |
            | companyId | <CompanyId> |
  When Configuration has been made as per following
-           | key                | value                |
-           | shortYearIndicator | true                 |
-           | shortYearStartDate | 2023-06-01T00:00:00Z |
-           | shortYearEndDate   |                      |
-           | name               | random 10 alphabets  |
+           | key                | value               |
+           | shortYearIndicator | true                |
+           | shortYearStartDate |                     |
+           | shortYearEndDate   |                     |
+           | name               | random 10 alphabets |
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
- Then API should give response as "PL024 : Required"
+Then the API response should contain the 2 following errors 
+	| error_code | error_message |
+	| PL024      | Required.     |
+	| PL371      | Required      |
 
 
-
-Scenario: PLan short year start date  field validate error message as required
-Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
-  When Configuration has been made as per following
-           | key       | value       |
-           | companyId | <CompanyId> |
- When Configuration has been made as per following
-           | key                | value |
-           | shortYearIndicator | true  |
-           | shortYearStartDate | null  |
-And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
- Then API should give response as "PL371 : Required"
 
 Scenario: PLan short year start and end date difference field validate error message 
 Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
@@ -475,6 +473,7 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | key                | value                |
            | shortYearStartDate | 2020-01-01T00:00:00Z |
            | shortYearEndDate   | 2021-05-03T00:00:00Z |
+           | name               | abc123               |
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
  Then API should give response as "PL032 : Difference between Short year begin date and Short year end should be less than one year."
 
@@ -501,9 +500,11 @@ Scenario: Select a plan type field validate error message as required
            | key       | value       |
            | companyId | <CompanyId> |
  When Configuration has been made as per following
- | planType     |                     |
- | rkPlanNumber | random 10 alphabets |
- | rlanName     | random 10 alphabets |
+ | planType     |                         |
+ | rkPlanNumber | random 10 alphabets     |
+ | rlanName     | random 10 alphabets     |
+ | planType     |                         |
+ | name         | random 10 Alphanumerics |
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should give response as "PL003 : Required"
 
@@ -522,6 +523,8 @@ Scenario: Select a company name field validate error message as required
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then API should give response as "PL954 : Required"
 
+
+#Error code changed PL013 <==> PL004
  Scenario:Select a sponsoring organization field validate error message as required
   Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDetails"
   When Configuration has been made as per following
@@ -529,12 +532,13 @@ Then API should give response as "PL954 : Required"
            | companyId | <CompanyId> |
  When Configuration has been made as per following
  | planName     | random 10 alphabets |
- | category     | 1                   |
- | level        | 1                   |
+ | category     |                   1 |
+ | level        |                   1 |
  | companyId    |                     |
  | rkPlanNumber | random 10 alphabets |
+ | name         | abc123              |
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
-Then API should give response as "PL013 : Required"
+Then API should give response as "PL004 : Required"
 
 
 

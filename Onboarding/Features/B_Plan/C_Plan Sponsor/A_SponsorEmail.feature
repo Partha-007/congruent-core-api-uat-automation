@@ -26,7 +26,7 @@ Scenario: Sponsor Email field validate with null value(error message)
   And the property "email" is configured as "(*&^@test.com"
   And the property "mobilePhoneNumber" is configured as "123-456-7899"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanSponsor"
-     Then the API response should contain the 2 following errors 
+     Then the API response should contain the 3 following errors 
      | error_code | error_message                                   |
      | PL055      | Email is in invalid format                      |
      | PL051      | First Name is not valid                         | Scenario: Sponsor first name field required validation (numerics)
