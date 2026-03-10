@@ -105,8 +105,8 @@ await testRunner.GivenAsync("Model is selected for the endpoint \"/api/BasicPlan
 await testRunner.WhenAsync("the property \"planType\" is configured as \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 9
-await testRunner.AndAsync("API request has been sent to the \"IPlanDetailsSave\" with the method name \"CreateN" +
-                        "ewPlanAsync\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+await testRunner.AndAsync(("API request has been sent to the \"IPlanDetailsSave\" with the method name \"CreateN" +
+                        "ewPlanAsync\""), ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 10
 await testRunner.ThenAsync("API should give response as \"PL143 : Required\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
