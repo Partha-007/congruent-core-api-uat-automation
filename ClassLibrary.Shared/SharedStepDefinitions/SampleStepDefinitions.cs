@@ -90,7 +90,7 @@ namespace SharedStepDefinitions
         [Then("the API response should contain the following errors")]
         public async Task ThenTheAPIResponseShouldContainTheFollowingErrors(DataTable dataTable, string expectedErrorMessage)
         {
-            foreach (var row in dataTable.Rows) 
+            foreach (var row in dataTable.Rows)
             {
                 string expectedCode = row["error_code"]?.Trim();
                 string expectedMsg = row["error_message"]?.Trim();
@@ -150,7 +150,7 @@ namespace SharedStepDefinitions
                         Value = formatted;
                     }
                 }
-                
+
                 if (Value.Contains("_"))
                 {
                     Value = await Program.GetDate(Convert.ToInt32(Value.Split("_")[1]), Value.Split("_")[0]);
@@ -163,7 +163,7 @@ namespace SharedStepDefinitions
                 //{
                 //    Value = await GetDate(Convert.ToInt32(Value.Split("/")[1]), Value.Split("/")[0]);
                 //}
-                /*if (Value.Contains(","))
+                if (Value.Contains(","))
                 {
                     var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     var newArray = new JArray();
@@ -190,7 +190,7 @@ namespace SharedStepDefinitions
                     }
 
                     
-                }*/
+                }
                 if (string.IsNullOrEmpty(Value))
                     Value = null;
                 //if (property.PropertyType == typeof(DateTimeOffset?))
@@ -340,7 +340,7 @@ namespace SharedStepDefinitions
         [When("Disbursement is done for the transaction {string}")]
         public async Task WhenDisbursementIsDoneForTheTransaction(string transactionType)
         {
-            if(transactionType == "Loan")
+            if (transactionType == "Loan")
                 await _program.ProcessLoanDisbursement();
         }
 

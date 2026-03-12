@@ -369,8 +369,8 @@ Given Model is selected for the endpoint "/api/BasicPlanDetails/SaveBasicPlanDet
            | zipCode            | <ZipCode>               |
            | irsPlanNumber      | <IrsPlanNumber>         |
            | name               | random 10 alphabets     |
-           | shortYearStartDate | 2025-03-02T00:00:00Z  |
-           | shortYearEndDate   | 2026-03-02T00:00:00Z  |
+           | shortYearStartDate | 2025-03-02  |
+           | shortYearEndDate   | 2026-03-02  |
 And API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 Then the API response should contain the 3 following errors
  | error_code | error_message                                                      |
@@ -381,13 +381,16 @@ Then the API response should contain the 3 following errors
 Examples:
 | IrsPlanNumber                              | ZipCode      |
 | random 3 specialcharacters                 | 12345-987689 |
-| random 3 alphanumericwithSpecialCharacters |              | Scenario: Validating the Zipcode field with null
+| random 3 alphanumericwithSpecialCharacters | 12345-987689 |
 | random 3 alphanumerics                     | 12345-6      | Scenario: Validating the Zipcode field with length 6 characters
 | random 3 specialcharacters                 |         1234 | Scenario: Validating the Zipcode field with length 4 characters
 #Scenario:13875 Plan IRS field validation with special characters
 #Scenario:13876 Plan IRS field validation with alphanumerics with special characters
 #Scenario:108842 Plan IRS field validation with alphanumerics
 #Scenario:13884 RK Plan number field acceptance special characters
+
+#UI changes
+#| random 3 alphanumericwithSpecialCharacters |              | Scenario: Validating the Zipcode field with null
 
 
 Scenario:13877 Plan IRS field already exist validation 
@@ -401,7 +404,7 @@ When Configuration has been made as per following
 | planName      | random 10 alphaNumerics |
 | name          | abc123                  |
 | irsPlanNumber |                     123 |
-| trsContractId | abv98                   |
+| trsContractId | Random 5 AlphaNumerics                   |
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
 When Configuration has been made as per following
 | key           | value                   |

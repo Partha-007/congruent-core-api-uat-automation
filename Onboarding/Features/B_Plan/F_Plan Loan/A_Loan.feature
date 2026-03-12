@@ -16,6 +16,23 @@
 #Scenario: Default method is configured with Benefit offset
 #Scenario: To Save feesPaymentMethodsApplicable field when  check fee length as 3 digits with 2 decimal points
 #Scenario: To Save feesPaymentMethodsApplicable field when check fee  length is greater than 3 digits with 2 decimal points
+#Scenario: To Verify the excludedEmployeeClassifications as empty
+#Scenario: To Verify the excludedEmploymentStatuses as empty
+#Scenario: Loan Interest rate is configured with Prime
+#Scenario: loan Reamortization allowed Yes
+#Scenario: loan Reamortization fee configured with 1
+#Scenario: Number of loan Reamortization configured with zero
+#Scenario: loanPerPlanYear as 3
+#Scenario: Loan type as General purpose 
+#Scenario: Maximum amount as allowed by loan regulators
+#Scenario: Minimum Tenure month field as equal as  11 months
+#Scenario: Maximum Tenure year field as equal as 5 years 
+#Scenario: Maximum Length years is configured with five
+#Scenario: Minimum Length is configured with 3 months
+#Scenario: Minimum Loan Repay amount as one
+#Scenario: numberOfLoansAllowed as 3
+#Scenario: To Verify the numberOfSuspensionsPerLoanAllowed as accept as 1 to 99
+
 
 
 Scenario: allowLoansIfAnotherLoanIsDelinquentDefaultDeemed is true
@@ -37,14 +54,30 @@ Scenario: allowLoansIfAnotherLoanIsDelinquentDefaultDeemed is true
            | defaultMethod                         |      1 |
            | feesPaymentMethodsApplicable          | 1,     |
            | checkFee                              | 999.99 |
+           | excludedEmployeeClassifications       | 0,     |
+           | excludedEmploymentStatuses            | 0,     |
+           | loanInterestRate                      |      1 |
+           | loanReamortizationAllowed             | true   |
+           | loanReAmortizationFee                 |      1 |
+           | numberOfLoanReAmortizationsAllowed    |      0 |
+           | numberOfLoansAllowed                  |      3 |
+           | loanPerPlanYear                       |      3 |
+           | masterLoanTypeId                      |      1 |
+           | maximumAmount                         |      1 |
+           | minimumLengthMonths                   |     11 |
+           | maximumLengthYears                    |      5 |
+           | minimumLength                         |      1 |
+           | minimumLoanRepaymentAmount            |      1 |
+           | numberOfSuspensionsPerLoanAllowed     |     99 |
+           
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
+           #| maximumLengthYears           |     3 |
+           #| maximumLengthMonths          |     0 |
+           #| minimumLengthYears           |     1 |
+           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then API should respond with successful message
 
@@ -63,6 +96,18 @@ Scenario: allowLoansIfAnotherLoanIsDelinquentDefaultDeemed is true
 #Scenario: Default method is configured with Deemed distribution
 #Scenario: To Save feesPaymentMethodsApplicable field when  EFT length as 3 digits with 2 decimal points
 #Scenario: To Save feesPaymentMethodsApplicable field when EFT  length is greater than 3 digits with 2 decimal points
+#Scenario: Loan Interest rate is configured with Prime+a%
+#Scenario: loan Reamortization allowed No
+#Scenario: loanPerPlanYear with max value
+#Scenario: Loan type as Residential
+#Scenario: Maximum amount as Percentage of balances is configured with  value
+#Scenario: Maximum Tenure month field as equal as  11 months
+#Scenario: Minimum Length is configured with 6 months
+#Scenario: Minimum Loan Repay amount as 99
+#Scenario: numberOfLoansAllowed with max value
+#Scenario: To Verify the numberOfSuspensionsPerLoanAllowed as blank
+
+
 
 Scenario: allowLoansIfAnotherLoanIsDelinquentDefaultDeemed is false
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
@@ -84,19 +129,36 @@ Scenario: allowLoansIfAnotherLoanIsDelinquentDefaultDeemed is false
            | defaultMethod                                     |      2 |
            | feesPaymentMethodsApplicable                      | 2,     |
            | eftFees                                           | 999.99 |
-
+           | loanInterestRate                                  |      2 |
+           | loanInterestRateValue                             |     10 |
+           | loanReamortizationAllowed                         | false  |
+           | numberOfLoansAllowed                              |      9 |
+           | loanPerPlanYear                                   |      9 |
+           | masterLoanTypeId                                  |      2 |
+           | maximumAmount                                     |      2 |
+           | maximumAmountPercentageValue                      |     10 |
+           | maximumLengthMonths                               |     11 |
+           | minimumLength                                     |      2 |
+           | minimumLoanRepaymentAmount                        |     99 |
+           | numberOfSuspensionsPerLoanAllowed                 |        |
    And Configuration has been made as per following
            | key                          | value | 
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
+           #| maximumLengthYears           |     3 |
+           #| maximumLengthMonths          |     0 |
+           #| minimumLengthYears           |     1 |
+           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then API should respond with successful message
 
 #Scenario: To Verify the Applicable repayment method field as empty 
+#Scenario: loanPerPlanYear should not exceed numberOfLoansAllowed
+#Scenario: Maximum Length years is configured with Null
+#Scenario: Maximum Length month is configured with null
+#Scenario: Minimum Length is configured with Null
+
+
 Scenario: To Validate Allow multiple active loans? field  as No and waitingPeriodBetweenLoansPayoffAndLoanRequest as null
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
@@ -115,30 +177,52 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
            | firstRepaymentDateFallsAfter                  |       |
            | firstRepaymentDateFallsWithin                 |       |
            | loanFeeAmount                                 |       |
+           | loanApportioningMethod                        |       |
+           | loanInterestRate                              |       |
+           | loanReamortizationAllowed                     |       |
+           | numberOfLoansAllowed                          |     2 |
+           | loanPerPlanYear                               |     3 |
+           | masterLoanTypeId                              |     0 |
+           | maximumAmount                                 |     2 |
+           | maximumAmountPercentageValue                  |       |
+           | minimumLengthYears                            |       |
+           | minimumLengthMonths                           |       |
+           | maximumLengthYears                            |       |
+           | maximumLengthMonths                           |       |
+           | minimumLoanRepaymentAmount                    |     0 |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
+           #| maximumLengthYears           |     3 |
+           #| maximumLengthMonths          |     0 |
+           #| minimumLengthYears           |     1 |
+           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
 Then the API response should contain the 1 following errors 
-	| error_code | error_message |
-	| PL316      | Required      |
-	| PL287      | Required      | Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when interestRateMinimum as null
-	| PL289      | Required      | Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when interestRateMaximum as null
-	| PL315      | Required      | Scenario: Applicable Re-Payment methods is configured with Null
-	| PL275      | Required      | Scenario: Cure Period with Null
-	| PL280      | Required      | Scenario: Cure Period for employee termination with Null
-	| PL307      | Required      | Scenario: Default method is configured with Null
-	| PL865      | Required      | Scenario: To Save feesPaymentMethodsApplicable field as empty
-	| PL302      | Required      | Scenario: To Validate First repayment date falls after field  is empty
-	| PL303      | Required      | Scenario: To Validate First repayment date falls within field  is empty
-	| PL337      | Required      | Scenario: To Save loanFeeAmount  field as null
-
-
+	| error_code | error_message                                             |
+	| PL316      | Required                                                  |
+	| PL287      | Required                                                  | Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when interestRateMinimum as null
+	| PL289      | Required                                                  | Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when interestRateMaximum as null
+	| PL315      | Required                                                  | Scenario: Applicable Re-Payment methods is configured with Null
+	| PL275      | Required                                                  | Scenario: Cure Period with Null
+	| PL280      | Required                                                  | Scenario: Cure Period for employee termination with Null
+	| PL307      | Required                                                  | Scenario: Default method is configured with Null
+	| PL865      | Required                                                  | Scenario: To Save feesPaymentMethodsApplicable field as empty
+	| PL302      | Required                                                  | Scenario: To Validate First repayment date falls after field  is empty
+	| PL303      | Required                                                  | Scenario: To Validate First repayment date falls within field  is empty
+	| PL337      | Required                                                  | Scenario: To Save loanFeeAmount  field as null
+	| PL309      | Required                                                  | Scenario: Loan apportion method is configured with null
+	| PL338      | Required                                                  | Scenario: Loan Interest rate is configured with Null
+	| PL286      | Required                                                  | Scenario: loan Reamortization allowed with Null
+	| PL321      | Loans per plan year should not exceed Total loans allowed | Scenario: loanPerPlanYear should not exceed numberOfLoansAllowed
+	| PL376      | Required                                                  | Scenario: Loan type leaving as null
+	| PL328      | Required                                                  | Scenario: Maximum amount as Percentage of balances is Null
+	| PL329      | Required                                                  | Scenario: Minimum Tenure year field as null
+	| PL1009     | Required                                                  | Scenario: Minimum Tenure month field as null
+	| PL333      | Required                                                  | Scenario: Maximum Tenure year field as null
+	| PL1011     | Required                                                  | Scenario: Maximum Tenure month field as null
+	| PL509      | Required                                                  | Scenario: Minimum Loan Repay amount as zero
 
 Scenario: To Validate Allow multiple active loans? field  as No and waitingPeriodBetweenLoansPayoffAndLoanRequest as length as 4 digits
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
@@ -152,21 +236,38 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
            | checkFee                                      |       |
            | refinancingAllowed                            | true  |
            | firstRepaymentDateFallsWithin                 |    91 |
+           | loanInterestRate                              |     2 |
+           | loanInterestRateValue                         |       |
+           | loanReamortizationAllowed                     | true  |
+           | loanReAmortizationFee                         |       |
+           | numberOfLoanReAmortizationsAllowed            |       |
+           | numberOfLoansAllowed                          |     2 |
+           | loanPerPlanYear                               |       |
+           | maximumAmount                                 |     2 |
+           | maximumAmountPercentageValue                  |     0 |
+           | minimumLengthYears                            |     5 |
+           | maximumLengthYears                            |     5 |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
+           #| maximumLengthYears           |     3 |
+           #| maximumLengthMonths          |     0 |
+           #| minimumLengthYears           |     1 |
+           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
 Then the API response should contain the 1 following errors 
-	| error_code | error_message                                                          |
-	| PL316      | Required                                                               |
-	| PL276      | Required                                                               | Scenario: Cure Period with Fixed number of days as Null
-	| PL866      | Required                                                               | Scenario: To Save feesPaymentMethodsApplicable field when  check fee as empty
-	| PL304      | First repayment date falls after date should be between 0 and 30 days. | Scenario: To Validate First repayment date falls after field  is above 30
+	| error_code | error_message                                                            |
+	| PL316      | Required                                                                 |
+	| PL276      | Required                                                                 | Scenario: Cure Period with Fixed number of days as Null
+	| PL866      | Required                                                                 | Scenario: To Save feesPaymentMethodsApplicable field when  check fee as empty
+	| PL304      | First repayment date falls after date should be between 0 and 30 days.   | Scenario: To Validate First repayment date falls after field  is above 30
+	| PL377      | Required                                                                 | Scenario: Loan Interest rate value is configured with Null
+	| PL373      | Required                                                                 | Scenario: loan Reamortization fee configured with Null
+	| PL285      | Required                                                                 | Scenario: Number of loan Reamortization configured with null
+	| PL320      | Required                                                                 | Scenario: loanPerPlanYear leaving as null
+	| PL328      | Required                                                                 | Scenario: Maximum amount as Percentage of balances is zero
+	| PL330      | Minimum Length should not be equal to or greater than the Maximum Length | Scenario: Minimum Tenure year field as equal as 5 years when maximum tenure year is 5 years
 
 
 
@@ -179,6 +280,15 @@ Then the API response should contain the 1 following errors
 #Scenario: To Save feesPaymentMethodsApplicable field to select both check fee and  EFT length as 3 digits with 2 decimal points
 #Scenario: To Validate First repayment date falls after field  is equal as 30
 #Scenario: To Save loanFeeAmount  field as length of 3 digits with 2 decimal points
+#Scenario: Loan apportion method is configured with Prorata
+#Scenario: Loan Interest rate is configured with Other
+#Scenario: loan Reamortization fee configured with 99
+#Scenario: Number of loan Reamortization configured with 1
+#Scenario: Loan type as Others
+#Scenario: Maximum amount as Percentage of balances is configured with decimal value
+#Scenario: Minimum Tenure month field as above 11 months
+#Scenario: Minimum Length is configured with 12 months
+#Scenario: Minimum Loan Repay amount as 100
 
 Scenario: To Validate Allow multiple active loans? field  as No and waitingPeriodBetweenLoansPayoffAndLoanRequest as length as 2 digits
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
@@ -201,15 +311,27 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
            | refinancingAllowed                                | true   |
            | firstRepaymentDateFallsAfter                      |     30 |
            | firstRepaymentDateFallsWithin                     |     31 |
-            | loanFeeAmount                              |   999.99      |
+           | loanFeeAmount                                     | 999.99 |
+           | loanApportioningMethod                            |      1 |
+           | loanInterestRate                                  |      3 |
+           | loanInterestRateValue                             |     10 |
+           | loanReamortizationAllowed                         | true   |
+           | loanReAmortizationFee                             |     99 |
+           | numberOfLoanReAmortizationsAllowed                |      1 |
+           | masterLoanTypeId                                  |      3 |
+           | maximumAmount                                     |      2 |
+           | maximumAmountPercentageValue                      |  10.90 |
+           | minimumLengthMonths                               |     12 |
+           | minimumLength                                     |      3 |
+           | minimumLoanRepaymentAmount                        |    100 |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
+           #| maximumLengthYears           |     3 |
+           #| maximumLengthMonths          |     0 |
+           #| minimumLengthYears           |     1 |
+           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then API should respond with successful message
 
@@ -220,6 +342,12 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
 #Scenario: To Save feesPaymentMethodsApplicable field when check fee  length is less than 3 digits with 2 decimal points
 #Scenario: To Validate First repayment date falls within field  is equal as 90
 #Scenario: To Save loanFeeAmount  field as length is less than 3 digits with 2 decimal points
+#Scenario: Loan apportion method is configured with loan status cum loan age
+#Scenario: loan Reamortization fee configured with 100
+#Scenario: Number of loan Reamortization configured with 1
+
+#Scenario: Maximum amount as Other is configured with value
+#Scenario: To Verify the numberOfSuspensionsPerLoanAllowed as blank
 
 Scenario: Loan fee type deducted from loan amount
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
@@ -238,19 +366,27 @@ Scenario: Loan fee type deducted from loan amount
            | checkFee                                          | 99.99 |
            | refinancingAllowed                                | true  |
            | firstRepaymentDateFallsWithin                     |    90 |
-           | loanFeeAmount                              |   99.99      |    
+           | loanFeeAmount                                     | 99.99 |
+           | loanApportioningMethod                            |     2 |
+           | loanReAmortizationFee                             |   100 |
+           | loanReamortizationAllowed                         | true  |
+           | numberOfLoanReAmortizationsAllowed                |     1 |
+           | maximumAmount                                     |     3 |
+           | maximumAmountPercentageValue                      |  6000 |
+           | numberOfSuspensionsPerLoanAllowed                 |       |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
+           #| maximumLengthYears           |     3 |
+           #| maximumLengthMonths          |     0 |
+           #| minimumLengthYears           |     1 |
+           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then API should respond with successful message
 
 
+#Scenario: Maximum amount as Other is configured with decimal value
 Scenario: To Verify the allowParticipantsToChooseLoanFeeType  as yes when Loan fee type deducted from is not selected
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
@@ -264,31 +400,44 @@ Scenario: To Verify the allowParticipantsToChooseLoanFeeType  as yes when Loan f
            | refinancingAllowed                                | true  |
            | firstRepaymentDateFallsAfter                      |    22 |
            | firstRepaymentDateFallsWithin                     |    22 |
+           | maximumAmount                                     |     3 |
+           | maximumAmountPercentageValue                      | 99.99 |
+           | minimumLengthYears                                |     6 |
+           | maximumLengthYears                                |     6 |
+           | maximumLengthMonths                               |    12 |
+           
+
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
+           #| maximumLengthYears           |     3 |
+           #| maximumLengthMonths          |     0 |
+           #| minimumLengthYears           |     1 |
+           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then the API response should contain the 1 following errors 
 	| error_code | error_message                                                                                              |
 	| PL290      | Required                                                                                                   |
 	| PL281      | Required                                                                                                   | Scenario: Cure Period for employee termination with Fixed number of days as Null
 	| PL868      | Required                                                                                                   | Scenario: To Save feesPaymentMethodsApplicable field when  EFT as empty
-	| PL305      | First repayment date falls within (days) cannot be lesser than the First repayment date falls after (days) |Scenario: To Validate First repayment date falls after  and First repayment date falls within field  is same
-
-
+	| PL305      | First repayment date falls within (days) cannot be lesser than the First repayment date falls after (days) | Scenario: To Validate First repayment date falls after  and First repayment date falls within field  is same
+	| PL326      | Required                                                                                                   | Scenario: Maximum amount as Other is Null
+	| PL330      | Minimum Length should not be equal to or greater than the Maximum Length                                   | Scenario: Minimum Tenure year field as above 5 years
+	| PL1012     | Exceeds loan regulation. Maximum length should not exceed 5 years                                          | Scenario: Maximum Tenure year field  as above 5 years
+	| PL335      | Maximum length months should not exceed 11                                                                 | Scenario: Maximum Tenure month field as above  11 months
 
             
 Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when interestRateMaximum as above  100
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
            | key                                   | value |
-            | allowParticipantsToChooseInterestRate | true        |
-            | interestRateMaximum | 101        |
+           | allowParticipantsToChooseInterestRate | true  |
+           | interestRateMaximum                   |   101 |
+           | maximumAmount                         |     3 |
+           | maximumAmountPercentageValue          |     0 |
+           | minimumLengthYears                    |     0 |
+           | minimumLengthMonths                   |     0 |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -299,14 +448,25 @@ Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when 
            | minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then the API response should contain the 1 following errors 
-	| error_code | error_message |
-	|            |               |
+	| error_code | error_message                                  |
+	|            |                                                |
+	| PL326      | Required                                       | Scenario: Maximum amount as Other is zero
+	| PL869      | Minimum Tenure should be greater than 0 months | Scenario: Minimum Tenure year and month field as 0
+
+
 
 #Scenario: Cure Period with Fixed number of days as 1
 #Scenario: Cure Period for employee termination with Fixed number of days as 100
 #Scenario: To Save feesPaymentMethodsApplicable field when EFT  length is less than 3 digits with 2 decimal points
 #Scenario: To Validate First repayment date falls after field  is below 30
 #Scenario: To Save loanFeeAmount  field as length is  3 digits with 3 decimal points
+#Scenario: loan Reamortization fee configured with 999
+#Scenario: Number of loan Reamortization configured with 9
+#Scenario: Maximum amount as Other is configured with maximum value
+#Scenario: Maximum Tenure year and month field as 5 and 0 years 
+#Scenario: Minimum Loan Repay amount as 999
+#Scenario: Maximum Length years is configured with one
+#Scenario: Minimum Loan Repay amount as 999
 
 Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when interestRateMinimum and  interestRateMaximum as 0 
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
@@ -325,11 +485,19 @@ Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when 
            | firstRepaymentDateFallsAfter                      |     22 |
            | firstRepaymentDateFallsWithin                     |     33 |
            | loanFeeAmount                                     | 999.99 |
+           | loanReAmortizationFee                             |    999 |
+           | loanReamortizationAllowed                         | true   |
+           | numberOfLoanReAmortizationsAllowed                |      9 |
+           | maximumAmount                                     |      3 |
+           | maximumAmountPercentageValue                      |  99999 |
+           | minimumLengthYears                                |      5 |
+           | minimumLengthMonths                               |      0 |
+           | minimumLoanRepaymentAmount                        |    999 |
            And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
+           | maximumLengthYears           |     2 |
            | maximumLengthMonths          |     0 |
            | minimumLengthYears           |     1 |
            | minimumLengthMonths          |     0 |
@@ -337,7 +505,7 @@ Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when 
     Then API should respond with successful message
 
 
-
+#Scenario: Minimum Loan Repay amount as 1000
 Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when interestRateMaximum is lesser than interestRateMinimum
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
@@ -345,37 +513,49 @@ Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when 
            | allowParticipantsToChooseInterestRate | true  |
            | interestRateMinimum                   |    80 |
            | interestRateMinimum                   |    30 |
+           | minimumLengthYears                    |     1 |
+           | minimumLengthMonths                   |     1 |
+           | maximumLengthYears                    |     0 |
+           | maximumLengthMonths                   |     0 |
+           | minimumLoanRepaymentAmount            |  1000 |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
+           #| maximumLengthYears           |     3 |
+           #| maximumLengthMonths          |     0 |
+           #| minimumLengthYears           |     1 |
+           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then the API response should contain the 1 following errors 
 	| error_code | error_message                                                 |
 	| PL291      | Minimum Interest Rate should not exceed Maximum Interest Rate |
-
+	| PL870      | Maximum Tenure should be greater than 0 months                |
 #Scenario: Cure Period with Fixed number of days as 99
 #Scenario: Cure Period for employee termination with Fixed number of days as 999
 #Scenario: To Save feesPaymentMethodsApplicable field to select both check fee and  EFT length is less than 3 digits with 2 decimal points
+#Scenario: Maximum amount as Other is configured with maximum value with decimal
+#Scenario: Minimum Loan Repay amount as 9999
 
 Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when interestRateMinimum is lesser than interestRateMaximum
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
-           | key                                               | value |
-           | allowParticipantsToChooseInterestRate             | true  |
-           | interestRateMinimum                               |    30 |
-           | interestRateMaximum                               |    80 |
-           | curePeriod                                        |     2 |
-           | curePeriodFixedNumberOfDays                       |    99 |
-           | curePeriodForEmployeeTermination                  |     2 |
-           | curePeriodFixedNumberOfDaysForEmployeeTermination |   999 |
-           | feesPaymentMethodsApplicable                      | 1,2,    |
-           | checkFee                                           | 99.99 |
-           | eftFees                                           | 99.99 |
+           | key                                               | value    |
+           | allowParticipantsToChooseInterestRate             | true     |
+           | interestRateMinimum                               |       30 |
+           | interestRateMaximum                               |       80 |
+           | curePeriod                                        |        2 |
+           | curePeriodFixedNumberOfDays                       |       99 |
+           | curePeriodForEmployeeTermination                  |        2 |
+           | curePeriodFixedNumberOfDaysForEmployeeTermination |      999 |
+           | feesPaymentMethodsApplicable                      | 1,2,     |
+           | checkFee                                          |    99.99 |
+           | eftFees                                           |    99.99 |
+           | loanReamortizationAllowed                         | true     |
+           | loanReAmortizationFee                             |        0 |
+           | maximumAmount                                     |        3 |
+           | maximumAmountPercentageValue                      | 99999.00 |
+           | minimumLoanRepaymentAmount                        |     9999 |
            And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -389,18 +569,22 @@ Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when 
 
 #Scenario: To Save feesPaymentMethodsApplicable field when check fee is 0
 #Scenario: To Validate First repayment date falls within field  is below  90
+#Scenario: Maximum amount as Other is configured with maximum value with max decimal
+#Scenario: Minimum Loan Repay amount as 10000
 
 Scenario: Cure Period with Fixed number of days as 100
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
-           | key                           | value |
-           | curePeriod                    |     2 |
-           | curePeriodFixedNumberOfDays   |   100 |
-           | feesPaymentMethodsApplicable  | 1,    |
-           | checkFee                      |     0 |
-           | refinancingAllowed            | true  |
-           | firstRepaymentDateFallsWithin |    33 |
-
+           | key                           | value    |
+           | curePeriod                    |        2 |
+           | curePeriodFixedNumberOfDays   |      100 |
+           | feesPaymentMethodsApplicable  | 1,       |
+           | checkFee                      |        0 |
+           | refinancingAllowed            | true     |
+           | firstRepaymentDateFallsWithin |       33 |
+           | maximumAmount                 |        3 |
+           | maximumAmountPercentageValue  | 99999.99 |
+           | minimumLoanRepaymentAmount    |    10000 |
            And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -412,15 +596,17 @@ Scenario: Cure Period with Fixed number of days as 100
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
     Then API should respond with successful message
 
+#Scenario: Minimum Loan Repay amount as 99999
 #Scenario: To Save feesPaymentMethodsApplicable field when EFT  length is 0
 Scenario: Cure Period with Fixed number of days as 999
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
-           | key                                   | value |
-           | curePeriod                            |     2 |
-           | curePeriodFixedNumberOfDays           |     999 |
+           | key                          | value |
+           | curePeriod                   |     2 |
+           | curePeriodFixedNumberOfDays  |   999 |
            | feesPaymentMethodsApplicable | 2,    |
-           | eftFees                     |     0 |
+           | eftFees                      |     0 |
+           | minimumLoanRepaymentAmount   | 99999 |
   And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -432,13 +618,15 @@ Scenario: Cure Period with Fixed number of days as 999
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
     Then API should respond with successful message
 
+#Scenario: Minimum Loan Repay amount as 99999.00
 Scenario: To Save feesPaymentMethodsApplicable field to select both check fee and  EFT length is 0
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
-           | key                                   | value |
-           | feesPaymentMethodsApplicable | 1,2,    |
-           | checkFee                     |     0 |
-           | eftFees                     |     0 |
+           | key                          | value    |
+           | feesPaymentMethodsApplicable | 1,2,     |
+           | checkFee                     |        0 |
+           | eftFees                      |        0 |
+           | minimumLoanRepaymentAmount   | 99999.00 |
   And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
@@ -482,6 +670,8 @@ Scenario: To Save feesPaymentMethodsApplicable field when check fee  length is g
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
 Then API should respond with successful message
 
+#Scenario: Maximum Length month is configured with 1
+
 Scenario: To Save feesPaymentMethodsApplicable field when EFT  length is greater than 3 digits with 3 decimal points
  Given Model is selected for the endpoint "/api/Loan/SaveLoan"
 
@@ -493,11 +683,13 @@ Scenario: To Save feesPaymentMethodsApplicable field when EFT  length is greater
            | firstRepaymentDateFallsWithin |       2 |
            | firstRepaymentDateFallsAfter  |       1 |
            | maximumLengthYears            |       3 |
-           | maximumLengthMonths           |       0 |
+           | maximumLengthMonths           |       2 |
            | minimumLengthYears            |       1 |
            | minimumLengthMonths           |       0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
 Then API should respond with successful message
+
+#Scenario: Maximum Length month is configured with equal 11
 
 Scenario: To Save feesPaymentMethodsApplicable field to select both check fee and  EFT when check fee length 3 digits with 3 decimal points
  Given Model is selected for the endpoint "/api/Loan/SaveLoan"
@@ -510,8 +702,8 @@ Scenario: To Save feesPaymentMethodsApplicable field to select both check fee an
            | loanPerPlanYear               |       1 |
            | firstRepaymentDateFallsAfter  |       1 |
            | firstRepaymentDateFallsWithin |       2 |
-           | maximumLengthYears            |       3 |
-           | maximumLengthMonths           |       0 |
+           | maximumLengthYears            |       2 |
+           | maximumLengthMonths           |      11 |
            | minimumLengthYears            |       1 |
            | minimumLengthMonths           |       0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
@@ -535,21 +727,51 @@ Scenario: To Save feesPaymentMethodsApplicable field to select both check fee an
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
 Then API should respond with successful message
 
+#Scenario: Maximum Length years is configured with above 5 Years
 
 Scenario: To Validate First repayment date falls after field value is greater than First repayment date falls within field
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
    When Configuration has been made as per following
-           | key                                               | value |
-           | allowParticipantsToChooseLoanFeeType              | true  |
+           | key                                  | value |
+           | allowParticipantsToChooseLoanFeeType | true  |
+           | minimumLengthYears                   |     5 |
+           | minimumLengthMonths                  |     0 |
+           | maximumLengthYears                   |     6 |
+           | maximumLengthMonths                  |     0 |
    And Configuration has been made as per following
            | key                          | value |
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
-           | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
-           | minimumLengthYears           |     1 |
-           | minimumLengthMonths          |     0 |
+           #| maximumLengthYears           |     3 |
+           #| maximumLengthMonths          |     0 |
+           #| minimumLengthYears           |     1 |
+           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then the API response should contain the 1 following errors 
 	| error_code | error_message                                                                                              |
 	| PL305      | First repayment date falls within (days) cannot be lesser than the First repayment date falls after (days) |
+	| PL1012     | Exceeds loan regulation. Maximum length should not exceed 5 years                                          |Scenario: Minimum Tenure year and month field as 5 and 0 years 
+
+#Scenario: Maximum Length month is configured with null
+
+Scenario: Maximum Length years is configured with zero
+  Given Model is selected for the endpoint "/api/Loan/SaveLoan"
+   When Configuration has been made as per following
+           | key                                  | value |
+           | allowParticipantsToChooseLoanFeeType | true  |
+           | minimumLengthYears                   |     5 |
+           | minimumLengthMonths                  |     0 |
+           | maximumLengthYears                   |     6 |
+           | maximumLengthMonths                  |     0 |
+           | minimumLoanRepaymentAmount           |       |
+           | numberOfLoansAllowed                 |       |
+   And Configuration has been made as per following
+           | key                          | value |
+           | loanPerPlanYear              |     1 |
+           | firstRepaymentDateFallsAfter |     1 |
+ And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
+  Then the API response should contain the 1 following errors 
+	| error_code | error_message                                                            |
+	| PL330      | Minimum Length should not be equal to or greater than the Maximum Length |
+	| PL509      | Required                                                                 | Scenario: Minimum Loan Repay amount as Null
+	| PL322      | Required                                                                 | Scenario: Loan type leaving as null

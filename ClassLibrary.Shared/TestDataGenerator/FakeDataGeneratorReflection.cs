@@ -119,11 +119,11 @@ namespace RefitSandBox.TestDataGenerator
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Tenantid") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CountryId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "StateId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "masterLoanTypeId") ? 1 :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "IsMaster") ? true : StringComparer.OrdinalIgnoreCase.Equals(propertyName, "AllowOptingOutOfStateWithholdingTax") ? false :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "LoanDescription") ? "General Purpose" :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "SourceName") ? "abc1234" : 
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "EffectiveDate") ? DateTimeOffset.Parse("2000-03-03T00:00:00Z") :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ActivationDate") ? DateTimeOffset.Parse("2026-03-06T00:00:00Z") :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate") ? DateTimeOffset.Parse("2000-03-03T00:00:00Z") :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? DateTimeOffset.Parse("2000-12-31T00:00:00Z") :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "SourceName") ?faker.Random.String2(5, "abcdefghijklmnopqrstuvwxyz") + faker.Random.Number(100, 999).ToString():
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "SourceCode") ? faker.Random.String2(1,"EFGHIJKLMNOPQRSTUVXYZ") :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "RecordKeepingNumber") ? faker.Random.String2(10, "ABCDEFGHIJKLMNOPQRSTUVXYZ") :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate") ? DateTimeOffset.Parse("2025-03-02T00:00:00Z") :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? DateTimeOffset.Parse("2026-03-02T00:00:00Z") :
                         propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("UniquePersonalIdentification", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
                         propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? Regex.Replace(faker.Name.FirstName(), @"[^\w\s]", "") :
                         propertyType == typeof(string) && propertyName.Contains("Name", StringComparison.OrdinalIgnoreCase) ? faker.Company.CompanyName() :
@@ -132,8 +132,8 @@ namespace RefitSandBox.TestDataGenerator
                         propertyType == typeof(string) && propertyName.Contains("Zipcode", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("PostalCode", StringComparison.OrdinalIgnoreCase) ? faker.Address.ZipCode("#####") :
                         propertyName == "SicCode" ? faker.Random.Number(1000, 9999).ToString() :
                         propertyName == "BusinessCode" ? faker.Random.Number(100000, 999999).ToString() :
-                        (propertyName == "LimitMaximumPercentage") || (propertyName == "LimitMaximumDollar") || (propertyName == "MaximumDollarCompensation") || (propertyName == "MaximumPercentageCompensation") || (propertyName == "HceMaximumAmount") || (propertyName == "HceMaximumPercentage") || (propertyName == "CatchupMaximumAmount") || (propertyName == "CatchupMaximumPercentage") ? faker.Random.Double(50, 100) :
-                        (propertyName == "LimitMinimumPercentage") || (propertyName == "LimitMinimumDollar") || (propertyName == "HceMinimumAmount") || (propertyName == "HceMinimumPercentage") || (propertyName == "CatchupMinimumAmount") || (propertyName == "CatchupMinimumPercentage") ? faker.Random.Double(1, 50) :
+                        (propertyName == "LimitMaximumPercentage") || (propertyName == "LimitMaximumDollar") || (propertyName == "MaximumDollarCompensation") || (propertyName == "MaximumPercentageCompensation") || (propertyName == "HceMaximumAmount") || (propertyName == "HceMaximumPercentage") || (propertyName == "CatchupMaximumAmount") || (propertyName == "CatchupMaximumPercentage") || (propertyName == "limitMaximum") ? faker.Random.Double(50, 100) :
+                        (propertyName == "LimitMinimumPercentage") || (propertyName == "LimitMinimumDollar") || (propertyName == "HceMinimumAmount") || (propertyName == "HceMinimumPercentage") || (propertyName == "CatchupMinimumAmount") || (propertyName == "CatchupMinimumPercentage") || (propertyName == "limitMinimum") ? faker.Random.Double(1, 50) :
                         propertyName == "TaxEIN" ? faker.Phone.PhoneNumber("##-#######") :
                         propertyName == "BusinessType" ? 1 :
                         propertyName.Contains("Address", StringComparison.OrdinalIgnoreCase) && !propertyType.IsClass && !propertyName.Equals("AddressType") ? faker.Address.StreetAddress() :

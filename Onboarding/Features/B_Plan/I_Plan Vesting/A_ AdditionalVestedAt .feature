@@ -153,7 +153,7 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
   Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value                    |
-           | vestingName               | abcde                    |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false                    |
            | vestingDescription        | random 151 AlphaNumerics |
            | vestedAt                  | 1,                       |
@@ -194,8 +194,9 @@ When Configuration has been made as per following
            | key                        | value                   |
            | vestingName                | random 10 alphaNumerics | Scenario: Vesting Name field configure with alphaNumerics
            | vestingDescription         | random 10 alphabets     |
-           | vestedAt                   |                     1,2 |
-           | employerSourcesList        | 1,                      | #SaveVesting Scenario: To Validate Employer source Match is selected
+           | 1vestedAt                  |                     1,2 |
+           | sourceId                   | <MatchSourceID>         | 
+           | employerSourcesList        |                       1 | #SaveVesting Scenario: To Validate Employer source Match is selected
            | vestingMethod              |                       1 |
            | hoursOfService             |                     100 |
            | vestingComputationalPeriod |                       1 | Scenario: Vesting ComputationPeriod  field configure with Anniversary
@@ -231,6 +232,7 @@ When Configuration has been made as per following
            | fourthYear                 |                         100 |
            | fifthYear                  |                         100 |
            | sixthYear                  |                         100 |
+           | daily                      |                          8  |
 And Collection in a model is configured with 1 blocks for the property "AdditionalVestings" with values to save model portfolio as given below
            | BlockNumber | Key                       | Value |
            |           1 | ImmediateVestingIndicator | false |
@@ -250,7 +252,7 @@ Scenario: VestedAt field configure with Disability
   Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value |
-           | vestingName               | abcde |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false |
            | vestedAt                  | 2,    |
            | vestingMethod             |     1 |
@@ -277,7 +279,7 @@ Scenario: VestedAt field configure with NRA
   Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value |
-           | vestingName               | abcde |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false |
            | vestedAt                  | 4,    |
            | vestingMethod             |     1 |
@@ -303,7 +305,7 @@ Scenario: VestedAt field configure with ERA
   Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value |
-           | vestingName               | abcde |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false |
            | vestedAt                  | 8,    |
            | vestingMethod             |     1 |
@@ -330,7 +332,7 @@ Scenario: VestedAt field configure with all options
 Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value   |
-           | vestingName               | abcde   |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false   |
            | vestedAt                  | 1,2,4,8 |
            | vestingMethod             |       1 |
@@ -394,7 +396,7 @@ Scenario: Vesting BIS rule field configure with Rule of priority
   Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value |
-           | vestingName               | abcde |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false |
            | vestedAt                  |   1,2 |
            | vestingMethod             |     1 |
@@ -464,7 +466,7 @@ Scenario: Vesting method field ElapsedTime configure
 Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value |
-           | vestingName               | abcde |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false |
            | vestedAt                  |   1,2 |
            | vestingMethod             |     2 |
@@ -489,7 +491,7 @@ Scenario: Vesting method field Equivalency configure
   Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value |
-           | vestingName               | abcde |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false |
            | vestedAt                  |   1,2 |
            | vestingMethod             |     3 |
@@ -568,7 +570,7 @@ Scenario: Vesting method field Equivalency configure more than 1000 for activeEM
   Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value |
-           | vestingName               | abcde |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false |
            | vestedAt                  |   1,2 |
            | vestingMethod             |     3 |
@@ -614,7 +616,7 @@ Scenario: Vesting BIS rule field configure with Five year BIS
 Given Model is selected for the endpoint "/api/Vesting/SaveVesting"
 When Configuration has been made as per following
            | key                       | value |
-           | vestingName               | abcde |
+           | vestingName               | random 5 Alphabets |
            | immediateVestingIndicator | false |
            | vestedAt                  |   1,2 |
            | vestingMethod             |     1 |
