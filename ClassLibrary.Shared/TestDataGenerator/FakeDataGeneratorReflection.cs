@@ -131,6 +131,8 @@ namespace RefitSandBox.TestDataGenerator
                         propertyType == typeof(string) && propertyName.Contains("PhoneNumber", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-###-####") :
                         propertyType == typeof(string) && propertyName.Contains("Zipcode", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("PostalCode", StringComparison.OrdinalIgnoreCase) ? faker.Address.ZipCode("#####") :
                         propertyName == "SicCode" ? faker.Random.Number(1000, 9999).ToString() :
+                        //StringComparer.OrdinalIgnoreCase.Equals(propertyName, "MinimumLengthYears") ? faker.Random.int(1, 3).ToString() :
+                        // StringComparer.OrdinalIgnoreCase.Equals(propertyName, "MaximumLengthYears")? faker.Random.int(4, 6).ToString() :
                         propertyName == "BusinessCode" ? faker.Random.Number(100000, 999999).ToString() :
                         (propertyName == "LimitMaximumPercentage") || (propertyName == "LimitMaximumDollar") || (propertyName == "MaximumDollarCompensation") || (propertyName == "MaximumPercentageCompensation") || (propertyName == "HceMaximumAmount") || (propertyName == "HceMaximumPercentage") || (propertyName == "CatchupMaximumAmount") || (propertyName == "CatchupMaximumPercentage") || (propertyName == "limitMaximum") ? faker.Random.Double(50, 100) :
                         (propertyName == "LimitMinimumPercentage") || (propertyName == "LimitMinimumDollar") || (propertyName == "HceMinimumAmount") || (propertyName == "HceMinimumPercentage") || (propertyName == "CatchupMinimumAmount") || (propertyName == "CatchupMinimumPercentage") || (propertyName == "limitMinimum") ? faker.Random.Double(1, 50) :

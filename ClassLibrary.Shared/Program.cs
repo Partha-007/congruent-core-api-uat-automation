@@ -601,15 +601,13 @@ namespace RefitSandBox
                             }
                             else
                             {
-                                if (newArray.Count != 0)
-                                    property.SetValue(modelAfterConvention, newArray);
-                                else
-                                {
+                               
+                            
                                     // Otherwise, convert the value to the underlying type and set it
                                     var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
                                     var convertedValue = Convert.ChangeType(Value, underlyingType);
                                     property.SetValue(modelAfterConvention, convertedValue);
-                                }
+                              
 
                             }
                         }
@@ -644,8 +642,11 @@ namespace RefitSandBox
                                 var splitted = Value.Split(",");
                                 foreach(var value in splitted)
                                 {
-                                    var convertedValue = Convert.ChangeType(value, itemType);
-                                    collectionInstance.Add(convertedValue);
+                                    if (value != null && (!(value is string) || !string.IsNullOrWhiteSpace(value.ToString())))
+                                    {
+                                        var convertedValue = Convert.ChangeType(value, itemType);
+                                        collectionInstance.Add(convertedValue);
+                                    }
                                 }
                                 property.SetValue(modelAfterConvention, collectionInstance);
                             }
