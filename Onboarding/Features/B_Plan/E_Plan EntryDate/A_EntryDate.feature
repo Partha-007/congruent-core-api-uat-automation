@@ -16,13 +16,18 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
 	| PL722      | Required                                  |
 	| PL985      | Rule name should not exceed 50 characters |
 
+
+    #UI change restriction 
+    #PL1021 : Rule Name should not contain special characters (!$%_+={}[];:"\\|<>?).
   #Scenario: Entry date Name field validation when null
   @CompanyAndPlanBasicDetails
   Scenario: To verify the validation message for plan entry date field is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"
-  When the property "entryDateRule" is configured as ""
-  And the property "ruleName" is configured as ""
+   When the property "entryDateRule" is configured as ""
+   And Configuration has been made as per following
+           | key      | value |
+           | ruleName |       |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then the API response should contain the 2 following errors 
 	| error_code | error_message |
@@ -46,7 +51,9 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "entryDateRule" is configured as "7"
   And the property "month" is configured as "0"
-    And the property "ruleName" is configured as "    "
+   And Configuration has been made as per following
+           | key      | value |
+           | ruleName |       |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then the API response should contain the 2 following errors 
 	| error_code | error_message |

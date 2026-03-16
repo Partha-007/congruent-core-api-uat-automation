@@ -131,6 +131,9 @@ namespace RefitSandBox
 
         [Post("/api/v1/Plan/SaveSourceLimits")]
         Task<object> SaveSourceLimitsAsync([Body] SourceLimitsViewModel sourceLimitsViewModel);
+
+        [Post("/api/Retirement/SaveRetirement")]
+        Task<object> SaveRetirementAsync([Body] RetirementViewModel retirementViewModel);
     }
 
     public interface ICompanyDetails

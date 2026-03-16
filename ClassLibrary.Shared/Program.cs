@@ -1823,7 +1823,9 @@ namespace RefitSandBox
                 {"/api/Withdrawal/SaveWithdrawal",() => new WithdrawalViewModel() },
                // {"/api/Rollover/SaveRollover",() => new RolloverViewModel() },
                 {"/api/v1/Loan/SubmitLoanRequest", () => new SubmitLoanRequestViewModel() },
-                {"/api/v1/Plan/SaveSourceLimits",() => new SourceLimitsViewModel() }
+                {"/api/v1/Plan/SaveSourceLimits",() => new SourceLimitsViewModel() },
+                {"/api/Retirement/SaveRetirement",() => new RetirementViewModel() }
+
 
             };
 

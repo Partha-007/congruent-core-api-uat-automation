@@ -136,8 +136,10 @@ Then API should respond with successful message
 And API request has been sent to the "ICompanyDetails" with the method name "CreateNewCompanyAsync"
 Then the API response should contain the 2 following errors
 | error_code | error_message                                               |
-| CM091      | Required                                                    |
+| CM026      | Required                                                    |
 | CM060      | Classification code length should not exceed 250 characters |
+##error message changed
+#| CM091      | Required                                                    |
 
 
 Scenario: New Employment classification Type creation without ClassificationCode

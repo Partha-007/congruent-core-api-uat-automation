@@ -40,7 +40,9 @@
 #Scenario: To Verify the isServiceRequirementApplicable field as yes
 #Scenario: To Verify the defaultMethod field as benefit offset 
 #           | sourceHierarchies                     | 1,     |
-
+#UI changes
+           #| spousalConsentRequired                | true   |
+           #| sponsorApprovalRequired               | true   |
 
 Scenario: allowLoansIfAnotherLoanIsDelinquentDefaultDeemed is true
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
@@ -52,8 +54,6 @@ Scenario: allowLoansIfAnotherLoanIsDelinquentDefaultDeemed is true
            | loanFeeTypeDeductedFrom               |      1 |
            | allowParticipantsToChooseInterestRate | false  |
            | applicablePaymentMethods              | 1,     |
-           | spousalConsentRequired                | true   |
-           | sponsorApprovalRequired               | true   |
            | refinancingAllowed                    | true   |
            | loanRefinancingFee                    | 999.99 |
            | curePeriod                            |      1 |
@@ -156,14 +156,14 @@ Scenario: allowLoansIfAnotherLoanIsDelinquentDefaultDeemed is false
            | overnightDeliveryFees                             |           999.99 |
            | isServiceRequirementApplicable                    | false            |
            | defaultMethod                                     |                2 |
-   #And Configuration has been made as per following
-   #        | key                          | value | 
-   #        | loanPerPlanYear              |     1 |
-   #        | firstRepaymentDateFallsAfter |     1 |
-           #| maximumLengthYears           |     3 |
+   And Configuration has been made as per following
+           | key                          | value | 
+           | loanPerPlanYear              |     1 |
+           | firstRepaymentDateFallsAfter |     1 |
+           | maximumLengthYears           |     3 |
+           | minimumLengthYears           |     1 |
+           | minimumLengthMonths          |     0 |
            #| maximumLengthMonths          |     0 |
-           #| minimumLengthYears           |     1 |
-           #| minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then API should respond with successful message
 
@@ -361,11 +361,11 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
     And Configuration has been made as per following
            | key                                               | value  |
     #       | loanPerPlanYear                                   |      1 |
-    #       | firstRepaymentDateFallsAfter                      |      1 |
              | maximumLengthYears           |     3 |
              | maximumLengthMonths          |     0 |
-    #       #| minimumLengthYears           |     1 |
+           | minimumLengthYears           |     1 |
     #       #| minimumLengthMonths          |     0 |
+        #       | firstRepaymentDateFallsAfter                      |      1 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then API should respond with successful message
 
@@ -387,6 +387,7 @@ Scenario: To Validate Allow multiple active loans? field  as No and waitingPerio
 #Scenario: To verify Refinancing allowed? as yes Number of refinancing(s) allowed field allow as below 9
 #Scenario: To Validate Refinancing allowed? field  as yes when number of refinancing(s) loanRefinancingFee field allow  3 characters with 3 decimal points as numerics
 #Scenario: Service Requirement for Loan number is 99 with month
+#Scenario: Maximum Length years is configured with one
 
 Scenario: Loan fee type deducted from loan amount
   Given Model is selected for the endpoint "/api/Loan/SaveLoan"
@@ -425,10 +426,10 @@ Scenario: Loan fee type deducted from loan amount
            | loanPerPlanYear              |     1 |
            | firstRepaymentDateFallsAfter |     1 |
            | maximumLengthYears           |     3 |
-           | maximumLengthMonths          |     0 |
+           | maximumLengthMonths          |     1 |
            | minimumLengthYears           |     1 |
            | minimumLengthMonths          |     0 |
-           #| minimumAmount                |     2 |
+           #| minimumAmount                |     1 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
   Then API should respond with successful message
 
@@ -450,12 +451,14 @@ Scenario: To Verify the allowParticipantsToChooseLoanFeeType  as yes when Loan f
            | firstRepaymentDateFallsWithin                     |    22 |
            | maximumAmount                                     |     3 |
            | maximumAmountPercentageValue                      | 99.99 |
+           | maximumAmountOtherValue                           |       |
            | minimumLengthYears                                |     6 |
            | maximumLengthYears                                |     6 |
            | maximumLengthMonths                               |    12 |
-                      | isServiceRequirementApplicable                    | true   |
-           | serviceRequirementForLoan                         |      2 |
+           | isServiceRequirementApplicable                    | true  |
+           | serviceRequirementForLoan                         |     2 |
            | serviceRequirementForLoanNumber                   |       |
+
    #And Configuration has been made as per following
    #        | key                          | value |
    #        | loanPerPlanYear              |     1 |
@@ -487,19 +490,19 @@ Scenario: Maximum amount as Other is zero
            | key                                   | value |
            | allowParticipantsToChooseInterestRate | true  |
            | maximumAmount                         |     3 |
-           | maximumAmountPercentageValue          |     0 |
+           | maximumAmountOtherValue               |     0 |
            | minimumLengthYears                    |     0 |
            | minimumLengthMonths                   |     0 |
            | isServiceRequirementApplicable        | true  |
            | serviceRequirementForLoan             |     2 |
-           | serviceRequirementForLoanNumber       |  0     |
-
-   #And Configuration has been made as per following
-   #        | key                          | value |
-   #        | loanPerPlanYear              |     1 |
-   #        | firstRepaymentDateFallsAfter |     1 |
-   #        | maximumLengthYears           |     3 |
-   #        | maximumLengthMonths          |     0 |
+           | serviceRequirementForLoanNumber       |     0 |
+           | interestRateMinimum                   |     1 |
+   And Configuration has been made as per following
+           | key                          | value |
+           | loanPerPlanYear              |     1 |
+           | firstRepaymentDateFallsAfter |     1 |
+           | maximumLengthYears           |     3 |
+           | maximumLengthMonths          |     0 |
    #        | minimumLengthYears           |     1 |
    #        | minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
@@ -521,7 +524,6 @@ Scenario: Maximum amount as Other is zero
 #Scenario: Maximum amount as Other is configured with maximum value
 #Scenario: Maximum Tenure year and month field as 5 and 0 years 
 #Scenario: Minimum Loan Repay amount as 999
-#Scenario: Maximum Length years is configured with one
 #Scenario: Minimum Loan Repay amount as 999
 #Scenario: feesPaymentMethodsApplicable is configured with EFT
 #Scenario: To verify Refinancing allowed? as yes Number of refinancing(s) allowed field allow as above 9
@@ -558,12 +560,12 @@ Scenario: To Verify the allowParticipantsToChooseInterestRate field as yes when 
            | serviceRequirementForLoanNumber                   |      1 |
            And Configuration has been made as per following
            | key                 | value |
-           ##| loanPerPlanYear              |     1 |
-           ##| firstRepaymentDateFallsAfter |     1 |
            | maximumLengthYears  |     5 |
-           | maximumLengthMonths |     1 |
+           | maximumLengthMonths |     0 |
            #| minimumLengthYears           |     1 |
            #| minimumLengthMonths          |     0 |
+           ##| loanPerPlanYear              |     1 |
+           ##| firstRepaymentDateFallsAfter |     1 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
     Then API should respond with successful message
 
@@ -660,14 +662,14 @@ Scenario: Cure Period with Fixed number of days as 100
            | maximumAmountPercentageValue      | 99999.99 |
            | minimumLoanRepaymentAmount        |    10000 |
            | numberOfSuspensionsPerLoanAllowed |        0 |
-           #And Configuration has been made as per following
-           #| key                          | value |
-           #| loanPerPlanYear              |     1 |
-           #| firstRepaymentDateFallsAfter |     1 |
-           #| maximumLengthYears           |     3 |
-           #| maximumLengthMonths          |     0 |
-           #| minimumLengthYears           |     1 |
-           #| minimumLengthMonths          |     0 |
+           And Configuration has been made as per following
+           | key                          | value |
+           | loanPerPlanYear              |     1 |
+           | firstRepaymentDateFallsAfter |     1 |
+           | maximumLengthYears           |     3 |
+           | maximumLengthMonths          |     0 |
+           | minimumLengthYears           |     1 |
+           | minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
     Then API should respond with successful message
 
@@ -683,14 +685,14 @@ Scenario: Cure Period with Fixed number of days as 999
            | feesPaymentMethodsApplicable | 2,    |
            | eftFees                      |     0 |
            | minimumLoanRepaymentAmount   | 99999 |
-  #And Configuration has been made as per following
-  #         | key                          | value |
-  #         | loanPerPlanYear              |     1 |
-  #         | firstRepaymentDateFallsAfter |     1 |
-  #         | maximumLengthYears           |     3 |
-  #         | maximumLengthMonths          |     0 |
-  #         | minimumLengthYears           |     1 |
-  #         | minimumLengthMonths          |     0 |
+  And Configuration has been made as per following
+           | key                          | value |
+           | loanPerPlanYear              |     1 |
+           | firstRepaymentDateFallsAfter |     1 |
+           | maximumLengthYears           |     3 |
+           | maximumLengthMonths          |     0 |
+           | minimumLengthYears           |     1 |
+           | minimumLengthMonths          |     0 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveLoan"
     Then API should respond with successful message
 

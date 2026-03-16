@@ -21,7 +21,7 @@ When Configuration has been made as per following
 | countryId         |                    2 |
 | foreignCountry    | <ForeignCountry>     |
 | foreignState      | <ForeignState>       |
-| ZipCode           | <ZipCode>            |
+| zipCode           | <ZipCode>            |
 | beneficiaryName   | random 150 alphabets | Scenario:To verify the beneficiaryName field  value with equal 150 alphaebts  in Create Mode of Employee Information Page
 | routingNumber     | random 9 numerics    |
 | emailId           | <Email>              |
@@ -388,7 +388,6 @@ Scenario: To Verify the length acceptance of Foreign Zipcode when value is above
 | employeeId | <HooksEmpId> |
 When Configuration has been made as per following
 | key               | value                                                                                               |
-| accountHolderName | random 151 alphabets                                                                                |
 | countryId           |                                                                                                   1 |
 | zipCode           | 123456789012345678901234567890abcdefh                                                               |
 | dateOfBirth       | day_0                                                                                               |
@@ -396,7 +395,7 @@ When Configuration has been made as per following
 | routingNumber     | random 7 numerics                                                                                   |
 
 When API request has been sent to the "IEmployee" with the method name "AddBeneficaryAsync"
-Then the API response should contain the 3 following errors 
+Then the API response should contain the 4 following errors 
 	| error_code | error_message                                      |
 	| EM210      | ZIP Code should not be greater than 36 characters. |
 	| EM229      | Date of Birth must be prior to the current date.   | Scenario: To verify the Date of Birth field value with valid date format of Current date MM/DD/YYYY- create mode

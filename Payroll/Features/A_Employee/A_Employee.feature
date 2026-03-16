@@ -28,13 +28,13 @@ When Configuration has been made as per following
 | additionalState              |                            |
 | additionalStateId            |                            |
 | additionalZipcode            |                            |
-| additionalAddressName        | random 51 alphabets        |
-| additionalForeignState       | random 36 alphabets        |
+| additionalAddressName        | random 51 Alphabets        |
+| additionalForeignState       | random 36 Alphabets        |
 | companyId                    |                            |
 | country                      |                            |
-| additionalAddressOne         | random 151 alphabets       |
-| additionalAddressTwo         | random 36 alphabets        |
-| additionalAddressThree       | random 36 alphabets        |
+| additionalAddressOne         | random 151 Alphabets       |
+| additionalAddressTwo         | random 36 Alphabets        |
+| additionalAddressThree       | random 36 Alphabets        |
 | accountHolderName            |                            |
 | bankAccountName              |                            |
 | bankAccountNumber            |                            |
@@ -47,7 +47,7 @@ When Configuration has been made as per following
 | primaryEmailAddress          |                        123 |
 | mobilePhoneNumber            | abc                        |
 | workPhoneNumber              | abc-xed-fiko               |
-| employeeNumber               | random 3 specialCharacters |
+| employeeNumber               | random 3 SpecialCharacters |
 | firstName                    |                            |
 | uniquePersonalIdentification |                            |
 | gender                       | Z                          |
@@ -128,14 +128,14 @@ When Configuration has been made as per following
 | lastName                     | random 10 numerics                         |
 | uniquePersonalIdentification | random 5 numerics                          |
 | maritalStatus                | Y                                          |
-| middleName                   | random 1 specialCharacters                 |
+| middleName                   | random 1 SpecialCharacters                 |
 | routingNumber                | random 9 alphabets                         |
 | zipCode                      |                                            |
 | employmentStatus             | Active                                     |
 When The date property "birthDate" is configured as "days" and should add "0" days to the current date
 When The date property "hireDate" is configured as "null" and should add "0" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 21 following errors 
+Then the API response should contain the 19 following errors 
 	| error_code | error_message                                                                                   |
 	| EM152      | ZIP Code should not exceed 36 characters.                                                       |
 	| EM021      | Required                                                                                        | Scenario: To verify the Foreign Country field value length validation in Create Mode of Employee Information Page
@@ -151,14 +151,15 @@ Then the API response should contain the 21 following errors
 	| EM038      | Secondary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 150470 Verify whether validation is triggered if "Secondary Phone Number" field is not in the proper format --> "Employee Information Page"--> New Employee --> Employee Tab
 	| EM042      | Employee ID should be alphanumeric.                                                             | Scenario: 20322 To verify the Employee ID column value with Alphanumerics & Special characters in Create Mode of Employee Information Page
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.                  | Scenario: 20287 Employee SSN field less than 9 numerics validation
-	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                    | Scenario: 20250 Employee first Name field  validation numerics
-	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                           | Scenario: 20265 Employee last Name field  validation numerics
 	| EM033      | Invalid Marital Status.                                                                         | Scenario:(Tc0128) To verify the Marital status value with invalid data in Create Mode of Employee Information Page
-	| EM028      | Middle Initial should have letter only.                                                         | Scenario: 20281 Employee middle Name field validation special charecters
 	| EM259      | Routing number must contain only numeric digits (0–9).                                          | Scenario:To verify Routing number field in data type acceptance of only alphabets - Create mode
 	| EM019      | Required                                                                                        | Scenario: 20489 To verify the Foreign Zipcode  value name with Null when Country as Other in Create Mode of Employee Information Page
 	| EM023      | Required                                                                                        |Scenario:(Tc395)To verify the Hire Date  value as Null Create Mode of Employee Information Page
+	| EM028      | Middle Initial should have letter only.                                                         | Scenario: 20281 Employee middle Name field validation special charecters
 
+	#Ui changes
+	#	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                    | Scenario: 20250 Employee first Name field  validation numerics
+	#| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                           | Scenario: 20265 Employee last Name field  validation numerics
 
 
 Scenario: To verify the Additional ZipCode field  value format validation in Create Mode of Employee Information Page
@@ -219,10 +220,10 @@ Then the API response should contain the 20 following errors
 	| EM040      | Email ID is invalid.                                                                          | Scenario: 20359 To verify the Email field  value with Alphanumerics in Create Mode of Employee Information Page
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20372 To verify the  Phone Number  value with Combination of Upper case and lower case in Create Mode of Employee Information Page
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.                | Scenario: To verify the SSN  value with alphabets in Create Mode of Employee Information Page
-	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20282 Employee middle Name field validation alphanumerics
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only special characters - Create mode
 	| EM047      | ZIP Code should not exceed 36 characters.                                                     | Scenario: 20499 To verify the Foreign Zipcode  value with above 36 characters  when Country as Other in Create Mode of Employee Information Page
 	| EM054      | Hire Date cannot be more than 30 days in future.                                              | Scenario:(Tc401)To verify the HIre Date  value with valid date format of Current date + 30 date MM/DD/YYYY in Create Mode of Employee Information Page
+	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20282 Employee middle Name field validation alphanumerics
 
 
 
@@ -243,7 +244,7 @@ When Collection in a model is configured with 1 blocks for the property "Employe
 When Configuration has been made as per following
 | key                          | value                       |
 | accountHolderName            | random 10 alphanumerics     |
-| bankAccountName              | random 10 specialCharacters |
+| bankAccountName              | random 10 SpecialCharacters |
 | bankAccountNumber            | random 19 numerics          |
 | acceptWarning                | false                       |
 | city                         | random 10 alphanumerics     |
@@ -269,10 +270,9 @@ Then the API response should contain the 11 following errors
 	| EM040      | Email ID is invalid.                                                                          | Scenario: 20360 To verify the Email field  value with Alphanumerics & Special characters in Create Mode of Employee Information Page
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20373 To verify the  Phone Number  value with only Numerics in Create Mode of Employee Information Page
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.                | Scenario: To verify the SSN  value with special characters in Create Mode of Employee Information Page
-	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20283 Employee middle Name field validation alphanumerics and special charecters
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only alphanuerics - Create mode
 	| EM019      | Required                                                                                      | Scenario: 20474 To verify the ZipCode field  value name with Null  in Create Mode of Employee Information Page
-
+	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20283 Employee middle Name field validation alphanumerics and special charecters
 
 
 
@@ -300,15 +300,15 @@ When Configuration has been made as per following
 | employmentStatusId           |                                             |
 | city                         | random 10 alphaNumericWithSpecialCharacters |
 | mobilePhoneNumber            | !@#                                         |
-| firstName                    | random 10 specialCharacters                 |
-| lastName                     | random 10 specialCharacters                 |
+| firstName                    | random 10 SpecialCharacters                 |
+| lastName                     | random 10 SpecialCharacters                 |
 | uniquePersonalIdentification | 444-44-4444                                 |
 | routingNumber                | random 9 alphaNumericWithSpecialCharacters  |
 | zipCode                      | abc                                        |
 
 When The date property "birthDate" is configured as "years" and should add "-15" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 12 following errors 
+Then the API response should contain the 10 following errors 
 	| error_code | error_message                                                                                 |
 	| EM219      | Account Holder Name contains hyphen ,spaces and letters only                                  |
 	| EM187      | Bank Name contains hyphen ,spaces and letters only.                                           | Scenario:To verify the bankAccountName field with alphaNumericWithSpecialCharacters of  10  in Create Mode of Employee Information Page
@@ -318,11 +318,12 @@ Then the API response should contain the 12 following errors
 	| EM035      | City name should have spaces, dot, hyphen, (‘) and letters only.                              | Scenario: 20431 To verify the city field  value with Alphanumerics in Create Mode of Employee Information Page
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20374 To verify the  Phone Number  value with only Special Characters in Create Mode of Employee Information Page
 	| EM061      | Social Security Number digits all should not be same                                          | Scenario: 20290 Employee SSN field all same validation
-	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20255 Employee first Name field  validation special charecters
-	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20270 Employee last Name field  validation special charecters
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only alphanuerics with special characters - Create mode
 	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            | Scenario: 20475 To verify the ZipCode field  value with lower case in Create Mode of Employee Information Page
-
+#ui changes
+	#| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20255 Employee first Name field  validation special charecters
+	#| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20270 Employee last Name field  validation special charecters
+	
 
 Scenario:To verify the bankAccountHolderName field with alphabets of above 150 characters  in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
@@ -410,17 +411,17 @@ When Configuration has been made as per following
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
 Examples: 
-| Address1                                    | Address2                                    | Address3                                    | AccountHolderName    | bankAccountName     | BankAccountNumber  | BankAccountType | City                | ForeignCountry                              | ForeignState                                | PrimaryEmailAddress                                                              | EmployeeNumber         | SSN         | FirstName            | Gender | LastName             | MaritalStatus | MiddleName | RoutingNumber     | ZipCode                                     |
-| abc                                         |                                             |                                             | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abc                 | abc                                         | abc                                         |                                                                                  | aca                    | 123-12-3452 | random 10 alphabets  | m      | random 10 alphabets  | m             |            | random 9 numerics | abc                                         |
-| abc                                         | abc                                         | abc                                         | random 100 alphabets | random 50 alphabets | random 10 numerics |               2 | ABC                 | ABC                                         | ABC                                         | te7st@test.com                                                                    |                        | 444-05-4444 | abcdefg              | M      | abcdefg              | M             | a          | random 9 numerics | ABC                                         |
-| ABC                                         | ABC                                         | ABC                                         | random 150 alphabets | random 10 alphabets | random 18 numerics |               1 | ABc                 | ABc                                         | ABc                                         | TES1T@TEST.COM                                                                    | ACA                    | 444-50-4444 | ABCDEFG              |        | ABCDEFG              | s             | A          | random 9 numerics | ABc                                         |
-| ABc                                         | ABc                                         | ABc                                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | random 25 alphabets | random 10 Numerics                          | random 10 numerics                          | TE6ST@test.COM                                                                   | Aca                    | 000-50-4444 | ABCDEFaa             | f      | ABCDEFaa             | S             | aA         | random 9 numerics | random 10 numerics                          |
-| random 10 numerics                          | random 10 numerics                          | random 10 numerics                          | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | random 30 alphabets | random 10 SpecialCharacters                 | random 10 specialCharacters                 | abcdeabcdeabcdeabcdeabcdeabcdeabckeabcdeabcdeabcde@test.com                      | random 3 numerics      | 666-66-1234 | -'                   | F      | -'                   | d             |            | random 9 numerics | random 10 specialCharacters                 |
-| random 10 SpecialCharacters                 | random 10 specialCharacters                 | random 10 specialCharacters                 | random 10 Alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | random 10 alphaNumerics                     | random 10 alphaNumerics                     | abdceabdceabdceabdceabdceabdcelbdceabdceabdceabdceabdceabdceabdceabdcea@test.com | random 5 alphaNumerics | 999-92-6666 | aaaaa                | u      | aaaaa                | D             |            | random 9 numerics | random 10 alphaNumerics                     |
-| random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abc                 | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | 193@test.com                                                                     | random 15 alphabets    | 999-96-9999 | random 150 alphabets | U      | random 150 alphabets | w             |            | random 9 numerics | random 10 alphaNumericWithSpecialCharacters |
-| random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | random 30 alphabets                         | random 35 alphabets                         |                                                                                  | random 20 alphabets    | 999-96-9999 | random 100 alphabets | M      | random 100 alphabets | W             |            | random 9 numerics | random 35 numerics                          |
-| random 30 alphabets                         | random 30 alphabets                         | random 30 alphabets                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abd                 | abc                                         | abc                                         |                                                                                  | random 10 alphabets    | 999-96-9999 | random 10 alphabets  | M      | random 10 alphabets  | S             |            | random 9 numerics | random 36 numerics                          |
-| random 150 alphabets                        | random 35 alphabets                         | random 35 alphabets                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | abc                                         | abc                                         |                                                                                  | ACA001                 | 999-96-9999 | random 10 alphabets  | M      | random 10 alphabets  | S             |            | random 9 numerics | abc                                         |
+| Address1                                    | Address2                                    | Address3                                    | AccountHolderName    | bankAccountName     | BankAccountNumber  | BankAccountType | City                | ForeignCountry                              | ForeignState                                | PrimaryEmailAddress | EmployeeNumber         | SSN         | FirstName            | Gender | LastName             | MaritalStatus | MiddleName | RoutingNumber     | ZipCode                                     |
+| abc                                         |                                             |                                             | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abc                 | abc                                         | abc                                         |                     | aca                    | 123-12-3452 | random 10 alphabets  | m      | random 10 alphabets  | m             |            | random 9 numerics | abc                                         |
+| abc                                         | abc                                         | abc                                         | random 100 alphabets | random 50 alphabets | random 10 numerics |               2 | ABC                 | ABC                                         | ABC                                         | random 15 Email     |                        | 444-05-4444 | abcdefg              | M      | abcdefg              | M             | a          | random 9 numerics | ABC                                         |
+| ABC                                         | ABC                                         | ABC                                         | random 150 alphabets | random 10 alphabets | random 18 numerics |               1 | ABc                 | ABc                                         | ABc                                         | random 15 Email     | ACA                    | 444-50-4444 | ABCDEFG              |        | ABCDEFG              | s             | A          | random 9 numerics | ABc                                         |
+| ABc                                         | ABc                                         | ABc                                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | random 25 alphabets | random 10 Numerics                          | random 10 numerics                          | random 15 Email     | Aca                    | 000-50-4444 | ABCDEFaa             | f      | ABCDEFaa             | S             | aA         | random 9 numerics | random 10 numerics                          |
+| random 10 numerics                          | random 10 numerics                          | random 10 numerics                          | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | random 30 alphabets | random 10 SpecialCharacters                 | random 10 specialCharacters                 | random 60 Email     | random 3 numerics      | 666-66-1234 | -'                   | F      | -'                   | d             |            | random 9 numerics | random 10 specialCharacters                 |
+| random 10 SpecialCharacters                 | random 10 specialCharacters                 | random 10 specialCharacters                 | random 10 Alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 80 Email     | random 5 alphaNumerics | 999-92-6666 | aaaaa                | u      | aaaaa                | D             |            | random 9 numerics | random 10 alphaNumerics                     |
+| random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abc                 | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | 1432@test.com        | random 15 alphabets    | 999-96-9919 | random 150 alphabets | U      | random 150 alphabets | w             |            | random 9 numerics | random 10 alphaNumericWithSpecialCharacters |
+| random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | random 30 alphabets                         | random 35 alphabets                         |                     | random 20 alphabets    | 999-96-9919 | random 100 alphabets | M      | random 100 alphabets | W             |            | random 9 numerics | random 35 numerics                          |
+| random 30 alphabets                         | random 30 alphabets                         | random 30 alphabets                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abd                 | abc                                         | abc                                         |                     | random 10 alphabets    | 999-96-9929 | random 10 alphabets  | M      | random 10 alphabets  | S             |            | random 9 numerics | random 36 numerics                          |
+| random 150 alphabets                        | random 35 alphabets                         | random 35 alphabets                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | abc                                         | abc                                         |                     | ACA001                 | 999-96-9909 | random 10 alphabets  | M      | random 10 alphabets  | S             |            | random 9 numerics | abc                                         |
 #Scenario: 20394 To verify the Address 1 field  value with Upper case in Create Mode of Employee Information Page
 #Scenario: 20395 To verify the Address 1 field  value with Combination of Upper case and lower case in Create Mode of Employee Information Page
 #Scenario: 20396 To verify the Address 1 field  value with only Numerics in Create Mode of Employee Information Page
@@ -673,7 +674,7 @@ When Configuration has been made as per following
 | hireDate                     | 01/01/1988                                                                                                                           |
 | birthDate                    | 01/01/1991                                                                                                                           |
 | city                         | random 50 alphabets                                                                                                                  |
-| primaryEmailAddress          | abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdedeabcdedeabcdeabcdeabcdeababcdeabcdeababcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde@test.com |
+| primaryEmailAddress          | abcdeabcdeabcdkabcdeabcdeabcdeabcdeabcdedeabcdedeabcdeabcdeabcdeababcdeabcdeababcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde@test.com |
 | mobilePhoneNumber            | !@#123ABC                                                                                                                            |
 | firstName                    | random 10 alphaNumerics                                                                                                              |
 | lastName                     | 123abc                                                                                                                               |
@@ -681,7 +682,7 @@ When Configuration has been made as per following
 | zipCode                      | ABc                                                                                                                                  |
 | routingNumber                | random 8 numerics                                                                                                                    |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 9 following errors 
+Then the API response should contain the 7 following errors 
 	| error_code | error_message                                                                                 |
 	| EM055      | Hire Date cannot be prior or equal to the Date of Birth.                                      |
 	| EM034      | City name should not exceed 35 characters.                                                    | Scenario: 20435 To verify the City field  value with above 30 characters in Create Mode of Employee Information Page
@@ -689,11 +690,12 @@ Then the API response should contain the 9 following errors
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20376 To verify the  Phone Number  value with Alphanumerics & Special characters in Create Mode of Employee Information Page
 	| EM061      | Social Security Number digits all should not be same                                          |
 	| EM062      | Social Security Number fourth and fifth digits should not be zero.                            | Scenario: 20295 Employee SSN field with all digits zero validation
-	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20256 Employee first Name field  validation alphaNumerics
-	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20271 Employee last Name field  validation alphaNumerics
 	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            | Scenario: 20477 To verify the ZipCode field  value with Combination of Upper case and lower case in Create Mode of Employee Information Page
 	| EM212      | ABA routing number should be 9 digits.                                                        | #Scenario:To verify the routingNumber field with numerics of below 9  in Create Mode of Employee Information Page
-	
+	#ui changes
+	#| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20256 Employee first Name field  validation alphaNumerics
+	#| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20271 Employee last Name field  validation alphaNumerics
+
 Scenario: 20646 To verify the Leave start Date  value as Null Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following

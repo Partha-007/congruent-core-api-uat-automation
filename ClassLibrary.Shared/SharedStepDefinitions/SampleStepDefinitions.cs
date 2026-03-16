@@ -163,7 +163,11 @@ namespace SharedStepDefinitions
                 //{
                 //    Value = await GetDate(Convert.ToInt32(Value.Split("/")[1]), Value.Split("/")[0]);
                 //}
-                if (Value.Contains(","))
+                if (Value == "0,")
+                {
+                    var newArray = new JArray();
+                }
+                if (Value.Contains(",") && !Value.Contains("0,"))
                 {
                     var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     var newArray = new JArray();
@@ -188,6 +192,7 @@ namespace SharedStepDefinitions
 
                        // Program.modelAfterConvention;
                     }
+
 
                     
                 }
