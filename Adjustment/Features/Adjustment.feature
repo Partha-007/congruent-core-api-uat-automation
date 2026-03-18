@@ -21,4 +21,4 @@ When File upload is executed for the file "CombinedFile.csv" and funding is done
 
 When Adjustment is created for the employee with Adjustment type as "Adjust balance" and Incident code as "ADJ001"
 
-And Trade procedures completed for the transaction "Transfer"
+And Trade procedures completed for the transaction "Adjustments"

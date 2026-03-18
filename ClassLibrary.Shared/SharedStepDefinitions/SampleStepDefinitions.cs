@@ -1,4 +1,5 @@
 using ClassLibrary.Shared;
+using ClassLibrary.Shared.Configurations;
 using ClassLibrary.Shared.TestDataGenerator;
 using CucumberExpressions.Ast;
 using MyNamespace;
@@ -9,7 +10,7 @@ using System;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using Xunit;
-using static ClassLibrary.Shared.TransactionsConfigurations;
+using static ClassLibrary.Shared.Configurations.TransactionsConfigurations;
 
 namespace SharedStepDefinitions
 {
@@ -47,8 +48,14 @@ namespace SharedStepDefinitions
         }
 
         [When("Trade procedures completed for the transaction {string}")]
-        public async Task WhenTradeProceduresCompletedForTheTransaction(string transfer)
+        public async Task WhenTradeProceduresCompletedForTheTransaction(string transactionName)
         {
+            if(transactionName == "Forfeiture In through Break in service")
+                await _program.ForfeitureTrigger();
+
+            if (transactionName == "Fund Switch")
+                await _transactionsConfigurations.UpdateFundSwitchStatus();
+
             await _program.TransferTransaction();
         }
 
@@ -80,9 +87,9 @@ namespace SharedStepDefinitions
 
 
         [Given("Vesting model is selected")]
-        public void GivenVestingModelIsSelected()
+        public async Task GivenVestingModelIsSelected()
         {
-            throw new PendingStepException();
+            await _program.SaveVesting();
         }
 
         [When("the property {string} is configured as {string}")]
@@ -363,6 +370,13 @@ namespace SharedStepDefinitions
             await _transactionsConfigurations.SaveFullFee(null, null, _feeSchedule, false);
         }
 
+        [When("Create a fund switch transaction in {string} level with investments from {string} to {string}")]
+        public async Task WhenCreateAFundSwitchTransactionInLevelWithInvestmentsFromTo(string ApplicableLevel, string investmentFrom, string investmentTo)
+        {
+            await _program.FundSwitchConfiguration(ApplicableLevel, investmentFrom, investmentTo);
+        }
+
+
 
 
         [Then("API should respond Match Calculated values as")]
@@ -556,11 +570,26 @@ namespace SharedStepDefinitions
             await _program.AddInvestmentToPlan(investmentName);
         }
 
+        [Given("Investment {string} has been mapped to the plan and trade identifier generated for the investment")]
+        public async Task GivenInvestmentHasBeenMappedToThePlanAndTradeIdentifierGeneratedForTheInvestment(string investmentName)
+        {
+            await _program.AddInvestmentToPlan(investmentName);
+            await _program.InvestmentMappingAndTradeIdentifierAdd();
+        }
+
+
         [Given("Enrollment configuration")]
         public async Task GivenEnrollmentConfiguration()
         {
             await _program.EnrollmentSetup();
         }
+
+        [Given("Configure Forfeiture In with the below details and map the investment {string} to the plan")]
+        public async Task GivenConfigureForfeitureInWithTheBelowDetailsAndMapTheInvestmentToThePlan(string investmentName, DataTable dataTable)
+        {
+            await _program.PlanForfeitureConfiguration(investmentName, dataTable);
+        }
+
 
 
 

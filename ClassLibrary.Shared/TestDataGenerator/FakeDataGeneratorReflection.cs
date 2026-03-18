@@ -262,7 +262,7 @@ namespace RefitSandBox.TestDataGenerator
                     .RuleFor(x => x.SSN, x => x.Person.Ssn())
                     .RuleFor(x => x.FirstName, x => x.Person.FirstName)
                     .RuleFor(x => x.LastName, x => x.Person.LastName)
-                    .RuleFor(x => x.MiddleName, x => x.Random.String2(1, "ABCDEFGHIJKLMNOPQRSTUVWXY"))
+                    //.RuleFor(x => x.MiddleName, x => x.Random.String2(1, "ABCDEFGHIJKLMNOPQRSTUVWXY"))
                     .RuleFor(x => x.Gender, x => x.Random.String2(1, "MF"))
                     .RuleFor(x => x.MaritalStatus, x => x.Random.String2(1, "SMD"))
                     .RuleFor(x => x.BirthDate, x => x.Date.PastDateOnly().AddYears(-40).ToString("MM/dd/yyyy"))
@@ -285,8 +285,8 @@ namespace RefitSandBox.TestDataGenerator
                     .RuleFor(x => x.LeaveStartDate, x => "")
                     .RuleFor(x => x.LeaveEndDate, x => "")
                     .RuleFor(x => x.Location, x => "L1")
-                    .RuleFor(x => x.LocationStartDate, x => " ")
-                    .RuleFor(x => x.LocationEndDate, x => " ")
+                    .RuleFor(x => x.LocationStartDate, x => "")
+                    .RuleFor(x => x.LocationEndDate, x => "")
                     .RuleFor(x => x.AnnualSalary, x => "500")
                     .RuleFor(x => x.Hours, x => "100")
                     .RuleFor(x => x.GrossCompensation, x => x.Random.Number(100, 999).ToString())
@@ -405,8 +405,8 @@ namespace RefitSandBox.TestDataGenerator
         [DisplayName("LAST NAME")]
         public string LastName { get; set; }
 
-        [DisplayName("MIDDLE NAME")]
-        public string MiddleName { get; set; }
+        /*[DisplayName("MIDDLE NAME")]
+        public string MiddleName { get; set; }*/
 
         [DisplayName("GENDER")]
         public string Gender { get; set; }
