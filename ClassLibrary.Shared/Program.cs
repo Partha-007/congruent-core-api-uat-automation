@@ -1,55 +1,56 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
-using NUnit.Framework.Legacy;
-using Refit;
-using System.Web;
-using System.Data;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using AutoFixture;
+using AutoMapper;
+using Bogus;
+using Bogus.Bson;
+using Bogus.DataSets;
+using Bogus.Extensions.Canada;
+using Bogus.Extensions.UnitedStates;
+using ClassLibrary.Shared;
+using ClassLibrary.Shared.AppSettings;
+using ClassLibrary.Shared.Enum;
+using ClassLibrary.Shared.TestDataGenerator;
+using CsvHelper;
+using FizzWare.NBuilder;
+using FizzWare.NBuilder.Extensions;
+using Fluid.Values;
+using HtmlAgilityPack;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Microsoft.Playwright;
 using MyNamespace;
-using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NSwag.CodeGeneration.Models;
+using NUnit.Framework;
+using NUnit.Framework.Diagnostics;
+using NUnit.Framework.Legacy;
+using Refit;
+using RefitSandBox;
+using RefitSandBox.Hooks;
+using RefitSandBox.TestDataGenerator;
+using Renci.SshNet;
+using Reqnroll;
+using System;
+using System.Collections;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Data;
+using System.Globalization;
 //using Microsoft.AspNetCore.Mvc;
 //using Microsoft.AspNetCore.Mvc.Infrastructure;
 //using Microsoft.AspNetCore.Http;
 using System.Net.Http;
-using System;
-using System.Collections.Specialized;
-using System.Text.RegularExpressions;
-using HtmlAgilityPack;
-using Bogus;
-using FizzWare.NBuilder;
-using AutoFixture;
+using System.Net.NetworkInformation;
 using System.Reflection;
-using RefitSandBox.TestDataGenerator;
-using Reqnroll;
-using Bogus.Bson;
-using FizzWare.NBuilder.Extensions;
-using RefitSandBox;
-using NSwag.CodeGeneration.Models;
-using System.ComponentModel;
-using CsvHelper;
-using System.Globalization;
-using Bogus.DataSets;
-using ClassLibrary.Shared.TestDataGenerator;
-using RefitSandBox.Hooks;
-using Fluid.Values;
-using System.Collections;
-using NUnit.Framework.Diagnostics;
-using System.Text;
-using Renci.SshNet;
 using System.Runtime.InteropServices.WindowsRuntime;
-using AutoMapper;
-using ClassLibrary.Shared.Enum;
-using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
 //using Microsoft.Extensions.Configuration.Json;
 using static Org.BouncyCastle.Bcpg.Attr.ImageAttrib;
-using ClassLibrary.Shared.AppSettings;
-using System.Net.NetworkInformation;
-using ClassLibrary.Shared;
-using Bogus.Extensions.Canada;
-using Bogus.Extensions.UnitedStates;
 //using Io.Cucumber.Messages.Types;
 //using Gherkin.CucumberMessages.Types;
 
@@ -1956,7 +1957,9 @@ namespace RefitSandBox
                     Value = Value.Contains("_") ? await GetDate(Convert.ToInt32(Value.Split('_')[0]), Value.Split('_')[1]) : Value;
                     Value = Columnname == "SSN" ? employeeSSN : Value;
                     UpdateFile(FileToEdit, Columnname, Value!, directoryPath);
+                    //Value = Value.Contains("+") ? await GetDate(Convert.ToInt32(Value.Split('_')[0]), Value.Split('_')[1]) : Value;
                 }
+
             }
 
 
@@ -2479,17 +2482,38 @@ namespace RefitSandBox
 
             var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages);
 
-            foreach (var error in errorMessages)
+            if(controlName == "payPeriodGrossCompensation" || controlName == "payPeriodPlanCompensation")
             {
-                if (controlName == error.ControlName)
+                var compensationType = controlName == "payPeriodGrossCompensation" ? "GROSS COMPENSATION" : "PLAN COMPENSATION";
+                var compensationErrorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.Compensations).Where(_ => _.CompensationType == compensationType).First().ErrorMessages;
+                foreach (var error in compensationErrorMessages)
                 {
-                    errorTriggered = true;
-                    var actualErrorReportMessage = error.MessageCode;
-                    var actualECRReportMessage = error.MessageDescCode;
-                    ClassicAssert.AreEqual(errorReportMessage, actualErrorReportMessage);
-                    ClassicAssert.AreEqual(ecrMessage, actualECRReportMessage);
+                    if (controlName == error.ControlName)
+                    {
+                        errorTriggered = true;
+                        var actualErrorReportMessage = error.MessageCode;
+                        var actualECRReportMessage = error.MessageDescCode;
+                        ClassicAssert.AreEqual(errorReportMessage, actualErrorReportMessage);
+                        ClassicAssert.AreEqual(ecrMessage, actualECRReportMessage);
+                    }
                 }
             }
+            else
+            {
+                foreach (var error in errorMessages)
+                {
+                    if (controlName == error.ControlName)
+                    {
+                        errorTriggered = true;
+                        var actualErrorReportMessage = error.MessageCode;
+                        var actualECRReportMessage = error.MessageDescCode;
+                        ClassicAssert.AreEqual(errorReportMessage, actualErrorReportMessage);
+                        ClassicAssert.AreEqual(ecrMessage, actualECRReportMessage);
+                    }
+                }
+            }
+
+                
 
             if (!errorTriggered)
                 throw new Exception($"Error not triggered for the given control name {controlName}");
