@@ -1,11 +1,31 @@
-﻿using Newtonsoft.Json;
+﻿using AutoFixture;
+using AutoMapper;
+using Bogus;
+using Bogus.Bson;
+using Bogus.DataSets;
+using Bogus.Extensions.Canada;
+using Bogus.Extensions.UnitedStates;
+using ClassLibrary.Shared;
+using ClassLibrary.Shared.AppSettings;
+using ClassLibrary.Shared.Configurations;
+using ClassLibrary.Shared.Enum;
+using ClassLibrary.Shared.RefitHelper;
+using ClassLibrary.Shared.TestDataGenerator;
+using CsvHelper;
+using FizzWare.NBuilder;
+using FizzWare.NBuilder.Extensions;
+using Fluid.Values;
+using HtmlAgilityPack;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Playwright;
+using MyNamespace;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NSwag.CodeGeneration.Models;
 using NUnit.Framework;
 using NUnit.Framework.Diagnostics;
 using NUnit.Framework.Legacy;
 using Refit;
-using RefitSandBox;
 using RefitSandBox.Hooks;
 using RefitSandBox.TestDataGenerator;
 using Renci.SshNet;
@@ -225,8 +245,6 @@ namespace RefitSandBox
             Configuration(ControlName, Value);
         }
 
-        public static List<System.Reflection.PropertyInfo> matchingProperties = new List<System.Reflection.PropertyInfo>();
-
         JArray newArray = new JArray();
         public void Configuration(string ControlName, string Value)
         {
@@ -414,7 +432,7 @@ namespace RefitSandBox
                             }
                             else
                             {
-                                await SetPropertyValueRecursive(modelAfterConvention, property.Name, Value);
+                                SetPropertyValueRecursive(modelAfterConvention, property.Name, Value);
                             }
                         }
                     }
@@ -555,7 +573,7 @@ namespace RefitSandBox
             }
         }
 
-        public static async Task SetPropertyValueRecursive(object targetObject, string propertyName, object value)
+        public static void SetPropertyValueRecursive(object targetObject, string propertyName, object value)
         {
             if (targetObject == null) return;
 
@@ -632,13 +650,13 @@ namespace RefitSandBox
                     // If it's a collection, iterate through each item in the collection
                     foreach (var item in (System.Collections.IEnumerable)propertyValue)
                     {
-                        await SetPropertyValueRecursive(item, propertyName, value);
+                        SetPropertyValueRecursive(item, propertyName, value);
                     }
                 }
                 else if (propertyValue != null && !property.PropertyType.IsValueType && property.PropertyType != typeof(string))
                 {
                     // If the property is a complex type, recurse into it
-                    await SetPropertyValueRecursive(propertyValue, propertyName, value);
+                    SetPropertyValueRecursive(propertyValue, propertyName, value);
                 }
             }
         }
