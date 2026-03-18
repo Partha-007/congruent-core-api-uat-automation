@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using CsvHelper;
 using System.Globalization;
 using Bogus.Extensions.UnitedStates;
+using System.Text.RegularExpressions;
 
 namespace RefitSandBox.TestDataGenerator
 {
@@ -118,18 +119,23 @@ namespace RefitSandBox.TestDataGenerator
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "Tenantid") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "CountryId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "StateId") || StringComparer.OrdinalIgnoreCase.Equals(propertyName, "masterLoanTypeId") ? 1 :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "IsMaster") ? true : StringComparer.OrdinalIgnoreCase.Equals(propertyName, "AllowOptingOutOfStateWithholdingTax") ? false :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "LoanDescription") ? "General Purpose" :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "SourceName") ?faker.Random.String2(5, "abcdefghijklmnopqrstuvwxyz") + faker.Random.Number(100, 999).ToString():
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "SourceCode") ? faker.Random.String2(1,"EFGHIJKLMNOPQRSTUVXYZ") :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "RecordKeepingNumber") ? faker.Random.String2(10, "ABCDEFGHIJKLMNOPQRSTUVXYZ") :
                         StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearStartDate") ? DateTimeOffset.Parse("2025-03-02T00:00:00Z") :
-                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? DateTimeOffset.Parse("2026-03-02T00:00:00Z") :
+                        StringComparer.OrdinalIgnoreCase.Equals(propertyName, "ShortYearEndDate") ? DateTimeOffset.Parse("2026-02-02T00:00:00Z") :
                         propertyName.Contains("SSN", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("UniquePersonalIdentification", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-##-####") :
-                        propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? faker.Name.FirstName() :
+                        propertyName.Contains("FirstName", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("LastName", StringComparison.OrdinalIgnoreCase) ? Regex.Replace(faker.Name.FirstName(), @"[^\w\s]", "") :
                         propertyType == typeof(string) && propertyName.Contains("Name", StringComparison.OrdinalIgnoreCase) ? faker.Company.CompanyName() :
                         propertyType == typeof(string) && propertyName.Contains("Email", StringComparison.OrdinalIgnoreCase) ? faker.Person.Email :
                         propertyType == typeof(string) && propertyName.Contains("PhoneNumber", StringComparison.OrdinalIgnoreCase) ? faker.Phone.PhoneNumber("###-###-####") :
                         propertyType == typeof(string) && propertyName.Contains("Zipcode", StringComparison.OrdinalIgnoreCase) || propertyName.Contains("PostalCode", StringComparison.OrdinalIgnoreCase) ? faker.Address.ZipCode("#####") :
                         propertyName == "SicCode" ? faker.Random.Number(1000, 9999).ToString() :
+                        //StringComparer.OrdinalIgnoreCase.Equals(propertyName, "MinimumLengthYears") ? faker.Random.int(1, 3).ToString() :
+                        // StringComparer.OrdinalIgnoreCase.Equals(propertyName, "MaximumLengthYears")? faker.Random.int(4, 6).ToString() :
                         propertyName == "BusinessCode" ? faker.Random.Number(100000, 999999).ToString() :
-                        (propertyName == "LimitMaximumPercentage") || (propertyName == "LimitMaximumDollar") || (propertyName == "MaximumDollarCompensation") || (propertyName == "MaximumPercentageCompensation") || (propertyName == "HceMaximumAmount") || (propertyName == "HceMaximumPercentage") || (propertyName == "CatchupMaximumAmount") || (propertyName == "CatchupMaximumPercentage") ? faker.Random.Double(50, 100) :
-                        (propertyName == "LimitMinimumPercentage") || (propertyName == "LimitMinimumDollar") || (propertyName == "HceMinimumAmount") || (propertyName == "HceMinimumPercentage") || (propertyName == "CatchupMinimumAmount") || (propertyName == "CatchupMinimumPercentage") ? faker.Random.Double(1, 50) :
+                        (propertyName == "LimitMaximumPercentage") || (propertyName == "LimitMaximumDollar") || (propertyName == "MaximumDollarCompensation") || (propertyName == "MaximumPercentageCompensation") || (propertyName == "HceMaximumAmount") || (propertyName == "HceMaximumPercentage") || (propertyName == "CatchupMaximumAmount") || (propertyName == "CatchupMaximumPercentage") || (propertyName == "limitMaximum") || (propertyName == "interestRateMaximum") ? faker.Random.Double(50, 100) :
+                        (propertyName == "LimitMinimumPercentage") || (propertyName == "LimitMinimumDollar") || (propertyName == "HceMinimumAmount") || (propertyName == "HceMinimumPercentage") || (propertyName == "CatchupMinimumAmount") || (propertyName == "CatchupMinimumPercentage") || (propertyName == "limitMinimum") || (propertyName == "interestRateMinimum") ? faker.Random.Double(1, 50) :
                         propertyName == "TaxEIN" ? faker.Phone.PhoneNumber("##-#######") :
                         propertyName == "BusinessType" ? 1 :
                         propertyName.Contains("Address", StringComparison.OrdinalIgnoreCase) && !propertyType.IsClass && !propertyName.Equals("AddressType") ? faker.Address.StreetAddress() :
@@ -259,8 +265,8 @@ namespace RefitSandBox.TestDataGenerator
             var data = new Faker<CombinedTemplateModel>()
                 .RuleFor(x => x.EmployeeId, x => x.Random.Number(10000, 99999).ToString())
                     .RuleFor(x => x.Paydate, x => x.Date.Past(1).ToString("MM/dd/yyyy"))
-                    .RuleFor(x => x.SSN, x => x.Person.Ssn())
-                    .RuleFor(x => x.FirstName, x => x.Person.FirstName)
+                    .RuleFor(x => x.SSN, x => Hooks.Hooks.seedSSN != null ? Hooks.Hooks.seedSSN : x.Person.Ssn())
+                    .RuleFor(x => x.FirstName, x => Hooks.Hooks.seedFirstName != null ? Hooks.Hooks.seedFirstName : x.Person.FirstName)
                     .RuleFor(x => x.LastName, x => x.Person.LastName)
                     //.RuleFor(x => x.MiddleName, x => x.Random.String2(1, "ABCDEFGHIJKLMNOPQRSTUVWXY"))
                     .RuleFor(x => x.Gender, x => x.Random.String2(1, "MF"))

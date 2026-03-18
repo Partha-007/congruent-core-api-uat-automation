@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Bogus.Extensions.UnitedStates;
 using ClassLibrary.Shared.AppSettings;
 using ClassLibrary.Shared.RefitHelper;
 using FizzWare.NBuilder;
@@ -46,7 +47,7 @@ namespace RefitSandBox.Hooks
 
         public static string? bearer;
         //public string planId;
-        public static string? companyId, planId, RollOverSource;
+        public static string? companyId, planId, RollOverSource, seedSSN, seedFirstName;
         public static AppSettings? _appSettings;
         public static string? url, name, password, clearingPartnerName, iD;
 
@@ -374,6 +375,13 @@ namespace RefitSandBox.Hooks
             planId = await Program.SavePlan(bearer!, companyId);
         }
 
+        [BeforeScenario("@sameEmployee")]
+        public async Task SameEmployee()
+        {
+            seedSSN = faker!.Person.Ssn();
+            seedFirstName = faker.Person.FirstName;
+        }
+
         public static async Task<DataTable> ChangeTable(DataTable table, string[] rowData)
         {
             foreach (var item in rowData)
@@ -398,7 +406,7 @@ namespace RefitSandBox.Hooks
 
         
 
-        public static async Task<int>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   CreateCPAccount(string name, int id)
+        public static async Task<int> CreateCPAccount(string name, int id)
         {
             var cpModel = new ClearingPartnerViewModel
             {
@@ -492,7 +500,7 @@ namespace RefitSandBox.Hooks
             await UserLogin();
 
 
-            // Initialize HttpClient
+            //Initialize HttpClient
             httpClient = new HttpClient
             {
                 BaseAddress = new Uri(_appSettings.ApplicationURL)
@@ -500,20 +508,20 @@ namespace RefitSandBox.Hooks
             httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Hooks.bearer!);
 
-            var listOfClearingPartners = await GetClearingPartner(httpClient);
+            //var listOfClearingPartners = await GetClearingPartner(httpClient);
 
 
 
 
-            j = _appSettings!.ClearingPartners.Count();
+            //j = _appSettings!.ClearingPartners.Count();
 
-            var ListofClearingPartners = new Dictionary<string, string>();
+            //var ListofClearingPartners = new Dictionary<string, string>();
 
-            foreach (var partner in _appSettings.ClearingPartners)
-            {
+            //foreach (var partner in _appSettings.ClearingPartners)
+            //{
 
-                // ListofClearingPartners[partner] = $"{partner}001";
-            }
+            //    // ListofClearingPartners[partner] = $"{partner}001";
+            //}
 
 
             //  var partnersList = JsonConvert.DeserializeObject<List<CPInfo>>(response.ToString());
@@ -525,12 +533,11 @@ namespace RefitSandBox.Hooks
 
             var program = new Program();
             companyId = await Program.SaveCompany(bearer!); // Static method call
-            for (i = 1; i < j; i++)
-            {
+            
                 planId = await Program.SavePlan(bearer!, companyId);
                 await Program.SaveSponsor(httpClient, bearer!, planId);
-                //await Program.ClearingPartnerPlanMapping(bearer!, planId);
-                await Program.UpsertPlanWithClearingPartnerAccount(httpClient, planId, AccountId);
+                await Program.ClearingPartnerPlanMapping(bearer!, planId);
+                //await Program.UpsertPlanWithClearingPartnerAccount(httpClient, planId, AccountId);
                 await Program.EligibilityConfiguration(_appSettings.ApplicationURL, httpClient, bearer!, planId);
                 await Program.SaveEntryDate(httpClient, bearer!, planId);
                 await Program.SavePretaxSource(bearer!, planId);
@@ -538,7 +545,7 @@ namespace RefitSandBox.Hooks
                 await Program.SaveMatchSource(httpClient, bearer!, planId);
                 await Program.SaveRothSource(bearer!, planId);
                 await Program.SaveCompensation(bearer!, planId);
-            }
+            
 
 
             await program.AddInvestmentToPlan("SEAS001");

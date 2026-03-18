@@ -1,7 +1,7 @@
 ﻿Feature: A_Limits
 [BeforeTestRun]
 Scenario:To validate Combined Limit Name field is null
-   Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
+Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"
 When Configuration has been made as per following
          | key                  | value              |
          | name                 | random 0 alphabets |
@@ -138,7 +138,9 @@ When Configuration has been made as per following
          | limitMinimum           |                        1000 |
          | limitMaximum           |                        1000 |
  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveSourceLimitsAsync"
-Then API should respond with successful message
+ Then the API response should contain the 1 following errors 
+	| error_code | error_message                                                         |
+	| PL1130     | Maximum limit amount should not be equal or lesser than minimum limit |
 
 Scenario: To validate contribution type as both when limitMinimum is 11 digits with 2 decimal points
    Given Model is selected for the endpoint "/api/v1/Plan/SaveSourceLimits"

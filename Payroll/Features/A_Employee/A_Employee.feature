@@ -1,14 +1,23 @@
 ﻿Feature: A_Employee
 [BeforeTestRun]
+[PlanActivation]
 
 #Scenario: 20346 To verify the Marital Status Dropdown is not selected in Create Mode of Employee Information Page
 #Scenario: 20252 Employee first Name field space validation 
 #Scenario: 20267 Employee last Name field space validation 
 Scenario: 20392 To verify the Address 1 field  value name with Null  in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
-  When Configuration has been made as per following
-| key       | value       |
-| companyId | <CompanyId> |
+ When Configuration has been made as per following
+| key                  | value                |
+| companyId            | <CompanyId>          |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                      |
 | address1                     |                            |
@@ -19,13 +28,13 @@ When Configuration has been made as per following
 | additionalState              |                            |
 | additionalStateId            |                            |
 | additionalZipcode            |                            |
-| additionalAddressName        | random 51 alphabets        |
-| additionalForeignState       | random 36 alphabets        |
+| additionalAddressName        | random 51 Alphabets        |
+| additionalForeignState       | random 36 Alphabets        |
 | companyId                    |                            |
 | country                      |                            |
-| additionalAddressOne         | random 151 alphabets       |
-| additionalAddressTwo         | random 36 alphabets        |
-| additionalAddressThree       | random 36 alphabets        |
+| additionalAddressOne         | random 151 Alphabets       |
+| additionalAddressTwo         | random 36 Alphabets        |
+| additionalAddressThree       | random 36 Alphabets        |
 | accountHolderName            |                            |
 | bankAccountName              |                            |
 | bankAccountNumber            |                            |
@@ -38,7 +47,7 @@ When Configuration has been made as per following
 | primaryEmailAddress          |                        123 |
 | mobilePhoneNumber            | abc                        |
 | workPhoneNumber              | abc-xed-fiko               |
-| employeeNumber               | random 3 specialCharacters |
+| employeeNumber               | random 3 SpecialCharacters |
 | firstName                    |                            |
 | uniquePersonalIdentification |                            |
 | gender                       | Z                          |
@@ -91,6 +100,14 @@ Scenario: To verify the Additional ZipCode field  value length validation in Cre
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                                      |
 | additionalZipcode            | random 37 numerics                         |
@@ -111,14 +128,14 @@ When Configuration has been made as per following
 | lastName                     | random 10 numerics                         |
 | uniquePersonalIdentification | random 5 numerics                          |
 | maritalStatus                | Y                                          |
-| middleName                   | random 1 specialCharacters                 |
+| middleName                   | random 1 SpecialCharacters                 |
 | routingNumber                | random 9 alphabets                         |
 | zipCode                      |                                            |
 | employmentStatus             | Active                                     |
 When The date property "birthDate" is configured as "days" and should add "0" days to the current date
 When The date property "hireDate" is configured as "null" and should add "0" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 21 following errors 
+Then the API response should contain the 19 following errors 
 	| error_code | error_message                                                                                   |
 	| EM152      | ZIP Code should not exceed 36 characters.                                                       |
 	| EM021      | Required                                                                                        | Scenario: To verify the Foreign Country field value length validation in Create Mode of Employee Information Page
@@ -134,14 +151,15 @@ Then the API response should contain the 21 following errors
 	| EM038      | Secondary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 150470 Verify whether validation is triggered if "Secondary Phone Number" field is not in the proper format --> "Employee Information Page"--> New Employee --> Employee Tab
 	| EM042      | Employee ID should be alphanumeric.                                                             | Scenario: 20322 To verify the Employee ID column value with Alphanumerics & Special characters in Create Mode of Employee Information Page
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.                  | Scenario: 20287 Employee SSN field less than 9 numerics validation
-	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                    | Scenario: 20250 Employee first Name field  validation numerics
-	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                           | Scenario: 20265 Employee last Name field  validation numerics
 	| EM033      | Invalid Marital Status.                                                                         | Scenario:(Tc0128) To verify the Marital status value with invalid data in Create Mode of Employee Information Page
-	| EM028      | Middle Initial should have letter only.                                                         | Scenario: 20281 Employee middle Name field validation special charecters
 	| EM259      | Routing number must contain only numeric digits (0–9).                                          | Scenario:To verify Routing number field in data type acceptance of only alphabets - Create mode
 	| EM019      | Required                                                                                        | Scenario: 20489 To verify the Foreign Zipcode  value name with Null when Country as Other in Create Mode of Employee Information Page
 	| EM023      | Required                                                                                        |Scenario:(Tc395)To verify the Hire Date  value as Null Create Mode of Employee Information Page
+	| EM028      | Middle Initial should have letter only.                                                         | Scenario: 20281 Employee middle Name field validation special charecters
 
+	#Ui changes
+	#	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                    | Scenario: 20250 Employee first Name field  validation numerics
+	#| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                           | Scenario: 20265 Employee last Name field  validation numerics
 
 
 Scenario: To verify the Additional ZipCode field  value format validation in Create Mode of Employee Information Page
@@ -149,6 +167,14 @@ Scenario: To verify the Additional ZipCode field  value format validation in Cre
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                       |
 | additionalZipcode            |                         123 |
@@ -157,10 +183,10 @@ When Configuration has been made as per following
 | address1                     | random 151 alphabets        |
 | address2                     | random 36 alphabets         |
 | address3                     | random 40 alphabets         |
-| accountHolderName            | random 10 specialCharacters |
+| accountHolderName            | random 10 SpecialCharacters |
 | bankAccountName              | random 10 numerics          |
-| bankAccountNumber            | random 10 specialCharacters |
-| city                         | random 10 specialCharacters |
+| bankAccountNumber            | random 10 SpecialCharacters |
+| city                         | random 10 SpecialCharacters |
 | country                      | Others                      |
 | countryId                    |                           2 |
 | foreignCountry               | random 100 alphabets        |
@@ -170,7 +196,7 @@ When Configuration has been made as per following
 | firstName                    | random 10 alphabets         |
 | uniquePersonalIdentification | random 9 alphabets          |
 | middleName                   | a1                          |
-| routingNumber                | random 9 specialCharacters  |
+| routingNumber                | random 9 SpecialCharacters  |
 | zipCode                      | random 100 numerics         |
 | employmentStatus             | Active                      |
 When The date property "hireDate" is configured as "days" and should add "31" days to the current date
@@ -194,10 +220,10 @@ Then the API response should contain the 20 following errors
 	| EM040      | Email ID is invalid.                                                                          | Scenario: 20359 To verify the Email field  value with Alphanumerics in Create Mode of Employee Information Page
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20372 To verify the  Phone Number  value with Combination of Upper case and lower case in Create Mode of Employee Information Page
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.                | Scenario: To verify the SSN  value with alphabets in Create Mode of Employee Information Page
-	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20282 Employee middle Name field validation alphanumerics
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only special characters - Create mode
 	| EM047      | ZIP Code should not exceed 36 characters.                                                     | Scenario: 20499 To verify the Foreign Zipcode  value with above 36 characters  when Country as Other in Create Mode of Employee Information Page
 	| EM054      | Hire Date cannot be more than 30 days in future.                                              | Scenario:(Tc401)To verify the HIre Date  value with valid date format of Current date + 30 date MM/DD/YYYY in Create Mode of Employee Information Page
+	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20282 Employee middle Name field validation alphanumerics
 
 
 
@@ -218,14 +244,14 @@ When Collection in a model is configured with 1 blocks for the property "Employe
 When Configuration has been made as per following
 | key                          | value                       |
 | accountHolderName            | random 10 alphanumerics     |
-| bankAccountName              | random 10 specialCharacters |
+| bankAccountName              | random 10 SpecialCharacters |
 | bankAccountNumber            | random 19 numerics          |
 | acceptWarning                | false                       |
 | city                         | random 10 alphanumerics     |
 | primaryEmailAddress          | ABC123!@#                   |
 | mobilePhoneNumber            |                         123 |
 | firstName                    | random 10 alphabets         |
-| uniquePersonalIdentification | random 9 specialCharacters  |
+| uniquePersonalIdentification | random 9 SpecialCharacters  |
 | middleName                   | a1#                         |
 | routingNumber                | random 9 alphaNumerics      |
 | zipCode                |                            |
@@ -244,10 +270,9 @@ Then the API response should contain the 11 following errors
 	| EM040      | Email ID is invalid.                                                                          | Scenario: 20360 To verify the Email field  value with Alphanumerics & Special characters in Create Mode of Employee Information Page
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20373 To verify the  Phone Number  value with only Numerics in Create Mode of Employee Information Page
 	| EM103      | SSN is invalid. Accepted format is xxxxxxxxx or xxx-xx-xxxx, x being a number.                | Scenario: To verify the SSN  value with special characters in Create Mode of Employee Information Page
-	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20283 Employee middle Name field validation alphanumerics and special charecters
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only alphanuerics - Create mode
 	| EM019      | Required                                                                                      | Scenario: 20474 To verify the ZipCode field  value name with Null  in Create Mode of Employee Information Page
-
+	| EM028      | Middle Initial should have letter only.                                                       | Scenario: 20283 Employee middle Name field validation alphanumerics and special charecters
 
 
 
@@ -257,6 +282,14 @@ Scenario:To verify the bankAccountHolderName field with alphaNumericWithSpecialC
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                                       |
 | accountHolderName            | random 10 alphaNumericWithSpecialCharacters |
@@ -267,15 +300,15 @@ When Configuration has been made as per following
 | employmentStatusId           |                                             |
 | city                         | random 10 alphaNumericWithSpecialCharacters |
 | mobilePhoneNumber            | !@#                                         |
-| firstName                    | random 10 specialCharacters                 |
-| lastName                     | random 10 specialCharacters                 |
+| firstName                    | random 10 SpecialCharacters                 |
+| lastName                     | random 10 SpecialCharacters                 |
 | uniquePersonalIdentification | 444-44-4444                                 |
 | routingNumber                | random 9 alphaNumericWithSpecialCharacters  |
 | zipCode                      | abc                                        |
 
 When The date property "birthDate" is configured as "years" and should add "-15" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 12 following errors 
+Then the API response should contain the 10 following errors 
 	| error_code | error_message                                                                                 |
 	| EM219      | Account Holder Name contains hyphen ,spaces and letters only                                  |
 	| EM187      | Bank Name contains hyphen ,spaces and letters only.                                           | Scenario:To verify the bankAccountName field with alphaNumericWithSpecialCharacters of  10  in Create Mode of Employee Information Page
@@ -285,17 +318,26 @@ Then the API response should contain the 12 following errors
 	| EM035      | City name should have spaces, dot, hyphen, (‘) and letters only.                              | Scenario: 20431 To verify the city field  value with Alphanumerics in Create Mode of Employee Information Page
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20374 To verify the  Phone Number  value with only Special Characters in Create Mode of Employee Information Page
 	| EM061      | Social Security Number digits all should not be same                                          | Scenario: 20290 Employee SSN field all same validation
-	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20255 Employee first Name field  validation special charecters
-	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20270 Employee last Name field  validation special charecters
 	| EM259      | Routing number must contain only numeric digits (0–9).                                        | Scenario:To verify Routing number field in data type acceptance of only alphanuerics with special characters - Create mode
 	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            | Scenario: 20475 To verify the ZipCode field  value with lower case in Create Mode of Employee Information Page
-
+#ui changes
+	#| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20255 Employee first Name field  validation special charecters
+	#| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20270 Employee last Name field  validation special charecters
+	
 
 Scenario:To verify the bankAccountHolderName field with alphabets of above 150 characters  in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                       |
 | accountHolderName            | random 151 alphabets        |
@@ -335,6 +377,14 @@ Scenario: 20393 To verify the Address 1 field  value with lower case in Create M
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                 |
 | address1                     | <Address1>            |
@@ -344,7 +394,7 @@ When Configuration has been made as per following
 | bankAccountNumber            | <BankAccountNumber>   |
 | bankAccountType              | <BankAccountType>     |
 | city                         | <City>                |
-| country                      | other                 |
+| country                      | Other                 |
 | countryId                    |                     2 |
 | foreignCountry               | <ForeignCountry>      |
 | foreignState                 | <ForeignState>        |
@@ -360,19 +410,18 @@ When Configuration has been made as per following
 | zipCode                      | <ZipCode>             |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
-
 Examples: 
-| Address1                                    | Address2                                    | Address3                                    | AccountHolderName    | bankAccountName     | BankAccountNumber  | BankAccountType | City                | ForeignCountry                              | ForeignState                                | PrimaryEmailAddress                                                              | EmployeeNumber         | SSN         | FirstName            | Gender | LastName             | MaritalStatus | MiddleName | RoutingNumber     | ZipCode                                     |
-| abc                                         |                                             |                                             | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abc                 | abc                                         | abc                                         |                                                                                  | aca                    | 123-12-3452 | random 10 alphabets  | m      | random 10 alphabets  | m             |            | random 9 numerics | abc                                         |
-| abc                                         | abc                                         | abc                                         | random 100 alphabets | random 50 alphabets | random 10 numerics |               2 | ABC                 | ABC                                         | ABC                                         | test@test.com                                                                    |                        | 444-05-4444 | abcdefg              | M      | abcdefg              | M             | a          | random 8 numerics | ABC                                         |
-| ABC                                         | ABC                                         | ABC                                         | random 150 alphabets | random 10 alphabets | random 18 numerics |               1 | ABc                 | ABc                                         | ABc                                         | TEST@TEST.COM                                                                    | ACA                    | 444-50-4444 | ABCDEFG              |        | ABCDEFG              | s             | A          | random 9 numerics | ABc                                         |
-| ABc                                         | ABc                                         | ABc                                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | random 25 alphabets | random 10 numerics                          | random 10 numerics                          | TEST@test.COM                                                                    | Aca                    | 000-50-4444 | ABCDEFaa             | f      | ABCDEFaa             | S             | aA         | random 9 numerics | random 10 numerics                          |
-| random 10 numerics                          | random 10 numerics                          | random 10 numerics                          | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | random 30 alphabets | random 10 specialCharacters                 | random 10 specialCharacters                 | abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde@test.com                      | random 3 numerics      | 666-66-1234 | -'                   | F      | -'                   | d             |            | random 9 numerics | random 10 specialCharacters                 |
-| random 10 specialCharacters                 | random 10 specialCharacters                 | random 10 specialCharacters                 | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | random 10 alphaNumerics                     | random 10 alphaNumerics                     | abdceabdceabdceabdceabdceabdceabdceabdceabdceabdceabdceabdceabdceabdcea@test.com | random 5 alphaNumerics | 999-92-6666 | aaaaa                | u      | aaaaa                | D             |            | random 9 numerics | random 10 alphaNumerics                     |
-| random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abc                 | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | 123@test.com                                                                     | random 15 alphabets    | 999-96-9999 | random 150 alphabets | U      | random 150 alphabets | w             |            | random 9 numerics | random 10 alphaNumericWithSpecialCharacters |
-| random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | random 30 alphabets                         | random 35 alphabets                         |                                                                                  | random 20 alphabets    | 999-96-9999 | random 100 alphabets | M      | random 100 alphabets | W             |            | random 9 numerics | random 35 numerics                          |
-| random 30 alphabets                         | random 30 alphabets                         | random 30 alphabets                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abd                 | abc                                         | abc                                         |                                                                                  | random 10 alphabets    | 999-96-9999 | random 10 alphabets  | M      | random 10 alphabets  | S             |            | random 9 numerics | random 36 numerics                          |
-| random 150 alphabets                        | random 35 alphabets                         | random 35 alphabets                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | abc                                         | abc                                         |                                                                                  | ACA001                 | 999-96-9999 | random 10 alphabets  | M      | random 10 alphabets  | S             |            | random 9 numerics | abc                                         |
+| Address1                                    | Address2                                    | Address3                                    | AccountHolderName    | bankAccountName     | BankAccountNumber  | BankAccountType | City                | ForeignCountry                              | ForeignState                                | PrimaryEmailAddress | EmployeeNumber         | SSN         | FirstName            | Gender | LastName             | MaritalStatus | MiddleName | RoutingNumber     | ZipCode                                     |
+| abc                                         |                                             |                                             | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abc                 | abc                                         | abc                                         |                     | aca                    | 123-12-3452 | random 10 alphabets  | m      | random 10 alphabets  | m             |            | random 9 numerics | abc                                         |
+| abc                                         | abc                                         | abc                                         | random 100 alphabets | random 50 alphabets | random 10 numerics |               2 | ABC                 | ABC                                         | ABC                                         | random 15 Email     |                        | 444-05-4444 | abcdefg              | M      | abcdefg              | M             | a          | random 9 numerics | ABC                                         |
+| ABC                                         | ABC                                         | ABC                                         | random 150 alphabets | random 10 alphabets | random 18 numerics |               1 | ABc                 | ABc                                         | ABc                                         | random 15 Email     | ACA                    | 444-50-4444 | ABCDEFG              |        | ABCDEFG              | s             | A          | random 9 numerics | ABc                                         |
+| ABc                                         | ABc                                         | ABc                                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | random 25 alphabets | random 10 Numerics                          | random 10 numerics                          | random 15 Email     | Aca                    | 000-50-4444 | ABCDEFaa             | f      | ABCDEFaa             | S             | aA         | random 9 numerics | random 10 numerics                          |
+| random 10 numerics                          | random 10 numerics                          | random 10 numerics                          | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | random 30 alphabets | random 10 SpecialCharacters                 | random 10 specialCharacters                 | random 60 Email     | random 3 numerics      | 666-66-1234 | -'                   | F      | -'                   | d             |            | random 9 numerics | random 10 specialCharacters                 |
+| random 10 SpecialCharacters                 | random 10 specialCharacters                 | random 10 specialCharacters                 | random 10 Alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 80 Email     | random 5 alphaNumerics | 999-92-6666 | aaaaa                | u      | aaaaa                | D             |            | random 9 numerics | random 10 alphaNumerics                     |
+| random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 10 alphaNumerics                     | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abc                 | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | 1432@test.com        | random 15 alphabets    | 999-96-9919 | random 150 alphabets | U      | random 150 alphabets | w             |            | random 9 numerics | random 10 alphaNumericWithSpecialCharacters |
+| random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 alphaNumericWithSpecialCharacters | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | random 30 alphabets                         | random 35 alphabets                         |                     | random 20 alphabets    | 999-96-9919 | random 100 alphabets | M      | random 100 alphabets | W             |            | random 9 numerics | random 35 numerics                          |
+| random 30 alphabets                         | random 30 alphabets                         | random 30 alphabets                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               1 | abd                 | abc                                         | abc                                         |                     | random 10 alphabets    | 999-96-9929 | random 10 alphabets  | M      | random 10 alphabets  | S             |            | random 9 numerics | random 36 numerics                          |
+| random 150 alphabets                        | random 35 alphabets                         | random 35 alphabets                         | random 10 alphabets  | random 10 alphabets | random 10 numerics |               2 | abc                 | abc                                         | abc                                         |                     | ACA001                 | 999-96-9909 | random 10 alphabets  | M      | random 10 alphabets  | S             |            | random 9 numerics | abc                                         |
 #Scenario: 20394 To verify the Address 1 field  value with Upper case in Create Mode of Employee Information Page
 #Scenario: 20395 To verify the Address 1 field  value with Combination of Upper case and lower case in Create Mode of Employee Information Page
 #Scenario: 20396 To verify the Address 1 field  value with only Numerics in Create Mode of Employee Information Page
@@ -521,7 +570,6 @@ Examples:
 #Scenario: 20350 To verify the Marital Status Dropdown values "Widower" selected in Create Mode of Employee Information Page
 
 #Scenario:To verify Routing number field in data type acceptance of only numerics - Create mode
-#Scenario:To verify the routingNumber field with numerics of below 9  in Create Mode of Employee Information Page
 #Scenario:To verify the routingNumber field with numerics of equal 9  in Create Mode of Employee Information Page
 
 #Scenario: 20490 To verify the Foreign Zipcode  value with lower case when Country as Other in Create Mode of Employee Information Page
@@ -543,6 +591,14 @@ Scenario: 20621 To verify the Birth Date  value with valid date format of  MM/DD
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value       |
 | birthDate                    | 01-04-1988  |
@@ -557,31 +613,46 @@ Scenario: 20629 To verify the Hire Date  value with valid date format of Current
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
-When The date property "hireDate" is configured as "<type>" and should add "<hi>" days to the current date
-When The date property "terminationDate" is configured as "days" and should add "<te>" days to the current date
-When The date property "reHireDate" is configured as "days" and should add "<re>" days to the current date
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
-| key              | value             |
-| employmentStatus | Military Leave    |
-| zipCode          | random 9 numerics |
-When The date property "leaveStartDate" is configured as "days" and should add "<le>" days to the current date
+| key              | value              |
+| employmentStatus | Terminated         |
+| zipCode          | random 5 Numerics |
+When The date property "hireDate" is configured as "<type>" and should add "<hireDate>" days to the current date
+When The date property "terminationDate" is configured as "days" and should add "<terminationDate>" days to the current date
+When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
+When The date property "reHireDate" is configured as "days" and should add "<reHireDate>" days to the current date
+When Configuration has been made as per following
+| key                | value             |
+| employmentStatus   | Active            |
+| zipCode            | random 9 numerics |
+When The date property "leaveStartDate" is configured as "days" and should add "<leaveStartDate>" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
 Examples: 
-| hi | te | re | type  | le |
-|  0 |  1 | 10 | days  |  0 |
-|  1 |  2 | 10 | days  |  1 |
-| -1 |  1 | 10 | days  | 29 |
-| -1 |  1 | 10 | years |  0 |
-| 29 | 30 | 30 | days  |  0 |
+| hireDate | terminationDate | reHireDate | type  | leaveStartDate |
+|        0 |               1 |         10 | days  |              0 |
+|        1 |               2 |         10 | days  |              1 |
+|       -1 |               1 |         10 | days  |             29 |
+|       -1 |               1 |         10 | years |              0 |
+|       29 |              30 |         30 | days  |              0 |
+
 #Scenario: 20630 To verify the Hire Date  value with valid date format of Future date MM/DD/YYYY in Create Mode of Employee Information Page
 #Scenario: 20631 To verify the Hire Date  value with valid date format of Past date MM/DD/YYYY in Create Mode of Employee Information Page
 #Scenario: 20632 To verify the HIre Date  value with valid date format of past year date MM/DD/YYYY in Create Mode of Employee Information Page
 #Scenario: 20633 To verify the HIre Date  value with valid date format of Current date + 29 date MM/DD/YYYY in Create Mode of Employee Information Page
+#Scenario: 20487 To verify the Zipcode  value with equal 9 characters in Create Mode of Employee Information Page
+
 #Scenario: 20647 To verify the Leave Start date value with valid date format of Current date MM/DD/YYYY in Create Mode of Employee Information Page
 #Scenario: 20648 To verify the Leave Start Date a value with valid date format of Future date MM/DD/YYYY in Create Mode of Employee Information Page
 #Scenario: 20649 To verify the Leave Start Date value with valid date format of Current date + 29 date MM/DD/YYYY in Create Mode of Employee Information Page
-#Scenario: 20487 To verify the Zipcode  value with equal 9 characters in Create Mode of Employee Information Page
 
 
 Scenario: 20636 To verify the Hire Date value before of Birth date format MM/DD/YYYY in Create Mode of Employee Information Page
@@ -589,37 +660,55 @@ Scenario: 20636 To verify the Hire Date value before of Birth date format MM/DD/
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value                                                                                                                                |
 | employmentStatus             | Active                                                                                                                               |
 | hireDate                     | 01/01/1988                                                                                                                           |
 | birthDate                    | 01/01/1991                                                                                                                           |
 | city                         | random 50 alphabets                                                                                                                  |
-| primaryEmailAddress          | abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdedeabcdedeabcdeabcdeabcdeababcdeabcdeababcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde@test.com |
+| primaryEmailAddress          | abcdeabcdeabcdkabcdeabcdeabcdeabcdeabcdedeabcdedeabcdeabcdeabcdeababcdeabcdeababcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde@test.com |
 | mobilePhoneNumber            | !@#123ABC                                                                                                                            |
 | firstName                    | random 10 alphaNumerics                                                                                                              |
 | lastName                     | 123abc                                                                                                                               |
 | uniquePersonalIdentification | 000-00-0000                                                                                                                          |
 | zipCode                      | ABc                                                                                                                                  |
-
+| routingNumber                | random 8 numerics                                                                                                                    |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 8 following errors 
+Then the API response should contain the 7 following errors 
 	| error_code | error_message                                                                                 |
 	| EM055      | Hire Date cannot be prior or equal to the Date of Birth.                                      |
 	| EM034      | City name should not exceed 35 characters.                                                    | Scenario: 20435 To verify the City field  value with above 30 characters in Create Mode of Employee Information Page
 	| EM041      | Email Address should not exceed 80 characters.                                                | Scenario: 20363 To verify the Email field  value with above 80 characters in Create Mode of Employee Information Page
 	| EM036      | Primary Phone number must be in a valid format - XXX-XXX-XXXX or XXXXXXXXXX, X being a number | Scenario: 20376 To verify the  Phone Number  value with Alphanumerics & Special characters in Create Mode of Employee Information Page
+	| EM061      | Social Security Number digits all should not be same                                          |
 	| EM062      | Social Security Number fourth and fifth digits should not be zero.                            | Scenario: 20295 Employee SSN field with all digits zero validation
-	| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20256 Employee first Name field  validation alphaNumerics
-	| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20271 Employee last Name field  validation alphaNumerics
-	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            |Scenario: 20477 To verify the ZipCode field  value with Combination of Upper case and lower case in Create Mode of Employee Information Page
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number            | Scenario: 20477 To verify the ZipCode field  value with Combination of Upper case and lower case in Create Mode of Employee Information Page
+	| EM212      | ABA routing number should be 9 digits.                                                        | #Scenario:To verify the routingNumber field with numerics of below 9  in Create Mode of Employee Information Page
+	#ui changes
+	#| EM026      | First Name should have spaces, hyphen, (') and letters only.                                  | Scenario: 20256 Employee first Name field  validation alphaNumerics
+	#| EM030      | Last Name should have spaces, dot, hyphen, (‘), (,) and letters only.                         | Scenario: 20271 Employee last Name field  validation alphaNumerics
 
-	
 Scenario: 20646 To verify the Leave start Date  value as Null Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | employmentStatus             | Military Leave      |
@@ -650,16 +739,25 @@ Scenario: 20650 To verify the Leave Start Date  value with valid date format of 
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
-| key                          | value               |
-| employmentStatus             | Military Leave      |
-| primaryEmailAddress          | "!@#@test.com       |
-| mobilePhoneNumber            |          0231231233 |
-| workPhoneNumber              |          0678437328 |
-| firstName                    | random 10 alphabets |
-| uniquePersonalIdentification | 000-00-9999         |
+| key                          | value                       |
+| employmentStatus             | Military Leave              |
+| employmentStatusId           |                       38419 |
+| primaryEmailAddress          | "!@#@test.com               |
+| mobilePhoneNumber            |                  0231231233 |
+| workPhoneNumber              |                  0678437328 |
+| firstName                    | random 10 alphabets         |
+| uniquePersonalIdentification | 000-00-9999                 |
 | zipCode                      | random 10 specialCharacters |
-When The date property "leaveStartDate" is configured as "days" and should add "31" days to the current date
+When The date property "leaveStartDate" is configured as "day" and should add "31" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 6 following errors 
 	| error_code | error_message                                                                      |
@@ -670,32 +768,62 @@ Then the API response should contain the 6 following errors
 	| EM062      | Social Security Number fourth and fifth digits should not be zero.                 | Scenario: 20300 Employee SSN field with  Combination of first three digits are 000  with Fourt and Fifth digits are Zero validation
 	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number | Scenario: 20479 To verify the ZipCode field  value with only Special Characters in Create Mode of Employee Information Page
 
-#Scenario: 20483 To verify the zipCode field  value with equal 5 characters in Create Mode of Employee Information Page
+Scenario: 20483 To verify the zipCode field  value with equal 5 characters in Create Mode of Employee Information Page
+  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
+  When Configuration has been made as per following
+| key       | value       |
+| companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
+When Configuration has been made as per following
+| key               | value             |
+| employmentStatus  | Military Leave    |
+| mobilePhoneNumber |        1231231230 |
+| zipCode           | random 5 numerics |
+
+When The date property "leaveStartDate" is configured as "days" and should add "<leaveStartDate>" days to the current date
+When The date property "leaveEndDate" is configured as "<type>" and should add "<leaveEndDate>" days to the current date
+When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
+Then API should respond with successful message
+Examples: 
+| leaveStartDate | leaveEndDate | type |
+|              1 |            2 | days |
+|              1 |            2 | days |
+|              1 |           29 | days |
+
+#Scenario: 20653 To verify the Leave End date value with valid date format of Current date MM/DD/YYYY in Create Mode of Employee Information Page
+#Scenario: 20654 To verify the Leave End Date  value with valid date format of Future date MM/DD/YYYY in Create Mode of Employee Information Page
+#Scenario: 20655 To verify the Leave End Date  value with valid date format of Current date + 29 date MM/DD/YYYY in Create Mode of Employee Information Page
+#Scenario: 20378 To verify the  Phone Number  value with equal 10 characters in Create Mode of Employee Information Page
+
+
 Scenario:(Tc419)To verify the validation message forLeave End Date  value as Null when changing employment status change to other from Leave inCreate Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
-| key               | value          |
-| employmentStatus  | Military Leave |
-| mobilePhoneNumber |     1231231230 |
-| zipCode           | random 5 numerics |
-
-When The date property "leaveStartDate" is configured as "days" and should add "<ls>" days to the current date
-When The date property "leaveEndDate" is configured as "<type>" and should add "<le>" days to the current date
+| key               | value               |
+| employmentStatus  | Military Leave      |
+| leaveEndDate      |                     |
+| accountHolderName | random 10 alphabets |
+When The date property "leaveStartDate" is configured as "days" and should add "1" days to the current date
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then API should respond with successful message
-Examples: 
-| ls | le | type |
-|  1 |  0 | null |
-|  1 |  2 | days |
-|  1 |  2 | days |
-|  1 | 29 | days |
-#Scenario: 20653 To verify the Leave End date value with valid date format of Current date MM/DD/YYYY in Create Mode of Employee Information Page
-#Scenario: 20654 To verify the Leave End Date  value with valid date format of Future date MM/DD/YYYY in Create Mode of Employee Information Page
-#Scenario: 20655 To verify the Leave End Date  value with valid date format of Current date + 29 date MM/DD/YYYY in Create Mode of Employee Information Page
-#Scenario: 20378 To verify the  Phone Number  value with equal 10 characters in Create Mode of Employee Information Page
 
 
 
@@ -704,12 +832,22 @@ Scenario: 20482 To verify the ZipCode field  value with below 5 characters in Cr
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key               | value          |
 | zipCode           | random 3 numerics |
 
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then API should respond with successful message
+Then the API response should contain the 1 following errors 
+	| error_code | error_message                                                                       |
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number |
 
 
 Scenario: 20657 To verify the validation message for Leave End Date  value as before Leave start date in Create Mode of Employee Information Page
@@ -717,6 +855,14 @@ Scenario: 20657 To verify the validation message for Leave End Date  value as be
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | employmentStatus             | Military Leave      |
@@ -750,14 +896,13 @@ When Collection in a model is configured with 1 blocks for the property "Employe
 |           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
-| workPhoneNumber              | 978-456-735         |
+| workPhoneNumber              | 978-456-7352         |
 | firstName                    | random 10 alphabets |
 | uniquePersonalIdentification | 123-45-6789         |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
-When Configuration has been made as per following
+
+ When Configuration has been made as per following
 | key       | value       |
-| companyId | <CompanyId> |
 | classificationId     | <CompEmpClassId>     |
 | classificationTypeId | <CompEmpClassTypeId> |
 | payrollFrequencyId   | <DailyFreqId>        |
@@ -770,7 +915,8 @@ When Configuration has been made as per following
 | key                          | value               |
 | workPhoneNumber              |          0678437328 |
 | firstName                    | random 10 alphabets |
-| uniquePersonalIdentification | 123-45-6789         |  
+| uniquePersonalIdentification | 123-45-6789         |
+| primaryEmailAddress          | random 20 Email     |
 
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 Then the API response should contain the 2 following errors 
@@ -785,6 +931,14 @@ Scenario: 20302 Employee SSN field with  Combination of first three digits are 9
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | firstName                    | random 10 alphabets |
@@ -794,17 +948,26 @@ When Configuration has been made as per following
 | hireDate                     | 01/01/1988          |
 | birthDate                    | 01/01/1991          |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 3 following errors 
-	| error_code | error_message                                                                      |
-	| EM062      | Social Security Number fourth and fifth digits should not be zero.                 |
-	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number | Scenario: 20485 To verify the Zipcode  value with above 5 and below 9 characters in Create Mode of Employee Information Page
-	| EM055      | Hire Date cannot be prior or equal to the Date of Birth.                           |Scenario:(Tc403)To verify the Hire Date value before of Birth date format MM/DD/YYYY in Create Mode of Employee Information Page
+Then the API response should contain the 4 following errors 
+	| error_code | error_message                                                                                         |
+	| EM062      | Social Security Number fourth and fifth digits should not be zero.                                    |
+	| EM181      | The middle two digits of the Social Security Number should be \\"70-88\\", \\"90-92\\" or \\"94-99\\" |
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number                    | Scenario: 20485 To verify the Zipcode  value with above 5 and below 9 characters in Create Mode of Employee Information Page
+	| EM055      | Hire Date cannot be prior or equal to the Date of Birth.                                              | Scenario:(Tc403)To verify the Hire Date value before of Birth date format MM/DD/YYYY in Create Mode of Employee Information Page
 
 Scenario: To verify the SSN  value with above 9 characters in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key                          | value               |
 | firstName                    | random 10 alphabets |
@@ -829,11 +992,21 @@ Scenario: 20627 To verify the Same Fistname, Lastname, Birth date of another emp
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
-| key                          | value       |
-| firstName                    | John        |
-| lastName                     | Muller      |
-| uniquePersonalIdentification | 123-45-6789 |
+| key                          | value                    |
+| firstName                    | John                     |
+| lastName                     | Muller                   |
+| uniquePersonalIdentification | 123-45-6789              |
+| primaryEmailAddress          | LaCurtis.Johns@yahoo.com |
+
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
 When Configuration has been made as per following
 | key                          | value       |
@@ -851,6 +1024,48 @@ Scenario:(Tc396)To verify the Hire Date  value with valid date format of Current
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
+When Configuration has been made as per following
+| key              | value |
+| employmentStatus | Active |
+When The date property "hireDate" is configured as "<type>" and should add "<hireDate>" days to the current date
+When The date property "reHireDate" is configured as "days" and should add "<reHireDate>" days to the current date
+When The date property "terminationDate" is configured as "days" and should add "<terminationDate>" days to the current date
+ When Collection in a model is configured with 1 blocks for the property "RehireDetails" with values to save model portfolio as given below
+| BlockNumber | Key        | Value  |
+|           1 | RehireDate | day_10 |
+When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
+Then API should respond with successful message
+Examples: 
+| type  | hireDate | reHireDate | terminationDate |
+| days  |        0 |         10 |               2 |
+| days  |        1 |         10 |               2 |
+| days  |       -1 |         10 |               2 |
+| years |       -1 |         10 |               2 |
+
+#Scenario:(Tc397)To verify the Hire Date  value with valid date format of Future date MM/DD/YYYY in Create Mode of Employee Information Page
+#Scenario:(Tc398)To verify the Hire Date  value with valid date format of Past date MM/DD/YYYY in Create Mode of Employee Information Page
+#Scenario:(Tc399)To verify the HIre Date  value with valid date format of past year date MM/DD/YYYY in Create Mode of Employee Information Page
+ Scenario:(Tc400)To verify the HIre Date  value with valid date format of Current date + 29 date MM/DD/YYYY in Create Mode of Employee Information Page
+  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
+  When Configuration has been made as per following
+| key       | value       |
+| companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value |
 | employmentStatus | Active |
@@ -861,27 +1076,27 @@ When The date property "terminationDate" is configured as "days" and should add 
 | BlockNumber | Key             | Value  |
 |           1 | RehireDate | day_10 |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then API should respond with successful message
+Then the API response should contain the 1 following errors 
+	| error_code | error_message                                                                      |
+	| EM239      | Most recent term should not be prior to Hire date                                  |
 Examples: 
 | hi    | di | ri | ti |
-| days  |  0 | 10 |  2 |
-| days  |  1 | 10 |  2 |
-| days  | -1 | 10 |  2 |
-| years | -1 | 10 |  2 |
 | days  | 29 | 30 | 30 |
-#Scenario:(Tc397)To verify the Hire Date  value with valid date format of Future date MM/DD/YYYY in Create Mode of Employee Information Page
-#Scenario:(Tc398)To verify the Hire Date  value with valid date format of Past date MM/DD/YYYY in Create Mode of Employee Information Page
-#Scenario:(Tc399)To verify the HIre Date  value with valid date format of past year date MM/DD/YYYY in Create Mode of Employee Information Page
-#Scenario:(Tc400)To verify the HIre Date  value with valid date format of Current date + 29 date MM/DD/YYYY in Create Mode of Employee Information Page
 
-
-
-
+#notification
 Scenario: To verify the Most recent Term date value with valid date format of Current date MM/DD/YYYY in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value      |
 | employmentStatus | Terminated |
@@ -890,14 +1105,25 @@ When The date property "terminationDate" is configured as "day" and should add "
 | BlockNumber | Key             | Value  |
 |           1 | TerminationDate | day_0 |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then API should respond with successful message
+Then the API response should contain the 1 following errors 
+	| error_code | error_message                                                |
+	| EM069      | New employee added with Date of Termination. Please confirm. |
+         
 
-
+#notification
 Scenario: To verify the Most recent Term date value with valid date format of Past date below 90 days MM/DD/YYYY in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
@@ -906,14 +1132,25 @@ When Configuration has been made as per following
 | BlockNumber | Key             | Value                    |
 |           1 | TerminationDate | 2023-12-12T06:56:11.258Z |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then API should respond with successful message
+Then the API response should contain the 2 following errors 
+	| error_code | error_message                                                                    |
+	| EM069      | New employee added with Date of Termination. Please confirm.                     |
+	| EM068      | The Employee's Most Recent Term Date is more than 90 days prior to current date. |
 
-
+#notification
 Scenario: To verify the Most recent Term date value with valid date format of Past date above 90 days MM/DD/YYYY in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
@@ -922,14 +1159,26 @@ When Configuration has been made as per following
 | BlockNumber | Key             | Value                    |
 |           1 | TerminationDate | 2023-01-12T06:56:11.258Z |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then API should respond with successful message
+Then the API response should contain the 2 following errors 
+	| error_code | error_message                                                                    |
+	| EM069      | New employee added with Date of Termination. Please confirm.                     |
+	| EM068      | The Employee's Most Recent Term Date is more than 90 days prior to current date. |
 
-	
+
+#notification	
 Scenario: To verify the Most recent Term Date  value with valid date format of Future date MM/DD/YYYY in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value      |
 | employmentStatus | Terminated |
@@ -938,13 +1187,24 @@ When The date property "terminationDate" is configured as "day" and should add "
 | BlockNumber | Key             | Value  |
 |           1 | TerminationDate | day_1 |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then API should respond with successful message
-
+Then the API response should contain the 1 following errors 
+	| error_code | error_message                                                |
+	| EM069      | New employee added with Date of Termination. Please confirm. |
+      
+#notification
 Scenario: To verify the Most recent Term Date  value with valid date format of Current date + 29 date MM/DD/YYYY in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value      |
 | employmentStatus | Terminated |
@@ -953,13 +1213,24 @@ When The date property "terminationDate" is configured as "day" and should add "
 | BlockNumber | Key             | Value  |
 |           1 | TerminationDate | day_29 |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then API should respond with successful message
+Then the API response should contain the 1 following errors 
+	| error_code | error_message                                                |
+	| EM069      | New employee added with Date of Termination. Please confirm. |
 
+#notification
 Scenario: To verify the validation message for Most Recent term Date  value as before HIre start date in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
@@ -970,18 +1241,27 @@ When Configuration has been made as per following
 | BlockNumber | Key             | Value                    |
 |           1 | TerminationDate | 2022-04-04T06:56:11.258Z |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 2 following errors 
+Then the API response should contain the 3 following errors 
 	| error_code | error_message                                                                      |
 	| EM088      | Most recent term should not be prior to Hire date                                  |
+	| EM068      | The Employee's Most Recent Term Date is more than 90 days prior to current date.   |
 	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number | Scenario: 20481 To verify the ZipCode field  value with Alphanumerics & Special characters in Create Mode of Employee Information Page
 
 
-
+#notification
 Scenario: To verify the validation message for Most Recent term Date is admitted for New hire employee in Create Mode of Employee Information Page
   Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
   When Configuration has been made as per following
 | key       | value       |
 | companyId | <CompanyId> |
+| classificationId     | <CompEmpClassId>     |
+| classificationTypeId | <CompEmpClassTypeId> |
+| payrollFrequencyId   | <DailyFreqId>        |
+| employmentStatusId   | <ActiveStatusId>     |
+When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+| BlockNumber | Key                  | Value                |
+|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+|           1 | ClassificationId     | <CompEmpClassId>     |
 When Configuration has been made as per following
 | key              | value                    |
 | employmentStatus | Terminated               |
@@ -994,21 +1274,31 @@ When Configuration has been made as per following
 |           1 | TerminationDate | 2023-12-26T06:56:11.258Z |
 |           1 | RehireDate      |                          |
 When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then the API response should contain the 2 following errors 
+Then the API response should contain the 3 following errors 
 	| error_code | error_message                                                                      |
 	| EM069      | New employee added with Date of Termination. Please confirm.                       |
-	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number |Scenario: 20480 To verify the ZipCode field  value with Alphanumerics in Create Mode of Employee Information Page
+	| EM068      | The Employee's Most Recent Term Date is more than 90 days prior to current date.   |
+	| EM044      | ZIP Code should be in format of XXXXX or XXXXXXXXX or XXXXX-XXXX, X being a number | Scenario: 20480 To verify the ZipCode field  value with Alphanumerics in Create Mode of Employee Information Page
 
 
 #**********************
-Scenario: positive case
-  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
-  When Configuration has been made as per following
-| key       | value       |
-| companyId | <CompanyId> |
-When Configuration has been made as per following
-| key       | value |
-| firstName | Rock  |
-When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
-Then API should respond with successful message
+#@PlanActivation
+#Scenario: positive case
+#  Given Model is selected for the endpoint "/api/v1/Payroll/SaveEmployee"
+#  When Configuration has been made as per following
+#| key       | value       |
+#| companyId | <CompanyId> |
+#| classificationId     | <CompEmpClassId>     |
+#| classificationTypeId | <CompEmpClassTypeId> |
+#| payrollFrequencyId   | <DailyFreqId>        |
+#| employmentStatusId   | <ActiveStatusId>     |
+#When Collection in a model is configured with 1 blocks for the property "EmployeeClassifications" with values as given below
+#| BlockNumber | Key                  | Value                |
+#|           1 | ClassificationTypeId | <CompEmpClassTypeId> |
+#|           1 | ClassificationId     | <CompEmpClassId>     |
+#When Configuration has been made as per following
+#| key       | value |
+#| firstName | Rock  |
+#When API request has been sent to the "IEmployee" with the method name "SaveEmployeeAsync"
+#Then API should respond with successful message
 

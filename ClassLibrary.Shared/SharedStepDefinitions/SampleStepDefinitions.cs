@@ -1,7 +1,9 @@
+using Bogus.Bson;
 using ClassLibrary.Shared;
 using ClassLibrary.Shared.Configurations;
 using ClassLibrary.Shared.TestDataGenerator;
 using CucumberExpressions.Ast;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using MyNamespace;
 using Newtonsoft.Json.Linq;
 using RefitSandBox;
@@ -108,7 +110,7 @@ namespace SharedStepDefinitions
         [Then("the API response should contain the following errors")]
         public async Task ThenTheAPIResponseShouldContainTheFollowingErrors(DataTable dataTable, string expectedErrorMessage)
         {
-            foreach (var row in dataTable.Rows) 
+            foreach (var row in dataTable.Rows)
             {
                 string expectedCode = row["error_code"]?.Trim();
                 string expectedMsg = row["error_message"]?.Trim();
@@ -151,9 +153,41 @@ namespace SharedStepDefinitions
                     var splitted = Value.Split(" ");
 
                     Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
-                    Value = Regex.Replace(Regex.Replace(GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue), @"[^\w\s]", " "), @"\s+", " ").Trim();
+
+                    var rawRandom = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                    Value = rawRandom;
+
+                    if (patternValue == Pattern.SpecialCharacters)
+                    {
+                        rawRandom = rawRandom.Replace("_", "@").Replace(",", "@");
+                        // For Specialcharacter: use the string AS-IS (no regex cleanup)
+                        Value = rawRandom;
+                    }
+                    if (patternValue == Pattern.Email)
+                    {
+                        string data = @"[!""#$%&'()*+,\-/:;<=>?\[\]^_`{|}~]";
+                        string formatted = Regex.Replace(Value, data, "A");
+                        Value = formatted;
+                    }
                 }
-                if (Value.Contains(","))
+
+                if (Value.Contains("_"))
+                {
+                    Value = await Program.GetDate(Convert.ToInt32(Value.Split("_")[1]), Value.Split("_")[0]);
+                    //var splitted = value.Split("_");
+
+                    //Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[0], ignoreCase: true);
+                    //value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                }
+                //if (Value.Contains("/"))
+                //{
+                //    Value = await GetDate(Convert.ToInt32(Value.Split("/")[1]), Value.Split("/")[0]);
+                //}
+                if (Value == "0,")
+                {
+                    var newArray = new JArray();
+                }
+                if (Value.Contains(",") && !Value.Contains("0,"))
                 {
                     var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     var newArray = new JArray();
@@ -175,9 +209,14 @@ namespace SharedStepDefinitions
                         {
                             newArray.Add(trimmed);
                         }
+
+                       // Program.modelAfterConvention;
                     }
+
+
+                    
                 }
-                if(string.IsNullOrEmpty(Value))
+                if (string.IsNullOrEmpty(Value))
                     Value = null;
                 //if (property.PropertyType == typeof(DateTimeOffset?))
                 //{
@@ -437,7 +476,7 @@ namespace SharedStepDefinitions
         [When("Disbursement is done for the transaction {string}")]
         public async Task WhenDisbursementIsDoneForTheTransaction(string transactionType)
         {
-            if(transactionType == "Loan")
+            if (transactionType == "Loan")
                 await _program.ProcessLoanDisbursement();
         }
 

@@ -5,36 +5,119 @@
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
   And the property "immediateEligibility" is configured as "true"
-  And the property "ltptHours" is configured as "500"
+    And Configuration has been made as per following
+           | key                          | value                          |
+           | isLTPTApplicable             | <IsLTPTApplicable>             |
+           | ltptAgeInYears               | <LtptAgeInYears>               |
+           | ltptAgeInMonths              | <LtptAgeInMonths>              |
+           | ltptHours                    | <LtptHours>                    |
+           | consecutiveYears             | <ConsecutiveYears>             |
+           | ltptVestingComputationPeriod | <ltptVestingComputationPeriod> |
+           | ltptServiceCreditPeriod      | <ltptServiceCreditPeriod>      |
+           | exclusionType                |                              1 |
+           | dateOfHireType               |                              2 |
+           | hiredOnOrBeforeDate          | 2022-04-03T18:30:00.000Z       |
+ And the property "effectiveDate" is configured as "01/01/2060"  
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then API should respond with successful message
+  Then API should respond with successful message
+ Examples: 
+ | IsLTPTApplicable | LtptAgeInYears | LtptAgeInMonths | LtptHours | ConsecutiveYears | ltptVestingComputationPeriod | ltptServiceCreditPeriod |
+ | true             |             21 |               0 |      1000 |                9 |                            1 |                       1 |
+ | true             |             16 |               0 |       500 |               19 |                            1 |                       1 |
+ | true             |             20 |               0 |      1000 |                1 |                            2 |                       2 |
+ | true             |             20 |               0 |       500 |                0 |                            2 |                       2 |
 
  Scenario:  To verify the validation message for Applicable eligibility requirement options by not selecting any option
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured with "alphabets" with 10 characters
+  When the property "name" is configured with "alphabets" with 61 characters
   And the property "immediateEligibility" is configured as "false"
   And the property "eligibilityType" is configured as ""
+  And the property "ltptHours" is configured as "2000"
+    And Configuration has been made as per following
+           | key                          | value              |
+           | isLTPTApplicable             | <IsLTPTApplicable> |
+           | ltptAgeInYears               | <LtptAgeInYears>   |
+           | ltptAgeInMonths              | <LtptAgeInMonths>  |
+           | ltptVestingComputationPeriod |                    |
+           | ltptServiceCreditPeriod      |                    |
+           | exclusionType                |                    |
+   And the property "effectiveDate" is configured as ""  
+  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
+ Then the API response should contain the 4 following errors
+ | error_code | error_message                                                        |
+ | PL504      | Required                                                             |
+ | PL168      | Eligibility Name length should not exceed 60 characters              |
+ | PL299      | Eligibility age must be less than or equal to 21 years and 0 months. |
+ | PL212      | Number of hours of service should not be greater than 1000           |
+ | PL216      | Required                                                             |
+ | PL217      | Required                                                             |
+ | PL218      | Required                                                             |
+ | PL179      | Required                                                             |
+ Examples: 
+ | IsLTPTApplicable | LtptAgeInYears | LtptAgeInMonths |
+ | true             |             21 |               6 |
+
+  @CompanyAndPlanBasicDetails
+  Scenario:  Eligiblity Name field wirh existing name
+  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
+  When the property "name" is configured as "PlanELigibility"
   And the property "ltptHours" is configured as "500"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL504 : Required"
+  When the property "name" is configured as "PlanELigibility"
+  And the property "ltptHours" is configured as "500"
+  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
+    Then the API response should contain the 2 following errors 
+| error_code | error_message                     |
+| PL1039     | Eligibility name should be unique |
+| PL519      | Plan Eligibility Already Exists   |
 
  Scenario:  To verify the validation message for Is this immediate eligibility? Option by without selecting any option
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured with "alphabets" with 10 characters
+  When the property "name" is configured with "alphabets" with 0 characters
   And the property "immediateEligibility" is configured as ""
-  And the property "ltptHours" is configured as "500"
+    And Configuration has been made as per following
+           | key              | value              |
+           | isLTPTApplicable | <IsLTPTApplicable> |
+           | ltptAgeInYears   | <LtptAgeInYears>   |
+           | ltptAgeInMonths  | <LtptAgeInMonths>  |
+           | ltptHours        | <LtptHours>        |
+           | exclusionType    |                  1 |
+           | dateOfHireType   |                    |
+    And the property "effectiveDate" is configured as "01/01/2021"        
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL502 : Required"
+  Then the API response should contain the 2 following errors 
+| error_code | error_message                                                           |
+| PL502      | Required                                                                |
+| PL167      | Required                                                                |
+| PL213      | Eligibility age must be equal to or greater than 16 years and 0 months. |
+| PL1143     | Number of hours of service should not be less than 500                  |
+| PL1036     | Effective date prior to 01/01/2024                                      |
+| PL181      | Required                                                                |
+ Examples: 
+ | IsLTPTApplicable | LtptAgeInYears | LtptAgeInMonths | LtptHours |
+ | true             |             11 |               6 |       100 |
+ | true             |              0 |               0 |         0 |
+
 
  Scenario:  To verify the Age (Textbox) acceptance criteria of lengh above 2 characters
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured with "alphabets" with 10 characters
+  When the property "name" is configured as ""
   And the property "immediateEligibility" is configured as "<ImmediatEligibility>"
   And the property "eligibilityType" is configured as "<eligibleType>"
   And the property "age" is configured as "<age>"
   And the property "ltptHours" is configured as "500"
+      And Configuration has been made as per following
+           | key                 | value |
+           | exclusionType       |     1 |
+           | dateOfHireType      |     2 |
+           | hiredOnOrBeforeDate |       |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL506 : Eligibility Age must be 18 - 99"
+   Then the API response should contain the 2 following errors 
+| error_code | error_message                           |
+| PL506      | PL506 : Eligibility Age must be 18 - 99 |
+| PL167      | Required                                |
+| PL172      | Required                                |
  Examples: 
  | ImmediatEligibility | eligibleType | age |
  | false               |            1 | 123 |
@@ -44,22 +127,29 @@
 
  Scenario:  Age field acceptance  when Immediate eligibility field is false and Applicable eligibility requirement is age
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured with "alphabets" with 10 characters
+ When Configuration has been made as per following
+           | key  | value  |
+           | name | <name> |
   And the property "immediateEligibility" is configured as "<ImmediatEligibility>"
   And the property "eligibilityType" is configured as "<eligibleType>"
   And the property "age" is configured as "<age>"
   And the property "ltptHours" is configured as "500"
+        And Configuration has been made as per following
+           | key                 | value                    |
+           | exclusionType       |                        1 |
+           | dateOfHireType      |                        1 |
+           | hiredOnOrBeforeDate | 2022-04-03T18:30:00.000Z |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
   Then API should respond with successful message
  Examples: 
- | ImmediatEligibility | eligibleType | age  |
- | false               |            1 |   20 |
- | false               |            1 |   19 |
- | false               |            1 |   99 |
- | false               |            1 |   50 |
- | false               |            1 |   18 |
- | false               |            1 | 19.9 |
-
+ | ImmediatEligibility | eligibleType | age  | name                                        |
+ | false               |            1 |   20 | random 10 alphabets                         |
+ | false               |            1 |   19 | random 10 numerics                          |
+ | false               |            1 |   99 | random 10 specialCharacters                 |
+ | false               |            1 |   50 | random 10 alphaNumericWithSpecialCharacters |
+ | false               |            1 |   18 | random 30 alphabets                         |
+ | false               |            1 | 19.9 | random 29 alphabets                         |
+ 
   Scenario:  To verify the validation message for Age (Textbox) by leaving empty
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -67,9 +157,16 @@
   And the property "eligibilityType" is configured as "1"
   And the property "age" is configured as ""
   And the property "ltptHours" is configured as "500"
+         And Configuration has been made as per following
+           | key                 | value                    |
+           | exclusionType       |                        1 |
+           | dateOfHireType      |                        1 |
+           | hiredOnOrBeforeDate |                          |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL505 : Required"
-
+    Then the API response should contain the 3 following errors 
+     | error_code | error_message |
+     | PL505      | Required      |
+     | PL171      | Required      |
  
   Scenario:  To verify the validation message for Applicable eligibility requirement options by selecting Service and not selecting any option
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
@@ -79,10 +176,19 @@
            | immediateEligibility     | false |
            | eligibilityType          |     2 |
            | yearsOfServiceDefinition |       |
-           And the property "ltptHours" is configured as "500"
+ And the property "ltptHours" is configured as "500"
+ And Configuration has been made as per following
+           | key                 | value |
+           | exclusionType       |     1 |
+           | dateOfHireType      |     3 |
+           | hiredOnOrBeforeDate |       |
+           | hiredOnOrBeforeDate |       |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL507 : Required"
-
+   Then the API response should contain the 3 following errors 
+     | error_code | error_message |
+     | PL507      | Required      |
+     | PL171      | Required      |
+     | PL172      | Required      |
 Scenario:To verify the Actual hours (Textbox) acceptance criteria of length
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
@@ -92,9 +198,18 @@ Scenario:To verify the Actual hours (Textbox) acceptance criteria of length
            | eligibilityType          | <eligibilityType>          |
            | yearsOfServiceDefinition | <yearsOfServiceDefinition> |
            | hours                    | <hours>                    |
-           And the property "ltptHours" is configured as "500"
+ And the property "ltptHours" is configured as "500"
+ And Configuration has been made as per following
+           | key                 | value                    |
+           | exclusionType       |                        1 |
+           | dateOfHireType      |                        3 |
+           | hiredOnOrBeforeDate | 2023-04-03T18:30:00.000Z |
+           | hiredOnOrBeforeDate | 2022-04-01T18:30:00.000Z |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
- Then API should give response as "PL197 : Actual hours should not exceed 1000"
+   Then the API response should contain the 3 following errors 
+     | error_code | error_message                                                    |
+     | PL197      | Actual hours should not exceed 1000                              |
+     | PL192      | Exclusion from date should not be greater than exclusion to date |
 
  Examples:
  | immediateEligibility | eligibilityType | yearsOfServiceDefinition | hours |
@@ -114,6 +229,12 @@ Scenario:To verify the Actual hours (Textbox) acceptance criteria of length
            And the property "ltptHours" is configured as "500"
            And the property "ltptAgeInYears" is configured as "16"
            And the property "ltptAgeInMonths" is configured as "0"
+            And Configuration has been made as per following
+           | key                 | value                    |
+           | exclusionType       |                        1 |
+           | dateOfHireType      |                        3 |
+           | hiredOnOrBeforeDate | 2022-03-03T18:30:00.000Z |
+           | hiredOnOrBeforeDate | 2022-04-03T18:30:00.000Z |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
   Then API should respond with successful message
 
@@ -136,7 +257,7 @@ Scenario:To verify the Actual hours (Textbox) acceptance criteria of length
            | eligibilityCalculationPeriod |       |
            | yearsOfServiceRequirement    |       |
            | serviceCreditPeriod          |       |
-           And the property "ltptHours" is configured as "500"
+  And the property "ltptHours" is configured as "500"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then API should give response as "PL196 : Required"
  Then the API response should contain the 4 following errors 

@@ -25,13 +25,13 @@ Scenario:7608 PLan name field validate error message as required
 | key       | value       |
 | companyId | <CompanyId> |
 When Configuration has been made as per following
-| key          | value               |
-| planName     | random 0 alphabets  |
-| rkPlanNumber | random 10 alphabets |
-| effectiveDate |  |
+| key           | value               |
+| planName      | random 0 alphabets  |
+| rkPlanNumber  | random 10 alphabets |
+| effectiveDate |                     |  
 
 When API request has been sent to the "IPlanDetailsSave" with the method name "CreateNewPlanAsync"
-Then the API response should contain the 1 following errors 
+Then the API response should contain the 2 following errors 
 	| error_code | error_message |
 	| PL001      | Required      |
 	| PL018      | Required      |Scenario:13862 PLan effective date field validate error message as required
