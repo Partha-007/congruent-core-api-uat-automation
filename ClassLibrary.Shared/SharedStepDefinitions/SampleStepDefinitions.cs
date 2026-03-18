@@ -1,5 +1,6 @@
 using Bogus.Bson;
 using ClassLibrary.Shared;
+using ClassLibrary.Shared.Configurations;
 using ClassLibrary.Shared.TestDataGenerator;
 using CucumberExpressions.Ast;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
@@ -8,7 +9,10 @@ using Newtonsoft.Json.Linq;
 using RefitSandBox;
 using Reqnroll;
 using System;
+using System.Reflection.Emit;
 using System.Text.RegularExpressions;
+using Xunit;
+using static ClassLibrary.Shared.Configurations.TransactionsConfigurations;
 
 namespace SharedStepDefinitions
 {
@@ -17,10 +21,20 @@ namespace SharedStepDefinitions
     {
         public Program _program;
         public AccountBalanceVerifier _accountBalanceVerifier;
-        public SampleStepDefinitions(Program program, AccountBalanceVerifier accountBalanceVerifier)
+        private readonly ScenarioContext _scenarioContext;
+        private FeeSpecificationDetails _feeSpecification;
+        private CalculationDetails _calculationDetails;
+        private Schedule _schedule;
+        private FeeApplicableTo? _feeApplicableTo;
+        private FeeSchedule? _feeSchedule;
+        private TransactionsConfigurations _transactionsConfigurations;
+
+        public SampleStepDefinitions(Program program, AccountBalanceVerifier accountBalanceVerifier, ScenarioContext scenarioContext, TransactionsConfigurations transactionsConfigurations)
         {
             _program = program;
             _accountBalanceVerifier = accountBalanceVerifier;
+            _scenarioContext = scenarioContext;
+            _transactionsConfigurations = transactionsConfigurations;
         }
 
         [Given("Model is selected for the endpoint {string}")]
@@ -36,8 +50,14 @@ namespace SharedStepDefinitions
         }
 
         [When("Trade procedures completed for the transaction {string}")]
-        public async Task WhenTradeProceduresCompletedForTheTransaction(string transfer)
+        public async Task WhenTradeProceduresCompletedForTheTransaction(string transactionName)
         {
+            if(transactionName == "Forfeiture In through Break in service")
+                await _program.ForfeitureTrigger();
+
+            if (transactionName == "Fund Switch")
+                await _transactionsConfigurations.UpdateFundSwitchStatus();
+
             await _program.TransferTransaction();
         }
 
@@ -69,9 +89,9 @@ namespace SharedStepDefinitions
 
 
         [Given("Vesting model is selected")]
-        public void GivenVestingModelIsSelected()
+        public async Task GivenVestingModelIsSelected()
         {
-            throw new PendingStepException();
+            await _program.SaveVesting();
         }
 
         [When("the property {string} is configured as {string}")]
@@ -294,6 +314,109 @@ namespace SharedStepDefinitions
             await _program.AdjustmentConfigurations(AdjustmentType, IncidentCode);
         }
 
+        [When("Create a rollover request with the following details")]
+        public async Task WhenCreateARolloverRequestWithTheFollowingDetails(DataTable dataTable)
+        {
+            if (dataTable.RowCount != 1)
+                throw new ArgumentException("Rollover request table must contain exactly one row.");
+
+            var row = dataTable.Rows[0];
+
+            var employeeIdStr = row["EmployeeId"];
+            var planIdStr = row["PlanId"];
+            var sourceIdStr = row["SourceId"];
+
+            var config = new RolloverInTestConfig
+            {
+                EmployeeId = int.Parse(await _program.IdentifyValue(employeeIdStr)),
+                PlanId = int.Parse(await _program.IdentifyValue(planIdStr)),
+                SourceId = int.Parse(await _program.IdentifyValue(sourceIdStr)),
+                RolloverAmount = double.Parse(row["RolloverAmount"]),
+                ContributionAmount = double.Parse(row["ContributionAmount"]),
+                EarningsAmount = double.Parse(row["EarningsAmount"])
+            };
+
+            _scenarioContext.Set(config);
+        }
+
+        [When("the rollover has the following investments")]
+        public async Task WhenTheRolloverHasTheFollowingInvestments(DataTable dataTable)
+        {
+            var investments = dataTable.CreateSet<InvestmentConfig>().ToList();
+
+            foreach (var inv in investments)
+            {
+                if (!string.IsNullOrEmpty(inv.InvestmentPlanMappingId.ToString()) && inv.InvestmentPlanMappingId.ToString().StartsWith("<"))
+                    inv.InvestmentPlanMappingId = int.Parse(await _program.IdentifyValue(inv.InvestmentPlanMappingId.ToString()));   
+            }
+
+            var config = _scenarioContext.Get<RolloverInTestConfig>();
+            config.Investments = investments;
+
+            _scenarioContext.Set(config);
+        }
+
+        [When("Submit the {string} request")]
+        public async Task WhenSubmitTheRequest(string transactionType)
+        {
+            if(transactionType == "Rollover")
+            {
+                var config = _scenarioContext.Get<RolloverInTestConfig>();
+                await _program.RolloverInConfiguration(config);
+            }
+            else if(transactionType == "Fee")
+            {
+                await _transactionsConfigurations.SaveFullFee(null, null, null, true);
+            }
+        }
+
+        [When("Create a basic details fee for {string}")]
+        public async Task WhenCreateABasicDetailsFeeFor(string FeeFor)
+        {
+            await _program.FeeConfiguration(FeeFor);
+        }
+
+        [When("Create specification for the fee as mentioned below")]
+        public async Task WhenCreateSpecificationForTheFeeAsMentionedBelow(DataTable dataTable)
+        {
+            _feeSpecification = MapFromTable(dataTable);
+        }
+
+        [When("Create calculation for the fee as mentioned below")]
+        public async Task WhenCreateCalculationForTheFeeAsMentionedBelow(DataTable dataTable)
+        {
+            _calculationDetails = await MapFromTable(dataTable, _feeSpecification);
+            await _transactionsConfigurations.SaveFullFee(_calculationDetails, null, null, false);
+        }
+
+        [When("Create applicable to for the fee as mentioned below")]
+        public async Task WhenCreateApplicableToForTheFeeAsMentionedBelow(DataTable dataTable)
+        {
+            _feeApplicableTo = MapFromTableFeeApplicable(dataTable);
+            await _transactionsConfigurations.SaveFullFee(null, _feeApplicableTo, null, false);
+        }
+
+        [When("Configure schedule for the fee schedule as mentioned below")]
+        public async Task WhenConfigureScheduleForTheFeeScheduleAsMentionedBelow(DataTable dataTable)
+        {
+            _schedule = MapFromTableSchedule(dataTable);
+        }
+
+        [When("Create schedule for the fee as mentioned below")]
+        public async Task WhenCreateScheduleForTheFeeAsMentionedBelow(DataTable dataTable)
+        {
+             _feeSchedule = MapFromTableFeeSchedule(dataTable, _schedule);
+            await _transactionsConfigurations.SaveFullFee(null, null, _feeSchedule, false);
+        }
+
+        [When("Create a fund switch transaction in {string} level with investments from {string} to {string}")]
+        public async Task WhenCreateAFundSwitchTransactionInLevelWithInvestmentsFromTo(string ApplicableLevel, string investmentFrom, string investmentTo)
+        {
+            await _program.FundSwitchConfiguration(ApplicableLevel, investmentFrom, investmentTo);
+        }
+
+
+
 
         [Then("API should respond Match Calculated values as")]
         public void ThenAPIShouldRespondWithMatchValue(Table table)
@@ -321,6 +444,14 @@ namespace SharedStepDefinitions
         {
             await _program.LoanApprove(requestType);
         }
+
+        [When("The transaction request for the transaction {string} is {string}")]
+        public async Task WhenTheTransactionRequestForTheTransactionIs(string transactionType, string approveOrReject)
+        {
+            await _program.ApproveOrRejectTransactionRequestAsAdmin(transactionType, approveOrReject);
+        }
+
+
 
         [When("Loan submission is done for the mentioned applicable sources {string}")]
         public async Task WhenLoanSubmissionIsDoneForTheMentionedApplicableSources(string sourceNames)
@@ -478,11 +609,26 @@ namespace SharedStepDefinitions
             await _program.AddInvestmentToPlan(investmentName);
         }
 
+        [Given("Investment {string} has been mapped to the plan and trade identifier generated for the investment")]
+        public async Task GivenInvestmentHasBeenMappedToThePlanAndTradeIdentifierGeneratedForTheInvestment(string investmentName)
+        {
+            await _program.AddInvestmentToPlan(investmentName);
+            await _program.InvestmentMappingAndTradeIdentifierAdd();
+        }
+
+
         [Given("Enrollment configuration")]
         public async Task GivenEnrollmentConfiguration()
         {
             await _program.EnrollmentSetup();
         }
+
+        [Given("Configure Forfeiture In with the below details and map the investment {string} to the plan")]
+        public async Task GivenConfigureForfeitureInWithTheBelowDetailsAndMapTheInvestmentToThePlan(string investmentName, DataTable dataTable)
+        {
+            await _program.PlanForfeitureConfiguration(investmentName, dataTable);
+        }
+
 
 
 
