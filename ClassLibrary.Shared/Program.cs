@@ -1,59 +1,31 @@
-﻿using AutoFixture;
-using AutoMapper;
+﻿using AutoMapper;
 using Bogus;
-using Bogus.Bson;
-using Bogus.DataSets;
-using Bogus.Extensions.Canada;
 using Bogus.Extensions.UnitedStates;
 using ClassLibrary.Shared;
-using ClassLibrary.Shared.AppSettings;
 using ClassLibrary.Shared.Configurations;
 using ClassLibrary.Shared.Enum;
 using ClassLibrary.Shared.RefitHelper;
 using ClassLibrary.Shared.TestDataGenerator;
 using CsvHelper;
-using FizzWare.NBuilder;
-using FizzWare.NBuilder.Extensions;
-using Fluid.Values;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Playwright;
 using MyNamespace;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NSwag.CodeGeneration.Models;
 using NUnit.Framework;
-using NUnit.Framework.Diagnostics;
 using NUnit.Framework.Legacy;
 using Refit;
-using RefitSandBox.Hooks;
 using RefitSandBox.TestDataGenerator;
 using Renci.SshNet;
 using Reqnroll;
-using System;
 using System.Collections;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Data;
 using System.Globalization;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.AspNetCore.Mvc.Infrastructure;
-//using Microsoft.AspNetCore.Http;
-using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
 using static ClassLibrary.Shared.Configurations.TransactionsConfigurations;
-//using Microsoft.Extensions.Configuration.Json;
-using static Org.BouncyCastle.Bcpg.Attr.ImageAttrib;
-//using Io.Cucumber.Messages.Types;
-//using Gherkin.CucumberMessages.Types;
 
 
 namespace RefitSandBox
@@ -245,7 +217,7 @@ namespace RefitSandBox
         }
 
         
-        public async Task Configuration(string ControlName, string Value)
+        public void Configuration(string ControlName, string Value)
         {
             var program = new Program();
             if (ControlName.Contains("1") || ControlName.Contains("2"))
@@ -425,7 +397,7 @@ namespace RefitSandBox
                             }
                             else
                             {
-                                await SetPropertyValueRecursive(modelAfterConvention, property.Name, Value);
+                                SetPropertyValueRecursive(modelAfterConvention, property.Name, Value);
                             }
                         }
                     }
@@ -543,7 +515,7 @@ namespace RefitSandBox
             }
         }
 
-        public static async Task SetPropertyValueRecursive(object targetObject, string propertyName, object value)
+        public static void SetPropertyValueRecursive(object targetObject, string propertyName, object value)
         {
             if (targetObject == null) return;
 
@@ -620,13 +592,13 @@ namespace RefitSandBox
                     // If it's a collection, iterate through each item in the collection
                     foreach (var item in (System.Collections.IEnumerable)propertyValue)
                     {
-                        await SetPropertyValueRecursive(item, propertyName, value);
+                        SetPropertyValueRecursive(item, propertyName, value);
                     }
                 }
                 else if (propertyValue != null && !property.PropertyType.IsValueType && property.PropertyType != typeof(string))
                 {
                     // If the property is a complex type, recurse into it
-                    await SetPropertyValueRecursive(propertyValue, propertyName, value);
+                    SetPropertyValueRecursive(propertyValue, propertyName, value);
                 }
             }
         }
