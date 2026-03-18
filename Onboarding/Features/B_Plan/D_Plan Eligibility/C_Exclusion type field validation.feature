@@ -109,33 +109,40 @@ Scenario: End date field validation when Exclusion type field  equal to date of 
 
 @CompanyAndPlanBasicDetails
 Scenario:Excluded employee classification field acceptance when Exclusion type field  equal to employee classification and employee classification is entered
+  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
  When Configuration has been made as per following
          | key                          | value |
          | immediateEligibility         | true  |
          | exclusionType                |     2 |
          | employeeClassificationCodeId | L1    |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
 Then API should respond with successful message
 
 @CompanyAndPlanBasicDetails
 Scenario:Excluded employee classification field is null when Exclusion type employee classification is entered
+  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
  When Configuration has been made as per following
          | key                          | value |
          | immediateEligibility         | true  |
          | exclusionType                |     2 |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+  And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then the API response should contain the 1 following errors 
 	| error_code | error_message |
 	| PL1038     | Required      |
 
 @CompanyAndPlanBasicDetails
 Scenario:Excluded employee classification field is null when Exclusion type date of hire and empolyee classification is entered in dateOfHireType is null
+  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
+
  When Configuration has been made as per following
          | key                          | value |
          | immediateEligibility         | true  |
          | exclusionType                |     3 |
          | dateOfHireType                |      |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then the API response should contain the 1 following errors 
 	| error_code | error_message |
 	| PL181     | Required      |
@@ -143,12 +150,14 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 
 @CompanyAndPlanBasicDetails
 Scenario:Excluded employee classification field is null when Exclusion type date of hire and empolyee classification is entered in employeeClassificationCodeId is null
+  Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
  When Configuration has been made as per following
          | key                          | value |
          | immediateEligibility         | true  |
          | exclusionType                |     3 |
          | dateOfHireType                |     1 |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then the API response should contain the 1 following errors 
 	| error_code | error_message |
 	| PL1038     | Required      |
@@ -156,46 +165,61 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 
  @CompanyAndPlanBasicDetails   
  Scenario:Both date of hire and empolyee classification field validation when Exclusion type field  equal to Both date of hire and empolyee classification
+   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
+
+   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
  When Configuration has been made as per following
          | key                          | value      |
          | exclusionType                |          3 |
          | dateOfHireType               |          2 |
-         | hiredOnOrBeforeDate          | 01/01/2021 |
+         | hiredOnOrBeforeDate          | 01-01-2021 |
          | employeeClassificationCodeId | L1         |
          | immediateEligibility         | true       |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+         | ltptHours                    |        500 |
+And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
 Then API should respond with successful message
 
 @CompanyAndPlanBasicDetails
  Scenario:Hired on after selected on date of hire  when Exclusion type field  equal to Both date of hire and empolyee classification
+   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
+
  When Configuration has been made as per following
-         | key                          | value      |
-         | exclusionType                | 3          |
-         | dateOfHireType               | 1          |
-         | employeeClassificationCodeId | L1         |
-         | immediateEligibility         | true       |
-         | hiredOnOrAfterDate         |        |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+         | key                          | value |
+         | exclusionType                |     3 |
+         | dateOfHireType               |     1 |
+         | employeeClassificationCodeId | L1    |
+         | immediateEligibility         | true  |
+         | hiredOnOrAfterDate           |       |
+         | ltptAgeInYears               |    17 |
+And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then the API response should contain the 1 following errors 
 	| error_code | error_message |
-	| PL171     | Required      |
+	| PL171      | Required      |
+
 
     @CompanyAndPlanBasicDetails
  Scenario:Hired on before selected on date of hire  when Exclusion type field  equal to Both date of hire and empolyee classification
+   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
+
  When Configuration has been made as per following
-         | key                          | value      |
-         | exclusionType                | 3          |
-         | dateOfHireType               | 2          |
-         | employeeClassificationCodeId | L1         |
-         | immediateEligibility         | true       |
-         | hiredOnOrBeforeDate          |            |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+         | key                          | value |
+         | exclusionType                |     3 |
+         | dateOfHireType               |     2 |
+         | employeeClassificationCodeId | L1    |
+         | immediateEligibility         | true  |
+         | hiredOnOrBeforeDate          |       |
+         | ltptAgeInYears               |    17 |
+And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then the API response should contain the 1 following errors 
 	| error_code  | error_message |
 	| PL172 | Required      |
 
     @CompanyAndPlanBasicDetails
  Scenario:Hired between selected on date of hire  when Exclusion type field  equal to Both date of hire and empolyee classification
+   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
  When Configuration has been made as per following
          | key                          | value      |
          | exclusionType                | 3          |
@@ -204,7 +228,8 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
          | immediateEligibility         | true       |
          | hiredOnOrBeforeDate         |        |
          | hiredOnOrAfterDate         |        |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then the API response should contain the 2 following errors 
 	| error_code  | error_message |
 	| PL171 | Required      |
@@ -212,6 +237,8 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
 
 @CompanyAndPlanBasicDetails
  Scenario:Save Hired between selected on date of hire  when Exclusion type field  equal to Both date of hire and employee classificationfication
+   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
+
  When Configuration has been made as per following
          | key                          | value      |
          | exclusionType                |          3 |
@@ -220,7 +247,8 @@ And API request has been sent to the "IPlanDetailsSave" with the method name "Sa
          | hiredOnOrAfterDate           | 01/01/2021 |
          | employeeClassificationCodeId | L1         |
          | immediateEligibility         | true       |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
 Then API should respond with successful message
 
  When Configuration has been made as per following
@@ -231,7 +259,8 @@ Then API should respond with successful message
          | hiredOnOrAfterDate           | 01/01/2022 |
          | employeeClassificationCodeId | L1         |
          | immediateEligibility         | true       |
-And API request has been sent to the "IPlanDetailsSave" with the method name "SaveWithdrawalAsync"
+And the property "ltptHours" is configured as "500"
+And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then the API response should contain the 1 following errors 
 	| error_code | error_message                                                    |
 	| PL192      | Exclusion from date should not be greater than exclusion to date |

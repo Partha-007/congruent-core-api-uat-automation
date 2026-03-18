@@ -13,7 +13,9 @@ Scenario: eligibilityReEvaluationandBreakInServiceAndTermination field validate(
  @CompanyAndPlanBasicDetails
 Scenario: EligibilityReEvaluationAndTermination field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured as "<Name>"
+   When Configuration has been made as per following
+| key         | value         |
+| name        | <Name>        |
   And the property "<condition>" is configured as "<data>"
   And the property "ltptHours" is configured as "500"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
@@ -26,7 +28,9 @@ Examples:
 @CompanyAndPlanBasicDetails
 Scenario: EligibilityBreakInServiceAndTermination field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured as "<Name>"
+   When Configuration has been made as per following
+| key         | value         |
+| name        | <Name>        |
   And the property "<condition>" is configured as "<data>"
   And the property "ltptHours" is configured as "500"
   #And the property "ltptAgeInYears" is configured as "16"

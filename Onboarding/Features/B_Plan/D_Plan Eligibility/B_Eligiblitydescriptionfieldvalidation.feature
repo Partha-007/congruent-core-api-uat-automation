@@ -13,8 +13,11 @@ Scenario: Eligiblitydescription field validate(error message)
  @CompanyAndPlanBasicDetails
 Scenario: Eligiblitydescription field validat( succcessfull response)
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
-  When the property "name" is configured as "<Name>"
-  And the property "description" is configured as "<Description>"
+  When Configuration has been made as per following
+| key            | value         |
+| name           | <Name>        |
+| description    | <Description> |
+| amendmentTitle | fthuy         |
   And the property "ltptHours" is configured as "500"
   And the property "ltptAgeInYears" is configured as "17"
   And the property "shortYearStartDate" is configured as "2023-06-01T00:00:00Z"
@@ -22,7 +25,7 @@ Scenario: Eligiblitydescription field validat( succcessfull response)
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then API should respond with successful message
 Examples: 
-| Name                | <Description>                               |
+| Name                | Description                                 |
 | random 10 alphabets | random 10 alphabets                         |
 | random 10 alphabets | random 10 numerics                          |
 | random 10 alphabets | random 10 specialCharacters                 |

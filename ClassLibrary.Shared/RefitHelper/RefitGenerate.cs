@@ -60,6 +60,8 @@ namespace ClassLibrary.Shared.RefitHelper
         [Headers("Content-Type: application/json")]
         Task<object> CreateNewPlanAsync([Body] PlanDetailsViewModel planModel);
 
+        //[Post("api/v1/Plan/SaveForfeitureSetting")]
+        //Task<object> SaveForfeitureAsync([Body] SaveForfeitureSettingViewModel saveForfeitureSettingViewModel);
 
         [Post("/api/Sponsor/SaveSponsor")]
         Task<object> SavePlanSponsor([Body] SponsorViewModel sponsor);
@@ -129,6 +131,9 @@ namespace ClassLibrary.Shared.RefitHelper
 
         [Post("/api/v1/Plan/SaveSourceLimits")]
         Task<object> SaveSourceLimitsAsync([Body] SourceLimitsViewModel sourceLimitsViewModel);
+
+        [Post("/api/Retirement/SaveRetirement")]
+        Task<object> SaveRetirementAsync([Body] RetirementViewModel retirementViewModel);
 
         [Post("/api/v1/Plan/SaveForfeitureSetting")]
         Task<object> SaveForfeitureSettingAsync([Body] SaveForfeitureSettingViewModel saveForfeitureSettingView);

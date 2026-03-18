@@ -237,6 +237,7 @@ namespace RefitSandBox
         {
             int increment = int.Parse(incrementValue);
             var Value = await GetDate(increment, pattern);
+
             if (ControlName == "firstRepaymentDate")
             {
                 firstRepaymentDate = Value;
@@ -244,8 +245,8 @@ namespace RefitSandBox
             Configuration(ControlName, Value);
         }
 
-        
-        public async Task Configuration(string ControlName, string Value)
+        JArray newArray = new JArray();
+        public void Configuration(string ControlName, string Value)
         {
             var program = new Program();
             if (ControlName.Contains("1") || ControlName.Contains("2"))
@@ -271,30 +272,36 @@ namespace RefitSandBox
                     .ToList();
             }
 
-            if (ControlName.Contains(","))
+            if(Value != null)
             {
-                var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                var newArray = new JArray();
-
-                foreach (var part in parts)
+                if (Value.Contains(","))
                 {
-                    var trimmed = part.Trim();
+                    var parts = Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    //var newArray = new JArray();
 
-                    // Try to parse into number (int/float), fallback to string
-                    if (int.TryParse(trimmed, out int intVal))
+                    foreach (var part in parts)
                     {
-                        newArray.Add(intVal);
+                        var trimmed = part.Trim();
+
+                        // Try to parse into number (int/float), fallback to string
+                        if (int.TryParse(trimmed, out int intVal))
+                        {
+                            newArray.Add(intVal);
+                        }
+                        else if (double.TryParse(trimmed, out double doubleVal))
+                        {
+                            newArray.Add(doubleVal);
+                        }
+                        else
+                        {
+                            newArray.Add(trimmed);
+                        }
                     }
-                    else if (double.TryParse(trimmed, out double doubleVal))
-                    {
-                        newArray.Add(doubleVal);
-                    }
-                    else
-                    {
-                        newArray.Add(trimmed);
-                    }
+
+
                 }
             }
+            
 
             //for (int i = 0; i < Value.Length; i++)
             //{
@@ -425,7 +432,7 @@ namespace RefitSandBox
                             }
                             else
                             {
-                                await SetPropertyValueRecursive(modelAfterConvention, property.Name, Value);
+                                SetPropertyValueRecursive(modelAfterConvention, property.Name, Value);
                             }
                         }
                     }
@@ -482,10 +489,14 @@ namespace RefitSandBox
                             }
                             else
                             {
-                                // Otherwise, convert the value to the underlying type and set it
-                                var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
-                                var convertedValue = Convert.ChangeType(Value, underlyingType);
-                                property.SetValue(modelAfterConvention, convertedValue);
+                               
+                            
+                                    // Otherwise, convert the value to the underlying type and set it
+                                    var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
+                                    var convertedValue = Convert.ChangeType(Value, underlyingType);
+                                    property.SetValue(modelAfterConvention, convertedValue);
+                              
+
                             }
                         }
                     }
@@ -509,6 +520,25 @@ namespace RefitSandBox
 
                             }
                         }
+                        else
+                        {
+                            var itemType = property.PropertyType.GetGenericArguments()[0]; // Get the item type T
+                            var listType = typeof(List<>).MakeGenericType(itemType); // Create List<T> type
+                            var collectionInstance = (IList)Activator.CreateInstance(listType); // Instantiate the List<T>
+                            if(Value.Contains(","))
+                            {
+                                var splitted = Value.Split(",");
+                                foreach(var value in splitted)
+                                {
+                                    if (value != null && (!(value is string) || !string.IsNullOrWhiteSpace(value.ToString())))
+                                    {
+                                        var convertedValue = Convert.ChangeType(value, itemType);
+                                        collectionInstance.Add(convertedValue);
+                                    }
+                                }
+                                property.SetValue(modelAfterConvention, collectionInstance);
+                            }
+                        }
                     }
                     else if (String.IsNullOrEmpty(Value))
                     {
@@ -521,10 +551,10 @@ namespace RefitSandBox
 
                         if (propertyType.IsEnum)
                             convertedValue = Enum.Parse(propertyType, Value.ToString(), true);
-                        
+
                         else
                             convertedValue = Convert.ChangeType(Value, propertyType);
-                        
+
                         try
                         {
                             property.SetValue(modelAfterConvention, convertedValue);
@@ -543,7 +573,7 @@ namespace RefitSandBox
             }
         }
 
-        public static async Task SetPropertyValueRecursive(object targetObject, string propertyName, object value)
+        public static void SetPropertyValueRecursive(object targetObject, string propertyName, object value)
         {
             if (targetObject == null) return;
 
@@ -620,13 +650,13 @@ namespace RefitSandBox
                     // If it's a collection, iterate through each item in the collection
                     foreach (var item in (System.Collections.IEnumerable)propertyValue)
                     {
-                        await SetPropertyValueRecursive(item, propertyName, value);
+                        SetPropertyValueRecursive(item, propertyName, value);
                     }
                 }
                 else if (propertyValue != null && !property.PropertyType.IsValueType && property.PropertyType != typeof(string))
                 {
                     // If the property is a complex type, recurse into it
-                    await SetPropertyValueRecursive(propertyValue, propertyName, value);
+                    SetPropertyValueRecursive(propertyValue, propertyName, value);
                 }
             }
         }
@@ -702,7 +732,7 @@ namespace RefitSandBox
                             var fundByFile = await payrollClient.FinalSubmit(fileId, fundingType);
                             await SaveFundingDetailsByPlan(httpClient, planId, fileId);
                             await Task.Delay(5000);
-                            
+
                             var responseAfterFileSubmission = fundByFile.IsSuccessfull;
                             if (!responseAfterFileSubmission)
                             {
@@ -915,7 +945,7 @@ namespace RefitSandBox
                 ReferenceNumber = null,
                 IsReInitiate = false,
 
-            
+
             };
             var ProcessLoanDisbursementViewModel2 = new ProcessLoanDisbursementViewModel()
             {
@@ -1236,8 +1266,8 @@ namespace RefitSandBox
         {
             if (response.ContainsKey("isSuccessfull"))
             {
-                response["isSuccessful"] = response["isSuccessfull"];  
-                response.Remove("isSuccessfull");                      
+                response["isSuccessful"] = response["isSuccessfull"];
+                response.Remove("isSuccessfull");
             }
 
             var responseBody = JsonConvert.DeserializeObject<ResponseBody>(response.ToString());
@@ -1280,7 +1310,7 @@ namespace RefitSandBox
             System.Type interfaceType = System.Type.GetType($"ClassLibrary.Shared.RefitHelper.{interfaceName}");
             Console.WriteLine($"Data001: {JsonConvert.SerializeObject(sourceobjModel, Formatting.Indented)}");
             var response = await SendAPIRequest(Hooks.Hooks.bearer!, modelAfterConvention, interfaceType, methodName);
-            if(response != null)
+            if (response != null)
             {
                 if (response.ContainsKey("source"))
                 {
@@ -1504,7 +1534,7 @@ namespace RefitSandBox
             var requestPayload = JObject.Parse(requestBody);
 
             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-            
+
             var task = await httpClient.PostAsync($"{_url}/{endpoint}/", data);
             var contentTask = await task.Content.ReadAsStringAsync();
             response = JObject.Parse(contentTask);
@@ -1512,7 +1542,7 @@ namespace RefitSandBox
             return response;
         }
 
-        public static Dictionary<string,string> MethodNamesNotHandledByRefit = new Dictionary<string, string>
+        public static Dictionary<string, string> MethodNamesNotHandledByRefit = new Dictionary<string, string>
         {
              { "SavePlanAmendmentEligibleRule", "api/v1/EligibleRule/SavePlanAmendmentEligibleRule" },
              { "SaveEnrollmentSettings", "api/Enrollment/SaveEnrollmentSetting" },
@@ -1698,7 +1728,10 @@ namespace RefitSandBox
                 {"/api/Withdrawal/SaveWithdrawal",() => new WithdrawalViewModel() },
                // {"/api/Rollover/SaveRollover",() => new RolloverViewModel() },
                 {"/api/v1/Loan/SubmitLoanRequest", () => new SubmitLoanRequestViewModel() },
-                {"/api/v1/Plan/SaveSourceLimits",() => new SourceLimitsViewModel() }
+                {"/api/v1/Plan/SaveSourceLimits",() => new SourceLimitsViewModel() },
+                {"/api/Retirement/SaveRetirement",() => new RetirementViewModel() }
+
+
             };
 
             if (endpointToViewModel.TryGetValue(endpoint, out Func<object> viewModelType))
@@ -1715,7 +1748,7 @@ namespace RefitSandBox
                     Model = employeeViewModel;
                     modelAfterConvention = employeeViewModel;
                 }
-                else if(endpoint == "/api/v1/Payroll/AddBeneficary")
+                else if (endpoint == "/api/v1/Payroll/AddBeneficary")
                 {
                     var benModel = BeneficiaryConfiguration();
                     Model = benModel;
@@ -1732,7 +1765,7 @@ namespace RefitSandBox
                     var listOfPlanInvestments = await program.SendAPIRequest(Hooks.Hooks.bearer!, planId, planDetailsClient, "GetInvestmentListByPlanId");
                     if (listOfPlanInvestments == null)
                         throw new Exception("Investments not mapped to this plan");
-                    
+
                     var InvestmentPlanMappingIds = await GetInvestmentIdsByNames(listOfPlanInvestments, modelPortfolioNames);
 
                     modelPortfolioInvestmentId = InvestmentPlanMappingIds[modelPortfolioNames.First()].ToString();
@@ -1828,7 +1861,9 @@ namespace RefitSandBox
                     Value = Value.Contains("_") ? await GetDate(Convert.ToInt32(Value.Split('_')[0]), Value.Split('_')[1]) : Value;
                     Value = Columnname == "SSN" ? employeeSSN : Value;
                     UpdateFile(FileToEdit, Columnname, Value!, directoryPath);
+                    //Value = Value.Contains("+") ? await GetDate(Convert.ToInt32(Value.Split('_')[0]), Value.Split('_')[1]) : Value;
                 }
+
             }
 
 
@@ -2054,7 +2089,7 @@ namespace RefitSandBox
 
         public async Task GenerateOBFile()
         {
-            
+
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(_url)
@@ -2069,7 +2104,7 @@ namespace RefitSandBox
         {
             Configuration("planId", planId);
             Configuration("sourceId", sourceId);
-            
+
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(_url)
@@ -2373,17 +2408,38 @@ namespace RefitSandBox
 
             var errorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.ErrorMessages);
 
-            foreach (var error in errorMessages)
+            if(controlName == "payPeriodGrossCompensation" || controlName == "payPeriodPlanCompensation")
             {
-                if (controlName == error.ControlName)
+                var compensationType = controlName == "payPeriodGrossCompensation" ? "GROSS COMPENSATION" : "PLAN COMPENSATION";
+                var compensationErrorMessages = ResponseFromTestEndpoint.ParseToObjectTestReponse.Employees.SelectMany(_ => _.Compensations).Where(_ => _.CompensationType == compensationType).First().ErrorMessages;
+                foreach (var error in compensationErrorMessages)
                 {
-                    errorTriggered = true;
-                    var actualErrorReportMessage = error.MessageCode;
-                    var actualECRReportMessage = error.MessageDescCode;
-                    ClassicAssert.AreEqual(errorReportMessage, actualErrorReportMessage);
-                    ClassicAssert.AreEqual(ecrMessage, actualECRReportMessage);
+                    if (controlName == error.ControlName)
+                    {
+                        errorTriggered = true;
+                        var actualErrorReportMessage = error.MessageCode;
+                        var actualECRReportMessage = error.MessageDescCode;
+                        ClassicAssert.AreEqual(errorReportMessage, actualErrorReportMessage);
+                        ClassicAssert.AreEqual(ecrMessage, actualECRReportMessage);
+                    }
                 }
             }
+            else
+            {
+                foreach (var error in errorMessages)
+                {
+                    if (controlName == error.ControlName)
+                    {
+                        errorTriggered = true;
+                        var actualErrorReportMessage = error.MessageCode;
+                        var actualECRReportMessage = error.MessageDescCode;
+                        ClassicAssert.AreEqual(errorReportMessage, actualErrorReportMessage);
+                        ClassicAssert.AreEqual(ecrMessage, actualECRReportMessage);
+                    }
+                }
+            }
+
+                
 
             if (!errorTriggered)
                 throw new Exception($"Error not triggered for the given control name {controlName}");
@@ -2412,8 +2468,11 @@ namespace RefitSandBox
 
                     if (expectedError == actualError)
                         Assert.Pass();
-                }
+                    return;
 
+                }
+                Assert.Fail();
+                throw new Exception($"Given error is not thrown, Expected error : {expectedError}");
             }
         }
 
@@ -2819,13 +2878,31 @@ namespace RefitSandBox
                     {
                         value = await IdentifyValue(value);
                     }
+
                     if (value.Contains("random"))
                     {
                         var splitted = value.Split(" ");
 
                         Pattern patternValue = (Pattern)Enum.Parse(typeof(Pattern), splitted[2], ignoreCase: true);
-                        value = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+
+                        var rawRandom = GenerateTestData.RandomString(Convert.ToInt32(splitted[1]), patternValue);
+                        value = rawRandom;
+
+                        if (patternValue == Pattern.SpecialCharacters)
+                        {
+                            rawRandom = rawRandom.Replace("_", "@").Replace(",", "@");
+                            // For Specialcharacter: use the string AS-IS (no regex cleanup)
+                            value = rawRandom;
+                        }
+                        if (patternValue == Pattern.Email)
+                        {
+                            string data = @"[!""#$%&'()*+,\-/:;<=>?\[\]^_`{|}~]";
+                            string formatted = Regex.Replace(value, data, "A");
+                            value = formatted;
+                        }
                     }
+
+
                     if (value.Contains(","))
                     {
                         var parts = value.Split(',', StringSplitOptions.RemoveEmptyEntries);
@@ -2923,7 +3000,7 @@ namespace RefitSandBox
                         {
                             convertedValue = value.ToString();
                         }
-                        else if(propType.IsEnum)
+                        else if (propType.IsEnum)
                         {
                             convertedValue = Enum.Parse(propType, value.ToString(), true);
                         }
@@ -3231,7 +3308,7 @@ namespace RefitSandBox
             return finalDate;
         }
 
-       
+
 
         public static async Task<string> SaveCompany(string bearer)
         {
@@ -3347,10 +3424,10 @@ namespace RefitSandBox
             var sponsorSave = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType!, "SavePlanSponsor");*/
         }
 
-        public static async Task ClearingPartnerPlanMapping(string bearer, string planId,string? ACName=null)
+        public static async Task ClearingPartnerPlanMapping(string bearer, string planId, string? ACName = null)
         {
-            
-            
+
+
 
             var program = new Program();
             System.Type interfaceType = System.Type.GetType($"ClassLibrary.Shared.RefitHelper.IPlanDetailsSave");
@@ -3364,7 +3441,7 @@ namespace RefitSandBox
             var clearingPartnerAddToPlanResponse = await program.SendAPIRequest(bearer, modelAfterConvention, interfaceType, "AddClearingPartnerToPlan");
         }
 
-        public static async Task UpsertPlanWithClearingPartnerAccount(HttpClient httpClient, string planId, int accountId )
+        public static async Task UpsertPlanWithClearingPartnerAccount(HttpClient httpClient, string planId, int accountId)
         {
             var clearingPartnerPlanMapping = new PlanWithClearingPartnerViewModel
             {
@@ -3377,7 +3454,7 @@ namespace RefitSandBox
             var clearingPartnerPlanMappingResponse = await PlanInterface.AddClearingPartnerToPlan(clearingPartnerPlanMapping);
             var parsedResponse = JObject.Parse(clearingPartnerPlanMappingResponse.ToString());
             var errorMessage = parsedResponse["errorMessage"]?.ToString();
-            if(!(errorMessage == null))
+            if (!(errorMessage == null))
                 throw new Exception($"Error in upserting clearing partner account to plan: {errorMessage}");
         }
 
@@ -3480,7 +3557,7 @@ namespace RefitSandBox
             program.Configuration("limitMinimumPercentage", "10");
             program.Configuration("limitMaximumPercentage", "70");
             program.Configuration("limitMaximumDollar", "70");
-            program.Configuration("sourceCode", "A");
+            program.Configuration("sourceCode", "B");
             program.Configuration("employerDiscretionarySource", null);
             program.Configuration("employerMatchSource", null);
             program.Configuration("employerOtherSource", null);
@@ -3556,7 +3633,7 @@ namespace RefitSandBox
             program.Configuration("limitMinimumPercentage", "10");
             program.Configuration("limitMaximumPercentage", "70");
             program.Configuration("limitMaximumDollar", "70");
-            program.Configuration("sourceCode", "Q");
+            program.Configuration("sourceCode", "D");
             program.Configuration("sourceId", "");
             program.Configuration("employerDiscretionarySource", null);
             program.Configuration("employerMatchSource", null);
@@ -4050,12 +4127,12 @@ namespace RefitSandBox
             Console.WriteLine("Trade order request :" + requestPayload.ToString());
             string Action = "api/v1/TradeOutboundFileGeneration/GenerateFile";
             var data = new StringContent(requestPayload.ToString(), Encoding.UTF8, "application/json");
-            
+
             var task = await httpClient.PostAsync($"{Settings.ApplicationURL}/{Action}/", data);
             var contentTask = await task.Content.ReadAsStringAsync();
             if (!(contentTask == "Outbound File generation initiated successfully"))
                 throw new Exception($"Error in running {Action} endpoint");
-            
+
         }
 
         public async Task VerifyClearingPartnerMappingId(HttpClient httpClient, string planId)
@@ -4114,24 +4191,25 @@ namespace RefitSandBox
     
         public async Task EnrollmentConfiguration(string planId, string pretaxSourceId, string rothSourceId, string investment1Name, string investment2Name)
         {
-            
-             
+
+
             var program = new Program();
             var investment1PlanMappingId = await program.IdentifyValue(investment1Name);
             var investment2PlanMappingId = await program.IdentifyValue(investment2Name);
-            try { 
-            enrollmentModel = new EnrollmentViewModel
+            try
             {
-                Id = 0,
-                PlanId = int.Parse(planId),
-                DefaultElectionSetting = new DefaultElectionSettingViewModel
+                enrollmentModel = new EnrollmentViewModel
                 {
-                    EnrollmentId = 0,
                     Id = 0,
-                    AutoUpdateInvestmentElection = null,
-                    SameInvestmentElectionToAllParticipants = true,
-                    InvestmentElectionBasedOn = null,
-                    DeferralSourceContribution = new List<DeferralSourceContributionViewModel>
+                    PlanId = int.Parse(planId),
+                    DefaultElectionSetting = new DefaultElectionSettingViewModel
+                    {
+                        EnrollmentId = 0,
+                        Id = 0,
+                        AutoUpdateInvestmentElection = null,
+                        SameInvestmentElectionToAllParticipants = true,
+                        InvestmentElectionBasedOn = null,
+                        DeferralSourceContribution = new List<DeferralSourceContributionViewModel>
                     {
                         new DeferralSourceContributionViewModel
                         {
@@ -4174,8 +4252,8 @@ namespace RefitSandBox
                             HceRate = null
                         }
                     },
-                    DefaultElectionBasedOnList = new List<DefaultElectionBasedOnViewModel>(),
-                    PlanInvestment = new List<PlanInvestmentViewModel>
+                        DefaultElectionBasedOnList = new List<DefaultElectionBasedOnViewModel>(),
+                        PlanInvestment = new List<PlanInvestmentViewModel>
                     {
                         new PlanInvestmentViewModel
                         {
@@ -4198,53 +4276,53 @@ namespace RefitSandBox
                             IsDeleted = false
                         }
                     },
-                    AdditionalDefaultElectionSetting = new List<AdditionalDefaultElectionSettingViewModel>()
-                },
-                AutoDeferralncreaseApplicable = new ADIApplicableConfigurationViewModel2
-                {
-                    EnrollmentId = 0,
-                    Id = 0,
-                    AutoDeferralIncreaseProgram = false,
-                    AdiApplicableTo = null,
-                    AutoDeferralIncrease = null,
-                    PeriodOfIncrease = null,
-                    ApplyADITo = null,
-                    IncreaseAllowanceDays = null,
-                    ExcludeHCE = null,
-                    SeparateAdiRatesForHce = null,
-                    AdiLiveDate = null,
-                    IsSetAutoIncreaseLimitAcrossAllDeferrals = null,
-                    AutoIncreaseAcrossAllDeferralsStopsAt = null,
-                    AdiContributionType = null,
-                    Adi = new List<ADIViewModel2>(),
-                    AdditionalADIRules = new List<AdditionalADIRuleViewModel>()
-                },
-                AutoEnrollment = new AutoEnrollmentDataViewModel2
-                {
-                    EnrollmentId = 0,
-                    Id = 0,
-                    PlanId = int.Parse(planId),
-                    SubjecttoAutoEnrollment = true,
-                    MinimumWithdrawallimit = null,
-                    IsAutoReEnroll = false,
-                    FrequencyOptoutIndicator = null,
-                    IsWindowPeriod = null,
-                    NumberOfDaysWindowIsOpenNumber = 10,
-                    NumberOfDaysWindowIsOpen = 1,
-                    NumberOfDaysWindowIsOpenForOptoutNumber = 10,
-                    NumberOfDaysWindowIsOpenForOptout = 1,
-                    NumberOfDaysWindowIsOpenReEnrollmentNumber = null,
-                    NumberOfDaysWindowIsOpenReEnrollment = null,
-                    ExclusionType = 0,
-                    UsePlanDefaultDeferralElection = true,
-                    UsePlanDefaultInvestmentElection = true,
-                    InvestmentBasedOn = null,
-                    SameInvestmentBasedOn = null,
-                    SameInvestmentElectionToAllSources = null,
-                    SameInvestmentElectionToAllParticipants = true,
-                    EffectiveDate = DateTimeOffset.Now.AddDays(1), // DateTimeOffset
-                    LiveDate = null,
-                    InvestmentElectionBasedOnList = new List<InvestmentElectionBasedOnViewModel2>
+                        AdditionalDefaultElectionSetting = new List<AdditionalDefaultElectionSettingViewModel>()
+                    },
+                    AutoDeferralncreaseApplicable = new ADIApplicableConfigurationViewModel2
+                    {
+                        EnrollmentId = 0,
+                        Id = 0,
+                        AutoDeferralIncreaseProgram = false,
+                        AdiApplicableTo = null,
+                        AutoDeferralIncrease = null,
+                        PeriodOfIncrease = null,
+                        ApplyADITo = null,
+                        IncreaseAllowanceDays = null,
+                        ExcludeHCE = null,
+                        SeparateAdiRatesForHce = null,
+                        AdiLiveDate = null,
+                        IsSetAutoIncreaseLimitAcrossAllDeferrals = null,
+                        AutoIncreaseAcrossAllDeferralsStopsAt = null,
+                        AdiContributionType = null,
+                        Adi = new List<ADIViewModel2>(),
+                        AdditionalADIRules = new List<AdditionalADIRuleViewModel>()
+                    },
+                    AutoEnrollment = new AutoEnrollmentDataViewModel2
+                    {
+                        EnrollmentId = 0,
+                        Id = 0,
+                        PlanId = int.Parse(planId),
+                        SubjecttoAutoEnrollment = true,
+                        MinimumWithdrawallimit = null,
+                        IsAutoReEnroll = false,
+                        FrequencyOptoutIndicator = null,
+                        IsWindowPeriod = null,
+                        NumberOfDaysWindowIsOpenNumber = 10,
+                        NumberOfDaysWindowIsOpen = 1,
+                        NumberOfDaysWindowIsOpenForOptoutNumber = 10,
+                        NumberOfDaysWindowIsOpenForOptout = 1,
+                        NumberOfDaysWindowIsOpenReEnrollmentNumber = null,
+                        NumberOfDaysWindowIsOpenReEnrollment = null,
+                        ExclusionType = 0,
+                        UsePlanDefaultDeferralElection = true,
+                        UsePlanDefaultInvestmentElection = true,
+                        InvestmentBasedOn = null,
+                        SameInvestmentBasedOn = null,
+                        SameInvestmentElectionToAllSources = null,
+                        SameInvestmentElectionToAllParticipants = true,
+                        EffectiveDate = DateTimeOffset.Now.AddDays(1), // DateTimeOffset
+                        LiveDate = null,
+                        InvestmentElectionBasedOnList = new List<InvestmentElectionBasedOnViewModel2>
                     {
                         new InvestmentElectionBasedOnViewModel2()
                         {
@@ -4280,14 +4358,14 @@ namespace RefitSandBox
                             },
                         }
                     },
-                    ExcludedEmployeeClassifications = new List<ExcludedEmployeeClassficationViewModel2>(),
-                    ExcludedEmploymentStatuses = new List<ExcludedEmployeeStatusViewModel2>(),
-                    DateOfHire = null,
-                    HiredOnOrAfterDateEnrollment = null,
-                    HiredOnOrBeforeDateEnrollment = null,
-                    HiredBetweenFrom = null,
-                    HiredBetweenTo = null,
-                    AutoEnrollmentDeferralSources = new List<AutoEnrollmentDeferralSourcesViewModel2>
+                        ExcludedEmployeeClassifications = new List<ExcludedEmployeeClassficationViewModel2>(),
+                        ExcludedEmploymentStatuses = new List<ExcludedEmployeeStatusViewModel2>(),
+                        DateOfHire = null,
+                        HiredOnOrAfterDateEnrollment = null,
+                        HiredOnOrBeforeDateEnrollment = null,
+                        HiredBetweenFrom = null,
+                        HiredBetweenTo = null,
+                        AutoEnrollmentDeferralSources = new List<AutoEnrollmentDeferralSourcesViewModel2>
                     {
                         new AutoEnrollmentDeferralSourcesViewModel2
                         {
@@ -4314,28 +4392,28 @@ namespace RefitSandBox
                             IsDeleted = false
                         }
                     },
-                    AdditionalAutoEnrollment = new List<AdditionalAutoEnrollmentDataViewModel2>()
-                },
-                OtherInformation = new OtherInformationViewModel
-                {
-                    EnrollmentId = 0,
-                    Id = 0,
-                    AllowReallocation = false,
-                    ReallocationPeriod = null,
-                    NumberOfReallocationsAllowed = null,
-                    SendEnrollmentInvite = 1,
-                    NumberOfDaysBeforeEntryDate = null,
-                    NumberOfDaysBeforeForecastDate = null,
-                    DeferralContributionRateUponRehire = 2,
-                    SendNoticeBeforeEachPlanYear = false,
-                    NumberOfDaysBeforePlanYearStart = null,
-                    IsRecurringCommunication = false,
-                    Frequency = null,
-                    NumberOfOccurrences = null
-                }
-            };
-        }
-             catch(Exception ex)
+                        AdditionalAutoEnrollment = new List<AdditionalAutoEnrollmentDataViewModel2>()
+                    },
+                    OtherInformation = new OtherInformationViewModel
+                    {
+                        EnrollmentId = 0,
+                        Id = 0,
+                        AllowReallocation = false,
+                        ReallocationPeriod = null,
+                        NumberOfReallocationsAllowed = null,
+                        SendEnrollmentInvite = 1,
+                        NumberOfDaysBeforeEntryDate = null,
+                        NumberOfDaysBeforeForecastDate = null,
+                        DeferralContributionRateUponRehire = 2,
+                        SendNoticeBeforeEachPlanYear = false,
+                        NumberOfDaysBeforePlanYearStart = null,
+                        IsRecurringCommunication = false,
+                        Frequency = null,
+                        NumberOfOccurrences = null
+                    }
+                };
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -4644,12 +4722,12 @@ namespace RefitSandBox
 
             var payrollTransactionId = transactionResponse.TransactionDetails.Select(_ => _.TransactionKey).First().ToString();
 
-            if(payrollTransactionId == null)
+            if (payrollTransactionId == null)
             {
-                throw new Exception("Payroll Transaction Id is null"); 
+                throw new Exception("Payroll Transaction Id is null");
                 return null;
             }
-                
+
             else
                 return payrollTransactionId;
         }

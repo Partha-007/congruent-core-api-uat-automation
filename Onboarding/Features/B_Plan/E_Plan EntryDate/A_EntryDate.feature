@@ -16,13 +16,18 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
 	| PL722      | Required                                  |
 	| PL985      | Rule name should not exceed 50 characters |
 
+
+    #UI change restriction 
+    #PL1021 : Rule Name should not contain special characters (!$%_+={}[];:"\\|<>?).
   #Scenario: Entry date Name field validation when null
   @CompanyAndPlanBasicDetails
   Scenario: To verify the validation message for plan entry date field is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"
-  When the property "entryDateRule" is configured as ""
-  And the property "ruleName" is configured as ""
+   When the property "entryDateRule" is configured as ""
+   And Configuration has been made as per following
+           | key      | value |
+           | ruleName |       |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then the API response should contain the 2 following errors 
 	| error_code | error_message |
@@ -33,7 +38,7 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   Scenario:To verify the validation message for source entry date field is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
    When the property "ruleName" is configured as "abc123"
-  When the property "entryDateRule" is configured as "2"
+  When the property "entryDateRuleFor" is configured as "2"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   When the property "ruleName" is configured as "abc1263"
   When the property "entryDateRule" is configured as ""
@@ -46,7 +51,9 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "entryDateRule" is configured as "7"
   And the property "month" is configured as "0"
-    And the property "ruleName" is configured as "    "
+   And Configuration has been made as per following
+           | key      | value |
+           | ruleName |       |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then the API response should contain the 2 following errors 
 	| error_code | error_message |
@@ -82,18 +89,17 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL726 : Required"
 
-@CompanyAndPlanBasicDetails
       Scenario:To verify the validation message for already exit month and date 
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "ruleName" is configured as "abc123" 
-    When the property "entryDateRule" is configured as "7"
-  When the property "month" is configured as "2"
-  When the property "day" is configured as "1"
-  And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
-      When the property "entryDateRule" is configured as "7"
-      When the property "ruleName" is configured as "abc1243" 
-  When the property "month" is configured as "2"
-  When the property "day" is configured as "1"
+  When the property "entryDateRuleFor" is configured as "1"
+  When the property "entryDateRule" is configured as "7"
+   When Collection in a model is configured with 2 blocks for the property "OtherEntryDates" with values as given below
+   | BlockNumber | Key   | Value |
+   |           1 | Month |     2 |
+   |           1 | Day   |     1 |
+   |           2 | Month |     2 |
+   |           2 | Day   |     1 |
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1042 : The entered day and month already exists for the plan"
 
@@ -110,6 +116,9 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   @CompanyAndPlanBasicDetails
       Scenario:To verify the switch to plan year entry date is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
+   When Configuration has been made as per following
+| propertyName | value                   |
+| ruleName     | random 10 AlphaNumerics |
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
   When the property "additionalEntryDateRule" is configured as ""
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
@@ -127,9 +136,12 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   Then API should give response as "PL724 : Required"
 
   @CompanyAndPlanBasicDetails
-          Scenario:To verify the Is coinciding with applicable is empty
+  Scenario:To verify the Is coinciding with applicable is empty
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
+  When Configuration has been made as per following
+| propertyName | value                   |
+| ruleName     | random 10 AlphaNumerics |
   When the property "additionalEntryDateRule" is configured as "1"
   When the property "additionalProspectiveOrRetrospective" is configured as "1"
    When the property "isCoincidingApplicableForAdditional" is configured as ""
@@ -157,10 +169,12 @@ Scenario: o verify the validation message for Prospective/retrospective criteria
   And API request has been sent to the "IPlanDetailsSave" with the method name "SaveEntryDate"
   Then API should give response as "PL1084 : Required"
 
-  @CompanyAndPlanBasicDetails
    Scenario:To verify the validation message for already exit month and date when Switch to plan year is "yes"
   Given Model is selected for the endpoint "/api/EntryDate/SaveEntryDate"
   When the property "isSwitchToPlanYearHaveDifferentEntryDates" is configured as "true"
+   When Configuration has been made as per following
+| propertyName | value                   |
+| ruleName     | random 10 AlphaNumerics |
   When the property "additionalEntryDateRule" is configured as "7"
   When the property "month" is configured as "2"
    When the property "day" is configured as "0"

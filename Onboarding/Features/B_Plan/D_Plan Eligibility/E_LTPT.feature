@@ -63,7 +63,6 @@ Scenario: Save Long Term Part Time (LTPT) Eligibility with valid data( succcessf
            | ltptAgeInYears   | <LtptAgeInYears>   |
            | ltptAgeInMonths  | <LtptAgeInMonths>  |
            | ltptHours        | <LtptHours>        |
-  And the property "ltptHours" is configured as "500"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then the API response should contain the 1 following errors
 | block | error_code | error_message                                              |
@@ -83,7 +82,6 @@ Scenario: Save Long Term Part Time (LTPT) Eligibility with valid data( succcessf
            | ltptAgeInYears   | <LtptAgeInYears>   |
            | ltptAgeInMonths  | <LtptAgeInMonths>  |
            | ltptHours        | <LtptHours>        |
-  And the property "ltptHours" is configured as "500"
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then the API response should contain the 1 following errors
 | block | error_code | error_message                                              |
@@ -138,12 +136,14 @@ Scenario: Save Long Term Part Time (LTPT) Eligibility with valid data( succcessf
   Given Model is selected for the endpoint "/api/v1/EligibleRule/SavePlanAmendmentEligibleRule"
   When the property "name" is configured with "alphabets" with 10 characters
   And Configuration has been made as per following
-           | key                             | value |
-           | isLTPTApplicable                | true  |
-           | ltptAgeInYears                  |    20 |
-           | ltptAgeInMonths                 |     0 |
- And the property "ltptVestingComputationPeriod" is configured as ""
-  And the property "ltptHours" is configured as "500"
+           | key                          | value |
+           | isLTPTApplicable             | true  |
+           | ltptAgeInYears               |    20 |
+           | ltptAgeInMonths              |     0 |
+           | ltptVestingComputationPeriod |       |
+           | ltptHours                    |   500 |
+ #And the property "ltptVestingComputationPeriod" is configured as ""
+  #And the property "ltptHours" is configured as "500"
  And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
  Then API should give response as "PL216 : Required"
 
@@ -157,7 +157,6 @@ Scenario: Save Long Term Part Time (LTPT) Eligibility with valid data( succcessf
            | ltptAgeInMonths         |     0 |
            | ltptServiceCreditPeriod |       |
   And the property "ltptHours" is configured as "500"
-
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
   Then API should give response as "PL217 : Required"
 
@@ -171,7 +170,6 @@ Scenario: Save Long Term Part Time (LTPT) Eligibility with valid data( succcessf
            | ltptAgeInMonths              |     0 |
            | ltptVestingComputationPeriod |     1 |
   And the property "ltptHours" is configured as "500"
-
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
   Then API should respond with successful message
 
@@ -213,7 +211,6 @@ Scenario: Save Long Term Part Time (LTPT) Eligibility with valid data( succcessf
            | ltptAgeInMonths         |     0 |
            | ltptServiceCreditPeriod |     2 |
   And the property "ltptHours" is configured as "500"
-
   And API request has been sent to the "IPlanDetailsSave" with the method name "SavePlanAmendmentEligibleRule"
   Then API should respond with successful message
 
