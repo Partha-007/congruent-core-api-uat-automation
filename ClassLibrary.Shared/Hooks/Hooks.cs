@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Bogus.Extensions.UnitedStates;
 using ClassLibrary.Shared.AppSettings;
 using ClassLibrary.Shared.RefitHelper;
 using FizzWare.NBuilder;
@@ -46,7 +47,7 @@ namespace RefitSandBox.Hooks
 
         public static string? bearer;
         //public string planId;
-        public static string? companyId, planId, RollOverSource;
+        public static string? companyId, planId, RollOverSource, seedSSN, seedFirstName;
         public static AppSettings? _appSettings;
         public static string? url, name, password, clearingPartnerName, iD;
 
@@ -374,6 +375,13 @@ namespace RefitSandBox.Hooks
             planId = await Program.SavePlan(bearer!, companyId);
         }
 
+        [BeforeScenario("@sameEmployee")]
+        public async Task SameEmployee()
+        {
+            seedSSN = faker!.Person.Ssn();
+            seedFirstName = faker.Person.FirstName;
+        }
+
         public static async Task<DataTable> ChangeTable(DataTable table, string[] rowData)
         {
             foreach (var item in rowData)
@@ -398,7 +406,7 @@ namespace RefitSandBox.Hooks
 
         
 
-        public static async Task<int>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   CreateCPAccount(string name, int id)
+        public static async Task<int> CreateCPAccount(string name, int id)
         {
             var cpModel = new ClearingPartnerViewModel
             {
