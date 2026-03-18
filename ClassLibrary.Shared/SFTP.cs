@@ -1,4 +1,6 @@
 ﻿using Bogus;
+using ClassLibrary.Shared.FixedWidthEditor;
+using ClassLibrary.Shared.RefitHelper;
 using Refit;
 using RefitSandBox;
 using RefitSandBox.Hooks;
@@ -7,9 +9,11 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace ClassLibrary.Shared
 {
@@ -19,6 +23,7 @@ namespace ClassLibrary.Shared
         public static Dictionary<string,string> CUSIPAmountDict = new Dictionary<string, string>();
         public static Faker _faker = new Faker();
         public static Queue<CusipProcessingResult> resultsQueue = new Queue<CusipProcessingResult>();
+        public static List<B50MatchResult> b50Response = new List<B50MatchResult>();
         public async Task<List<B50MatchResult>> SFTPOperations(string searchValue)
         {
             var results = new List<B50MatchResult>();
@@ -52,6 +57,8 @@ namespace ClassLibrary.Shared
                         }
                     }
                 }
+
+                sftp.Disconnect();
             }
 
             return results;
@@ -127,9 +134,17 @@ namespace ClassLibrary.Shared
             }
         }
 
-
-        public void EditFixedWidthFile(string clearingPartner,string inputFilePath,List<B50MatchResult> matchResults,Dictionary<string, CusipProcessingResult> cusipProcessingResult)
+        public async Task EditFixedWidthFile(string clearingPartner, string inputFilePath, List<B50MatchResult> matchResults, Dictionary<string, CusipProcessingResult> cusipProcessingResult)
         {
+            await FixedWidthFileEditor.EditFixedWidthFile(clearingPartner, inputFilePath, matchResults, cusipProcessingResult);
+
+            /*if (inputFilePath == "D260102.P2361.C09" && cusipProcessingResult.Count == 0)
+                throw new Exception("Trade order file does not contain order numbers belongs to the investments");
+
+            if(inputFilePath == "D260119.P2084.C00" && matchResults.Count == 0)
+                throw new Exception("B50 file does not contain the cusips belongs to the investments");
+
+
             string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
 
             string directoryPath = Path.Combine(
@@ -139,42 +154,192 @@ namespace ClassLibrary.Shared
                 clearingPartner,
                 inputFilePath);
 
-            if (!File.Exists(directoryPath))
+            if (!System.IO.File.Exists(directoryPath))
                 throw new FileNotFoundException("Input file not found.", directoryPath);
 
-            if(cusipProcessingResult.Count != 0)
+            var resultsQueue = new Queue<CusipProcessingResult>(cusipProcessingResult.Values);
+
+            string fileHeader = null;
+            string f53Template = null;
+            string tradeTemplate = null;
+            string summaryLine = null;
+            var trailerLines = new List<string>();
+
+            // ----------------------
+            // First pass: identify header, F53 template, trade template, summary, trailers
+            // ----------------------
+            foreach (var line in System.IO.File.ReadLines(directoryPath))
             {
-                resultsQueue = new Queue<CusipProcessingResult>(
-                cusipProcessingResult.Values);
+                if (fileHeader == null)
+                {
+                    fileHeader = line; // Only first line is header
+                    continue;
+                }
+
+                if (line.StartsWith("F53") && f53Template == null)
+                {
+                    f53Template = line; // first F53 line as template
+                }
+                else if (line.StartsWith("019701"))
+                {
+                    if (line.Length > 20 && line.Substring(16, 4) == "9990")
+                    {
+                        summaryLine = line; // summary line
+                    }
+                    else if (tradeTemplate == null)
+                    {
+                        tradeTemplate = line; // first trade line template
+                    }
+                }
+                else if (line.StartsWith("0201") || line.StartsWith("0302"))
+                {
+                    trailerLines.Add(line); // summary/trailer lines
+                }
+                // Any other line (whitespace, extra headers) is ignored
             }
-            
 
             var outputLines = new List<string>();
-            int matchIndex = 0;
 
-            foreach (var line in File.ReadLines(directoryPath))
+            // ----------------------
+            // Add the single file header
+            // ----------------------
+            if (!string.IsNullOrEmpty(fileHeader))
+                outputLines.Add(fileHeader);
+
+            // ----------------------
+            // Insert F53 block immediately after header
+            // ----------------------
+            if (f53Template != null)
             {
-                string updatedLine = line;
-
-                // F53 replacement
-                if (line.StartsWith("F53") && line.Length >= 76 && matchIndex < matchResults.Count)
+                for (int i = 0; i < matchResults.Count; i++)
                 {
-                    updatedLine = ReplaceF53Fields(line, matchResults[matchIndex]);
-                    matchIndex++;
+                    var newF53Line = ReplaceF53Fields(f53Template, matchResults[i]);
+                    outputLines.Add(newF53Line);
                 }
-
-                // Trade response editing
-                else if (line.StartsWith("019701") && resultsQueue.Count > 0)
-                {
-                    var nextResult = resultsQueue.Dequeue();
-                    updatedLine = EditTradeResponseFile(line, nextResult);
-                }
-
-                outputLines.Add(updatedLine);
             }
 
-            File.WriteAllLines(directoryPath, outputLines);
+            // ----------------------
+            // Generate trade lines dynamically & calculate totals
+            // ----------------------
+            decimal totalShares = 0;
+            decimal totalAmount = 0;
+
+            if (tradeTemplate != null)
+            {
+                foreach (var result in cusipProcessingResult.Values)
+                {
+                    var newTrade = EditTradeResponseFile(tradeTemplate, result);
+
+                    string sharesStr = newTrade.Substring(114, 14).TrimStart('0');
+                    string amountStr = newTrade.Substring(140, 16).TrimStart('0');
+
+                    decimal shares = 0;
+                    decimal amount = 0;
+
+                    if (decimal.TryParse(sharesStr, out var rawShares))
+                    {
+                        shares = rawShares / 10000m; // 4 decimal places
+                    }
+
+                    if (decimal.TryParse(amountStr, out var rawAmount))
+                    {
+                        amount = rawAmount / 100m; // 2 decimal places
+                    }
+
+                    totalShares += shares;
+                    totalAmount += amount;
+
+                    outputLines.Add(newTrade);
+                }
+            }
+
+            // ----------------------
+            // Update summary line
+            // ----------------------
+            if (!string.IsNullOrEmpty(summaryLine))
+            {
+                long sharesForFile = (long)(totalShares * 10000);
+                long amountForFile = (long)(totalAmount * 100);
+                summaryLine = UpdateSummaryLine(summaryLine, cusipProcessingResult.Count, sharesForFile, amountForFile);
+                outputLines.Add(summaryLine);
+            }
+
+            // ----------------------
+            // Append trailer/control lines at the end
+            // ----------------------
+            outputLines.AddRange(trailerLines);
+
+            // ----------------------
+            // Write updated file
+            // ----------------------
+            System.IO.File.WriteAllLines(directoryPath, outputLines);
+            await Task.Delay(2000);*/
         }
+
+        // ----------------------
+        // Update summary line (adjust positions/widths as per your DTCC file spec)
+        // ----------------------
+        private string UpdateSummaryLine(string line, int tradeCount, decimal totalShares, decimal totalAmount)
+        {
+            var sb = new StringBuilder(line);
+
+            long sharesForFile = (long)(totalShares * 10000);
+            long amountForFile = (long)(totalAmount * 100);
+
+            sb.Remove(100, 6).Insert(100, tradeCount.ToString("D6"));
+            sb.Remove(114, 14).Insert(114, sharesForFile.ToString("D14"));
+            sb.Remove(140, 16).Insert(140, amountForFile.ToString("D16"));
+
+            return sb.ToString();
+        }
+
+        //public void EditFixedWidthFile(string clearingPartner,string inputFilePath,List<B50MatchResult> matchResults,Dictionary<string, CusipProcessingResult> cusipProcessingResult)
+        //{
+        //    string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
+
+        //    string directoryPath = Path.Combine(
+        //        projectDirectory,
+        //        "ClassLibrary.Shared",
+        //        "Trade",
+        //        clearingPartner,
+        //        inputFilePath);
+
+        //    if (!File.Exists(directoryPath))
+        //        throw new FileNotFoundException("Input file not found.", directoryPath);
+
+        //    if(cusipProcessingResult.Count != 0)
+        //    {
+        //        resultsQueue = new Queue<CusipProcessingResult>(
+        //        cusipProcessingResult.Values);
+        //    }
+
+
+        //    var outputLines = new List<string>();
+        //    int matchIndex = 0;
+
+        //    foreach (var line in File.ReadLines(directoryPath))
+        //    {
+        //        string updatedLine = line;
+
+        //        // F53 replacement
+        //        if (line.StartsWith("F53") && line.Length >= 76 && matchIndex < matchResults.Count)
+        //        {
+        //            updatedLine = ReplaceF53Fields(line, matchResults[matchIndex]);
+        //            matchIndex++;
+        //        }
+
+        //        // Trade response editing
+        //        else if (line.StartsWith("019701") && line.Substring(16, 4) != "9990" && resultsQueue.Count > 0)
+        //        {
+        //            var nextResult = resultsQueue.Dequeue();
+        //            updatedLine = EditTradeResponseFile(line, nextResult);
+        //        }
+
+        //        outputLines.Add(updatedLine);
+        //    }
+
+        //    File.WriteAllLines(directoryPath, outputLines);
+        //}
 
 
 
@@ -302,7 +467,7 @@ namespace ClassLibrary.Shared
                         if (tradeIdentifier != cusipTradeIdentifierDict[cusip])
                             continue;
 
-                        // ✅ Extract TradeOrderNumber
+                        // Extract TradeOrderNumber
                         string tradeOrderNumber = line.Substring(40, 16).Trim();
 
                         // Read 0303 for Amount
@@ -322,6 +487,8 @@ namespace ClassLibrary.Shared
                         };
                     }
                 }
+
+                sftp.Disconnect();
             }
 
             return result;
@@ -342,7 +509,7 @@ namespace ClassLibrary.Shared
                 clearingPartner,
                 localFileName);
 
-            if (!File.Exists(directoryPath))
+            if (!System.IO.File.Exists(directoryPath))
                 throw new FileNotFoundException("Input file not found.", directoryPath);
             var sftpDirectory = $"/dev/{Hooks.clearingPartnerName}/inbound/";
             string remoteFilePath = sftpDirectory + localFileName;
@@ -422,6 +589,7 @@ namespace ClassLibrary.Shared
                 }
 
                 Console.WriteLine("Timeout reached. File was not picked up.");
+                sftp.Disconnect();
                 return false;
             }
         }
@@ -444,10 +612,7 @@ namespace ClassLibrary.Shared
                     var result = jsonElement.Deserialize<InvestmentResponse>(
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                    if (result?.InvestmentPlanDetails != null &&
-                        result.InvestmentPlanDetails.Count >= 2 &&
-                        result.InvestmentPlanDetails.All(x =>
-                            !string.IsNullOrWhiteSpace(x.TradeIdentifier)))
+                    if (result?.InvestmentPlanDetails != null && result.InvestmentPlanDetails.Count >= 2 && result.InvestmentPlanDetails.All(x => !string.IsNullOrWhiteSpace(x.TradeIdentifier)))
                     {
                         Console.WriteLine("Investments processed successfully.");
                         return;
@@ -475,6 +640,22 @@ namespace ClassLibrary.Shared
                 throw new Exception("Account balance not updated for the employee within the time");
             }
             
+        }
+
+        public async Task GenerateTradeIdentifierAndValidate(HttpClient httpClient,string AccountId, string planId)
+        {
+            var program = new Program();
+            await program.GenerateOutboundFile(httpClient, "Saturna", "DTCC", 7);
+            await Task.Delay(2500);
+            b50Response = await SFTPOperations(AccountId.ToString());
+            if (b50Response.Count == 0)
+                throw new Exception("B50 File does not contain investments");
+            else
+                Program.b50Response.AddRange(b50Response);
+
+            await EditFixedWidthFile(Hooks.clearingPartnerName!, "D260119.P2084.C00", b50Response, new Dictionary<string, CusipProcessingResult>());
+            UploadFile(Hooks.clearingPartnerName, "D260119.P2084.C00");
+            await PollingIdentifier(httpClient, Hooks.clearingPartnerName, planId, "ClearingPartnerMapping");
         }
 
         private static string CalculateUnits(string amountString, int totalWidth = 14)

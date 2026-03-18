@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using ClassLibrary.Shared.AppSettings;
+using ClassLibrary.Shared.RefitHelper;
 using FizzWare.NBuilder;
 using Generator.sourceGenerator;
 using Microsoft.ApplicationInsights;
@@ -397,7 +398,7 @@ namespace RefitSandBox.Hooks
 
         
 
-        public static async Task<int> CreateCPAccount(string name, int id)
+        public static async Task<int>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   CreateCPAccount(string name, int id)
         {
             var cpModel = new ClearingPartnerViewModel
             {
@@ -534,7 +535,7 @@ namespace RefitSandBox.Hooks
                 await Program.SaveEntryDate(httpClient, bearer!, planId);
                 await Program.SavePretaxSource(bearer!, planId);
                 //await Program.SavePretaxRollOverSource(bearer!, planId);
-                await Program.SaveMatchSource(bearer!, planId);
+                await Program.SaveMatchSource(httpClient, bearer!, planId);
                 await Program.SaveRothSource(bearer!, planId);
                 await Program.SaveCompensation(bearer!, planId);
             }
@@ -542,10 +543,11 @@ namespace RefitSandBox.Hooks
 
             await program.AddInvestmentToPlan("SEAS001");
             await program.AddInvestmentToPlan("SEAS002");
-            await program.EnrollmentSetup("<SEAS001>", "<SEAS002>");
-            await Program.SaveFunding(bearer!, planId);
+            await program.EnrollmentSetup();
+            await Program.SaveFunding(bearer!, planId!);
             clearingPartnerName = _appSettings.ClearingPartners.Select(_ => _.Name).FirstOrDefault() ?? "DefaultPartner";
             await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);
+            await Program.SaveFunding(bearer!, planId);
             await Program.UpdatePlanStatus(bearer!, planId, "2");
             await Program.UpdatePlanStatus(bearer!, planId, "3");
             await Program.SaveEmployee(httpClient, companyId);
@@ -589,7 +591,7 @@ namespace RefitSandBox.Hooks
                 await Program.SaveEntryDate(httpClient, bearer!, planId);
                 await Program.SavePretaxSource(bearer!, planId);
                 //await Program.SavePretaxRollOverSource(bearer!, planId);
-                await Program.SaveMatchSource(bearer!, planId);
+                await Program.SaveMatchSource(httpClient, bearer!, planId);
                 await Program.SaveRothSource(bearer!, planId);
                 await Program.SaveCompensation(bearer!, planId);
             }

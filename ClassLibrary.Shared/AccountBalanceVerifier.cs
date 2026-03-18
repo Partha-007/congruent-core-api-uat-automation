@@ -1,8 +1,8 @@
-﻿using Gherkin.CucumberMessages.Types;
+﻿using ClassLibrary.Shared.RefitHelper;
+using Gherkin.CucumberMessages.Types;
 using Microsoft.Playwright;
 using MyNamespace;
 using Refit;
-using RefitSandBox;
 using RefitSandBox.Hooks;
 using Reqnroll;
 using System;
