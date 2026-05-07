@@ -1,6 +1,5 @@
 using System;
 using Reqnroll;
-using ClassLibrary.Shared.SharedFeatureFiles;
 
 namespace RefitSandBox
 {

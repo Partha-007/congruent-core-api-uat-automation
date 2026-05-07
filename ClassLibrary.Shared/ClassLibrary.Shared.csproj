@@ -6,11 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ReqnrollObsoleteCodeBehindFiles Remove="SharedFeatureFiles\Sample.feature.cs" />
-    <ReqnrollObsoleteCodeBehindFiles Remove="TestDataGenerator\Sample.feature.cs" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="AutoFixture" Version="5.0.0-preview0011" />
 		<PackageReference Include="AutoMapper" Version="14.0.0" />
@@ -48,26 +43,6 @@
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Reflection" Version="4.3.0" />
 		<PackageReference Include="xunit" Version="2.9.3" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Update="SharedFeatureFiles\Sample.feature.cs">
-	    <DependentUpon>%(Filename)</DependentUpon>
-	  </Compile>
-	  <Compile Update="TestDataGenerator\Sample.feature.cs">
-	    <DependentUpon>%(Filename)</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ReqnrollFeatureFiles Update="SharedFeatureFiles\Sample.feature">
-	    <Visible>$(UsingMicrosoftNETSdk)</Visible>
-	    <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-	  </ReqnrollFeatureFiles>
-	  <ReqnrollFeatureFiles Update="TestDataGenerator\Sample.feature">
-	    <Visible>$(UsingMicrosoftNETSdk)</Visible>
-	    <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-	  </ReqnrollFeatureFiles>
 	</ItemGroup>
 
 	<ItemGroup>
