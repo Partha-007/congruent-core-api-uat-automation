@@ -552,12 +552,12 @@ namespace RefitSandBox.Hooks
             await program.AddInvestmentToPlan("SEAS002");
             await program.EnrollmentSetup();
             await Program.SaveFunding(bearer!, planId!);
-            clearingPartnerName = _appSettings.ClearingPartners.Select(_ => _.Name).FirstOrDefault() ?? "DefaultPartner";
-            await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);
+            /*clearingPartnerName = _appSettings.ClearingPartners.Select(_ => _.Name).FirstOrDefault() ?? "DefaultPartner";
+            await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);*/
             await Program.SaveFunding(bearer!, planId);
             await Program.UpdatePlanStatus(bearer!, planId, "2");
             await Program.UpdatePlanStatus(bearer!, planId, "3");
-            await Program.SaveEmployee(httpClient, companyId);
+            //await Program.SaveEmployee(httpClient, companyId);
             //RollOverSource = await Program.SavePretaxRollOverSource(bearer!, planId);
             await Program.SavePretaxRolloverSource(bearer!, planId); 
         }
