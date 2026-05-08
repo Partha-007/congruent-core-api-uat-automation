@@ -531,10 +531,10 @@ namespace RefitSandBox.Hooks
 
 
 
-            var program = new Program();
-            companyId = await Program.SaveCompany(bearer!); // Static method call
+          //  var program = new Program();
+           // companyId = await Program.SaveCompany(bearer!); // Static method call
             
-                planId = await Program.SavePlan(bearer!, companyId);
+            /*    planId = await Program.SavePlan(bearer!, companyId);
                 await Program.SaveSponsor(httpClient, bearer!, planId);
                 await Program.ClearingPartnerPlanMapping(bearer!, planId);
                 //await Program.UpsertPlanWithClearingPartnerAccount(httpClient, planId, AccountId);
@@ -551,15 +551,18 @@ namespace RefitSandBox.Hooks
             await program.AddInvestmentToPlan("SEAS001");
             await program.AddInvestmentToPlan("SEAS002");
             await program.EnrollmentSetup();
-            await Program.SaveFunding(bearer!, planId!);
+            await Program.SaveFunding(bearer!, planId!); */
             /*clearingPartnerName = _appSettings.ClearingPartners.Select(_ => _.Name).FirstOrDefault() ?? "DefaultPartner";
             await program.TradeOutboundFileGeneration(clearingPartnerName, AccountId);*/
+          /*
             await Program.SaveFunding(bearer!, planId);
             await Program.UpdatePlanStatus(bearer!, planId, "2");
             await Program.UpdatePlanStatus(bearer!, planId, "3");
             //await Program.SaveEmployee(httpClient, companyId);
             //RollOverSource = await Program.SavePretaxRollOverSource(bearer!, planId);
             await Program.SavePretaxRolloverSource(bearer!, planId); 
+          */
+            
         }
 
         [BeforeFeature("@PayrollTradeSetup")]
